@@ -101,7 +101,7 @@ class LoginView extends GetView<LoginController> {
                       TextField(
                         controller: controller.usernameController,
                         decoration: InputDecoration(
-                          hintText: 'admin',
+                          hintText: 'Masukkan username',
                           hintStyle: TextStyle(
                             color: const Color(0xFF2F2F2F).withOpacity(0.5),
                           ),
@@ -155,7 +155,7 @@ class LoginView extends GetView<LoginController> {
                         controller: controller.passwordController,
                         obscureText: controller.isPasswordHidden.value,
                         decoration: InputDecoration(
-                          hintText: 'admin',
+                          hintText: 'Masukkan password',
                           hintStyle: TextStyle(
                             color: const Color(0xFF2F2F2F).withOpacity(0.5),
                           ),
