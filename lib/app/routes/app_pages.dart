@@ -32,6 +32,8 @@ class AppPages {
       name: Routes.login,
       page: () => const LoginView(),
       binding: LoginBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 400),
     ),
     GetPage(
       name: Routes.home,
