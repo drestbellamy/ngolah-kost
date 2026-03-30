@@ -8,7 +8,7 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
+      backgroundColor: const Color(0xFF6B8E7A),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -21,7 +21,7 @@ class LoginView extends GetView<LoginController> {
                   width: 96,
                   height: 96,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6B8E7A),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
@@ -39,7 +39,7 @@ class LoginView extends GetView<LoginController> {
                   child: const Icon(
                     Icons.home_rounded,
                     size: 48,
-                    color: Colors.white,
+                    color: Color(0xFF6B8E7A),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -50,7 +50,7 @@ class LoginView extends GetView<LoginController> {
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF2F2F2F),
+                    color: Colors.white,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -61,7 +61,7 @@ class LoginView extends GetView<LoginController> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
-                    color: Color(0xFF6B7280),
+                    color: Color(0xFFA8D5BA),
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -105,10 +105,18 @@ class LoginView extends GetView<LoginController> {
                           hintStyle: TextStyle(
                             color: const Color(0xFF2F2F2F).withOpacity(0.5),
                           ),
-                          prefixIcon: const Icon(
-                            Icons.person_outline,
-                            size: 20,
-                            color: Color(0xFF6B7280),
+                          prefixIcon: Container(
+                            margin: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE5EDE8),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.person_outline,
+                              size: 20,
+                              color: Color(0xFF6B8E7A),
+                            ),
                           ),
                           filled: true,
                           fillColor: const Color(0xFFF7F9F8),
@@ -159,10 +167,18 @@ class LoginView extends GetView<LoginController> {
                           hintStyle: TextStyle(
                             color: const Color(0xFF2F2F2F).withOpacity(0.5),
                           ),
-                          prefixIcon: const Icon(
-                            Icons.lock_outline,
-                            size: 20,
-                            color: Color(0xFF6B7280),
+                          prefixIcon: Container(
+                            margin: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE5EDE8),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(
+                              Icons.lock_outline,
+                              size: 20,
+                              color: Color(0xFF6B8E7A),
+                            ),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
