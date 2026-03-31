@@ -7,6 +7,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/kost/bindings/kost_binding.dart';
 import '../modules/kost/views/kost_view.dart';
+import '../modules/kamar/bindings/kamar_binding.dart';
+import '../modules/kamar/views/kamar_view.dart';
 import '../modules/penghuni/bindings/penghuni_binding.dart';
 import '../modules/penghuni/views/penghuni_view.dart';
 import '../modules/profil/bindings/profil_binding.dart';
@@ -17,8 +19,10 @@ import '../modules/kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../modules/kelola_pengumuman/views/kelola_pengumuman_view.dart';
 import '../modules/kelola_peraturan/bindings/kelola_peraturan_binding.dart';
 import '../modules/kelola_peraturan/views/kelola_peraturan_view.dart';
-import '../modules/kamar/bindings/kamar_binding.dart';
-import '../modules/kamar/views/kamar_view.dart';
+import '../modules/kamar/bindings/informasi_kamar_binding.dart';
+import '../modules/kamar/views/informasi_kamar_view.dart';
+import '../modules/kamar/bindings/tambah_penghuni_binding.dart';
+import '../modules/kamar/views/tambah_penghuni_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -48,6 +52,11 @@ class AppPages {
       binding: KostBinding(),
     ),
     GetPage(
+      name: Routes.kamar,
+      page: () => const KamarView(),
+      binding: KamarBinding(),
+    ),
+    GetPage(
       name: Routes.penghuni,
       page: () => const PenghuniView(),
       binding: PenghuniBinding(),
@@ -73,9 +82,14 @@ class AppPages {
       binding: KelolaPeraturanBinding(),
     ),
     GetPage(
-      name: Routes.kamar,
-      page: () => const KamarView(),
-      binding: KamarBinding(),
+      name: Routes.informasiKamar,
+      page: () => const InformasiKamarView(),
+      binding: InformasiKamarBinding(),
+    ),
+    GetPage(
+      name: Routes.tambahPenghuni,
+      page: () => const TambahPenghuniView(),
+      binding: TambahPenghuniBinding(),
     ),
   ];
 }
