@@ -8,4 +8,5 @@ abstract class Routes {
   static const kelolaTagihan = '/kelola-tagihan';
   static const kelolaPengumuman = '/kelola-pengumuman';
   static const kelolaPeraturan = '/kelola-peraturan';
+  static const kamar = '/kamar';
 }

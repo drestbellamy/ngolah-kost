@@ -17,6 +17,8 @@ import '../modules/kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../modules/kelola_pengumuman/views/kelola_pengumuman_view.dart';
 import '../modules/kelola_peraturan/bindings/kelola_peraturan_binding.dart';
 import '../modules/kelola_peraturan/views/kelola_peraturan_view.dart';
+import '../modules/kamar/bindings/kamar_binding.dart';
+import '../modules/kamar/views/kamar_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -69,6 +71,11 @@ class AppPages {
       name: Routes.kelolaPeraturan,
       page: () => const KelolaPeraturanView(),
       binding: KelolaPeraturanBinding(),
+    ),
+    GetPage(
+      name: Routes.kamar,
+      page: () => const KamarView(),
+      binding: KamarBinding(),
     ),
   ];
 }
