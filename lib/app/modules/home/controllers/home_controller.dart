@@ -1,4 +1,7 @@
 import 'package:get/get.dart';
+import '../../../routes/app_routes.dart';
+import '../../kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
+import '../../kelola_pengumuman/views/kelola_pengumuman_view.dart';
 
 class HomeController extends GetxController {
   final selectedIndex = 0.obs;
@@ -18,7 +21,7 @@ class HomeController extends GetxController {
 
   void changeTab(int index) {
     selectedIndex.value = index;
-    
+
     switch (index) {
       case 0:
         // Already on home
@@ -40,7 +43,16 @@ class HomeController extends GetxController {
   }
 
   void navigateToKelolaPengumuman() {
-    Get.toNamed('/kelola-pengumuman');
+    try {
+      print("Menu Kelola Pengumuman ditekan - mencoba navigasi langsung...");
+      Get.to(
+        () => const KelolaPengumumanView(),
+        binding: KelolaPengumumanBinding(),
+      );
+    } catch (e) {
+      Get.snackbar('Error Navigasi', 'Gagal membuka halaman: $e');
+      print("Navigasi error: $e");
+    }
   }
 
   void navigateToKelolaPeraturan() {

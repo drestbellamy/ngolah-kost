@@ -43,7 +43,7 @@ class LoginView extends GetView<LoginController> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Title
                 const Text(
                   'Ngolah Kost',
@@ -54,18 +54,15 @@ class LoginView extends GetView<LoginController> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Subtitle
                 const Text(
                   'Kelola kost favoritmu! Login to continue',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFFA8D5BA),
-                  ),
+                  style: TextStyle(fontSize: 16, color: Color(0xFFA8D5BA)),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Form Container
                 Container(
                   padding: const EdgeInsets.all(24),
@@ -148,7 +145,7 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // Password Field
                       const Text(
                         'Password',
@@ -159,68 +156,70 @@ class LoginView extends GetView<LoginController> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Obx(() => TextField(
-                        controller: controller.passwordController,
-                        obscureText: controller.isPasswordHidden.value,
-                        decoration: InputDecoration(
-                          hintText: 'Masukkan password',
-                          hintStyle: TextStyle(
-                            color: const Color(0xFF2F2F2F).withOpacity(0.5),
-                          ),
-                          prefixIcon: Container(
-                            margin: const EdgeInsets.all(12),
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE5EDE8),
-                              borderRadius: BorderRadius.circular(8),
+                      Obx(
+                        () => TextField(
+                          controller: controller.passwordController,
+                          obscureText: controller.isPasswordHidden.value,
+                          decoration: InputDecoration(
+                            hintText: 'Masukkan password',
+                            hintStyle: TextStyle(
+                              color: const Color(0xFF2F2F2F).withOpacity(0.5),
                             ),
-                            child: const Icon(
-                              Icons.lock_outline,
-                              size: 20,
-                              color: Color(0xFF6B8E7A),
+                            prefixIcon: Container(
+                              margin: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE5EDE8),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.lock_outline,
+                                size: 20,
+                                color: Color(0xFF6B8E7A),
+                              ),
                             ),
-                          ),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              controller.isPasswordHidden.value
-                                  ? Icons.visibility_off_outlined
-                                  : Icons.visibility_outlined,
-                              size: 20,
-                              color: const Color(0xFF6B7280),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                controller.isPasswordHidden.value
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                size: 20,
+                                color: const Color(0xFF6B7280),
+                              ),
+                              onPressed: controller.togglePasswordVisibility,
                             ),
-                            onPressed: controller.togglePasswordVisibility,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFFF7F9F8),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
-                              width: 1.1,
+                            filled: true,
+                            fillColor: const Color(0xFFF7F9F8),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFE5E7EB),
+                                width: 1.1,
+                              ),
                             ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: Color(0xFFE5E7EB),
-                              width: 1.1,
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFE5E7EB),
+                                width: 1.1,
+                              ),
                             ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: Color(0xFF6B8E7A),
-                              width: 1.1,
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              borderSide: const BorderSide(
+                                color: Color(0xFF6B8E7A),
+                                width: 1.1,
+                              ),
                             ),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                           ),
                         ),
-                      )),
+                      ),
                       const SizedBox(height: 32),
-                      
+
                       // Login Button
                       SizedBox(
                         width: double.infinity,
