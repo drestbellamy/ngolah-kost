@@ -26,6 +26,8 @@ import '../modules/kamar/bindings/tambah_penghuni_binding.dart';
 import '../modules/kamar/views/tambah_penghuni_view.dart';
 import '../modules/user_home/bindings/user_home_binding.dart';
 import '../modules/user_home/views/user_home_view.dart';
+import '../modules/user_history_pembayaran/bindings/user_history_pembayaran_binding.dart';
+import '../modules/user_history_pembayaran/views/user_history_pembayaran_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -103,6 +105,11 @@ class AppPages {
       name: Routes.userHome,
       page: () => const UserHomeView(),
       binding: UserHomeBinding(),
+    ),
+    GetPage(
+      name: Routes.userHistoryPembayaran,
+      page: () => const UserHistoryPembayaranView(),
+      binding: UserHistoryPembayaranBinding(),
     ),
   ];
 }

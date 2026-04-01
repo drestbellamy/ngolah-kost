@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_routes.dart';
 import '../controllers/user_home_controller.dart';
 
 class UserHomeView extends GetView<UserHomeController> {
@@ -705,10 +706,12 @@ class UserHomeView extends GetView<UserHomeController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildBottomNavItem(Icons.home_outlined, 'Beranda', true),
-                _buildBottomNavItem(Icons.receipt_long_outlined, 'Tagihan', false),
-                _buildBottomNavItem(Icons.history_outlined, 'Riwayat', false),
-                _buildBottomNavItem(Icons.notifications_outlined, 'Info', false),
+                _buildBottomNavItem(Icons.home_outlined, 'Beranda', true, () {}),
+                _buildBottomNavItem(Icons.receipt_long_outlined, 'Tagihan', false, () {}),
+                _buildBottomNavItem(Icons.history_outlined, 'Riwayat', false, () {
+                  Get.toNamed(Routes.userHistoryPembayaran);
+                }),
+                _buildBottomNavItem(Icons.notifications_outlined, 'Info', false, () {}),
               ],
             ),
           ),
@@ -717,35 +720,38 @@ class UserHomeView extends GetView<UserHomeController> {
     );
   }
 
-  Widget _buildBottomNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
-          size: 24,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
+  Widget _buildBottomNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
             color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+            size: 24,
           ),
-        ),
-        if (isActive)
-          Container(
-            margin: const EdgeInsets.only(top: 4),
-            width: 4,
-            height: 4,
-            decoration: const BoxDecoration(
-              color: Color(0xFF6B8E7A),
-              shape: BoxShape.circle,
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
-      ],
+          if (isActive)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              width: 4,
+              height: 4,
+              decoration: const BoxDecoration(
+                color: Color(0xFF6B8E7A),
+                shape: BoxShape.circle,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
