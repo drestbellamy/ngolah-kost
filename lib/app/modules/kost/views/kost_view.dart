@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/kost_controller.dart';
+import '../../../routes/app_routes.dart';
 
 class KostView extends GetView<KostController> {
   const KostView({super.key});
@@ -122,7 +123,7 @@ class KostView extends GetView<KostController> {
 
   Widget _buildKostCard(kost) {
     return GestureDetector(
-      onTap: () => Get.toNamed('/kamar', arguments: kost),
+      onTap: () => Get.toNamed(Routes.kamar, arguments: kost),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
@@ -282,16 +283,16 @@ class KostView extends GetView<KostController> {
         onTap: (index) {
           switch (index) {
             case 0:
-              Get.offAllNamed('/home');
+              Get.offNamed(Routes.home);
               break;
             case 1:
               // Sudah di halaman Kost
               break;
             case 2:
-              Get.offAllNamed('/penghuni');
+              Get.offNamed(Routes.penghuni);
               break;
             case 3:
-              Get.offAllNamed('/profil');
+              Get.offNamed(Routes.profil);
               break;
           }
         },

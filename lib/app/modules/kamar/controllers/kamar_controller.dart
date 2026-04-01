@@ -1,86 +1,149 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../views/widgets/tambah_kamar_bottom_sheet.dart';
+import '../views/widgets/edit_kamar_bottom_sheet.dart';
+import '../views/widgets/hapus_kamar_dialog.dart';
 
 class KamarController extends GetxController {
-  var selectedTab = 'Semua Kamar'.obs;
-
-  // Observable list of kamar
-  final RxList<Map<String, dynamic>> allKamar = <Map<String, dynamic>>[
+  final selectedTab = 0.obs;
+  
+  // Data kost
+  final namaKost = 'Green Valley Kost'.obs;
+  final alamatKost = 'Jl. Sudirman No. 123, Jakarta'.obs;
+  final totalRuangan = 4.obs;
+  final ditempati = 2.obs;
+  final kosong = 2.obs;
+  
+  // List kamar
+  final kamarList = <Map<String, dynamic>>[
     {
-      'no': 'A-101',
+      'nomor': 'A-101',
+      'status': 'Ditempati',
       'penghuni': 'John Doe',
-      'harga': '1500000',
-      'status': 'Ditempati',
+      'harga': 'Rp 1.500.000/Bulan',
+      'statusColor': const Color(0xFF10B981),
     },
-    {'no': 'A-102', 'penghuni': null, 'harga': '1500000', 'status': 'Kosong'},
     {
-      'no': 'A-103',
-      'penghuni': 'Jane Smith',
-      'harga': '1500000',
-      'status': 'Ditempati',
+      'nomor': 'A-102',
+      'status': 'Kosong',
+      'penghuni': null,
+      'harga': 'Rp 1.500.000/Bulan',
+      'statusColor': const Color(0xFFF2A65A),
     },
-    {'no': 'B-201', 'penghuni': null, 'harga': '1800000', 'status': 'Kosong'},
+    {
+      'nomor': 'A-103',
+      'status': 'Ditempati',
+      'penghuni': 'Jane Smith',
+      'harga': 'Rp 1.500.000/Bulan',
+      'statusColor': const Color(0xFF10B981),
+    },
+    {
+      'nomor': 'B-201',
+      'status': 'Kosong',
+      'penghuni': null,
+      'harga': 'Rp 1.800.000/Bulan',
+      'statusColor': const Color(0xFFF2A65A),
+    },
   ].obs;
 
+
+
+  void changeTab(int index) {
+    selectedTab.value = index;
+  }
+
   List<Map<String, dynamic>> get filteredKamar {
-    if (selectedTab.value == 'Kosong') {
-      return allKamar.where((k) => k['status'] == 'Kosong').toList();
-    } else if (selectedTab.value == 'Ditempati') {
-      return allKamar.where((k) => k['status'] == 'Ditempati').toList();
-    }
-    return allKamar;
-  }
-
-  void changeTab(String tab) {
-    selectedTab.value = tab;
-  }
-
-  void addKamar(String no, String harga) {
-    allKamar.add({
-      'no': no,
-      'penghuni': null, // default is null
-      'harga': harga,
-      'status': 'Kosong', // default status
-    });
-  }
-
-  void editKamar(String oldNo, String newNo, String harga) {
-    int index = allKamar.indexWhere((k) => k['no'] == oldNo);
-    if (index != -1) {
-      var item = allKamar[index];
-      item['no'] = newNo;
-      item['harga'] = harga;
-      allKamar[index] = item; // Memaksa re-render
-      // Memberitahu getx bahwa allKamar berubah
-      allKamar.refresh();
+    if (selectedTab.value == 0) {
+      return kamarList;
+    } else if (selectedTab.value == 1) {
+      return kamarList.where((k) => k['status'] == 'Kosong').toList();
+    } else {
+      return kamarList.where((k) => k['status'] == 'Ditempati').toList();
     }
   }
 
-  void deleteKamar(String no) {
-    allKamar.removeWhere((k) => k['no'] == no);
+  void goBack() {
+    Get.back();
   }
 
-  // Format harga
-  String formatRupiah(String amount) {
-    int parsedAmount =
-        int.tryParse(amount.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-    String result = parsedAmount.toString();
-    String formatted = '';
-    for (int i = 0; i < result.length; i++) {
-      if (i > 0 && i % 3 == 0) {
-        formatted = '.$formatted';
+  void navigateToInformasiKamar(Map<String, dynamic> kamar) {
+    // Navigasi ke informasi kamar untuk kamar terisi atau kosong
+    Get.toNamed('/informasi-kamar', arguments: kamar);
+  }
+
+  void tambahKamar() async {
+    final result = await Get.dialog(
+      const TambahKamarBottomSheet(),
+    );
+
+    if (result != null) {
+      kamarList.add({
+        'nomor': result['nomor'],
+        'status': 'Kosong',
+        'penghuni': null,
+        'harga': 'Rp ${result['harga']}/Bulan',
+        'statusColor': const Color(0xFFF2A65A),
+      });
+      
+      totalRuangan.value++;
+      kosong.value++;
+      
+      Get.snackbar(
+        'Berhasil',
+        'Kamar ${result['nomor']} berhasil ditambahkan',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void editKamar(Map<String, dynamic> kamar) async {
+    final result = await Get.dialog(
+      EditKamarBottomSheet(kamar: kamar),
+    );
+
+    if (result != null) {
+      final index = kamarList.indexWhere((k) => k['nomor'] == kamar['nomor']);
+      if (index != -1) {
+        kamarList[index]['nomor'] = result['nomor'];
+        kamarList[index]['harga'] = 'Rp ${result['harga']}/Bulan';
+        kamarList.refresh();
+        
+        Get.snackbar(
+          'Berhasil',
+          'Kamar berhasil diupdate',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFF10B981),
+          colorText: Colors.white,
+        );
       }
-      formatted = result[result.length - 1 - i] + formatted;
     }
-    return 'Rp $formatted';
   }
 
-  int get totalRuangan => allKamar.length;
-  int get totalDitempati =>
-      allKamar.where((k) => k['status'] == 'Ditempati').length;
-  int get totalKosong => allKamar.where((k) => k['status'] == 'Kosong').length;
+  void hapusKamar(Map<String, dynamic> kamar) async {
+    final result = await Get.dialog(
+      HapusKamarDialog(kamar: kamar),
+    );
 
-  @override
-  void onInit() {
-    super.onInit();
+    if (result == true) {
+      final wasOccupied = kamar['status'] == 'Ditempati';
+      kamarList.removeWhere((k) => k['nomor'] == kamar['nomor']);
+      
+      totalRuangan.value--;
+      if (wasOccupied) {
+        ditempati.value--;
+      } else {
+        kosong.value--;
+      }
+      
+      Get.snackbar(
+        'Berhasil',
+        'Kamar ${kamar['nomor']} berhasil dihapus',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+      );
+    }
   }
 }
