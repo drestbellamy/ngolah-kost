@@ -12,4 +12,5 @@ abstract class Routes {
   static const kelolaPeraturan = '/kelola-peraturan';
   static const informasiKamar = '/informasi-kamar';
   static const tambahPenghuni = '/tambah-penghuni';
+  static const userHome = '/user-home';
 }
