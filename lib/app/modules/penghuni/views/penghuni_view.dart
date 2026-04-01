@@ -8,12 +8,8 @@ class PenghuniView extends GetView<PenghuniController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Penghuni'),
-      ),
-      body: const Center(
-        child: Text('Penghuni View'),
-      ),
+      appBar: AppBar(title: const Text('Penghuni')),
+      body: const Center(child: Text('Penghuni View')),
     );
   }
 }

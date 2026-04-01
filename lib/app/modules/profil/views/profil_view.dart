@@ -8,12 +8,8 @@ class ProfilView extends GetView<ProfilController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profil'),
-      ),
-      body: const Center(
-        child: Text('Profil View'),
-      ),
+      appBar: AppBar(title: const Text('Profil')),
+      body: const Center(child: Text('Profil View')),
     );
   }
 }

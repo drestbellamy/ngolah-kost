@@ -15,7 +15,7 @@ class LandingController extends GetxController {
     Future.delayed(const Duration(milliseconds: 1500), () {
       showContent.value = true;
     });
-    
+
     // Show description after logo animation completes (1.5s + 0.8s animation)
     Future.delayed(const Duration(milliseconds: 2400), () {
       showDescription.value = true;

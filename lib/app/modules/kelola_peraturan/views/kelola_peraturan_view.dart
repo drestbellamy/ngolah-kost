@@ -8,12 +8,8 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kelola Peraturan'),
-      ),
-      body: const Center(
-        child: Text('Kelola Peraturan View'),
-      ),
+      appBar: AppBar(title: const Text('Kelola Peraturan')),
+      body: const Center(child: Text('Kelola Peraturan View')),
     );
   }
 }
