@@ -11,6 +11,7 @@ import '../modules/kamar/bindings/kamar_binding.dart';
 import '../modules/kamar/views/kamar_view.dart';
 import '../modules/penghuni/bindings/penghuni_binding.dart';
 import '../modules/penghuni/views/penghuni_view.dart';
+import '../modules/penghuni/views/penghuni_detail_view.dart';
 import '../modules/profil/bindings/profil_binding.dart';
 import '../modules/profil/views/profil_view.dart';
 import '../modules/kelola_tagihan/bindings/kelola_tagihan_binding.dart';
@@ -59,6 +60,11 @@ class AppPages {
     GetPage(
       name: Routes.penghuni,
       page: () => const PenghuniView(),
+      binding: PenghuniBinding(),
+    ),
+    GetPage(
+      name: Routes.penghuniDetail,
+      page: () => const PenghuniDetailView(),
       binding: PenghuniBinding(),
     ),
     GetPage(

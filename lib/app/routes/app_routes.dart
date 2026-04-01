@@ -5,6 +5,7 @@ abstract class Routes {
   static const kost = '/kost';
   static const kamar = '/kamar';
   static const penghuni = '/penghuni';
+  static const penghuniDetail = '/penghuni/detail';
   static const profil = '/profil';
   static const kelolaTagihan = '/kelola-tagihan';
   static const kelolaPengumuman = '/kelola-pengumuman';
