@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/kelola_peraturan_controller.dart';
-import '../../../core/widgets/admin_bottom_navbar.dart';
 
 class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   const KelolaPeraturanView({super.key});
@@ -322,7 +321,6 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
           ],
         ),
       ),
-      bottomNavigationBar: const AdminBottomNavbar(currentIndex: -1),
     );
   }
 

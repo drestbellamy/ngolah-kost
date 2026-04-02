@@ -359,10 +359,17 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                                 controller.perTagihan.value,
                               ),
                               const SizedBox(height: 8),
+                              const Divider(
+                                color: Color(0xFFE5E7EB),
+                                height: 1,
+                              ),
+                              const SizedBox(height: 8),
                               _buildSummaryRow(
                                 'Total Nilai Kontrak:',
                                 controller.totalNilaiKontrak.value,
                                 isBold: true,
+                                labelColor: const Color(0xFF6B7280),
+                                valueColor: const Color(0xFF6B8E7A),
                               ),
                             ],
                           ),
@@ -471,7 +478,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
     );
   }
 
-  Widget _buildSummaryRow(String label, String value, {bool isBold = false}) {
+  Widget _buildSummaryRow(String label, String value, {bool isBold = false, Color? labelColor, Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -480,7 +487,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-            color: const Color(0xFF6B7280),
+            color: labelColor ?? const Color(0xFF6B7280),
           ),
         ),
         Text(
@@ -488,7 +495,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: const Color(0xFF2F2F2F),
+            color: valueColor ?? const Color(0xFF2F2F2F),
           ),
         ),
       ],
