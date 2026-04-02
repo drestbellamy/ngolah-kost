@@ -11,6 +11,7 @@ import '../modules/kamar/bindings/kamar_binding.dart';
 import '../modules/kamar/views/kamar_view.dart';
 import '../modules/penghuni/bindings/penghuni_binding.dart';
 import '../modules/penghuni/views/penghuni_view.dart';
+import '../modules/penghuni/views/penghuni_detail_view.dart';
 import '../modules/profil/bindings/profil_binding.dart';
 import '../modules/profil/views/profil_view.dart';
 import '../modules/kelola_tagihan/bindings/kelola_tagihan_binding.dart';
@@ -23,6 +24,10 @@ import '../modules/kamar/bindings/informasi_kamar_binding.dart';
 import '../modules/kamar/views/informasi_kamar_view.dart';
 import '../modules/kamar/bindings/tambah_penghuni_binding.dart';
 import '../modules/kamar/views/tambah_penghuni_view.dart';
+import '../modules/user_home/bindings/user_home_binding.dart';
+import '../modules/user_home/views/user_home_view.dart';
+import '../modules/user_history_pembayaran/bindings/user_history_pembayaran_binding.dart';
+import '../modules/user_history_pembayaran/views/user_history_pembayaran_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -62,6 +67,11 @@ class AppPages {
       binding: PenghuniBinding(),
     ),
     GetPage(
+      name: Routes.penghuniDetail,
+      page: () => const PenghuniDetailView(),
+      binding: PenghuniBinding(),
+    ),
+    GetPage(
       name: Routes.profil,
       page: () => const ProfilView(),
       binding: ProfilBinding(),
@@ -90,6 +100,16 @@ class AppPages {
       name: Routes.tambahPenghuni,
       page: () => const TambahPenghuniView(),
       binding: TambahPenghuniBinding(),
+    ),
+    GetPage(
+      name: Routes.userHome,
+      page: () => const UserHomeView(),
+      binding: UserHomeBinding(),
+    ),
+    GetPage(
+      name: Routes.userHistoryPembayaran,
+      page: () => const UserHistoryPembayaranView(),
+      binding: UserHistoryPembayaranBinding(),
     ),
   ];
 }

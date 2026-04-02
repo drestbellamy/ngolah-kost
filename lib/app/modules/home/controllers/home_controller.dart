@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
+import '../../kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
+import '../../kelola_pengumuman/views/kelola_pengumuman_view.dart';
 
 class HomeController extends GetxController {
-  final selectedIndex = 0.obs;
-
   // Dashboard data
   final totalKost = 8.obs;
   final totalKamar = 64.obs;
@@ -16,35 +16,29 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
-  void changeTab(int index) {
-    selectedIndex.value = index;
-    
-    switch (index) {
-      case 0:
-        // Already on home
-        break;
-      case 1:
-        Get.toNamed('/kost');
-        break;
-      case 2:
-        Get.toNamed('/penghuni');
-        break;
-      case 3:
-        Get.toNamed('/profil');
-        break;
-    }
-  }
-
   void navigateToKelolaTagihan() {
     Get.toNamed('/kelola-tagihan');
   }
 
   void navigateToKelolaPengumuman() {
-    Get.toNamed('/kelola-pengumuman');
+    try {
+      print("Menu Kelola Pengumuman ditekan - mencoba navigasi langsung...");
+      Get.to(
+        () => const KelolaPengumumanView(),
+        binding: KelolaPengumumanBinding(),
+      );
+    } catch (e) {
+      Get.snackbar('Error Navigasi', 'Gagal membuka halaman: $e');
+      print("Navigasi error: $e");
+    }
   }
 
   void navigateToKelolaPeraturan() {
     Get.toNamed('/kelola-peraturan');
+  }
+
+  void navigateToMetodePembayaran() {
+    Get.toNamed('/metode-pembayaran');
   }
 
   void navigateToVerifikasi() {

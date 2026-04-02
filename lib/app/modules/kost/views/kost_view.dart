@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/kost_controller.dart';
+import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../routes/app_routes.dart';
 
 class KostView extends GetView<KostController> {
@@ -9,7 +10,7 @@ class KostView extends GetView<KostController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
         child: Column(
           children: [
@@ -117,7 +118,7 @@ class KostView extends GetView<KostController> {
         backgroundColor: const Color(0xFFFF9F66),
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: const AdminBottomNavbar(currentIndex: 1),
     );
   }
 
@@ -255,56 +256,6 @@ class KostView extends GetView<KostController> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF6B8E7F),
-        unselectedItemColor: const Color(0xFFA0AEC0),
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        elevation: 0,
-        currentIndex: 1,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Get.offNamed(Routes.home);
-              break;
-            case 1:
-              // Sudah di halaman Kost
-              break;
-            case 2:
-              Get.offNamed(Routes.penghuni);
-              break;
-            case 3:
-              Get.offNamed(Routes.profil);
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.apartment), label: 'Kost'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Penghuni'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
       ),
     );
   }

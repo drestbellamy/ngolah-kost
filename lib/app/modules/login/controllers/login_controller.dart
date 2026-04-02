@@ -40,15 +40,11 @@ class LoginController extends GetxController {
 
     // Simulasi login
     if (username == 'admin' && password == 'admin') {
+      // Admin login - ke halaman admin
       Get.offAllNamed(Routes.home);
     } else {
-      Get.snackbar(
-        'Error',
-        'Username atau password salah',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      // User login - ke halaman user
+      Get.offAllNamed(Routes.userHome);
     }
   }
 }
