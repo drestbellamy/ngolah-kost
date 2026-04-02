@@ -1,8 +1,6 @@
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  final selectedIndex = 0.obs;
-
   // Dashboard data
   final totalKost = 8.obs;
   final totalKamar = 64.obs;
@@ -14,25 +12,6 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-  }
-
-  void changeTab(int index) {
-    selectedIndex.value = index;
-    
-    switch (index) {
-      case 0:
-        // Already on home
-        break;
-      case 1:
-        Get.toNamed('/kost');
-        break;
-      case 2:
-        Get.toNamed('/penghuni');
-        break;
-      case 3:
-        Get.toNamed('/profil');
-        break;
-    }
   }
 
   void navigateToKelolaTagihan() {

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 import 'widgets/dashboard_card.dart';
 import 'widgets/menu_item.dart';
+import '../../../core/widgets/admin_bottom_navbar.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -339,7 +340,7 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: const AdminBottomNavbar(currentIndex: 0),
     );
   }
 
@@ -364,100 +365,6 @@ class HomeView extends GetView<HomeController> {
           ),
           const SizedBox(height: 12),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNav() {
-    return Container(
-      height: 81,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color: const Color(0xFFE5E7EB),
-            width: 1.1,
-          ),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 50,
-            offset: const Offset(0, 25),
-          ),
-        ],
-      ),
-      child: Obx(() => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(
-            icon: Icons.home_outlined,
-            label: 'Beranda',
-            index: 0,
-            isSelected: controller.selectedIndex.value == 0,
-          ),
-          _buildNavItem(
-            icon: Icons.home_work_outlined,
-            label: 'Kost',
-            index: 1,
-            isSelected: controller.selectedIndex.value == 1,
-          ),
-          _buildNavItem(
-            icon: Icons.people_outline,
-            label: 'Penghuni',
-            index: 2,
-            isSelected: controller.selectedIndex.value == 2,
-          ),
-          _buildNavItem(
-            icon: Icons.person_outline,
-            label: 'Profil',
-            index: 3,
-            isSelected: controller.selectedIndex.value == 3,
-          ),
-        ],
-      )),
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required int index,
-    required bool isSelected,
-  }) {
-    return GestureDetector(
-      onTap: () => controller.changeTab(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF6B8E7A).withOpacity(0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isSelected
-                  ? const Color(0xFF6B8E7A)
-                  : const Color(0xFF6B7280),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: isSelected
-                    ? const Color(0xFF6B8E7A)
-                    : const Color(0xFF6B7280),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
