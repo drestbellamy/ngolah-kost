@@ -315,6 +315,15 @@ class HomeView extends GetView<HomeController> {
                       child: Column(
                         children: [
                           MenuItem(
+                            icon: Icons.account_balance_wallet_outlined,
+                            title: 'Metode Pembayaran',
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF4B83F3), Color(0xFF285ADA)],
+                            ),
+                            onTap: controller.navigateToMetodePembayaran,
+                          ),
+                          const SizedBox(height: 12),
+                          MenuItem(
                             icon: Icons.receipt_long_outlined,
                             title: 'Kelola Tagihan',
                             gradient: const LinearGradient(
