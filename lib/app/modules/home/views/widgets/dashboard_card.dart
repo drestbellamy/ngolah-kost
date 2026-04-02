@@ -25,10 +25,7 @@ class DashboardCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: const Color(0xFFF3F4F6),
-            width: 1.1,
-          ),
+          border: Border.all(color: const Color(0xFFF3F4F6), width: 1.1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -54,11 +51,7 @@ class DashboardCard extends StatelessWidget {
                   color: iconBgColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
-                  icon,
-                  size: 28,
-                  color: iconBgColor,
-                ),
+                child: Icon(icon, size: 28, color: iconBgColor),
               ),
               const Spacer(),
               Text(

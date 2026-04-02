@@ -31,10 +31,7 @@ class HomeView extends GetView<HomeController> {
                             gradient: const LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFF6B8E7A),
-                                Color(0xFF4F6F5D),
-                              ],
+                              colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
                             ),
                             borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(24),
@@ -80,7 +77,7 @@ class HomeView extends GetView<HomeController> {
                                   ),
                                 ),
                               ),
-                              
+
                               // Content
                               Padding(
                                 padding: const EdgeInsets.all(24),
@@ -104,10 +101,11 @@ class HomeView extends GetView<HomeController> {
                                       ),
                                     ),
                                     const SizedBox(height: 32),
-                                    
+
                                     // Decorative building icons
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         _buildDecorativeIcon(80, 0.2),
                                         const SizedBox(width: 8),
@@ -123,7 +121,7 @@ class HomeView extends GetView<HomeController> {
                             ],
                           ),
                         ),
-                        
+
                         // Verification Alert - Overlapping
                         Positioned(
                           left: 24,
@@ -135,7 +133,10 @@ class HomeView extends GetView<HomeController> {
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFFFF6900), Color(0xFFF54900)],
+                                  colors: [
+                                    Color(0xFFFF6900),
+                                    Color(0xFFF54900),
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
@@ -169,17 +170,20 @@ class HomeView extends GetView<HomeController> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Obx(() => Text(
-                                          '${controller.menungguVerifikasi.value} Pembayaran\nPerlu Verifikasi',
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                            height: 1.3,
+                                        Obx(
+                                          () => Text(
+                                            '${controller.menungguVerifikasi.value} Pembayaran\nPerlu Verifikasi',
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              height: 1.3,
+                                            ),
                                           ),
-                                        )),
+                                        ),
                                         const SizedBox(height: 4),
                                         const Text(
                                           'Klik untuk memeriksa bukti transfer',
@@ -204,85 +208,93 @@ class HomeView extends GetView<HomeController> {
                         ),
                       ],
                     ),
-                    
+
                     const SizedBox(height: 78),
-                    
+
                     // Dashboard Cards Grid
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Obx(() => Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: DashboardCard(
-                                  icon: Icons.home_work_outlined,
-                                  value: controller.totalKost.value.toString(),
-                                  label: 'Total Kost',
-                                  iconBgColor: const Color(0xFF6B8E7A),
+                      child: Obx(
+                        () => Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DashboardCard(
+                                    icon: Icons.home_work_outlined,
+                                    value: controller.totalKost.value
+                                        .toString(),
+                                    label: 'Total Kost',
+                                    iconBgColor: const Color(0xFF6B8E7A),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: DashboardCard(
-                                  icon: Icons.meeting_room_outlined,
-                                  value: controller.totalKamar.value.toString(),
-                                  label: 'Total Kamar',
-                                  iconBgColor: const Color(0xFFA8D5BA),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: DashboardCard(
+                                    icon: Icons.meeting_room_outlined,
+                                    value: controller.totalKamar.value
+                                        .toString(),
+                                    label: 'Total Kamar',
+                                    iconBgColor: const Color(0xFFA8D5BA),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: DashboardCard(
-                                  icon: Icons.door_front_door_outlined,
-                                  value: controller.kamarKosong.value.toString(),
-                                  label: 'Kamar Kosong',
-                                  iconBgColor: const Color(0xFFF2A65A),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DashboardCard(
+                                    icon: Icons.door_front_door_outlined,
+                                    value: controller.kamarKosong.value
+                                        .toString(),
+                                    label: 'Kamar Kosong',
+                                    iconBgColor: const Color(0xFFF2A65A),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: DashboardCard(
-                                  icon: Icons.people_outline,
-                                  value: controller.totalPenghuni.value.toString(),
-                                  label: 'Total Penghuni',
-                                  iconBgColor: const Color(0xFF6B8E7A),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: DashboardCard(
+                                    icon: Icons.people_outline,
+                                    value: controller.totalPenghuni.value
+                                        .toString(),
+                                    label: 'Total Penghuni',
+                                    iconBgColor: const Color(0xFF6B8E7A),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: DashboardCard(
-                                  icon: Icons.access_time_outlined,
-                                  value: controller.tagihanBelumBayar.value.toString(),
-                                  label: 'Tagihan Belum Bayar',
-                                  iconBgColor: const Color(0xFFF59E0B),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: DashboardCard(
+                                    icon: Icons.access_time_outlined,
+                                    value: controller.tagihanBelumBayar.value
+                                        .toString(),
+                                    label: 'Tagihan Belum Bayar',
+                                    iconBgColor: const Color(0xFFF59E0B),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: DashboardCard(
-                                  icon: Icons.check_circle_outline,
-                                  value: controller.menungguVerifikasi.value.toString(),
-                                  label: 'Menunggu Verifikasi',
-                                  iconBgColor: const Color(0xFF10B981),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: DashboardCard(
+                                    icon: Icons.check_circle_outline,
+                                    value: controller.menungguVerifikasi.value
+                                        .toString(),
+                                    label: 'Menunggu Verifikasi',
+                                    iconBgColor: const Color(0xFF10B981),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Settings Section
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24),
@@ -295,9 +307,9 @@ class HomeView extends GetView<HomeController> {
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 16),
-                    
+
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
@@ -331,7 +343,7 @@ class HomeView extends GetView<HomeController> {
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 100),
                   ],
                 ),

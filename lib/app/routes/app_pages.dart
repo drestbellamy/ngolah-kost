@@ -7,8 +7,11 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/kost/bindings/kost_binding.dart';
 import '../modules/kost/views/kost_view.dart';
+import '../modules/kamar/bindings/kamar_binding.dart';
+import '../modules/kamar/views/kamar_view.dart';
 import '../modules/penghuni/bindings/penghuni_binding.dart';
 import '../modules/penghuni/views/penghuni_view.dart';
+import '../modules/penghuni/views/penghuni_detail_view.dart';
 import '../modules/profil/bindings/profil_binding.dart';
 import '../modules/profil/views/profil_view.dart';
 import '../modules/kelola_tagihan/bindings/kelola_tagihan_binding.dart';
@@ -17,6 +20,14 @@ import '../modules/kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../modules/kelola_pengumuman/views/kelola_pengumuman_view.dart';
 import '../modules/kelola_peraturan/bindings/kelola_peraturan_binding.dart';
 import '../modules/kelola_peraturan/views/kelola_peraturan_view.dart';
+import '../modules/kamar/bindings/informasi_kamar_binding.dart';
+import '../modules/kamar/views/informasi_kamar_view.dart';
+import '../modules/kamar/bindings/tambah_penghuni_binding.dart';
+import '../modules/kamar/views/tambah_penghuni_view.dart';
+import '../modules/user_home/bindings/user_home_binding.dart';
+import '../modules/user_home/views/user_home_view.dart';
+import '../modules/user_history_pembayaran/bindings/user_history_pembayaran_binding.dart';
+import '../modules/user_history_pembayaran/views/user_history_pembayaran_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -32,6 +43,8 @@ class AppPages {
       name: Routes.login,
       page: () => const LoginView(),
       binding: LoginBinding(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 400),
     ),
     GetPage(
       name: Routes.home,
@@ -44,8 +57,18 @@ class AppPages {
       binding: KostBinding(),
     ),
     GetPage(
+      name: Routes.kamar,
+      page: () => const KamarView(),
+      binding: KamarBinding(),
+    ),
+    GetPage(
       name: Routes.penghuni,
       page: () => const PenghuniView(),
+      binding: PenghuniBinding(),
+    ),
+    GetPage(
+      name: Routes.penghuniDetail,
+      page: () => const PenghuniDetailView(),
       binding: PenghuniBinding(),
     ),
     GetPage(
@@ -67,6 +90,26 @@ class AppPages {
       name: Routes.kelolaPeraturan,
       page: () => const KelolaPeraturanView(),
       binding: KelolaPeraturanBinding(),
+    ),
+    GetPage(
+      name: Routes.informasiKamar,
+      page: () => const InformasiKamarView(),
+      binding: InformasiKamarBinding(),
+    ),
+    GetPage(
+      name: Routes.tambahPenghuni,
+      page: () => const TambahPenghuniView(),
+      binding: TambahPenghuniBinding(),
+    ),
+    GetPage(
+      name: Routes.userHome,
+      page: () => const UserHomeView(),
+      binding: UserHomeBinding(),
+    ),
+    GetPage(
+      name: Routes.userHistoryPembayaran,
+      page: () => const UserHistoryPembayaranView(),
+      binding: UserHistoryPembayaranBinding(),
     ),
   ];
 }
