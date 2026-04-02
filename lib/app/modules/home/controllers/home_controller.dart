@@ -37,6 +37,10 @@ class HomeController extends GetxController {
     Get.toNamed('/kelola-peraturan');
   }
 
+  void navigateToMetodePembayaran() {
+    Get.toNamed('/metode-pembayaran');
+  }
+
   void navigateToVerifikasi() {
     // Navigate to verification page
     Get.snackbar(
