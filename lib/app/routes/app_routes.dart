@@ -17,4 +17,6 @@ abstract class Routes {
   static const tambahPenghuni = '/tambah-penghuni';
   static const userHome = '/user-home';
   static const userHistoryPembayaran = '/user-history-pembayaran';
+  static const ringkasanKeuangan = '/ringkasan-keuangan';
+  static const detailKeuanganKost = '/detail-keuangan-kost';
 }
