@@ -134,23 +134,43 @@ class KelolaPeraturanController extends GetxController {
     super.onClose();
   }
 
-  void _onDeskripsiChanged() {
-    String text = deskripsiController.text;
+  int _nextRuleNumber(String text) {
+    final lines = text
+        .split('\n')
+        .map((item) => item.trim())
+        .where((item) => item.isNotEmpty)
+        .toList();
 
-    // Jika teks kosong karena dihapus semua, biarkan kosong atau set '1. '
-    // Tapi karena requestnya saat dipencet kosong mau muncul 1, kita handle.
+    if (lines.isEmpty) {
+      return 1;
+    }
+
+    final lastLine = lines.last;
+    final match = RegExp(r'^(\d+)\.').firstMatch(lastLine);
+    final currentNumber = int.tryParse(match?.group(1) ?? '');
+
+    if (currentNumber == null) {
+      return lines.length + 1;
+    }
+
+    return currentNumber + 1;
+  }
+
+  void _onDeskripsiChanged() {
+    final text = deskripsiController.text;
+
     if (text.isEmpty && _previousText.isNotEmpty) {
       _previousText = text;
       return;
     }
 
-    if (text == _previousText) return;
+    if (text == _previousText) {
+      return;
+    }
 
     if (text.endsWith('\n') && text.length > _previousText.length) {
-      List<String> lines = text.trimRight().split('\n');
-      int nextNumber = lines.length + 1;
-
-      String newText = '$text$nextNumber. ';
+      final nextNumber = _nextRuleNumber(text.trimRight());
+      final newText = '$text$nextNumber. ';
 
       deskripsiController.value = TextEditingValue(
         text: newText,
@@ -169,6 +189,15 @@ class KelolaPeraturanController extends GetxController {
         offset: deskripsiController.text.length,
       );
     }
+  }
+
+  void setFormForEdit(PeraturanModel kategori) {
+    namaController.text = kategori.nama;
+    deskripsiController.text = kategori.deskripsi;
+    _previousText = deskripsiController.text;
+    deskripsiController.selection = TextSelection.collapsed(
+      offset: deskripsiController.text.length,
+    );
   }
 
   void resetForm() {

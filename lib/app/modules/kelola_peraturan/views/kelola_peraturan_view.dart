@@ -19,7 +19,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               Expanded(
                 child: selectedGedung == null
                     ? _buildPilihGedungContent()
-                    : _buildKelolaPeraturanContent(selectedGedung),
+                    : _buildKelolaPeraturanContent(),
               ),
             ],
           ),
@@ -31,7 +31,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   Widget _buildHeader(GedungKostModel? selectedGedung) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 40),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -39,14 +39,14 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
           colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
         ),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(34),
-          bottomRight: Radius.circular(34),
+          bottomLeft: Radius.circular(26),
+          bottomRight: Radius.circular(26),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 24,
-            offset: const Offset(0, 14),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -54,11 +54,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            right: -84,
-            top: -84,
+            right: -72,
+            top: -72,
             child: Container(
-              width: 260,
-              height: 260,
+              width: 220,
+              height: 220,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.06),
                 shape: BoxShape.circle,
@@ -66,11 +66,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
             ),
           ),
           Positioned(
-            left: -72,
-            bottom: -72,
+            left: -62,
+            bottom: -62,
             child: Container(
-              width: 150,
-              height: 150,
+              width: 126,
+              height: 126,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
@@ -88,7 +88,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                   Get.back();
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
@@ -96,11 +96,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                   child: const Icon(
                     Icons.arrow_back,
                     color: Colors.white,
-                    size: 22,
+                    size: 20,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,18 +108,18 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                     const Text(
                       'Kelola Peraturan',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       selectedGedung?.nama ?? 'Kelola informasi peraturan kost',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Color(0xFFC7E1D3),
                       ),
                     ),
@@ -135,12 +135,12 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
 
   Widget _buildPilihGedungContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
       child: Column(
         children: controller.gedungKostList
             .map(
               (gedung) => Padding(
-                padding: const EdgeInsets.only(bottom: 18),
+                padding: const EdgeInsets.only(bottom: 10),
                 child: _buildGedungCard(gedung),
               ),
             )
@@ -152,19 +152,19 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   Widget _buildGedungCard(GedungKostModel gedung) {
     return InkWell(
       onTap: () => controller.pilihGedungKost(gedung),
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: const Color(0xFFF8F8F8),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: const Color(0xFFE7E9E8)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.07),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -172,74 +172,74 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 84,
-              height: 84,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: const Color(0xFFE9ECEA),
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(13),
               ),
               child: const Icon(
                 Icons.apartment_outlined,
                 color: Color(0xFF6B8E7A),
-                size: 40,
+                size: 24,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     gedung.nama,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF2D2F34),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 2),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(top: 2),
+                        padding: EdgeInsets.only(top: 0.5),
                         child: Icon(
                           Icons.location_on_outlined,
-                          size: 20,
+                          size: 14,
                           color: Color(0xFF7A8292),
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           gedung.alamat,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 13,
                             color: Color(0xFF6C7383),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 8,
+                      horizontal: 10,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE5EFE9),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Text(
                       '${gedung.totalKamar} Rooms',
                       style: const TextStyle(
                         color: Color(0xFF507562),
-                        fontSize: 17,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -247,12 +247,12 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             const Padding(
-              padding: EdgeInsets.only(top: 4),
+              padding: EdgeInsets.only(top: 2),
               child: Icon(
                 Icons.chevron_right,
-                size: 30,
+                size: 20,
                 color: Color(0xFF7A8292),
               ),
             ),
@@ -262,17 +262,17 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
     );
   }
 
-  Widget _buildKelolaPeraturanContent(GedungKostModel selectedGedung) {
+  Widget _buildKelolaPeraturanContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
       child: Column(
         children: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6B8E7A),
-              minimumSize: const Size(double.infinity, 56),
+              minimumSize: const Size(double.infinity, 46),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(14),
               ),
               elevation: 0,
             ),
@@ -280,64 +280,22 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add, color: Colors.white, size: 28),
-                SizedBox(width: 10),
+                Icon(Icons.add, color: Colors.white, size: 22),
+                SizedBox(width: 8),
                 Text(
                   'Tambah Kategori Peraturan',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 17,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEFF3FB),
-              border: Border.all(color: const Color(0xFFAFC9F5), width: 2),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.info_outline,
-                      color: Color(0xFF2A5BDD),
-                      size: 26,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Peraturan berlaku untuk gedung kost yang dipilih.',
-                        style: TextStyle(
-                          color: const Color(0xFF2A5BDD),
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Semua perubahan akan diterapkan ke seluruh penghuni gedung kost ${selectedGedung.nama}.',
-                  style: const TextStyle(
-                    color: Color(0xFF2A5BDD),
-                    fontSize: 16,
-                    height: 1.3,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
+          _buildInfoBannerModal(),
+          const SizedBox(height: 12),
           Obx(() {
             if (controller.kategoriList.isEmpty) {
               return Container(
@@ -367,7 +325,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: controller.kategoriList.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 18),
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final kategori = controller.kategoriList[index];
                 return _buildKategoriCard(kategori);
@@ -388,16 +346,16 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: const Color(0xFFF9F9F9),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFE2E5E4)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -409,9 +367,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               Expanded(
                 child: Text(
                   kategori.nama,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                     color: Color(0xFF2D2F34),
                   ),
                 ),
@@ -424,11 +384,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                   child: Icon(
                     Icons.edit_outlined,
                     color: Color(0xFF6B8E7A),
-                    size: 30,
+                    size: 20,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               InkWell(
                 borderRadius: BorderRadius.circular(30),
                 onTap: () => _showDeleteModal(kategori),
@@ -437,36 +397,37 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                   child: Icon(
                     Icons.delete_outline,
                     color: Color(0xFFFF2D2D),
-                    size: 30,
+                    size: 20,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          ...cleanedRules.map(
-            (rule) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+          const SizedBox(height: 6),
+          ...cleanedRules.asMap().entries.map(
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    width: 10,
-                    height: 10,
-                    decoration: const BoxDecoration(
+                  Text(
+                    '${entry.key + 1}.',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
                       color: Color(0xFF6B8E7A),
-                      shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      rule,
+                      entry.value,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 13,
                         color: Color(0xFF6C7383),
-                        height: 1.45,
+                        height: 1.35,
                       ),
                     ),
                   ),
@@ -484,8 +445,8 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
     Get.dialog(
       Dialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -497,23 +458,19 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 children: [
                   const Text(
                     'Tambah Peraturan',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
                     child: const Icon(
                       Icons.close,
-                      color: Color(0xFF9CA3AF),
-                      size: 24,
+                      size: 20,
+                      color: Colors.grey,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               _buildInfoBannerModal(),
               const SizedBox(height: 20),
               _buildLabel('Nama Kategori'),
@@ -533,46 +490,42 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 decoration: _inputDecoration('Masukan Deskripsi'),
                 style: const TextStyle(fontSize: 14),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF6B7280),
+                        side: const BorderSide(color: Color(0xFFD1D5DB)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        side: const BorderSide(color: Color(0xFFE5E7EB)),
                       ),
                       onPressed: () => Get.back(),
                       child: const Text(
                         'Batal',
-                        style: TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6B8E7A),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 0,
                       ),
                       onPressed: controller.tambahKategori,
                       child: const Text(
                         'Tambah',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -593,8 +546,8 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
     Get.dialog(
       Dialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -606,23 +559,19 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 children: [
                   const Text(
                     'Edit Peraturan',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
                     child: const Icon(
                       Icons.close,
-                      color: Color(0xFF9CA3AF),
-                      size: 24,
+                      size: 20,
+                      color: Colors.grey,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               _buildInfoBannerModal(),
               const SizedBox(height: 20),
               _buildLabel('Nama Kategori'),
@@ -642,46 +591,42 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 decoration: _inputDecoration('Masukan Deskripsi'),
                 style: const TextStyle(fontSize: 14),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF6B7280),
+                        side: const BorderSide(color: Color(0xFFD1D5DB)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        side: const BorderSide(color: Color(0xFFE5E7EB)),
                       ),
                       onPressed: () => Get.back(),
                       child: const Text(
                         'Batal',
-                        style: TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6B8E7A),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 0,
                       ),
                       onPressed: () => controller.editKategori(kategori.id),
                       child: const Text(
                         'Simpan',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -698,44 +643,39 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   void _showDeleteModal(PeraturanModel kategori) {
     Get.dialog(
       Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     'Hapus Peraturan',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F2937),
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
                     child: Container(
+                      padding: const EdgeInsets.all(4),
                       decoration: const BoxDecoration(
                         color: Color(0xFFF3F4F6),
                         shape: BoxShape.circle,
                       ),
-                      padding: const EdgeInsets.all(4),
                       child: const Icon(
                         Icons.close,
-                        color: Color(0xFF9CA3AF),
-                        size: 16,
+                        size: 20,
+                        color: Colors.grey,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 18),
               const Text(
                 'Apakah Anda yakin ingin menghapus peraturan ini? Tindakan ini tidak dapat dibatalkan.',
                 style: TextStyle(
@@ -744,47 +684,42 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
+                    child: TextButton(
+                      style: TextButton.styleFrom(
                         backgroundColor: const Color(0xFFF3F4F6),
+                        foregroundColor: const Color(0xFF6B7280),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                        elevation: 0,
                       ),
                       onPressed: () => Get.back(),
                       child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Color(0xFF4B5563),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'Batal',
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF4444),
+                        backgroundColor: const Color(0xFFFF3B30),
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 0,
                       ),
                       onPressed: () => controller.hapusKategori(kategori.id),
                       child: const Text(
-                        'Delete',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'Hapus',
+                        style: TextStyle(fontWeight: FontWeight.w600),
                       ),
                     ),
                   ),
@@ -834,9 +769,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
       text: TextSpan(
         text: text,
         style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF374151),
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Color(0xFF111827),
         ),
         children: const [
           TextSpan(
@@ -852,8 +787,6 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
-      filled: true,
-      fillColor: Colors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFFD1D5DB)),
