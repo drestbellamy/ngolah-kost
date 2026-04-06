@@ -39,7 +39,9 @@ class ProfilView extends GetView<ProfilController> {
                             label: const Text(
                               'Simpan Perubahan',
                               style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF5E8675),
@@ -71,7 +73,6 @@ class ProfilView extends GetView<ProfilController> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(top: 60, bottom: 40, left: 20, right: 20),
       decoration: const BoxDecoration(
         color: Color(0xFF5E8675),
         borderRadius: BorderRadius.only(
@@ -79,74 +80,189 @@ class ProfilView extends GetView<ProfilController> {
           bottomRight: Radius.circular(30),
         ),
       ),
-      child: Column(
+      child: Stack(
         children: [
-          Row(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Get.offAllNamed(Routes.home),
-                ),
+          // Bubble Backgrounds
+          Positioned(
+            top: -50,
+            right: -30,
+            child: Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(width: 16),
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Profil Admin',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+            ),
+          ),
+          Positioned(
+            top: 50,
+            left: -40,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          // Header Content
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 60,
+              bottom: 40,
+              left: 20,
+              right: 20,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Get.offAllNamed(Routes.home),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Profil Admin',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Kelola akun Anda',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                GestureDetector(
+                  onTap: () {
+                    FocusScope.of(Get.context!).unfocus();
+                    Get.bottomSheet(
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(2),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            const Text(
+                              'Foto Profil',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            _buildPhotoOption(
+                              icon: Icons.camera_alt_outlined,
+                              iconColor: const Color(0xFF5E8675),
+                              iconBgColor: const Color(
+                                0xFF5E8675,
+                              ).withOpacity(0.1),
+                              title: 'Ambil Foto',
+                              subtitle: 'Gunakan kamera',
+                              onTap: () => Get.back(),
+                            ),
+                            const SizedBox(height: 12),
+                            _buildPhotoOption(
+                              icon: Icons.photo_library_outlined,
+                              iconColor: const Color(0xFFF59E0B),
+                              iconBgColor: const Color(
+                                0xFFF59E0B,
+                              ).withOpacity(0.1),
+                              title: 'Pilih dari Galeri',
+                              subtitle: 'Pilih foto yang sudah ada',
+                              onTap: () => Get.back(),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              child: TextButton(
+                                onPressed: () => Get.back(),
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Colors.grey[100],
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Batal',
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Color(0xFF5E8675),
+                      child: Icon(
+                        Icons.account_circle,
+                        size: 80,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  Text(
-                    'Kelola akun Anda',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'admin',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 30),
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              shape: BoxShape.circle,
-            ),
-            child: const CircleAvatar(
-              radius: 40,
-              backgroundColor: Color(0xFF5E8675),
-              child: Icon(
-                Icons.account_circle,
-                size: 80,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'admin',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const Text(
-            'Administrator',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
+                ),
+                const Text(
+                  'Administrator',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+              ],
             ),
           ),
         ],
@@ -175,11 +291,21 @@ class ProfilView extends GetView<ProfilController> {
           children: [
             ListTile(
               onTap: controller.toggleUsername,
-              leading:
-                  const Icon(CupertinoIcons.person, color: Color(0xFF5E8675)),
+              leading: const Icon(
+                CupertinoIcons.person,
+                color: Color(0xFF5E8675),
+                size: 24,
+              ),
               title: const Text(
                 'Username',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              trailing: Icon(
+                isExpanded
+                    ? CupertinoIcons.chevron_down
+                    : CupertinoIcons.chevron_right,
+                color: Colors.grey,
+                size: 20,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
@@ -191,29 +317,39 @@ class ProfilView extends GetView<ProfilController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Username',
-                        style: TextStyle(fontSize: 12, color: Colors.grey)),
+                    const Text(
+                      'Username',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: controller.usernameController,
                       decoration: InputDecoration(
                         hintText: 'admin',
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                              color: Colors.grey.shade300, width: 1),
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide(
-                              color: Colors.grey.shade300, width: 1),
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                              color: Color(0xFF5E8675), width: 1.5),
+                            color: Color(0xFF5E8675),
+                            width: 1.5,
+                          ),
                         ),
                       ),
                     ),
@@ -247,10 +383,21 @@ class ProfilView extends GetView<ProfilController> {
           children: [
             ListTile(
               onTap: controller.togglePassword,
-              leading: const Icon(CupertinoIcons.lock, color: Color(0xFF5E8675)),
+              leading: const Icon(
+                CupertinoIcons.lock,
+                color: Color(0xFF5E8675),
+                size: 24,
+              ),
               title: const Text(
                 'Ubah Password',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              trailing: Icon(
+                isExpanded
+                    ? CupertinoIcons.chevron_down
+                    : CupertinoIcons.chevron_right,
+                color: Colors.grey,
+                size: 20,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
@@ -308,8 +455,10 @@ class ProfilView extends GetView<ProfilController> {
           obscureText: obscureValue.value,
           decoration: InputDecoration(
             hintText: hint,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
@@ -320,7 +469,10 @@ class ProfilView extends GetView<ProfilController> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF5E8675), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF5E8675),
+                width: 1.5,
+              ),
             ),
             suffixIcon: IconButton(
               icon: Icon(
@@ -337,8 +489,10 @@ class ProfilView extends GetView<ProfilController> {
       if (helpText != null)
         Padding(
           padding: const EdgeInsets.only(top: 4),
-          child: Text(helpText,
-              style: const TextStyle(fontSize: 10, color: Colors.grey)),
+          child: Text(
+            helpText,
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
+          ),
         ),
     ];
   }
@@ -359,6 +513,62 @@ class ProfilView extends GetView<ProfilController> {
           padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPhotoOption({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.grey[50],
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        highlightColor: Colors.black.withOpacity(0.05),
+        splashColor: Colors.black.withOpacity(0.05),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: iconColor),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
