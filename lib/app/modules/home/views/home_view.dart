@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 import 'widgets/dashboard_card.dart';
 import 'widgets/menu_item.dart';
+import 'widgets/ringkasan_keuangan_widget.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 
 class HomeView extends GetView<HomeController> {
@@ -291,6 +292,14 @@ class HomeView extends GetView<HomeController> {
                           ],
                         ),
                       ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Ringkasan Keuangan Widget
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: RingkasanKeuanganWidget(),
                     ),
 
                     const SizedBox(height: 24),

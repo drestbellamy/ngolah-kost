@@ -20,6 +20,10 @@ import '../modules/metode_pembayaran/bindings/metode_pembayaran_binding.dart';
 import '../modules/metode_pembayaran/views/metode_pembayaran_view.dart';
 import '../modules/metode_pembayaran/controllers/tambah_metode_pembayaran_controller.dart';
 import '../modules/metode_pembayaran/views/tambah_metode_pembayaran_view.dart';
+import '../modules/ringkasan_keuangan/bindings/ringkasan_keuangan_binding.dart';
+import '../modules/ringkasan_keuangan/views/ringkasan_keuangan_view.dart';
+import '../modules/ringkasan_keuangan/bindings/detail_keuangan_kost_binding.dart';
+import '../modules/ringkasan_keuangan/views/detail_keuangan_kost_view.dart';
 import '../modules/kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../modules/kelola_pengumuman/views/kelola_pengumuman_view.dart';
 import '../modules/kelola_peraturan/bindings/kelola_peraturan_binding.dart';
@@ -137,6 +141,16 @@ class AppPages {
       name: Routes.userHistoryPembayaran,
       page: () => const UserHistoryPembayaranView(),
       binding: UserHistoryPembayaranBinding(),
+    ),
+    GetPage(
+      name: Routes.ringkasanKeuangan,
+      page: () => const RingkasanKeuanganView(),
+      binding: RingkasanKeuanganBinding(),
+    ),
+    GetPage(
+      name: Routes.detailKeuanganKost,
+      page: () => const DetailKeuanganKostView(),
+      binding: DetailKeuanganKostBinding(),
     ),
   ];
 }
