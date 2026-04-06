@@ -31,7 +31,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   Widget _buildHeader(GedungKostModel? selectedGedung) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 40),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -39,14 +39,14 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
           colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
         ),
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(34),
-          bottomRight: Radius.circular(34),
+          bottomLeft: Radius.circular(26),
+          bottomRight: Radius.circular(26),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 24,
-            offset: const Offset(0, 14),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -54,11 +54,11 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            right: -84,
-            top: -84,
+            right: -72,
+            top: -72,
             child: Container(
-              width: 260,
-              height: 260,
+              width: 220,
+              height: 220,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.06),
                 shape: BoxShape.circle,
@@ -66,11 +66,11 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
             ),
           ),
           Positioned(
-            left: -72,
-            bottom: -72,
+            left: -62,
+            bottom: -62,
             child: Container(
-              width: 150,
-              height: 150,
+              width: 126,
+              height: 126,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
@@ -88,7 +88,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                   Get.back();
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
@@ -96,11 +96,11 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                   child: const Icon(
                     Icons.arrow_back,
                     color: Colors.white,
-                    size: 22,
+                    size: 20,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,19 +108,19 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                     const Text(
                       'Kelola Pengumuman',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       selectedGedung?.nama ??
                           'Kelola informasi pengumuman kost',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: Color(0xFFC7E1D3),
                       ),
                     ),
@@ -136,12 +136,12 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
 
   Widget _buildPilihGedungContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
       child: Column(
         children: controller.gedungKostList
             .map(
               (gedung) => Padding(
-                padding: const EdgeInsets.only(bottom: 18),
+                padding: const EdgeInsets.only(bottom: 10),
                 child: _buildGedungCard(gedung),
               ),
             )
@@ -153,19 +153,19 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   Widget _buildGedungCard(GedungKostModel gedung) {
     return InkWell(
       onTap: () => controller.pilihGedungKost(gedung),
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: const Color(0xFFF8F8F8),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: const Color(0xFFE7E9E8)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.07),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -173,74 +173,74 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 84,
-              height: 84,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: const Color(0xFFE9ECEA),
-                borderRadius: BorderRadius.circular(22),
+                borderRadius: BorderRadius.circular(13),
               ),
               child: const Icon(
                 Icons.apartment_outlined,
                 color: Color(0xFF6B8E7A),
-                size: 40,
+                size: 24,
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     gedung.nama,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF2D2F34),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 2),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(top: 2),
+                        padding: EdgeInsets.only(top: 0.5),
                         child: Icon(
                           Icons.location_on_outlined,
-                          size: 20,
+                          size: 14,
                           color: Color(0xFF7A8292),
                         ),
                       ),
-                      const SizedBox(width: 6),
+                      const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           gedung.alamat,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 13,
                             color: Color(0xFF6C7383),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 8,
+                      horizontal: 10,
+                      vertical: 4,
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE5EFE9),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Text(
                       '${gedung.totalKamar} Rooms',
                       style: const TextStyle(
                         color: Color(0xFF507562),
-                        fontSize: 17,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -248,12 +248,12 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             const Padding(
-              padding: EdgeInsets.only(top: 4),
+              padding: EdgeInsets.only(top: 2),
               child: Icon(
                 Icons.chevron_right,
-                size: 30,
+                size: 20,
                 color: Color(0xFF7A8292),
               ),
             ),
@@ -265,15 +265,15 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
 
   Widget _buildKelolaPengumumanContent() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
       child: Column(
         children: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF6B8E7A),
-              minimumSize: const Size(double.infinity, 56),
+              minimumSize: const Size(double.infinity, 46),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(14),
               ),
               elevation: 0,
             ),
@@ -281,20 +281,20 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add, color: Colors.white, size: 28),
-                SizedBox(width: 10),
+                Icon(Icons.add, color: Colors.white, size: 22),
+                SizedBox(width: 8),
                 Text(
                   'Tambah Pengumuman',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: 17,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           Obx(() {
             if (controller.pengumumanList.isEmpty) {
               return Container(
@@ -324,7 +324,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: controller.pengumumanList.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 18),
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final item = controller.pengumumanList[index];
                 return _buildPengumumanCard(item);
@@ -337,121 +337,285 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   }
 
   Widget _buildPengumumanCard(PengumumanModel item) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF9F9F9),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E5E4)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  item.title,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF2D2F34),
-                  ),
-                ),
-              ),
-              InkWell(
-                borderRadius: BorderRadius.circular(30),
-                onTap: () => _showEditPengumumanDialog(item),
-                child: const Padding(
-                  padding: EdgeInsets.all(4),
-                  child: Icon(
-                    Icons.edit_outlined,
-                    color: Color(0xFF6B8E7A),
-                    size: 30,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              InkWell(
-                borderRadius: BorderRadius.circular(30),
-                onTap: () => _showDeletePengumumanDialog(item.id),
-                child: const Padding(
-                  padding: EdgeInsets.all(4),
-                  child: Icon(
-                    Icons.delete_outline,
-                    color: Color(0xFFFF2D2D),
-                    size: 30,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Text(
-            item.description,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color(0xFF6C7383),
-              height: 1.45,
+    return InkWell(
+      onTap: () => _showDetailPengumumanDialog(item),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9F9F9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFE2E5E4)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(height: 22),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Row(
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    item.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2D2F34),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(30),
+                  onTap: () => _showEditPengumumanDialog(item),
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.edit_outlined,
+                      color: Color(0xFF6B8E7A),
+                      size: 22,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                InkWell(
+                  borderRadius: BorderRadius.circular(30),
+                  onTap: () => _showDeletePengumumanDialog(item.id),
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: Color(0xFFFF2D2D),
+                      size: 22,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            FractionallySizedBox(
+              widthFactor: 0.80,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                item.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Color(0xFF6C7383),
+                  height: 1.35,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.home_work_outlined,
+                        size: 15,
+                        color: Color(0xFF6C7383),
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          item.kostName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFF6C7383),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 14,
+                      color: Color(0xFF6C7383),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      item.date,
+                      style: const TextStyle(
+                        color: Color(0xFF6C7383),
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDetailPengumumanDialog(PengumumanModel item) {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Detail Pengumuman',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => Get.back(),
+                      child: const Icon(
+                        Icons.close,
+                        size: 20,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _buildInfoBannerModal(),
+                const SizedBox(height: 20),
+                const Text(
+                  'Judul',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF9FAFB),
+                    border: Border.all(color: const Color(0xFFD1D5DB)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    item.title,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF374151),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Deskripsi',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF9FAFB),
+                    border: Border.all(color: const Color(0xFFD1D5DB)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    item.description,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF4B5563),
+                      height: 1.45,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
                   children: [
                     const Icon(
                       Icons.home_work_outlined,
-                      size: 22,
+                      size: 16,
                       color: Color(0xFF6C7383),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         item.kostName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
+                          fontSize: 12,
                           color: Color(0xFF6C7383),
-                          fontSize: 16,
                         ),
                       ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(width: 12),
-              Row(
-                children: [
-                  const Icon(
-                    Icons.calendar_today_outlined,
-                    size: 20,
-                    color: Color(0xFF6C7383),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    item.date,
-                    style: const TextStyle(
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 15,
                       color: Color(0xFF6C7383),
-                      fontSize: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      item.date,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF6C7383),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Get.back(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6B8E7A),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Tutup',
+                      style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
     );
   }
 
