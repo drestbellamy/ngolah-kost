@@ -182,15 +182,15 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                             ),
                             const SizedBox(width: 8),
                             _buildFilterChip(
-                              'Belum Dibayar (${controller.tagihanList.where((t) => t.status == 'belum_dibayar').length})',
-                              'belum_dibayar',
-                              const Color(0xFFEF4444),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildFilterChip(
                               'Menunggu (${controller.tagihanList.where((t) => t.status == 'menunggu_verifikasi').length})',
                               'menunggu_verifikasi',
                               const Color(0xFFF2A65A),
+                            ),
+                            const SizedBox(width: 8),
+                            _buildFilterChip(
+                              'Belum Dibayar (${controller.tagihanList.where((t) => t.status == 'belum_dibayar').length})',
+                              'belum_dibayar',
+                              const Color(0xFFEF4444),
                             ),
                             const SizedBox(width: 8),
                             _buildFilterChip(
