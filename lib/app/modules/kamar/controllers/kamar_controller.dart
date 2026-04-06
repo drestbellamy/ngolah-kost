@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../kost/models/kost_model.dart';
 import '../views/widgets/tambah_kamar_bottom_sheet.dart';
 import '../views/widgets/edit_kamar_bottom_sheet.dart';
 import '../views/widgets/hapus_kamar_dialog.dart';
@@ -8,11 +9,22 @@ class KamarController extends GetxController {
   final selectedTab = 0.obs;
   
   // Data kost
-  final namaKost = 'Green Valley Kost'.obs;
-  final alamatKost = 'Jl. Sudirman No. 123, Jakarta'.obs;
+  final namaKost = ''.obs;
+  final alamatKost = ''.obs;
   final totalRuangan = 4.obs;
   final ditempati = 2.obs;
   final kosong = 2.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Ambil data kost dari arguments yang dikirim dari halaman kost
+    final args = Get.arguments;
+    if (args != null && args is KostModel) {
+      namaKost.value = args.name;
+      alamatKost.value = args.address;
+    }
+  }
   
   // List kamar
   final kamarList = <Map<String, dynamic>>[

@@ -16,6 +16,10 @@ import '../modules/profil/bindings/profil_binding.dart';
 import '../modules/profil/views/profil_view.dart';
 import '../modules/kelola_tagihan/bindings/kelola_tagihan_binding.dart';
 import '../modules/kelola_tagihan/views/kelola_tagihan_view.dart';
+import '../modules/metode_pembayaran/bindings/metode_pembayaran_binding.dart';
+import '../modules/metode_pembayaran/views/metode_pembayaran_view.dart';
+import '../modules/metode_pembayaran/controllers/tambah_metode_pembayaran_controller.dart';
+import '../modules/metode_pembayaran/views/tambah_metode_pembayaran_view.dart';
 import '../modules/kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../modules/kelola_pengumuman/views/kelola_pengumuman_view.dart';
 import '../modules/kelola_peraturan/bindings/kelola_peraturan_binding.dart';
@@ -26,6 +30,8 @@ import '../modules/kamar/bindings/tambah_penghuni_binding.dart';
 import '../modules/kamar/views/tambah_penghuni_view.dart';
 import '../modules/user_home/bindings/user_home_binding.dart';
 import '../modules/user_home/views/user_home_view.dart';
+import '../modules/user_history_pembayaran/bindings/user_history_pembayaran_binding.dart';
+import '../modules/user_history_pembayaran/views/user_history_pembayaran_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -80,6 +86,29 @@ class AppPages {
       binding: KelolaTagihanBinding(),
     ),
     GetPage(
+      name: Routes.metodePembayaran,
+      page: () => const MetodePembayaranView(),
+      binding: MetodePembayaranBinding(),
+    ),
+    GetPage(
+      name: Routes.tambahMetodePembayaran,
+      page: () => const TambahMetodePembayaranView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<TambahMetodePembayaranController>(
+          () => TambahMetodePembayaranController(),
+        );
+      }),
+    ),
+    GetPage(
+      name: Routes.editMetodePembayaran,
+      page: () => const TambahMetodePembayaranView(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<TambahMetodePembayaranController>(
+          () => TambahMetodePembayaranController(),
+        );
+      }),
+    ),
+    GetPage(
       name: Routes.kelolaPengumuman,
       page: () => const KelolaPengumumanView(),
       binding: KelolaPengumumanBinding(),
@@ -103,6 +132,11 @@ class AppPages {
       name: Routes.userHome,
       page: () => const UserHomeView(),
       binding: UserHomeBinding(),
+    ),
+    GetPage(
+      name: Routes.userHistoryPembayaran,
+      page: () => const UserHistoryPembayaranView(),
+      binding: UserHistoryPembayaranBinding(),
     ),
   ];
 }

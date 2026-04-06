@@ -95,30 +95,36 @@ class KamarView extends GetView<KamarController> {
                     const SizedBox(height: 24),
                     
                     // Stats
-                    Row(
+                    Obx(() => Row(
                       children: [
                         Expanded(
                           child: _buildStatCard(
                             'Total Ruangan',
                             controller.totalRuangan.value.toString(),
+                            Icons.meeting_room_outlined,
+                            const Color(0xFF6B8E7A),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _buildStatCard(
                             'Ditempati',
                             controller.ditempati.value.toString(),
+                            Icons.check_circle_outline,
+                            const Color(0xFF6B8E7A),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _buildStatCard(
                             'Kosong',
                             controller.kosong.value.toString(),
+                            Icons.door_back_door_outlined,
+                            const Color(0xFF6B8E7A),
                           ),
                         ),
                       ],
-                    ),
+                    )),
                   ],
                 ),
               ),
@@ -169,31 +175,59 @@ class KamarView extends GetView<KamarController> {
     );
   }
 
-  Widget _buildStatCard(String label, String value) {
+  Widget _buildStatCard(String label, String value, IconData icon, Color iconColor) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFFA8D5BA),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade600,
             ),
-            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          const SizedBox(height: 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2F2F2F),
+                ),
+              ),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  color: iconColor,
+                  size: 20,
+                ),
+              ),
+            ],
           ),
         ],
       ),
