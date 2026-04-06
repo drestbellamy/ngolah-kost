@@ -20,6 +20,10 @@ class HomeController extends GetxController {
     Get.toNamed('/kelola-tagihan');
   }
 
+  void navigateToMetodePembayaran() {
+    Get.toNamed('/metode-pembayaran');
+  }
+
   void navigateToKelolaPengumuman() {
     try {
       print("Menu Kelola Pengumuman ditekan - mencoba navigasi langsung...");
@@ -35,10 +39,6 @@ class HomeController extends GetxController {
 
   void navigateToKelolaPeraturan() {
     Get.toNamed('/kelola-peraturan');
-  }
-
-  void navigateToMetodePembayaran() {
-    Get.toNamed('/metode-pembayaran');
   }
 
   void navigateToVerifikasi() {
