@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../controllers/kelola_peraturan_controller.dart';
 
 class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
@@ -7,315 +8,252 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Custom Header
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(
-                left: 24,
-                right: 24,
-                top: 16,
-                bottom: 40,
+    return Obx(() {
+      final selectedGedung = controller.selectedGedung.value;
+      return Scaffold(
+        backgroundColor: const Color(0xFFF1F3F2),
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(selectedGedung),
+              Expanded(
+                child: selectedGedung == null
+                    ? _buildPilihGedungContent()
+                    : _buildKelolaPeraturanContent(selectedGedung),
               ),
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildHeader(GedungKostModel? selectedGedung) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 40),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(34),
+          bottomRight: Radius.circular(34),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            right: -84,
+            top: -84,
+            child: Container(
+              width: 260,
+              height: 260,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 25,
-                    offset: const Offset(0, 20),
-                  ),
-                ],
-              ),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  // Decorative circle (like in home_view)
-                  Positioned(
-                    right: -70,
-                    top: -50,
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Get.back(),
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      const Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Kelola Peraturan',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Kelola informasi peraturan kost',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFFC7E1D3),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                color: Colors.white.withValues(alpha: 0.06),
+                shape: BoxShape.circle,
               ),
             ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+          ),
+          Positioned(
+            left: -72,
+            bottom: -72,
+            child: Container(
+              width: 150,
+              height: 150,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (selectedGedung != null) {
+                    controller.kembaliKePilihGedung();
+                    return;
+                  }
+                  Get.back();
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Button Tambah Kategori
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6B8E7A),
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0,
-                      ),
-                      onPressed: () => _showAddModal(context),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add, color: Colors.white, size: 20),
-                          SizedBox(width: 8),
-                          Text(
-                            'Tambah Kategori Peraturan',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                    const Text(
+                      'Kelola Peraturan',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 16),
-
-                    // Info Banner
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF3F8FF),
-                        border: Border.all(color: const Color(0xFFD6E4FF)),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            color: Color(0xFF2563EB),
-                            size: 20,
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Peraturan berlaku untuk semua kost',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF1E3A8A),
-                                    fontSize: 13,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  'Semua perubahan akan diterapkan ke seluruh penghuni di semua kost.',
-                                  style: TextStyle(
-                                    color: Color(0xFF2563EB),
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // List of Categories
-                    Obx(
-                      () => ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.kategoriList.length,
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 16),
-                        itemBuilder: (context, index) {
-                          final kategori = controller.kategoriList[index];
-                          return Container(
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.03),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        kategori.nama,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF1F2937),
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () =>
-                                              _showEditModal(context, kategori),
-                                          child: const Icon(
-                                            Icons.edit_outlined,
-                                            color: Color(0xFF6B8E7A),
-                                            size: 20,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 12),
-                                        GestureDetector(
-                                          onTap: () => _showDeleteModal(
-                                            context,
-                                            kategori,
-                                          ),
-                                          child: const Icon(
-                                            Icons.delete_outline,
-                                            color: Color(0xFFEF4444),
-                                            size: 20,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 16),
-                                const Divider(
-                                  color: Color(0xFFF3F4F6),
-                                  height: 1,
-                                ),
-                                const SizedBox(height: 16),
-                                ...kategori.deskripsi
-                                    .split('\n')
-                                    .where((r) => r.trim().isNotEmpty)
-                                    .toList()
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
-                                      final index = entry.key + 1;
-                                      final rule = entry.value.trim();
-
-                                      // Buang penomoran manual dari admin bila ada
-                                      final cleanRule = rule.replaceFirst(
-                                        RegExp(r'^\d+\.\s*'),
-                                        '',
-                                      );
-
-                                      return Padding(
-                                        padding: const EdgeInsets.only(
-                                          bottom: 8.0,
-                                        ),
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                top: 4.0,
-                                                right: 8.0,
-                                              ),
-                                              child: Text(
-                                                '$index.',
-                                                style: const TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Color(0xFF6B7280),
-                                                ),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                cleanRule,
-                                                style: const TextStyle(
-                                                  fontSize: 13,
-                                                  color: Color(0xFF6B7280),
-                                                  height: 1.5,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    })
-                                    .toList(),
-                              ],
-                            ),
-                          );
-                        },
+                    const SizedBox(height: 4),
+                    Text(
+                      selectedGedung?.nama ?? 'Kelola informasi peraturan kost',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFFC7E1D3),
                       ),
                     ),
                   ],
                 ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPilihGedungContent() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
+      child: Column(
+        children: controller.gedungKostList
+            .map(
+              (gedung) => Padding(
+                padding: const EdgeInsets.only(bottom: 18),
+                child: _buildGedungCard(gedung),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  Widget _buildGedungCard(GedungKostModel gedung) {
+    return InkWell(
+      onTap: () => controller.pilihGedungKost(gedung),
+      borderRadius: BorderRadius.circular(22),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8F8F8),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: const Color(0xFFE7E9E8)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.07),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 84,
+              height: 84,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE9ECEA),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: const Icon(
+                Icons.apartment_outlined,
+                color: Color(0xFF6B8E7A),
+                size: 40,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    gedung.nama,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF2D2F34),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 2),
+                        child: Icon(
+                          Icons.location_on_outlined,
+                          size: 20,
+                          color: Color(0xFF7A8292),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          gedung.alamat,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Color(0xFF6C7383),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 18,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5EFE9),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      '${gedung.totalKamar} Rooms',
+                      style: const TextStyle(
+                        color: Color(0xFF507562),
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Padding(
+              padding: EdgeInsets.only(top: 4),
+              child: Icon(
+                Icons.chevron_right,
+                size: 30,
+                color: Color(0xFF7A8292),
               ),
             ),
           ],
@@ -324,7 +262,224 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
     );
   }
 
-  void _showAddModal(BuildContext context) {
+  Widget _buildKelolaPeraturanContent(GedungKostModel selectedGedung) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
+      child: Column(
+        children: [
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF6B8E7A),
+              minimumSize: const Size(double.infinity, 56),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
+              elevation: 0,
+            ),
+            onPressed: _showAddModal,
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.add, color: Colors.white, size: 28),
+                SizedBox(width: 10),
+                Text(
+                  'Tambah Kategori Peraturan',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFF3FB),
+              border: Border.all(color: const Color(0xFFAFC9F5), width: 2),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.info_outline,
+                      color: Color(0xFF2A5BDD),
+                      size: 26,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Peraturan berlaku untuk gedung kost yang dipilih.',
+                        style: TextStyle(
+                          color: const Color(0xFF2A5BDD),
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Semua perubahan akan diterapkan ke seluruh penghuni gedung kost ${selectedGedung.nama}.',
+                  style: const TextStyle(
+                    color: Color(0xFF2A5BDD),
+                    fontSize: 16,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Obx(() {
+            if (controller.kategoriList.isEmpty) {
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 28,
+                  horizontal: 20,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                ),
+                child: const Text(
+                  'Belum ada kategori peraturan. Tambahkan kategori pertama untuk gedung kost ini.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFF6B7280),
+                    fontSize: 16,
+                    height: 1.4,
+                  ),
+                ),
+              );
+            }
+
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: controller.kategoriList.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 18),
+              itemBuilder: (context, index) {
+                final kategori = controller.kategoriList[index];
+                return _buildKategoriCard(kategori);
+              },
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKategoriCard(PeraturanModel kategori) {
+    final cleanedRules = kategori.deskripsi
+        .split('\n')
+        .where((item) => item.trim().isNotEmpty)
+        .map((item) => item.trim().replaceFirst(RegExp(r'^\d+\.\s*'), ''))
+        .toList();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9F9F9),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E5E4)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  kategori.nama,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF2D2F34),
+                  ),
+                ),
+              ),
+              InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () => _showEditModal(kategori),
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.edit_outlined,
+                    color: Color(0xFF6B8E7A),
+                    size: 30,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () => _showDeleteModal(kategori),
+                child: const Padding(
+                  padding: EdgeInsets.all(4),
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: Color(0xFFFF2D2D),
+                    size: 30,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          ...cleanedRules.map(
+            (rule) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF6B8E7A),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      rule,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFF6C7383),
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddModal() {
     controller.resetForm();
     Get.dialog(
       Dialog(
@@ -361,7 +516,6 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               const SizedBox(height: 16),
               _buildInfoBannerModal(),
               const SizedBox(height: 20),
-
               _buildLabel('Nama Kategori'),
               const SizedBox(height: 8),
               TextField(
@@ -370,18 +524,16 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 20),
-
               _buildLabel('Deskripsi'),
               const SizedBox(height: 8),
               TextField(
-                onTap: () => controller.requestFocusToDeskripsi(),
+                onTap: controller.requestFocusToDeskripsi,
                 controller: controller.deskripsiController,
                 maxLines: 5,
                 decoration: _inputDecoration('Masukan Deskripsi'),
                 style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 24),
-
               Row(
                 children: [
                   Expanded(
@@ -430,11 +582,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
           ),
         ),
       ),
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
     );
   }
 
-  void _showEditModal(BuildContext context, PeraturanModel kategori) {
+  void _showEditModal(PeraturanModel kategori) {
     controller.namaController.text = kategori.nama;
     controller.deskripsiController.text = kategori.deskripsi;
 
@@ -473,7 +625,6 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               const SizedBox(height: 16),
               _buildInfoBannerModal(),
               const SizedBox(height: 20),
-
               _buildLabel('Nama Kategori'),
               const SizedBox(height: 8),
               TextField(
@@ -482,18 +633,16 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 20),
-
               _buildLabel('Deskripsi'),
               const SizedBox(height: 8),
               TextField(
-                onTap: () => controller.requestFocusToDeskripsi(),
+                onTap: controller.requestFocusToDeskripsi,
                 controller: controller.deskripsiController,
                 maxLines: 5,
                 decoration: _inputDecoration('Masukan Deskripsi'),
                 style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 24),
-
               Row(
                 children: [
                   Expanded(
@@ -542,11 +691,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
           ),
         ),
       ),
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
     );
   }
 
-  void _showDeleteModal(BuildContext context, PeraturanModel kategori) {
+  void _showDeleteModal(PeraturanModel kategori) {
     Get.dialog(
       Dialog(
         backgroundColor: Colors.white,
@@ -587,7 +736,6 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 ],
               ),
               const SizedBox(height: 24),
-
               const Text(
                 'Apakah Anda yakin ingin menghapus peraturan ini? Tindakan ini tidak dapat dibatalkan.',
                 style: TextStyle(
@@ -597,7 +745,6 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 ),
               ),
               const SizedBox(height: 32),
-
               Row(
                 children: [
                   Expanded(
@@ -647,11 +794,12 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
           ),
         ),
       ),
-      barrierColor: Colors.black.withOpacity(0.5),
+      barrierColor: Colors.black.withValues(alpha: 0.5),
     );
   }
 
   Widget _buildInfoBannerModal() {
+    final namaGedung = controller.selectedGedung.value?.nama;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -659,15 +807,17 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
         border: Border.all(color: const Color(0xFFD6E4FF)),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Row(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, color: Color(0xFF2563EB), size: 16),
-          SizedBox(width: 12),
+          const Icon(Icons.info_outline, color: Color(0xFF2563EB), size: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Peraturan berlaku untuk semua kost',
-              style: TextStyle(
+              namaGedung == null
+                  ? 'Peraturan akan diterapkan sesuai gedung kost yang dipilih.'
+                  : 'Peraturan diterapkan untuk $namaGedung.',
+              style: const TextStyle(
                 color: Color(0xFF2563EB),
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
