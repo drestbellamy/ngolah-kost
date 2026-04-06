@@ -8,6 +8,9 @@ abstract class Routes {
   static const penghuniDetail = '/penghuni/detail';
   static const profil = '/profil';
   static const kelolaTagihan = '/kelola-tagihan';
+  static const metodePembayaran = '/metode-pembayaran';
+  static const tambahMetodePembayaran = '/tambah-metode-pembayaran';
+  static const editMetodePembayaran = '/edit-metode-pembayaran';
   static const kelolaPengumuman = '/kelola-pengumuman';
   static const kelolaPeraturan = '/kelola-peraturan';
   static const informasiKamar = '/informasi-kamar';
