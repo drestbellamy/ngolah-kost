@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+class GedungKostModel {
+  final String id;
+  final String nama;
+  final String alamat;
+  final int totalKamar;
+
+  const GedungKostModel({
+    required this.id,
+    required this.nama,
+    required this.alamat,
+    required this.totalKamar,
+  });
+}
+
 class PeraturanModel {
   String id;
   String nama;
@@ -14,7 +28,36 @@ class PeraturanModel {
 }
 
 class KelolaPeraturanController extends GetxController {
+  final gedungKostList = const <GedungKostModel>[
+    GedungKostModel(
+      id: '1',
+      nama: 'Sunrise Boarding House',
+      alamat: 'Jl. Gatot Subroto No. 45, Jakarta',
+      totalKamar: 8,
+    ),
+    GedungKostModel(
+      id: '2',
+      nama: 'Peaceful Haven Kost',
+      alamat: 'Jl. Thamrin No. 67, Jakarta',
+      totalKamar: 10,
+    ),
+    GedungKostModel(
+      id: '3',
+      nama: 'Urban Residence',
+      alamat: 'Jl. HR Rasuna Said No. 89, Jakarta',
+      totalKamar: 15,
+    ),
+    GedungKostModel(
+      id: '4',
+      nama: 'Green Valley Kost',
+      alamat: 'Jl. Sudirman No. 123, Jakarta',
+      totalKamar: 12,
+    ),
+  ];
+
+  final selectedGedung = Rxn<GedungKostModel>();
   final kategoriList = <PeraturanModel>[].obs;
+  final Map<String, List<PeraturanModel>> _kategoriByGedung = {};
 
   final namaController = TextEditingController();
   final deskripsiController = TextEditingController();
@@ -24,8 +67,10 @@ class KelolaPeraturanController extends GetxController {
   void onInit() {
     super.onInit();
     deskripsiController.addListener(_onDeskripsiChanged);
-    // Load data awal sesuai gambar
-    kategoriList.addAll([
+  }
+
+  List<PeraturanModel> _seedKategori() {
+    return [
       PeraturanModel(
         id: '1',
         nama: 'Jam Malam & Keamanan',
@@ -44,7 +89,41 @@ class KelolaPeraturanController extends GetxController {
         deskripsi:
             '1. Dilarang membawa senjata tajam, narkoba, atau minuman keras\n2. Dilarang berjudi atau melakukan kegiatan ilegal\n3. Dilarang membuat keributan setelah pukul 22:00\n4. Dilarang memelihara binatang peliharaan',
       ),
-    ]);
+    ];
+  }
+
+  List<PeraturanModel> _cloneKategori(List<PeraturanModel> source) {
+    return source
+        .map(
+          (item) => PeraturanModel(
+            id: item.id,
+            nama: item.nama,
+            deskripsi: item.deskripsi,
+          ),
+        )
+        .toList();
+  }
+
+  void pilihGedungKost(GedungKostModel gedung) {
+    selectedGedung.value = gedung;
+
+    _kategoriByGedung.putIfAbsent(gedung.id, _seedKategori);
+    kategoriList.value = _cloneKategori(_kategoriByGedung[gedung.id]!);
+  }
+
+  void kembaliKePilihGedung() {
+    selectedGedung.value = null;
+    kategoriList.clear();
+    resetForm();
+  }
+
+  void _sinkronkanKategoriKeGedungAktif() {
+    final gedung = selectedGedung.value;
+    if (gedung == null) {
+      return;
+    }
+
+    _kategoriByGedung[gedung.id] = _cloneKategori(kategoriList);
   }
 
   @override
@@ -71,7 +150,7 @@ class KelolaPeraturanController extends GetxController {
       List<String> lines = text.trimRight().split('\n');
       int nextNumber = lines.length + 1;
 
-      String newText = text + '$nextNumber. ';
+      String newText = '$text$nextNumber. ';
 
       deskripsiController.value = TextEditingValue(
         text: newText,
@@ -95,9 +174,14 @@ class KelolaPeraturanController extends GetxController {
   void resetForm() {
     namaController.clear();
     deskripsiController.clear();
+    _previousText = '';
   }
 
   void tambahKategori() {
+    if (selectedGedung.value == null) {
+      return;
+    }
+
     if (namaController.text.trim().isEmpty ||
         deskripsiController.text.trim().isEmpty) {
       return;
@@ -110,12 +194,17 @@ class KelolaPeraturanController extends GetxController {
         deskripsi: deskripsiController.text.trim(),
       ),
     );
+    _sinkronkanKategoriKeGedungAktif();
 
     Get.back(); // Hanya keluar dari dialog
     resetForm();
   }
 
   void editKategori(String id) {
+    if (selectedGedung.value == null) {
+      return;
+    }
+
     if (namaController.text.trim().isEmpty ||
         deskripsiController.text.trim().isEmpty) {
       return;
@@ -128,6 +217,7 @@ class KelolaPeraturanController extends GetxController {
         nama: namaController.text.trim(),
         deskripsi: deskripsiController.text.trim(),
       );
+      _sinkronkanKategoriKeGedungAktif();
 
       Get.back(); // Hanya keluar dari dialog
       resetForm();
@@ -135,7 +225,12 @@ class KelolaPeraturanController extends GetxController {
   }
 
   void hapusKategori(String id) {
+    if (selectedGedung.value == null) {
+      return;
+    }
+
     kategoriList.removeWhere((k) => k.id == id);
+    _sinkronkanKategoriKeGedungAktif();
     Get.back(); // Hanya tutup dialog
   }
 }
