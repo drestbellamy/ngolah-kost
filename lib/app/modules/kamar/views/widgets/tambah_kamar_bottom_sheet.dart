@@ -10,9 +10,7 @@ class TambahKamarBottomSheet extends StatelessWidget {
     final hargaController = TextEditingController();
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -43,7 +41,7 @@ class TambahKamarBottomSheet extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              
+
               // Nomor Kamar
               const Text(
                 'Nomor Kamar',
@@ -86,7 +84,7 @@ class TambahKamarBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Harga per Bulan
               const Text(
                 'Harga per Bulan (IDR)',
@@ -130,7 +128,7 @@ class TambahKamarBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Buttons
               Row(
                 children: [
@@ -173,10 +171,12 @@ class TambahKamarBottomSheet extends StatelessWidget {
                           );
                           return;
                         }
-                        Get.back(result: {
-                          'nomor': nomorKamarController.text,
-                          'harga': hargaController.text,
-                        });
+                        Get.back(
+                          result: {
+                            'nomor': nomorKamarController.text,
+                            'harga': hargaController.text,
+                          },
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6B8E7A),

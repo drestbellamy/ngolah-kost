@@ -5,19 +5,19 @@ import 'package:intl/intl.dart';
 class TambahPenghuniController extends GetxController {
   // Step management
   final currentStep = 1.obs;
-  
+
   // Room info
   final nomorKamar = ''.obs;
   final namaKost = ''.obs;
   final hargaPerBulan = ''.obs;
   final hargaBulanan = 0.obs;
-  
+
   // Step 1 - Data Pribadi & Akun
   final namaController = TextEditingController();
   final teleponController = TextEditingController();
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  
+
   // Step 2 - Informasi Kontrak
   final tanggalMasuk = ''.obs;
   final tanggalMasukDate = Rx<DateTime?>(null);
@@ -26,7 +26,7 @@ class TambahPenghuniController extends GetxController {
   final sistemPembayaran = ''.obs;
   final sistemPembayaranBulan = 0.obs;
   final tanggalBerakhir = ''.obs;
-  
+
   // Durasi options
   final durasiOptions = [
     '1 Bulan',
@@ -35,10 +35,10 @@ class TambahPenghuniController extends GetxController {
     '12 Bulan ( 1 Tahun )',
     '24 Bulan ( 2 Tahun )',
   ];
-  
+
   // Sistem pembayaran options (dynamic based on durasi)
   final sistemPembayaranOptions = <String>[].obs;
-  
+
   // Calculated values
   final totalKontrak = ''.obs;
   final sistemPembayaranLabel = ''.obs;
@@ -55,7 +55,7 @@ class TambahPenghuniController extends GetxController {
       nomorKamar.value = kamar['nomor'] ?? '';
       namaKost.value = 'Green Valley Kost';
       hargaPerBulan.value = kamar['harga'] ?? '';
-      
+
       // Extract numeric value from harga
       final hargaStr = hargaPerBulan.value.replaceAll(RegExp(r'[^0-9]'), '');
       hargaBulanan.value = int.tryParse(hargaStr) ?? 0;
@@ -102,7 +102,7 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     if (teleponController.text.isEmpty) {
       Get.snackbar(
         'Error',
@@ -113,7 +113,7 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     if (usernameController.text.isEmpty) {
       Get.snackbar(
         'Error',
@@ -124,7 +124,7 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     if (passwordController.text.isEmpty) {
       Get.snackbar(
         'Error',
@@ -135,7 +135,7 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     if (passwordController.text.length < 6) {
       Get.snackbar(
         'Error',
@@ -146,7 +146,7 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     return true;
   }
 
@@ -161,7 +161,7 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     if (durasiKontrak.value.isEmpty) {
       Get.snackbar(
         'Error',
@@ -172,7 +172,7 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     if (sistemPembayaran.value.isEmpty) {
       Get.snackbar(
         'Error',
@@ -183,16 +183,14 @@ class TambahPenghuniController extends GetxController {
       );
       return false;
     }
-    
+
     return true;
   }
 
   void _submitForm() {
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -237,8 +235,22 @@ class TambahPenghuniController extends GetxController {
                 child: ElevatedButton(
                   onPressed: () {
                     Get.back(); // Close dialog
-                    Get.back(); // Back to informasi kamar
-                    Get.back(); // Back to kamar list
+
+                    // Kembalikan data penghuni baru ke halaman sebelumnya (Informasi Kamar)
+                    Get.back(
+                      result: {
+                        'nama': namaController.text,
+                        'telepon': teleponController.text,
+                        'username': '@${usernameController.text}',
+                        'statusKontrak': 'Aktif',
+                        'durasiKontrak': durasiKontrak.value,
+                        'siklusBayar': sistemPembayaran.value,
+                        'tanggalMulai': tanggalMasuk.value,
+                        'tanggalBerakhir': tanggalBerakhir.value,
+                        'hargaSewa': perTagihan.value,
+                        'isExpanded': false,
+                      },
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6B8E7A),
@@ -251,10 +263,7 @@ class TambahPenghuniController extends GetxController {
                   ),
                   child: const Text(
                     'OK',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
@@ -270,8 +279,19 @@ class TambahPenghuniController extends GetxController {
     tanggalMasukDate.value = date;
     // Format: 27 Maret 2026
     final months = [
-      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     tanggalMasuk.value = '${date.day} ${months[date.month]} ${date.year}';
     _calculateTanggalBerakhir();
@@ -279,7 +299,7 @@ class TambahPenghuniController extends GetxController {
 
   void setDurasiKontrak(String durasi) {
     durasiKontrak.value = durasi;
-    
+
     // Extract months from durasi
     if (durasi.contains('1 Bulan')) {
       durasiKontrakBulan.value = 1;
@@ -292,29 +312,29 @@ class TambahPenghuniController extends GetxController {
     } else if (durasi.contains('24 Bulan')) {
       durasiKontrakBulan.value = 24;
     }
-    
+
     // Update sistem pembayaran options based on durasi
     _updateSistemPembayaranOptions();
-    
+
     // Reset sistem pembayaran
     sistemPembayaran.value = '';
     sistemPembayaranBulan.value = 0;
-    
+
     // Calculate tanggal berakhir
     _calculateTanggalBerakhir();
-    
+
     // Update total kontrak
     totalKontrak.value = '${durasiKontrakBulan.value} bulan';
   }
 
   void _updateSistemPembayaranOptions() {
     sistemPembayaranOptions.clear();
-    
+
     final durasi = durasiKontrakBulan.value;
-    
+
     // Always include 1 bulan
     sistemPembayaranOptions.add('1 Bulan');
-    
+
     // Add options based on durasi
     if (durasi >= 3) {
       sistemPembayaranOptions.add('3 Bulan');
@@ -332,7 +352,7 @@ class TambahPenghuniController extends GetxController {
 
   void setSistemPembayaran(String sistem) {
     sistemPembayaran.value = sistem;
-    
+
     // Extract months from sistem
     if (sistem.contains('1 Bulan')) {
       sistemPembayaranBulan.value = 1;
@@ -350,7 +370,7 @@ class TambahPenghuniController extends GetxController {
       sistemPembayaranBulan.value = 24;
       sistemPembayaranLabel.value = '2 Tahunan';
     }
-    
+
     _calculatePayment();
   }
 
@@ -363,23 +383,36 @@ class TambahPenghuniController extends GetxController {
       );
       // Format: 27 Maret 2027
       final months = [
-        '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        '',
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
       ];
-      tanggalBerakhir.value = '${endDate.day} ${months[endDate.month]} ${endDate.year}';
+      tanggalBerakhir.value =
+          '${endDate.day} ${months[endDate.month]} ${endDate.year}';
     }
   }
 
   void _calculatePayment() {
     if (durasiKontrakBulan.value > 0 && sistemPembayaranBulan.value > 0) {
       // Calculate number of payments
-      final numPayments = (durasiKontrakBulan.value / sistemPembayaranBulan.value).ceil();
+      final numPayments =
+          (durasiKontrakBulan.value / sistemPembayaranBulan.value).ceil();
       jumlahTagihan.value = '${numPayments}x tagihan';
-      
+
       // Calculate per payment
       final perPayment = hargaBulanan.value * sistemPembayaranBulan.value;
       perTagihan.value = _formatCurrency(perPayment);
-      
+
       // Calculate total
       final total = hargaBulanan.value * durasiKontrakBulan.value;
       totalNilaiKontrak.value = _formatCurrency(total);

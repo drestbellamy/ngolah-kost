@@ -18,10 +18,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF6B8E7A),
-                  Color(0xFF8FAA9F),
-                ],
+                colors: [Color(0xFF6B8E7A), Color(0xFF8FAA9F)],
               ),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(24),
@@ -43,47 +40,51 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Obx(() => Text(
-                      'Langkah ${controller.currentStep.value} dari 2',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFFA8D5BA),
+                    Obx(
+                      () => Text(
+                        'Langkah ${controller.currentStep.value} dari 2',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFFA8D5BA),
+                        ),
                       ),
-                    )),
+                    ),
                     const SizedBox(height: 16),
-                    
+
                     // Progress indicator
-                    Obx(() => Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(2),
+                    Obx(
+                      () => Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(2),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Container(
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: controller.currentStep.value == 2
-                                  ? Colors.white
-                                  : Colors.white.withValues(alpha: 0.3),
-                              borderRadius: BorderRadius.circular(2),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Container(
+                              height: 4,
+                              decoration: BoxDecoration(
+                                color: controller.currentStep.value == 2
+                                    ? Colors.white
+                                    : Colors.white.withValues(alpha: 0.3),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    )),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
-          
+
           // Content
           Expanded(
             child: SingleChildScrollView(
@@ -117,46 +118,54 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Obx(() => Text(
-                            controller.nomorKamar.value,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2F2F2F),
+                          Obx(
+                            () => Text(
+                              controller.nomorKamar.value,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF2F2F2F),
+                              ),
                             ),
-                          )),
-                          Obx(() => Text(
-                            controller.namaKost.value,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF6B7280),
+                          ),
+                          Obx(
+                            () => Text(
+                              controller.namaKost.value,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF6B7280),
+                              ),
                             ),
-                          )),
+                          ),
                           const SizedBox(height: 8),
-                          Obx(() => Text(
-                            controller.hargaPerBulan.value,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF6B8E7A),
+                          Obx(
+                            () => Text(
+                              controller.hargaPerBulan.value,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF6B8E7A),
+                              ),
                             ),
-                          )),
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Form content based on step
-                  Obx(() => controller.currentStep.value == 1
-                      ? _buildStep1()
-                      : _buildStep2()),
+                  Obx(
+                    () => controller.currentStep.value == 1
+                        ? _buildStep1()
+                        : _buildStep2(),
+                  ),
                 ],
               ),
             ),
           ),
-          
+
           // Bottom buttons
           Container(
             padding: const EdgeInsets.all(24),
@@ -170,56 +179,60 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                 ),
               ],
             ),
-            child: Obx(() => Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: controller.handleBack,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF6B7280),
-                      backgroundColor: Colors.white,
-                      side: const BorderSide(
-                        color: Color(0xFFE5E7EB),
-                        width: 1.5,
+            child: Obx(
+              () => Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: controller.handleBack,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF6B7280),
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(
+                          color: Color(0xFFE5E7EB),
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      controller.currentStep.value == 1 ? 'Batal' : 'Kembali',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: controller.handleNext,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B8E7A),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      controller.currentStep.value == 1 ? 'Lanjut' : 'Tambahkan',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                      child: Text(
+                        controller.currentStep.value == 1 ? 'Batal' : 'Kembali',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            )),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: controller.handleNext,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6B8E7A),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        controller.currentStep.value == 1
+                            ? 'Lanjut'
+                            : 'Tambahkan',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -233,7 +246,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
         // Data Pribadi Section
         _buildSectionHeader(Icons.person_outline, 'Data Pribadi'),
         const SizedBox(height: 16),
-        
+
         _buildTextField(
           label: 'Nama Lengkap',
           hint: 'Masukkan nama lengkap',
@@ -241,7 +254,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           isRequired: true,
         ),
         const SizedBox(height: 16),
-        
+
         _buildTextField(
           label: 'Nomor Telepon',
           hint: '081234567890',
@@ -250,11 +263,11 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           isRequired: true,
         ),
         const SizedBox(height: 24),
-        
+
         // Akun Penghuni Section
         _buildSectionHeader(Icons.lock_outline, 'Akun Penghuni'),
         const SizedBox(height: 16),
-        
+
         _buildTextField(
           label: 'Username',
           hint: 'Pilih username',
@@ -262,7 +275,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           isRequired: true,
         ),
         const SizedBox(height: 16),
-        
+
         _buildTextField(
           label: 'Password',
           hint: 'Minimal 6 karakter',
@@ -271,13 +284,10 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           isRequired: true,
         ),
         const SizedBox(height: 8),
-        
+
         const Text(
           'Password akan digunakan untuk login penghuni',
-          style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF6B7280),
-          ),
+          style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
         ),
       ],
     );
@@ -290,142 +300,136 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
         // Informasi Kontrak Section
         _buildSectionHeader(Icons.calendar_today_outlined, 'Informasi Kontrak'),
         const SizedBox(height: 16),
-        
+
         // Tanggal Mulai Masuk
         _buildLabel('Tanggal Mulai Masuk', isRequired: true),
         const SizedBox(height: 8),
-        Obx(() => GestureDetector(
-          onTap: () => _showDatePicker(),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: const Color(0xFFE5E7EB),
-                width: 1,
+        Obx(
+          () => GestureDetector(
+            onTap: () => _showDatePicker(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    controller.tanggalMasuk.value.isEmpty
+                        ? 'Pilih tanggal'
+                        : controller.tanggalMasuk.value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: controller.tanggalMasuk.value.isEmpty
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF2F2F2F),
+                    ),
+                  ),
+                  const Icon(
+                    Icons.calendar_today_outlined,
+                    size: 20,
+                    color: Color(0xFF6B7280),
+                  ),
+                ],
               ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  controller.tanggalMasuk.value.isEmpty
-                      ? 'Pilih tanggal'
-                      : controller.tanggalMasuk.value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: controller.tanggalMasuk.value.isEmpty
-                        ? const Color(0xFF9CA3AF)
-                        : const Color(0xFF2F2F2F),
-                  ),
-                ),
-                const Icon(
-                  Icons.calendar_today_outlined,
-                  size: 20,
-                  color: Color(0xFF6B7280),
-                ),
-              ],
-            ),
-          ),
-        )),
-        const SizedBox(height: 16),
-        
-        // Durasi Kontrak
-        _buildLabel('Durasi Kontrak', isRequired: true),
-        const SizedBox(height: 8),
-        Obx(() => GestureDetector(
-          onTap: () => _showDurasiKontrakPicker(),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: const Color(0xFFE5E7EB),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  controller.durasiKontrak.value.isEmpty
-                      ? 'Pilih durasi'
-                      : controller.durasiKontrak.value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: controller.durasiKontrak.value.isEmpty
-                        ? const Color(0xFF9CA3AF)
-                        : const Color(0xFF2F2F2F),
-                  ),
-                ),
-                const Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 20,
-                  color: Color(0xFF6B7280),
-                ),
-              ],
-            ),
-          ),
-        )),
-        const SizedBox(height: 16),
-        
-        // Sistem Pembayaran
-        _buildLabel('Sistem Pembayaran', isRequired: true),
-        const SizedBox(height: 8),
-        Obx(() => GestureDetector(
-          onTap: controller.durasiKontrak.value.isEmpty
-              ? null
-              : () => _showSistemPembayaranPicker(),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: controller.durasiKontrak.value.isEmpty
-                  ? const Color(0xFFE5E7EB)
-                  : const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: const Color(0xFFE5E7EB),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  controller.sistemPembayaran.value.isEmpty
-                      ? 'Pilih sistem pembayaran'
-                      : controller.sistemPembayaran.value,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: controller.sistemPembayaran.value.isEmpty
-                        ? const Color(0xFF9CA3AF)
-                        : const Color(0xFF2F2F2F),
-                  ),
-                ),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 20,
-                  color: controller.durasiKontrak.value.isEmpty
-                      ? const Color(0xFFD1D5DB)
-                      : const Color(0xFF6B7280),
-                ),
-              ],
-            ),
-          ),
-        )),
-        const SizedBox(height: 8),
-        
-        const Text(
-          'Frekuensi pembayaran sewa oleh penghuni',
-          style: TextStyle(
-            fontSize: 12,
-            color: Color(0xFF6B7280),
           ),
         ),
         const SizedBox(height: 16),
-        
+
+        // Durasi Kontrak
+        _buildLabel('Durasi Kontrak', isRequired: true),
+        const SizedBox(height: 8),
+        Obx(
+          () => GestureDetector(
+            onTap: () => _showDurasiKontrakPicker(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    controller.durasiKontrak.value.isEmpty
+                        ? 'Pilih durasi'
+                        : controller.durasiKontrak.value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: controller.durasiKontrak.value.isEmpty
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF2F2F2F),
+                    ),
+                  ),
+                  const Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 20,
+                    color: Color(0xFF6B7280),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Sistem Pembayaran
+        _buildLabel('Sistem Pembayaran', isRequired: true),
+        const SizedBox(height: 8),
+        Obx(
+          () => GestureDetector(
+            onTap: controller.durasiKontrak.value.isEmpty
+                ? null
+                : () => _showSistemPembayaranPicker(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: controller.durasiKontrak.value.isEmpty
+                    ? const Color(0xFFE5E7EB)
+                    : const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    controller.sistemPembayaran.value.isEmpty
+                        ? 'Pilih sistem pembayaran'
+                        : controller.sistemPembayaran.value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: controller.sistemPembayaran.value.isEmpty
+                          ? const Color(0xFF9CA3AF)
+                          : const Color(0xFF2F2F2F),
+                    ),
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 20,
+                    color: controller.durasiKontrak.value.isEmpty
+                        ? const Color(0xFFD1D5DB)
+                        : const Color(0xFF6B7280),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        const Text(
+          'Frekuensi pembayaran sewa oleh penghuni',
+          style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+        ),
+        const SizedBox(height: 16),
+
         // Tanggal Berakhir Kontrak
         Obx(() {
           if (controller.tanggalBerakhir.value.isNotEmpty) {
@@ -435,7 +439,10 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                 _buildLabel('Tanggal Berakhir Kontrak'),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF3F4F6),
                     borderRadius: BorderRadius.circular(12),
@@ -469,7 +476,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           }
           return const SizedBox.shrink();
         }),
-        
+
         // Ringkasan Pembayaran
         Obx(() {
           if (controller.sistemPembayaran.value.isNotEmpty) {
@@ -589,25 +596,16 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           obscureText: isPassword,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(
-              color: Color(0xFF9CA3AF),
-              fontSize: 14,
-            ),
+            hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
             filled: true,
             fillColor: const Color(0xFFF3F4F6),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFE5E7EB),
-                width: 1,
-              ),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFE5E7EB),
-                width: 1,
-              ),
+              borderSide: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
@@ -674,7 +672,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
         );
       },
     );
-    
+
     if (picked != null) {
       controller.setTanggalMasuk(picked);
     }
@@ -683,9 +681,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
   void _showDurasiKontrakPicker() {
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -750,9 +746,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
   void _showSistemPembayaranPicker() {
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -768,7 +762,9 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                 ),
               ),
               const SizedBox(height: 20),
-              ...controller.sistemPembayaranOptions.asMap().entries.map((entry) {
+              ...controller.sistemPembayaranOptions.asMap().entries.map((
+                entry,
+              ) {
                 final index = entry.key;
                 final option = entry.value;
                 return Column(
