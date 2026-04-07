@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../controllers/kost_controller.dart';
+import '../models/kost_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../routes/app_routes.dart';
 
@@ -24,15 +25,46 @@ class KostView extends GetView<KostController> {
 
             // List Kost
             Expanded(
-              child: Obx(
-                () => ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: controller.kostList.length,
-                  itemBuilder: (context, index) {
-                    final kost = controller.kostList[index];
-                    return _buildKostCard(kost);
-                  },
-                ),
+              child: FutureBuilder<List<KostModel>>(
+                future: controller.kostFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Gagal memuat data kost: ${snapshot.error}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Color(0xFFE53E3E)),
+                      ),
+                    );
+                  }
+
+                  if (controller.kostList.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Belum ada data kost',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF718096),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Obx(
+                    () => ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: controller.kostList.length,
+                      itemBuilder: (context, index) {
+                        final kost = controller.kostList[index];
+                        return _buildKostCard(kost);
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -47,7 +79,7 @@ class KostView extends GetView<KostController> {
     );
   }
 
-  Widget _buildKostCard(kost) {
+  Widget _buildKostCard(KostModel kost) {
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.kamar, arguments: kost),
       child: Container(
