@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/user_home_controller.dart';
 
@@ -14,66 +15,27 @@ class UserHomeView extends GetView<UserHomeController> {
         child: Column(
           children: [
             // Header with greeting
-            Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xFF6B8E7A),
-                    Color(0xFF8FAA9F),
-                  ],
-                ),
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Obx(() => Text(
-                            'Hallo, ${controller.userName.value}!',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          )),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Selamat datang kembali',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFFA8D5BA),
-                            ),
-                          ),
-                        ],
+            SafeArea(
+              child: Obx(
+                () => CustomHeader(
+                  title: 'Hallo, ${controller.userName.value}!',
+                  subtitle: 'Selamat datang kembali',
+                  showBackButton: false,
+                  trailing: GestureDetector(
+                    onTap: controller.showLogoutDialog,
+                    child: Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      GestureDetector(
-                        onTap: controller.showLogoutDialog,
-                        child: Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.logout,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ),
+                      child: const Icon(
+                        Icons.logout,
+                        color: Colors.white,
+                        size: 24,
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),

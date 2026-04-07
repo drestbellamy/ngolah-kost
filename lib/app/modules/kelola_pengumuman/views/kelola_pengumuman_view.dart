@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/kelola_pengumuman_controller.dart';
 
 class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
@@ -29,108 +29,17 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   }
 
   Widget _buildHeader(GedungKostModel? selectedGedung) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
-        ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(26),
-          bottomRight: Radius.circular(26),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.12),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            right: -72,
-            top: -72,
-            child: Container(
-              width: 220,
-              height: 220,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Positioned(
-            left: -62,
-            bottom: -62,
-            child: Container(
-              width: 126,
-              height: 126,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.05),
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  if (selectedGedung != null) {
-                    controller.kembaliKePilihGedung();
-                    return;
-                  }
-                  Get.back();
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Kelola Pengumuman',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      selectedGedung?.nama ??
-                          'Kelola informasi pengumuman kost',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFFC7E1D3),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+    return CustomHeader(
+      title: 'Kelola Pengumuman',
+      subtitle: selectedGedung?.nama ?? 'Kelola informasi pengumuman kost',
+      showBackButton: true,
+      onBackPressed: () {
+        if (selectedGedung != null) {
+          controller.kembaliKePilihGedung();
+          return;
+        }
+        Get.back();
+      },
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/kamar_controller.dart';
 
 class KamarView extends GetView<KamarController> {
@@ -9,200 +10,131 @@ class KamarView extends GetView<KamarController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
-      body: Column(
-        children: [
-          // Header with gradient
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF6B8E7A), Color(0xFF8FAA9F)],
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(32),
-                bottomRight: Radius.circular(32),
-              ),
-            ),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 24,
-                  right: 24,
-                  top: 24,
-                  bottom: 32,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Back button and title
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: controller.goBack,
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                              size: 18,
-                            ),
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // Header with gradient
+              Obx(
+                () => CustomHeader(
+                  title: controller.namaKost.value,
+                  showBackButton: true,
+                  onBackPressed: controller.goBack,
+                  subtitleWidget: Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: Color(0xFFA8D5BA),
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          controller.alamatKost.value,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFFA8D5BA),
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Obx(
-                                () => Text(
-                                  controller.namaKost.value,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.location_on_outlined,
-                                    size: 16,
-                                    color: Color(0xFFA8D5BA),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Expanded(
-                                    child: Obx(
-                                      () => Text(
-                                        controller.alamatKost.value,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xFFA8D5BA),
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Stats Grid
-          Transform.translate(
-            offset: const Offset(0, 0),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24),
-              child: Obx(
-                () => Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            'Total Ruangan',
-                            controller.totalRuangan.value.toString(),
-                            Icons.home_outlined, // Rumah
-                            const Color(0xFF6B8E7A),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildStatCard(
-                            'Total Penghuni',
-                            controller.totalPenghuni.value.toString(),
-                            Icons.how_to_reg_outlined, // Orang dgn centang
-                            const Color(0xFFE59C5A),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            'Ditempati',
-                            controller.ditempati.value.toString(),
-                            Icons.meeting_room_outlined, // Pintu terbuka
-                            const Color(0xFF34D399), // Hijau muda cerah
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _buildStatCard(
-                            'Kosong',
-                            controller.kosong.value.toString(),
-                            Icons.door_front_door_outlined, // Pintu tertutup
-                            const Color(0xFFD97706), // Oranye tua kemerahan
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Tabs
-          Transform.translate(
-            offset: const Offset(0, 0),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Obx(
-                () => Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(28),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.06),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: Row(
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Stats Grid
+              Padding(
+                padding: const EdgeInsets.only(left: 24, right: 24),
+                child: Obx(
+                  () => Column(
                     children: [
-                      Expanded(child: _buildTab('Semua Kamar', 0)),
-                      Expanded(child: _buildTab('Kosong', 1)),
-                      Expanded(child: _buildTab('Ditempati', 2)),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              'Total Ruangan',
+                              controller.totalRuangan.value.toString(),
+                              Icons.home_outlined,
+                              const Color(0xFF6B8E7A),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildStatCard(
+                              'Total Penghuni',
+                              controller.totalPenghuni.value.toString(),
+                              Icons.how_to_reg_outlined,
+                              const Color(0xFFE59C5A),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              'Ditempati',
+                              controller.ditempati.value.toString(),
+                              Icons.meeting_room_outlined,
+                              const Color(0xFF34D399),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildStatCard(
+                              'Kosong',
+                              controller.kosong.value.toString(),
+                              Icons.door_front_door_outlined,
+                              const Color(0xFFD97706),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-          // Kamar List
-          Expanded(
-            child: Transform.translate(
-              offset: const Offset(0, 0),
-              child: Obx(
+              // Tabs
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Obx(
+                  () => Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: const Color(0xFFE5E7EB)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(child: _buildTab('Semua Kamar', 0)),
+                        Expanded(child: _buildTab('Kosong', 1)),
+                        Expanded(child: _buildTab('Ditempati', 2)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // Kamar List
+              Obx(
                 () => ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 8,
@@ -214,15 +146,16 @@ class KamarView extends GetView<KamarController> {
                   },
                 ),
               ),
-            ),
+              const SizedBox(height: 80), // Space for FAB
+            ],
           ),
-        ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: controller.tambahKamar,
         backgroundColor: const Color(0xFFF2A65A),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16), // Rounded square like image
+          borderRadius: BorderRadius.circular(16),
         ),
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -373,23 +306,29 @@ class KamarView extends GetView<KamarController> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Kamar ${kamar['nomor']}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2F2F2F),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    'Kamar ${kamar['nomor']}',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF2F2F2F),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(
-                                Icons.chevron_right,
-                                color: Color(0xFF6B7280),
-                                size: 18,
-                              ),
-                            ],
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.chevron_right,
+                                  color: Color(0xFF6B7280),
+                                  size: 18,
+                                ),
+                              ],
+                            ),
                           ),
                           Container(
                             padding: const EdgeInsets.symmetric(
