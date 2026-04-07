@@ -29,6 +29,28 @@ class PenghuniController extends GetxController {
         sistemPembayaran: 'Bulanan (1 bulan)',
         tanggalBerakhir: '15 Januari 2025',
         totalNilaiKontrak: 18000000,
+        historyPembayaran: [
+          PembayaranModel(
+            bulan: 'Desember 2024',
+            jumlah: 1500000,
+            jatuhTempo: '15 Desember 2024',
+            status: 'Belum Dibayar',
+          ),
+          PembayaranModel(
+            bulan: 'November 2024',
+            jumlah: 1500000,
+            jatuhTempo: '15 November 2024',
+            status: 'Lunas',
+            tanggalBayar: '15 November 2024',
+          ),
+          PembayaranModel(
+            bulan: 'Oktober 2024',
+            jumlah: 1500000,
+            jatuhTempo: '15 Oktober 2024',
+            status: 'Lunas',
+            tanggalBayar: '15 Oktober 2024',
+          ),
+        ],
       ),
       PenghuniModel(
         id: '2',
@@ -42,6 +64,21 @@ class PenghuniController extends GetxController {
         sistemPembayaran: 'Bulanan (1 bulan)',
         tanggalBerakhir: '01 Februari 2025',
         totalNilaiKontrak: 18000000,
+        historyPembayaran: [
+          PembayaranModel(
+            bulan: 'Februari 2024',
+            jumlah: 1500000,
+            jatuhTempo: '01 Februari 2024',
+            status: 'Lunas',
+            tanggalBayar: '01 Februari 2024',
+          ),
+          PembayaranModel(
+            bulan: 'Maret 2024',
+            jumlah: 1500000,
+            jatuhTempo: '01 Maret 2024',
+            status: 'Belum Dibayar',
+          ),
+        ],
       ),
       PenghuniModel(
         id: '3',
@@ -55,6 +92,28 @@ class PenghuniController extends GetxController {
         sistemPembayaran: 'Bulanan (1 bulan)',
         tanggalBerakhir: '01 Desember 2024',
         totalNilaiKontrak: 18000000,
+        historyPembayaran: [
+          PembayaranModel(
+            bulan: 'Desember 2023',
+            jumlah: 1500000,
+            jatuhTempo: '01 Desember 2023',
+            status: 'Lunas',
+            tanggalBayar: '01 Desember 2023',
+          ),
+          PembayaranModel(
+            bulan: 'Januari 2024',
+            jumlah: 1500000,
+            jatuhTempo: '01 Januari 2024',
+            status: 'Lunas',
+            tanggalBayar: '02 Januari 2024',
+          ),
+          PembayaranModel(
+            bulan: 'Februari 2024',
+            jumlah: 1500000,
+            jatuhTempo: '01 Februari 2024',
+            status: 'Belum Dibayar',
+          ),
+        ],
       ),
       PenghuniModel(
         id: '4',
@@ -68,6 +127,21 @@ class PenghuniController extends GetxController {
         sistemPembayaran: 'Bulanan (1 bulan)',
         tanggalBerakhir: '20 Januari 2025',
         totalNilaiKontrak: 19200000,
+        historyPembayaran: [
+          PembayaranModel(
+            bulan: 'Januari 2024',
+            jumlah: 1600000,
+            jatuhTempo: '20 Januari 2024',
+            status: 'Lunas',
+            tanggalBayar: '20 Januari 2024',
+          ),
+          PembayaranModel(
+            bulan: 'Februari 2024',
+            jumlah: 1600000,
+            jatuhTempo: '20 Februari 2024',
+            status: 'Belum Dibayar',
+          ),
+        ],
       ),
     ];
     filteredPenghuniList.value = penghuniList;

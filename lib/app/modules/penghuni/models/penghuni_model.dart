@@ -1,3 +1,19 @@
+class PembayaranModel {
+  final String bulan;
+  final double jumlah;
+  final String jatuhTempo;
+  final String status;
+  final String? tanggalBayar;
+
+  PembayaranModel({
+    required this.bulan,
+    required this.jumlah,
+    required this.jatuhTempo,
+    required this.status,
+    this.tanggalBayar,
+  });
+}
+
 class PenghuniModel {
   final String id;
   final String nama;
@@ -10,6 +26,7 @@ class PenghuniModel {
   final String sistemPembayaran;
   final String tanggalBerakhir;
   final double totalNilaiKontrak;
+  final List<PembayaranModel> historyPembayaran;
 
   PenghuniModel({
     required this.id,
@@ -23,5 +40,6 @@ class PenghuniModel {
     required this.sistemPembayaran,
     required this.tanggalBerakhir,
     required this.totalNilaiKontrak,
+    this.historyPembayaran = const [],
   });
 }

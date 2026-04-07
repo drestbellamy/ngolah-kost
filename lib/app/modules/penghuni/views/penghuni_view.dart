@@ -8,6 +8,8 @@ class PenghuniView extends GetView<PenghuniController> {
 
   @override
   Widget build(BuildContext context) {
+    // Memaksa refresh data dummy pada setiap build (agar update instan saat Hot Reload)
+    controller.loadPenghuniData();
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
@@ -108,12 +110,24 @@ class PenghuniView extends GetView<PenghuniController> {
                           onChanged: controller.searchPenghuni,
                           decoration: InputDecoration(
                             hintText: 'Cari penghuni, kamar, atau kost...',
-                            hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
-                            prefixIcon: const Icon(Icons.search, color: Color(0xFF9CA3AF)),
+                            hintStyle: const TextStyle(
+                              color: Color(0xFF9CA3AF),
+                              fontSize: 14,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Color(0xFF9CA3AF),
+                            ),
                             filled: true,
                             fillColor: Colors.white,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -132,11 +146,34 @@ class PenghuniView extends GetView<PenghuniController> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 children: [
-                  Obx(() => _buildFilterChip('Semua Kost', controller.penghuniList.length, controller.selectedFilter.value == 'Semua Kost')),
+                  Obx(
+                    () => _buildFilterChip(
+                      'Semua Kost',
+                      controller.penghuniList.length,
+                      controller.selectedFilter.value == 'Semua Kost',
+                    ),
+                  ),
                   const SizedBox(width: 8),
-                  Obx(() => _buildFilterChip('Green Valley Kost', controller.penghuniList.where((p) => p.namaKost == 'Green Valley Kost').length, controller.selectedFilter.value == 'Green Valley Kost')),
+                  Obx(
+                    () => _buildFilterChip(
+                      'Green Valley Kost',
+                      controller.penghuniList
+                          .where((p) => p.namaKost == 'Green Valley Kost')
+                          .length,
+                      controller.selectedFilter.value == 'Green Valley Kost',
+                    ),
+                  ),
                   const SizedBox(width: 8),
-                  Obx(() => _buildFilterChip('Sunrise Boarding House', controller.penghuniList.where((p) => p.namaKost == 'Sunrise Boarding House').length, controller.selectedFilter.value == 'Sunrise Boarding House')),
+                  Obx(
+                    () => _buildFilterChip(
+                      'Sunrise Boarding House',
+                      controller.penghuniList
+                          .where((p) => p.namaKost == 'Sunrise Boarding House')
+                          .length,
+                      controller.selectedFilter.value ==
+                          'Sunrise Boarding House',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -171,7 +208,11 @@ class PenghuniView extends GetView<PenghuniController> {
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF6B8E7F) : Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isSelected ? const Color(0xFF6B8E7F) : const Color(0xFFE5E7EB)),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF6B8E7F)
+                : const Color(0xFFE5E7EB),
+          ),
         ),
         child: Row(
           children: [
@@ -180,12 +221,31 @@ class PenghuniView extends GetView<PenghuniController> {
                 padding: EdgeInsets.only(right: 6),
                 child: Icon(Icons.apartment, size: 16, color: Colors.white),
               ),
-            Text(label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: isSelected ? Colors.white : const Color(0xFF6B7280))),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: isSelected ? Colors.white : const Color(0xFF6B7280),
+              ),
+            ),
             const SizedBox(width: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(color: isSelected ? Colors.white.withOpacity(0.2) : const Color(0xFFF3F4F6), borderRadius: BorderRadius.circular(10)),
-              child: Text(count.toString(), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isSelected ? Colors.white : const Color(0xFF6B7280))),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Colors.white.withOpacity(0.2)
+                    : const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                count.toString(),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                ),
+              ),
             ),
           ],
         ),
@@ -202,7 +262,13 @@ class PenghuniView extends GetView<PenghuniController> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 2))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,35 +276,91 @@ class PenghuniView extends GetView<PenghuniController> {
             Row(
               children: [
                 Container(
-                  width: 48, height: 48,
-                  decoration: BoxDecoration(color: const Color(0xFFE8F0ED), borderRadius: BorderRadius.circular(12)),
-                  child: const Icon(Icons.person, color: Color(0xFF6B8E7F), size: 24),
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F0ED),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.person,
+                    color: Color(0xFF6B8E7F),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(penghuni.nama, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF2D3748))),
+                      Text(
+                        penghuni.nama,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2D3748),
+                        ),
+                      ),
                       const SizedBox(height: 4),
-                      Row(children: [
-                        const Icon(Icons.location_on, size: 14, color: Color(0xFF718096)),
-                        const SizedBox(width: 4),
-                        Expanded(child: Text(penghuni.namaKost, style: const TextStyle(fontSize: 12, color: Color(0xFF718096)), maxLines: 1, overflow: TextOverflow.ellipsis)),
-                      ]),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: Color(0xFF718096),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              penghuni.namaKost,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF718096),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 2),
-                      Row(children: [
-                        const Icon(Icons.phone, size: 14, color: Color(0xFF718096)),
-                        const SizedBox(width: 4),
-                        Text(penghuni.noTelepon, style: const TextStyle(fontSize: 12, color: Color(0xFF718096))),
-                      ]),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.phone,
+                            size: 14,
+                            color: Color(0xFF718096),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            penghuni.noTelepon,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF718096),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(color: const Color(0xFF6B8E7F), borderRadius: BorderRadius.circular(8)),
-                  child: Text(penghuni.nomorKamar, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6B8E7F),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    penghuni.nomorKamar,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -248,16 +370,42 @@ class PenghuniView extends GetView<PenghuniController> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('Sewa Bulanan', style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF))),
-                  const SizedBox(height: 4),
-                  Text('Rp ${penghuni.sewaBulanan.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF2D3748))),
-                ]),
-                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  const Text('Tanggal Masuk', style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF))),
-                  const SizedBox(height: 4),
-                  Text(penghuni.tanggalMasuk, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF2D3748))),
-                ]),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Sewa Bulanan',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Rp ${penghuni.sewaBulanan.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2D3748),
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Text(
+                      'Tanggal Masuk',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      penghuni.tanggalMasuk,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2D3748),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
