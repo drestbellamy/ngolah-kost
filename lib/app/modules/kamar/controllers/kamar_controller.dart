@@ -7,13 +7,14 @@ import '../views/widgets/hapus_kamar_dialog.dart';
 
 class KamarController extends GetxController {
   final selectedTab = 0.obs;
-  
+
   // Data kost
   final namaKost = ''.obs;
   final alamatKost = ''.obs;
-  final totalRuangan = 4.obs;
-  final ditempati = 2.obs;
-  final kosong = 2.obs;
+  final totalRuangan = 5.obs;
+  final ditempati = 4.obs;
+  final kosong = 1.obs;
+  final totalPenghuni = 4.obs;
 
   @override
   void onInit() {
@@ -25,7 +26,7 @@ class KamarController extends GetxController {
       alamatKost.value = args.address;
     }
   }
-  
+
   // List kamar
   final kamarList = <Map<String, dynamic>>[
     {
@@ -58,8 +59,6 @@ class KamarController extends GetxController {
     },
   ].obs;
 
-
-
   void changeTab(int index) {
     selectedTab.value = index;
   }
@@ -84,9 +83,7 @@ class KamarController extends GetxController {
   }
 
   void tambahKamar() async {
-    final result = await Get.dialog(
-      const TambahKamarBottomSheet(),
-    );
+    final result = await Get.dialog(const TambahKamarBottomSheet());
 
     if (result != null) {
       kamarList.add({
@@ -96,10 +93,10 @@ class KamarController extends GetxController {
         'harga': 'Rp ${result['harga']}/Bulan',
         'statusColor': const Color(0xFFF2A65A),
       });
-      
+
       totalRuangan.value++;
       kosong.value++;
-      
+
       Get.snackbar(
         'Berhasil',
         'Kamar ${result['nomor']} berhasil ditambahkan',
@@ -111,9 +108,7 @@ class KamarController extends GetxController {
   }
 
   void editKamar(Map<String, dynamic> kamar) async {
-    final result = await Get.dialog(
-      EditKamarBottomSheet(kamar: kamar),
-    );
+    final result = await Get.dialog(EditKamarBottomSheet(kamar: kamar));
 
     if (result != null) {
       final index = kamarList.indexWhere((k) => k['nomor'] == kamar['nomor']);
@@ -121,7 +116,7 @@ class KamarController extends GetxController {
         kamarList[index]['nomor'] = result['nomor'];
         kamarList[index]['harga'] = 'Rp ${result['harga']}/Bulan';
         kamarList.refresh();
-        
+
         Get.snackbar(
           'Berhasil',
           'Kamar berhasil diupdate',
@@ -134,21 +129,19 @@ class KamarController extends GetxController {
   }
 
   void hapusKamar(Map<String, dynamic> kamar) async {
-    final result = await Get.dialog(
-      HapusKamarDialog(kamar: kamar),
-    );
+    final result = await Get.dialog(HapusKamarDialog(kamar: kamar));
 
     if (result == true) {
       final wasOccupied = kamar['status'] == 'Ditempati';
       kamarList.removeWhere((k) => k['nomor'] == kamar['nomor']);
-      
+
       totalRuangan.value--;
       if (wasOccupied) {
         ditempati.value--;
       } else {
         kosong.value--;
       }
-      
+
       Get.snackbar(
         'Berhasil',
         'Kamar ${kamar['nomor']} berhasil dihapus',

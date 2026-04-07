@@ -9,9 +9,7 @@ class HapusKamarDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -32,7 +30,7 @@ class HapusKamarDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Title
             const Text(
               'Hapus Kamar?',
@@ -43,7 +41,7 @@ class HapusKamarDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            
+
             // Message
             Text(
               'Apakah Anda yakin ingin menghapus Kamar ${kamar['nomor']}? Tindakan ini tidak dapat dibatalkan.',
@@ -55,7 +53,7 @@ class HapusKamarDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Buttons
             Row(
               children: [

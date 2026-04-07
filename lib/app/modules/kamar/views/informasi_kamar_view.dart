@@ -18,10 +18,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF6B8E7A),
-                  Color(0xFF8FAA9F),
-                ],
+                colors: [Color(0xFF6B8E7A), Color(0xFF8FAA9F)],
               ),
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(24),
@@ -58,14 +55,16 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Obx(() => Text(
-                                'Kamar ${controller.nomorKamar.value}',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                              Obx(
+                                () => Text(
+                                  'Kamar ${controller.nomorKamar.value}',
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              )),
+                              ),
                               const SizedBox(height: 4),
                               Row(
                                 children: [
@@ -75,13 +74,15 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                                     color: Color(0xFFA8D5BA),
                                   ),
                                   const SizedBox(width: 4),
-                                  Obx(() => Text(
-                                    controller.namaKost.value,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFFA8D5BA),
+                                  Obx(
+                                    () => Text(
+                                      controller.namaKost.value,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFFA8D5BA),
+                                      ),
                                     ),
-                                  )),
+                                  ),
                                 ],
                               ),
                             ],
@@ -90,34 +91,38 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    
+
                     // Status badge
-                    Obx(() => Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: controller.status.value == 'Kosong' 
-                            ? const Color(0xFFF2A65A) 
-                            : const Color(0xFF10B981),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        controller.status.value == 'Kosong' ? 'Tersedia' : controller.status.value,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                    Obx(
+                      () => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: controller.status.value == 'Kosong'
+                              ? const Color(0xFFF2A65A)
+                              : const Color(0xFF10B981),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          controller.status.value == 'Kosong'
+                              ? 'Tersedia'
+                              : controller.status.value,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    )),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
-          
+
           // Content
           Expanded(
             child: Obx(() {
@@ -146,9 +151,9 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                           ),
                         ],
                       ),
-                      
+
                       const SizedBox(height: 16),
-                      
+
                       // Belum Ada Penghuni Card
                       Container(
                         padding: const EdgeInsets.all(32),
@@ -170,7 +175,9 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF2A65A).withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFFF2A65A,
+                                ).withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -180,7 +187,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                               ),
                             ),
                             const SizedBox(height: 20),
-                            
+
                             // Title
                             const Text(
                               'Belum Ada Penghuni',
@@ -191,7 +198,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            
+
                             // Description
                             const Text(
                               'Kamar ini masih kosong dan tersedia untuk\npenghuni baru',
@@ -203,18 +210,23 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            
+
                             // Button
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(
                                 onPressed: controller.tambahPenghuni,
-                                icon: const Icon(Icons.person_add_outlined, size: 20),
+                                icon: const Icon(
+                                  Icons.person_add_outlined,
+                                  size: 20,
+                                ),
                                 label: const Text('Tambah Penghuni'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF6B8E7A),
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
@@ -229,152 +241,297 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                   ),
                 );
               }
-              
+
               // Jika kamar terisi, tampilkan UI lengkap
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    // Informasi Kamar
-                    _buildInfoCard(
-                      title: 'Informasi Kamar',
+                    // Kapasitas dan Terisi Cards
+                    Row(
                       children: [
-                        _buildInfoRow(
-                          icon: Icons.meeting_room_outlined,
-                          label: 'Nomor Kamar',
-                          value: controller.nomorKamar.value,
-                          iconColor: const Color(0xFF6B8E7A),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow(
-                          icon: Icons.attach_money,
-                          label: 'Harga per Bulan',
-                          value: controller.hargaPerBulan.value,
-                          iconColor: const Color(0xFFF2A65A),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Informasi Penghuni
-                    _buildInfoCard(
-                      title: 'Informasi Penghuni',
-                      children: [
-                        _buildInfoRow(
-                          icon: Icons.person_outline,
-                          label: 'Nama',
-                          value: controller.namaPenghuni.value,
-                          iconColor: const Color(0xFF6B8E7A),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow(
-                          icon: Icons.phone_outlined,
-                          label: 'Telepon',
-                          value: controller.telepon.value,
-                          iconColor: const Color(0xFF6B8E7A),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow(
-                          icon: Icons.calendar_today_outlined,
-                          label: 'Tanggal Masuk',
-                          value: controller.tanggalMasuk.value,
-                          iconColor: const Color(0xFF6B8E7A),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    // Informasi Kontrak
-                    _buildInfoCard(
-                      title: 'Informasi Kontrak',
-                      badge: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Obx(() => Text(
-                          controller.statusKontrak.value,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF10B981),
+                        Expanded(
+                          child: _buildSummaryBox(
+                            icon: Icons.people_outline,
+                            iconColor: Colors.white,
+                            iconBgColor: const Color(0xFF6B8E7A),
+                            title: 'Kapasitas',
+                            value: '${controller.kapasitas.value}',
+                            subtitle: 'orang maksimal',
                           ),
-                        )),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildSummaryBox(
+                            icon: Icons.person_outline,
+                            iconColor: Colors.white,
+                            iconBgColor: const Color(0xFFF2A65A),
+                            title: 'Terisi',
+                            value:
+                                '${controller.terisi.value}/${controller.kapasitas.value}',
+                            subtitle: 'penghuni aktif',
+                            valueSize: 24,
+                            valueSubtitleSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Informasi Kamar Box
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      children: [
-                        _buildInfoRow(
-                          icon: Icons.access_time_outlined,
-                          label: 'Durasi Kontrak',
-                          value: controller.durasiKontrak.value,
-                          iconColor: const Color(0xFFF2A65A),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow(
-                          icon: Icons.payment_outlined,
-                          label: 'Sistem Pembayaran',
-                          value: controller.sistemPembayaran.value,
-                          iconColor: const Color(0xFFF2A65A),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow(
-                          icon: Icons.calendar_month_outlined,
-                          label: 'Periode Kontrak',
-                          value: controller.periodeKontrak.value,
-                          iconColor: const Color(0xFF6B8E7A),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // Ringkasan Tagihan
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF7F9F8),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
                             children: [
-                              const Text(
-                                'Ringkasan Tagihan',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF6B8E7A),
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF6B8E7A),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.door_front_door_outlined,
+                                  color: Colors.white,
+                                  size: 24,
                                 ),
                               ),
-                              const SizedBox(height: 12),
-                              _buildSummaryRow(
-                                'Total Tagihan:',
-                                controller.totalTagihan.value,
-                              ),
-                              const SizedBox(height: 8),
-                              _buildSummaryRow(
-                                'Per Tagihan:',
-                                controller.perTagihan.value,
-                              ),
-                              const SizedBox(height: 8),
-                              const Divider(
-                                color: Color(0xFFE5E7EB),
-                                height: 1,
-                              ),
-                              const SizedBox(height: 8),
-                              _buildSummaryRow(
-                                'Total Nilai Kontrak:',
-                                controller.totalNilaiKontrak.value,
-                                isBold: true,
-                                labelColor: const Color(0xFF6B7280),
-                                valueColor: const Color(0xFF6B8E7A),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Informasi Kamar',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2F2F2F),
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF7F9F8),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFF6B8E7A,
+                                    ).withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.door_front_door_outlined,
+                                    color: Color(0xFF6B8E7A),
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Nomor Kamar',
+                                      style: TextStyle(
+                                        color: Color(0xFF6B7280),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      controller.nomorKamar.value,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF7ED),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFFF2A65A,
+                                ).withValues(alpha: 0.2),
+                                width: 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFFF2A65A,
+                                    ).withValues(alpha: 0.1),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.attach_money,
+                                    color: Color(0xFFF2A65A),
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Harga per Bulan',
+                                      style: TextStyle(
+                                        color: Color(0xFF6B7280),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      controller.hargaPerBulan.value,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Color(0xFFF2A65A),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Daftar Penghuni Box
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF6B8E7A),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.people_outline,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Daftar Penghuni',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF2F2F2F),
+                                    ),
+                                  ),
+                                  Text(
+                                    '${controller.terisi.value} penghuni aktif',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Color(0xFF6B7280),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+
+                          // List of Penghuni
+                          ...List.generate(controller.daftarPenghuni.length, (
+                            index,
+                          ) {
+                            var penghuni = controller.daftarPenghuni[index];
+                            return _buildPenghuniItem(index, penghuni);
+                          }),
+
+                          const SizedBox(height: 20),
+                          // Button Tambah Penghuni
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed:
+                                  controller.terisi.value <
+                                      controller.kapasitas.value
+                                  ? controller.tambahPenghuni
+                                  : null,
+                              icon: const Icon(
+                                Icons.person_add_outlined,
+                                size: 20,
+                              ),
+                              label: Text(
+                                'Tambah Penghuni (${controller.kapasitas.value - controller.terisi.value} slot tersisa)',
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF6B8E7A),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                                disabledBackgroundColor: const Color(
+                                  0xFFE5E7EB,
+                                ),
+                                disabledForegroundColor: const Color(
+                                  0xFFA1A1AA,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -382,6 +539,344 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
             }),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryBox({
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required String title,
+    required String value,
+    required String subtitle,
+    double valueSize = 24,
+    double valueSubtitleSize = 24,
+  }) {
+    List<TextSpan> valueSpans = [];
+    if (value.contains('/')) {
+      var parts = value.split('/');
+      valueSpans.add(
+        TextSpan(
+          text: parts[0],
+          style: TextStyle(
+            fontSize: valueSize,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF2F2F2F),
+          ),
+        ),
+      );
+      valueSpans.add(
+        TextSpan(
+          text: '/${parts[1]}',
+          style: TextStyle(
+            fontSize: valueSubtitleSize,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF9CA3AF),
+          ),
+        ),
+      );
+    } else {
+      valueSpans.add(
+        TextSpan(
+          text: value,
+          style: TextStyle(
+            fontSize: valueSize,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xFF2F2F2F),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconBgColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF6B7280),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          RichText(text: TextSpan(children: valueSpans)),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPenghuniItem(int index, Map<String, dynamic> penghuni) {
+    bool isExpanded = penghuni['isExpanded'] ?? false;
+    return GestureDetector(
+      onTap: () => controller.toggleExpand(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6B8E7A),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.person_outline,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          penghuni['nama'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          penghuni['telepon'],
+                          style: const TextStyle(
+                            color: Color(0xFF6B7280),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    isExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: const Color(0xFF6B7280),
+                  ),
+                ],
+              ),
+            ),
+            if (isExpanded)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Username',
+                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      penghuni['username'],
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Status Kontrak',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: penghuni['statusKontrak'] == 'Aktif'
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFEF4444),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                penghuni['statusKontrak'] == 'Aktif'
+                                    ? Icons.check_circle_outline
+                                    : Icons.warning_amber_rounded,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                penghuni['statusKontrak'],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Durasi Kontrak',
+                                style: TextStyle(
+                                  color: Color(0xFF6B7280),
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                penghuni['durasiKontrak'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Tanggal Mulai',
+                                style: TextStyle(
+                                  color: Color(0xFF6B7280),
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                penghuni['tanggalMulai'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Siklus Bayar',
+                                style: TextStyle(
+                                  color: Color(0xFF6B7280),
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                penghuni['siklusBayar'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              const Text(
+                                'Tanggal Berakhir',
+                                style: TextStyle(
+                                  color: Color(0xFF6B7280),
+                                  fontSize: 12,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                penghuni['tanggalBerakhir'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(color: Color(0xFFE5E7EB)),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Harga Sewa',
+                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          penghuni['hargaSewa'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Color(0xFF6B8E7A),
+                          ),
+                        ),
+                        const Text(
+                          '/bulan',
+                          style: TextStyle(color: Color(0xFF6B7280)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -444,11 +939,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
             color: iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: iconColor,
-          ),
+          child: Icon(icon, size: 20, color: iconColor),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -457,10 +948,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF6B7280),
-                ),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
               ),
               const SizedBox(height: 4),
               Text(
@@ -478,7 +966,13 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
     );
   }
 
-  Widget _buildSummaryRow(String label, String value, {bool isBold = false, Color? labelColor, Color? valueColor}) {
+  Widget _buildSummaryRow(
+    String label,
+    String value, {
+    bool isBold = false,
+    Color? labelColor,
+    Color? valueColor,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
