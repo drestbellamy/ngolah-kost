@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../services/supabase_service.dart';
 import '../models/kost_model.dart';
 
 class KostController extends GetxController {
+  final SupabaseService _supabaseService = SupabaseService();
   final RxList<KostModel> kostList = <KostModel>[].obs;
+  late final Future<List<KostModel>> kostFuture;
   final nameController = TextEditingController();
   final addressController = TextEditingController();
   final roomCountController = TextEditingController();
@@ -11,37 +14,13 @@ class KostController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadKostData();
+    kostFuture = fetchKostData();
   }
 
-  void loadKostData() {
-    // Data dummy untuk contoh
-    kostList.value = [
-      KostModel(
-        id: '1',
-        name: 'Sunrise Boarding House',
-        address: 'Jl. Gatot Subroto No. 45, Jakarta',
-        roomCount: 8,
-      ),
-      KostModel(
-        id: '2',
-        name: 'Peaceful Haven Kost',
-        address: 'Jl. Thamrin No. 67, Jakarta',
-        roomCount: 10,
-      ),
-      KostModel(
-        id: '3',
-        name: 'Urban Residence',
-        address: 'Jl. HR Rasuna Said No. 89, Jakarta',
-        roomCount: 15,
-      ),
-      KostModel(
-        id: '4',
-        name: 'Green Valley Kost',
-        address: 'Jl. Sudirman No. 123, Jakarta',
-        roomCount: 12,
-      ),
-    ];
+  Future<List<KostModel>> fetchKostData() async {
+    final data = await _supabaseService.getKostList();
+    kostList.assignAll(data);
+    return data;
   }
 
   void editKost(String id) {
@@ -282,20 +261,40 @@ class KostController extends GetxController {
     );
   }
 
-  void _updateKost(String id) {
-    final index = kostList.indexWhere((k) => k.id == id);
-    if (index != -1) {
-      kostList[index] = KostModel(
-        id: id,
-        name: nameController.text,
-        address: addressController.text,
-        roomCount: int.tryParse(roomCountController.text) ?? 0,
+  Future<void> _updateKost(String id) async {
+    if (nameController.text.isEmpty ||
+        addressController.text.isEmpty ||
+        roomCountController.text.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Semua field harus diisi',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
       );
+      return;
+    }
+
+    try {
+      await _supabaseService.updateKost(
+        id: id,
+        namaKost: nameController.text,
+        alamat: addressController.text,
+        totalKamar: int.tryParse(roomCountController.text) ?? 0,
+      );
+
+      await fetchKostData();
       Get.back();
       Get.snackbar(
         'Berhasil',
         'Data kost berhasil diperbarui',
         backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memperbarui data kost: $e',
+        backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
       );
     }
@@ -386,15 +385,25 @@ class KostController extends GetxController {
     );
   }
 
-  void _confirmDelete(String id) {
-    kostList.removeWhere((kost) => kost.id == id);
-    Get.back();
-    Get.snackbar(
-      'Berhasil',
-      'Kost berhasil dihapus',
-      backgroundColor: const Color(0xFFEF4444),
-      colorText: Colors.white,
-    );
+  Future<void> _confirmDelete(String id) async {
+    try {
+      await _supabaseService.deleteKost(id);
+      await fetchKostData();
+      Get.back();
+      Get.snackbar(
+        'Berhasil',
+        'Kost berhasil dihapus',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menghapus kost: $e',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    }
   }
 
   void addKost() {
@@ -630,7 +639,7 @@ class KostController extends GetxController {
     );
   }
 
-  void _saveNewKost() {
+  Future<void> _saveNewKost() async {
     if (nameController.text.isEmpty ||
         addressController.text.isEmpty ||
         roomCountController.text.isEmpty) {
@@ -643,21 +652,29 @@ class KostController extends GetxController {
       return;
     }
 
-    final newKost = KostModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: nameController.text,
-      address: addressController.text,
-      roomCount: int.tryParse(roomCountController.text) ?? 0,
-    );
+    try {
+      await _supabaseService.createKost(
+        namaKost: nameController.text,
+        alamat: addressController.text,
+        totalKamar: int.tryParse(roomCountController.text) ?? 0,
+      );
 
-    kostList.add(newKost);
-    Get.back();
-    Get.snackbar(
-      'Berhasil',
-      'Kost baru berhasil ditambahkan',
-      backgroundColor: const Color(0xFF10B981),
-      colorText: Colors.white,
-    );
+      await fetchKostData();
+      Get.back();
+      Get.snackbar(
+        'Berhasil',
+        'Kost baru berhasil ditambahkan',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menambahkan kost: $e',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    }
   }
 
   @override
