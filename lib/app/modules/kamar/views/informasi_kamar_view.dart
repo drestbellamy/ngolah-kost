@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/informasi_kamar_controller.dart';
+import '../../penghuni/controllers/penghuni_controller.dart'
+    as controller_penghuni;
 
 class InformasiKamarView extends GetView<InformasiKamarController> {
   const InformasiKamarView({super.key});

@@ -63,6 +63,7 @@ class PenghuniDetailView extends StatelessWidget {
     }
 
     final PenghuniModel penghuni = penghuniArg;
+    final billingHistory = _buildBillingHistory(penghuni);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -577,6 +578,70 @@ class PenghuniDetailView extends StatelessWidget {
                     ),
 
                     const SizedBox(height: 16),
+
+                    // Card History Pembayaran
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(
+                                Icons.receipt_long_outlined,
+                                size: 20,
+                                color: Color(0xFF6B8E7F),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'History Pembayaran',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3748),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          if (billingHistory.isNotEmpty)
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: billingHistory.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final history = billingHistory[index];
+                                return _buildHistoryItem(history);
+                              },
+                            )
+                          else
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: Text(
+                                  'Belum ada data history pembayaran.',
+                                  style: TextStyle(color: Color(0xFF6B7280)),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -651,4 +716,282 @@ class PenghuniDetailView extends StatelessWidget {
       ],
     );
   }
+
+  Widget _buildHistoryItem(PembayaranModel history) {
+    final bool isLunas = history.status.toLowerCase() == 'lunas';
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isLunas
+                  ? const Color(0xFFD1FAE5)
+                  : const Color(0xFFFEE2E2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isLunas ? Icons.check_circle_outline : Icons.access_time,
+              color: isLunas
+                  ? const Color(0xFF10B981)
+                  : const Color(0xFFEF4444),
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      history.bulan,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2D3748),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isLunas
+                            ? const Color(0xFFD1FAE5).withOpacity(0.5)
+                            : const Color(0xFFFEE2E2).withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        history.status,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isLunas
+                              ? const Color(0xFF059669)
+                              : const Color(0xFFDC2626),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Rp ${history.jumlah.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF6B8E7F),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (!isLunas)
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today_outlined,
+                        size: 14,
+                        color: Color(0xFF9CA3AF),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Jatuh tempo: ${history.jatuhTempo}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF6B7280),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.calendar_today_outlined,
+                              size: 14,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Jatuh tempo:',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Color(0xFF9CA3AF),
+                                    ),
+                                  ),
+                                  Text(
+                                    history.jatuhTempo,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF6B7280),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_outline,
+                              size: 14,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Dibayar:',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Color(0xFF9CA3AF),
+                                    ),
+                                  ),
+                                  Text(
+                                    history.tanggalBayar ?? '-',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF6B7280),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<PembayaranModel> _buildBillingHistory(PenghuniModel penghuni) {
+    final startDate = _parseDate(penghuni.tanggalMasuk);
+    if (startDate == null || penghuni.durasiKontrak <= 0) {
+      return penghuni.historyPembayaran;
+    }
+
+    final existingHistory = {
+      for (final item in penghuni.historyPembayaran)
+        item.bulan.toLowerCase(): item,
+    };
+
+    return List.generate(penghuni.durasiKontrak, (index) {
+      final dueDate = DateTime(
+        startDate.year,
+        startDate.month + index,
+        startDate.day,
+      );
+      final bulanLabel = _formatMonthLabel(dueDate);
+      final existing = existingHistory[bulanLabel.toLowerCase()];
+      if (existing != null) {
+        return existing;
+      }
+
+      return PembayaranModel(
+        bulan: bulanLabel,
+        jumlah: penghuni.sewaBulanan,
+        jatuhTempo: _formatDueDate(dueDate),
+        status: 'Belum Dibayar',
+      );
+    });
+  }
+
+  DateTime? _parseDate(String tanggal) {
+    final parts = tanggal.split(RegExp(r'\s+'));
+    if (parts.length < 3) return null;
+    final day = int.tryParse(parts[0]);
+    final month = _monthNumber(parts[1].toLowerCase());
+    final year = int.tryParse(parts[2]);
+    if (day == null || month == null || year == null) return null;
+    return DateTime(year, month, day);
+  }
+
+  String _formatMonthLabel(DateTime date) {
+    return '${_monthNames[date.month]} ${date.year}';
+  }
+
+  String _formatDueDate(DateTime date) {
+    return '${date.day.toString().padLeft(2, '0')} ${_monthNames[date.month]} ${date.year}';
+  }
+
+  int? _monthNumber(String month) {
+    const monthMap = {
+      'jan': 1,
+      'januari': 1,
+      'feb': 2,
+      'februari': 2,
+      'mar': 3,
+      'maret': 3,
+      'apr': 4,
+      'april': 4,
+      'mei': 5,
+      'jun': 6,
+      'juni': 6,
+      'jul': 7,
+      'juli': 7,
+      'agu': 8,
+      'agustus': 8,
+      'sep': 9,
+      'september': 9,
+      'okt': 10,
+      'oktober': 10,
+      'nov': 11,
+      'november': 11,
+      'des': 12,
+      'desember': 12,
+    };
+    return monthMap[month];
+  }
+
+  static const _monthNames = {
+    1: 'Januari',
+    2: 'Februari',
+    3: 'Maret',
+    4: 'April',
+    5: 'Mei',
+    6: 'Juni',
+    7: 'Juli',
+    8: 'Agustus',
+    9: 'September',
+    10: 'Oktober',
+    11: 'November',
+    12: 'Desember',
+  };
 }
