@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/tambah_penghuni_controller.dart';
 
 class TambahPenghuniView extends GetView<TambahPenghuniController> {
@@ -12,71 +13,33 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
       body: Column(
         children: [
           // Header with gradient
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF6B8E7A), Color(0xFF8FAA9F)],
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          SafeArea(
+            child: Obx(
+              () => CustomHeader(
+                title: 'Tambah Penghuni',
+                subtitle: 'Langkah ${controller.currentStep.value} dari 2',
+                showBackButton: false,
+                progressIndicator: Row(
                   children: [
-                    const Text(
-                      'Tambah Penghuni',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Obx(
-                      () => Text(
-                        'Langkah ${controller.currentStep.value} dari 2',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFFA8D5BA),
+                    Expanded(
+                      child: Container(
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
-
-                    // Progress indicator
-                    Obx(
-                      () => Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Container(
-                              height: 4,
-                              decoration: BoxDecoration(
-                                color: controller.currentStep.value == 2
-                                    ? Colors.white
-                                    : Colors.white.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          ),
-                        ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: controller.currentStep.value == 2
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
                   ],

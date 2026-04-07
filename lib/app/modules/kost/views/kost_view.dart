@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/kost_controller.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../routes/app_routes.dart';
@@ -15,86 +16,10 @@ class KostView extends GetView<KostController> {
         child: Column(
           children: [
             // Header
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 25,
-                    offset: const Offset(0, 20),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  // Decorative circles
-                  Positioned(
-                    right: -120,
-                    top: -180,
-                    child: Container(
-                      width: 256,
-                      height: 256,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: -80,
-                    bottom: -100,
-                    child: Container(
-                      width: 192,
-                      height: 192,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-
-                  // Content
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Unit Kost',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Kelola unit kost Anda',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFFA8D5BA),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            const CustomHeader(
+              title: 'Unit Kost',
+              subtitle: 'Kelola unit kost Anda',
+              showBackButton: false,
             ),
 
             // List Kost
@@ -165,6 +90,8 @@ class KostView extends GetView<KostController> {
                     children: [
                       Text(
                         kost.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,

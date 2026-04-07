@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/informasi_kamar_controller.dart';
-import '../../penghuni/controllers/penghuni_controller.dart'
-    as controller_penghuni;
 
 class InformasiKamarView extends GetView<InformasiKamarController> {
   const InformasiKamarView({super.key});
@@ -14,109 +13,25 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
       body: Column(
         children: [
           // Header with gradient
-          Container(
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF6B8E7A), Color(0xFF8FAA9F)],
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
-              ),
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          SafeArea(
+            child: Obx(
+              () => CustomHeader(
+                title: 'Kamar ${controller.nomorKamar.value}',
+                showBackButton: true,
+                onBackPressed: controller.goBack,
+                subtitleWidget: Row(
                   children: [
-                    // Back button and title
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: controller.goBack,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Obx(
-                                () => Text(
-                                  'Kamar ${controller.nomorKamar.value}',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.location_on_outlined,
-                                    size: 16,
-                                    color: Color(0xFFA8D5BA),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Obx(
-                                    () => Text(
-                                      controller.namaKost.value,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFFA8D5BA),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 16,
+                      color: Color(0xFFA8D5BA),
                     ),
-                    const SizedBox(height: 16),
-
-                    // Status badge
-                    Obx(
-                      () => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: controller.status.value == 'Kosong'
-                              ? const Color(0xFFF2A65A)
-                              : const Color(0xFF10B981),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          controller.status.value == 'Kosong'
-                              ? 'Tersedia'
-                              : controller.status.value,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
+                    const SizedBox(width: 4),
+                    Text(
+                      controller.namaKost.value,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFFA8D5BA),
                       ),
                     ),
                   ],
@@ -681,6 +596,8 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -968,33 +885,4 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
     );
   }
 
-  Widget _buildSummaryRow(
-    String label,
-    String value, {
-    bool isBold = false,
-    Color? labelColor,
-    Color? valueColor,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-            color: labelColor ?? const Color(0xFF6B7280),
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: valueColor ?? const Color(0xFF2F2F2F),
-          ),
-        ),
-      ],
-    );
-  }
 }

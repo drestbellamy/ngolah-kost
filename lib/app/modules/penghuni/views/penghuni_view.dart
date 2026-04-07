@@ -300,6 +300,8 @@ class PenghuniView extends GetView<PenghuniController> {
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF2D3748),
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Row(
