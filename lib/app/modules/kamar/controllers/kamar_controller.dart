@@ -33,6 +33,8 @@ class KamarController extends GetxController {
       'nomor': 'A-101',
       'status': 'Ditempati',
       'penghuni': 'John Doe',
+      'kapasitas': 2,
+      'terisi': 1,
       'harga': 'Rp 1.500.000/Bulan',
       'statusColor': const Color(0xFF10B981),
     },
@@ -40,6 +42,8 @@ class KamarController extends GetxController {
       'nomor': 'A-102',
       'status': 'Kosong',
       'penghuni': null,
+      'kapasitas': 2,
+      'terisi': 0,
       'harga': 'Rp 1.500.000/Bulan',
       'statusColor': const Color(0xFFF2A65A),
     },
@@ -47,6 +51,8 @@ class KamarController extends GetxController {
       'nomor': 'A-103',
       'status': 'Ditempati',
       'penghuni': 'Jane Smith',
+      'kapasitas': 2,
+      'terisi': 2,
       'harga': 'Rp 1.500.000/Bulan',
       'statusColor': const Color(0xFF10B981),
     },
@@ -54,6 +60,8 @@ class KamarController extends GetxController {
       'nomor': 'B-201',
       'status': 'Kosong',
       'penghuni': null,
+      'kapasitas': 4,
+      'terisi': 0,
       'harga': 'Rp 1.800.000/Bulan',
       'statusColor': const Color(0xFFF2A65A),
     },
@@ -90,6 +98,8 @@ class KamarController extends GetxController {
         'nomor': result['nomor'],
         'status': 'Kosong',
         'penghuni': null,
+        'kapasitas': result['kapasitas'],
+        'terisi': 0,
         'harga': 'Rp ${result['harga']}/Bulan',
         'statusColor': const Color(0xFFF2A65A),
       });
@@ -115,6 +125,7 @@ class KamarController extends GetxController {
       if (index != -1) {
         kamarList[index]['nomor'] = result['nomor'];
         kamarList[index]['harga'] = 'Rp ${result['harga']}/Bulan';
+        kamarList[index]['kapasitas'] = result['kapasitas'];
         kamarList.refresh();
 
         Get.snackbar(

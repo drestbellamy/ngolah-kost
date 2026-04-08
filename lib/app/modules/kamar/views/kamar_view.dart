@@ -317,19 +317,9 @@ class KamarView extends GetView<KamarController> {
   }
 
   Widget _buildKamarCard(Map<String, dynamic> kamar) {
-    // Simulasi rasio penghuni untuk tampilan
-    String rasioPenghuni = '0/2';
-    if (kamar['nomor'] == 'A-101')
-      rasioPenghuni = '1/2';
-    else if (kamar['nomor'] == 'A-103')
-      rasioPenghuni = '2/2';
-
-    if (kamar['status'] == 'Kosong') {
-      rasioPenghuni =
-          '0/2'; // Ensure Kosong matches 0/2 or dynamically based on capacity
-      if (kamar['nomor'] == 'B-201')
-        rasioPenghuni = '0/4'; // Match the exact image B-201
-    }
+    final kapasitas = kamar['kapasitas'] ?? 2;
+    final terisi = kamar['terisi'] ?? (kamar['status'] == 'Ditempati' ? 1 : 0);
+    final rasioPenghuni = '$terisi/$kapasitas';
 
     return GestureDetector(
       onTap: () => controller.navigateToInformasiKamar(kamar),

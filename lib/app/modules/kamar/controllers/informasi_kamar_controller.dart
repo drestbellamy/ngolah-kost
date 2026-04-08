@@ -34,6 +34,8 @@ class InformasiKamarController extends GetxController {
       nomorKamar.value = kamar['nomor'] ?? 'A-101';
       status.value = kamar['status'] ?? 'Terisi';
       hargaPerBulan.value = kamar['harga'] ?? 'Rp 1.500.000';
+      kapasitas.value = kamar['kapasitas'] ?? 2;
+      terisi.value = kamar['terisi'] ?? (status.value == 'Ditempati' ? 1 : 0);
     }
   }
 
