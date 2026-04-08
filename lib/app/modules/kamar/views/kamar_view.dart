@@ -12,151 +12,192 @@ class KamarView extends GetView<KamarController> {
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Header with gradient
-              Obx(
-                () => CustomHeader(
-                  title: controller.namaKost.value,
-                  showBackButton: true,
-                  onBackPressed: controller.goBack,
-                  subtitleWidget: Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: Color(0xFFA8D5BA),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          controller.alamatKost.value,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFFA8D5BA),
-                          ),
-                          overflow: TextOverflow.ellipsis,
+        child: Column(
+          children: [
+            // Header fixed
+            Obx(
+              () => CustomHeader(
+                title: controller.namaKost.value,
+                showBackButton: true,
+                onBackPressed: controller.goBack,
+                subtitleWidget: Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 16,
+                      color: Color(0xFFA8D5BA),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        controller.alamatKost.value,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFFA8D5BA),
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
+            ),
+            Expanded(
+              child: Obx(() {
+                final filteredKamar = controller.filteredKamar;
 
-              // Stats Grid
-              Padding(
-                padding: const EdgeInsets.only(left: 24, right: 24),
-                child: Obx(
-                  () => Column(
-                    children: [
-                      Row(
+                return CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              'Total Ruangan',
-                              controller.totalRuangan.value.toString(),
-                              Icons.home_outlined,
-                              const Color(0xFF6B8E7A),
+                          const SizedBox(height: 12),
+
+                          // Stats Grid (scrollable)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 24, right: 24),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard(
+                                        'Total Ruangan',
+                                        controller.totalRuangan.value
+                                            .toString(),
+                                        Icons.home_outlined,
+                                        const Color(0xFF6B8E7A),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: _buildStatCard(
+                                        'Total Penghuni',
+                                        controller.totalPenghuni.value
+                                            .toString(),
+                                        Icons.how_to_reg_outlined,
+                                        const Color(0xFFE59C5A),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildStatCard(
+                                        'Ditempati',
+                                        controller.ditempati.value.toString(),
+                                        Icons.meeting_room_outlined,
+                                        const Color(0xFF34D399),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: _buildStatCard(
+                                        'Kosong',
+                                        controller.kosong.value.toString(),
+                                        Icons.door_front_door_outlined,
+                                        const Color(0xFFD97706),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildStatCard(
-                              'Total Penghuni',
-                              controller.totalPenghuni.value.toString(),
-                              Icons.how_to_reg_outlined,
-                              const Color(0xFFE59C5A),
-                            ),
-                          ),
+                          const SizedBox(height: 12),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              'Ditempati',
-                              controller.ditempati.value.toString(),
-                              Icons.meeting_room_outlined,
-                              const Color(0xFF34D399),
+                    ),
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _StickyTabsHeaderDelegate(
+                        height: 64,
+                        child: Container(
+                          color: const Color(0xFFF7F9F8),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          alignment: Alignment.center,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(28),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.06),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(child: _buildTab('Semua Kamar', 0)),
+                                Expanded(child: _buildTab('Kosong', 1)),
+                                Expanded(child: _buildTab('Ditempati', 2)),
+                              ],
                             ),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildStatCard(
-                              'Kosong',
-                              controller.kosong.value.toString(),
-                              Icons.door_front_door_outlined,
-                              const Color(0xFFD97706),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Tabs
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Obx(
-                  () => Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(28),
-                      border: Border.all(color: const Color(0xFFE5E7EB)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.06),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
                         ),
-                      ],
+                      ),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(child: _buildTab('Semua Kamar', 0)),
-                        Expanded(child: _buildTab('Kosong', 1)),
-                        Expanded(child: _buildTab('Ditempati', 2)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Kamar List
-              Obx(
-                () => ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
-                  itemCount: controller.filteredKamar.length,
-                  itemBuilder: (context, index) {
-                    final kamar = controller.filteredKamar[index];
-                    return _buildKamarCard(kamar);
-                  },
-                ),
-              ),
-              const SizedBox(height: 80), // Space for FAB
-            ],
-          ),
+                    if (controller.isLoading.value)
+                      const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (filteredKamar.isEmpty)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 24, 24, 96),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                              ),
+                            ),
+                            child: const Text(
+                              'Belum ada data kamar. Silakan tekan tombol + untuk menambahkan kamar baru.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF6B7280),
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 96),
+                        sliver: SliverList.builder(
+                          itemCount: filteredKamar.length,
+                          itemBuilder: (context, index) {
+                            final kamar = filteredKamar[index];
+                            return _buildKamarCard(kamar);
+                          },
+                        ),
+                      ),
+                  ],
+                );
+              }),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: controller.tambahKamar,
         backgroundColor: const Color(0xFFF2A65A),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -420,5 +461,32 @@ class KamarView extends GetView<KamarController> {
         ),
       ),
     );
+  }
+}
+
+class _StickyTabsHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final double height;
+  final Widget child;
+
+  _StickyTabsHeaderDelegate({required this.height, required this.child});
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant _StickyTabsHeaderDelegate oldDelegate) {
+    return oldDelegate.height != height || oldDelegate.child != child;
   }
 }
