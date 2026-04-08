@@ -119,4 +119,46 @@ class SupabaseService {
   Future<void> deleteKamar(String id) async {
     await supabase.from('kamar').delete().eq('id', id);
   }
+
+  // UPDATE STATUS KAMAR
+  Future<void> updateKamarStatus({
+    required String id,
+    required String status,
+  }) async {
+    await supabase.from('kamar').update({'status': status}).eq('id', id);
+  }
+
+  // INSERT PENGHUNI
+  Future<void> createPenghuni({
+    String? userId,
+    required String kamarId,
+    required int durasiKontrak,
+    required DateTime tanggalMasuk,
+    required DateTime tanggalKeluar,
+    String status = 'aktif',
+  }) async {
+    await supabase.from('penghuni').insert({
+      'user_id': userId,
+      'kamar_id': kamarId,
+      'durasi_kontrak': durasiKontrak,
+      'tanggal_masuk': tanggalMasuk.toIso8601String().split('T').first,
+      'tanggal_keluar': tanggalKeluar.toIso8601String().split('T').first,
+      'status': status,
+    });
+  }
+
+  // GET PENGHUNI BY KAMAR
+  Future<List<Map<String, dynamic>>> getPenghuniByKamarId(
+    String kamarId,
+  ) async {
+    final List<dynamic> response = await supabase
+        .from('penghuni')
+        .select(
+          'id, user_id, kamar_id, durasi_kontrak, tanggal_masuk, tanggal_keluar, status, created_at',
+        )
+        .eq('kamar_id', kamarId)
+        .order('created_at', ascending: false);
+
+    return response.map((item) => Map<String, dynamic>.from(item)).toList();
+  }
 }
