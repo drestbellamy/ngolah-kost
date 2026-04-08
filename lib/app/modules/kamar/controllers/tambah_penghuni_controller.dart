@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../services/supabase_service.dart';
 
 class TambahPenghuniController extends GetxController {
@@ -69,13 +70,26 @@ class TambahPenghuniController extends GetxController {
       final kamar = Get.arguments as Map<String, dynamic>;
       kamarId.value = kamar['kamar_id']?.toString() ?? '';
       nomorKamar.value = kamar['nomor'] ?? '';
-      namaKost.value = 'Green Valley Kost';
+      namaKost.value = kamar['namaKost']?.toString() ?? '-';
       hargaPerBulan.value = kamar['harga'] ?? '';
 
       // Extract numeric value from harga
       final hargaStr = hargaPerBulan.value.replaceAll(RegExp(r'[^0-9]'), '');
       hargaBulanan.value = int.tryParse(hargaStr) ?? 0;
+
+      if (usernameController.text.trim().isEmpty) {
+        _setInitialUsernamePreview();
+      }
     }
+  }
+
+  Future<void> _setInitialUsernamePreview() async {
+    final nextNumber = await _getNextOccupantNumber();
+    usernameController.text = _buildPreviewUsername(
+      namaKost.value,
+      nomorKamar.value,
+      occupantNumber: nextNumber,
+    );
   }
 
   @override
@@ -129,7 +143,7 @@ class TambahPenghuniController extends GetxController {
         : null;
 
     usernameError.value = username.isEmpty
-        ? 'Username harus diisi'
+        ? null
         : username.length < 4
         ? 'Username minimal 4 karakter'
         : username.length > 20
@@ -180,6 +194,12 @@ class TambahPenghuniController extends GetxController {
       return;
     }
 
+    final nama = namaController.text.trim();
+    final telepon = teleponController.text.trim();
+    var username = usernameController.text.trim();
+    final password = passwordController.text;
+    final kostPrefix = _buildKostPrefix(namaKost.value);
+
     final tanggalKeluarDate = DateTime(
       tanggalMasukDate.value!.year,
       tanggalMasukDate.value!.month + durasiKontrakBulan.value,
@@ -188,7 +208,39 @@ class TambahPenghuniController extends GetxController {
 
     isSubmitting.value = true;
     try {
+      String userId = '';
+      var retryCount = 0;
+
+      while (retryCount < 5) {
+        try {
+          userId = await _supabaseService.createPenghuniUserSecure(
+            nama: nama,
+            noTlpn: telepon,
+            username: username,
+            password: password,
+            kostPrefix: kostPrefix,
+          );
+          break;
+        } on PostgrestException catch (e) {
+          final err = e.toString().toLowerCase();
+          if (_isDuplicateUsernameError(err) &&
+              _isRoomBasedUsername(username)) {
+            username = _nextRoomBasedUsername(username);
+            retryCount++;
+            continue;
+          }
+          rethrow;
+        }
+      }
+
+      if (userId.isEmpty) {
+        throw Exception('Gagal membuat akun penghuni');
+      }
+
+      usernameController.text = username;
+
       await _supabaseService.createPenghuni(
+        userId: userId,
         kamarId: kamarId.value,
         durasiKontrak: durasiKontrakBulan.value,
         tanggalMasuk: tanggalMasukDate.value!,
@@ -201,7 +253,12 @@ class TambahPenghuniController extends GetxController {
         status: 'ditempati',
       );
     } catch (e) {
-      submitError.value = 'Gagal menyimpan data penghuni. Coba lagi.';
+      final errorText = e.toString().toLowerCase();
+      if (e is PostgrestException && _isDuplicateUsernameError(errorText)) {
+        submitError.value = 'Username sudah digunakan. Gunakan username lain.';
+      } else {
+        submitError.value = 'Gagal menyimpan data penghuni. Coba lagi.';
+      }
       isSubmitting.value = false;
       return;
     }
@@ -293,6 +350,108 @@ class TambahPenghuniController extends GetxController {
       ),
       barrierDismissible: false,
     );
+  }
+
+  String _buildKostPrefix(String kostName) {
+    final words = kostName
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((word) => word.isNotEmpty)
+        .toList();
+
+    if (words.isEmpty) return 'KST';
+
+    final initials = words.map((word) {
+      final first = word.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      if (first.isEmpty) return '';
+      return first[0].toUpperCase();
+    }).join();
+
+    final prefix = initials.isEmpty ? 'KST' : initials;
+    return prefix.length > 5 ? prefix.substring(0, 5) : prefix;
+  }
+
+  String _sanitizeRoomCode(String roomNumber) {
+    final cleaned = roomNumber.toUpperCase().replaceAll(
+      RegExp(r'[^A-Z0-9]'),
+      '',
+    );
+    return cleaned.isEmpty ? 'KM' : cleaned;
+  }
+
+  Future<int> _getNextOccupantNumber() async {
+    if (kamarId.value.isEmpty) return 1;
+    try {
+      final count = await _supabaseService.getPenghuniCountByKamarId(
+        kamarId.value,
+      );
+      return count + 1;
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  String _buildPreviewUsername(
+    String kostName,
+    String roomNumber, {
+    int occupantNumber = 1,
+  }) {
+    final prefix = _buildKostPrefix(kostName);
+    final roomCode = _sanitizeRoomCode(roomNumber);
+    return _buildRoomBasedUsername(prefix, roomCode, occupantNumber);
+  }
+
+  String _buildRoomBasedUsername(String prefix, String roomCode, int number) {
+    final suffix = number > 1 ? '_$number' : '';
+    final maxBaseLength = 20 - suffix.length;
+    final baseRaw = '${prefix}_$roomCode';
+    final safeBaseLength = maxBaseLength < 1 ? 1 : maxBaseLength;
+    final base = baseRaw.length > safeBaseLength
+        ? baseRaw.substring(0, safeBaseLength)
+        : baseRaw;
+    return '$base$suffix';
+  }
+
+  bool _isDuplicateUsernameError(String errorText) {
+    return errorText.contains('username sudah digunakan') ||
+        errorText.contains('already used') ||
+        errorText.contains('duplicate');
+  }
+
+  bool _isRoomBasedUsername(String username) {
+    return username.contains('_');
+  }
+
+  String _nextRoomBasedUsername(String username) {
+    final regex = RegExp(r'^(.*?)(?:_(\d+))?$');
+    final match = regex.firstMatch(username);
+
+    if (match == null) {
+      final fallback = '${username}_2';
+      return fallback.length > 20 ? fallback.substring(0, 20) : fallback;
+    }
+
+    final root = match.group(1) ?? username;
+    final number = int.tryParse(match.group(2) ?? '') ?? 1;
+    final next = number + 1;
+    final suffix = '_$next';
+    final maxRootLength = 20 - suffix.length;
+    final safeRootLength = maxRootLength < 1 ? 1 : maxRootLength;
+    final trimmedRoot = root.length > safeRootLength
+        ? root.substring(0, safeRootLength)
+        : root;
+    return '$trimmedRoot$suffix';
+  }
+
+  Future<void> regenerateUsernamePreview() async {
+    final nextNumber = await _getNextOccupantNumber();
+    usernameController.text = _buildPreviewUsername(
+      namaKost.value,
+      nomorKamar.value,
+      occupantNumber: nextNumber,
+    );
+    usernameError.value = null;
+    submitError.value = null;
   }
 
   void setTanggalMasuk(DateTime date) {
@@ -485,7 +644,7 @@ class TambahPenghuniController extends GetxController {
     if (usernameError.value != null) {
       final v = value.trim();
       usernameError.value = v.isEmpty
-          ? 'Username harus diisi'
+          ? null
           : v.length < 4
           ? 'Username minimal 4 karakter'
           : v.length > 20

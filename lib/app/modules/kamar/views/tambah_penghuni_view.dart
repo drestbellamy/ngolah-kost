@@ -279,15 +279,38 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           const SizedBox(height: 24),
 
           // Akun Penghuni Section
-          _buildSectionHeader(Icons.lock_outline, 'Akun Penghuni'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSectionHeader(Icons.lock_outline, 'Akun Penghuni'),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6B8E7A).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  'Otomatis',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF6B8E7A),
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
 
           _buildTextField(
             label: 'Username',
-            hint: 'Pilih username',
+            hint: 'Username otomatis (bisa diubah)',
             controller: controller.usernameController,
-            isRequired: true,
-            helperText: 'Maksimal 20 karakter (huruf/angka)',
+            isRequired: false,
+            helperText: 'Otomatis dari nama kost + no kamar. Bisa diubah.',
             errorText: controller.usernameError.value,
             onChanged: controller.onUsernameChanged,
             inputFormatters: [
@@ -653,6 +676,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
     bool isPassword = false,
     bool isPasswordHidden = true,
     VoidCallback? onTogglePassword,
+    Widget? suffixIcon,
     bool isRequired = false,
     String? errorText,
     String? helperText,
@@ -707,7 +731,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                       color: const Color(0xFF6B7280),
                     ),
                   )
-                : null,
+                : suffixIcon,
             helperText: helperText,
             errorText: errorText,
             counterText: '',
