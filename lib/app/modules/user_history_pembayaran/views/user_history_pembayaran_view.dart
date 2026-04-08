@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../controllers/user_history_pembayaran_controller.dart';
+import '../../../routes/app_routes.dart';
 
-class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController> {
+class UserHistoryPembayaranView
+    extends GetView<UserHistoryPembayaranController> {
   const UserHistoryPembayaranView({super.key});
 
   @override
@@ -20,9 +22,9 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
               showBackButton: true,
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Total Payment Card
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -44,35 +46,36 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
                 children: [
                   const Text(
                     'Total Pembayaran',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF6B7280),
+                    style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                  ),
+                  const SizedBox(height: 8),
+                  Obx(
+                    () => Text(
+                      controller.totalPayment,
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF6B8E7A),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Obx(() => Text(
-                    controller.totalPayment,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF6B8E7A),
+                  Obx(
+                    () => Text(
+                      '${controller.paymentCount} pembayaran selesai',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF9CA3AF),
+                      ),
                     ),
-                  )),
-                  const SizedBox(height: 8),
-                  Obx(() => Text(
-                    '${controller.paymentCount} pembayaran selesai',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF9CA3AF),
-                    ),
-                  )),
+                  ),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Section Title
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 24),
@@ -88,9 +91,9 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Payment History List
           Expanded(
             child: Obx(() {
@@ -116,7 +119,7 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
                   ),
                 );
               }
-              
+
               return ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 itemCount: controller.paymentHistory.length,
@@ -164,9 +167,9 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
               size: 24,
             ),
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Payment Info
           Expanded(
             child: Column(
@@ -273,11 +276,28 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildBottomNavItem(Icons.home_outlined, 'Beranda', false, () {
-                Get.back();
+                Get.offAllNamed(Routes.userHome);
               }),
-              _buildBottomNavItem(Icons.receipt_long_outlined, 'Tagihan', false, () {}),
-              _buildBottomNavItem(Icons.history_outlined, 'Riwayat', true, () {}),
-              _buildBottomNavItem(Icons.notifications_outlined, 'Info', false, () {}),
+              _buildBottomNavItem(
+                Icons.receipt_long_outlined,
+                'Tagihan',
+                false,
+                () {
+                  Get.offAllNamed(Routes.userTagihan);
+                },
+              ),
+              _buildBottomNavItem(
+                Icons.history_outlined,
+                'Riwayat',
+                true,
+                () {},
+              ),
+              _buildBottomNavItem(
+                Icons.notifications_outlined,
+                'Info',
+                false,
+                () {},
+              ),
             ],
           ),
         ),
@@ -293,6 +313,7 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
   ) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -306,7 +327,9 @@ class UserHistoryPembayaranView extends GetView<UserHistoryPembayaranController>
             label,
             style: TextStyle(
               fontSize: 12,
-              color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
+              color: isActive
+                  ? const Color(0xFF6B8E7A)
+                  : const Color(0xFF9CA3AF),
               fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
