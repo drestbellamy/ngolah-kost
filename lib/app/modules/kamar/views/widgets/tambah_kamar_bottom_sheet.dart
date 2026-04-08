@@ -8,8 +8,10 @@ class TambahKamarBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final nomorKamarController = TextEditingController();
     final hargaController = TextEditingController();
+    final kapasitasController = TextEditingController();
 
     return Dialog(
+      backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: SingleChildScrollView(
         child: Padding(
@@ -64,11 +66,67 @@ class TambahKamarBottomSheet extends StatelessWidget {
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF6B8E7A),
+                      width: 1.5,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Kapasitas Penghuni
+              const Text(
+                'Kapasitas Penghuni',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2F2F2F),
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: kapasitasController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Masukkan jumlah kapasitas penghuni',
+                  hintStyle: const TextStyle(
+                    color: Color(0xFFD1D5DB),
+                    fontSize: 14,
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFF9FAFB),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -108,11 +166,17 @@ class TambahKamarBottomSheet extends StatelessWidget {
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE5E7EB),
+                      width: 1,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -160,8 +224,13 @@ class TambahKamarBottomSheet extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
+                        final kapasitas = int.tryParse(
+                          kapasitasController.text,
+                        );
+
                         if (nomorKamarController.text.isEmpty ||
-                            hargaController.text.isEmpty) {
+                            hargaController.text.isEmpty ||
+                            kapasitasController.text.isEmpty) {
                           Get.snackbar(
                             'Error',
                             'Mohon lengkapi semua field',
@@ -171,10 +240,23 @@ class TambahKamarBottomSheet extends StatelessWidget {
                           );
                           return;
                         }
+
+                        if (kapasitas == null || kapasitas <= 0) {
+                          Get.snackbar(
+                            'Error',
+                            'Kapasitas penghuni harus lebih dari 0',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
                         Get.back(
                           result: {
                             'nomor': nomorKamarController.text,
                             'harga': hargaController.text,
+                            'kapasitas': kapasitas,
                           },
                         );
                       },
