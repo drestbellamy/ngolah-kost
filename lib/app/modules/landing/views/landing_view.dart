@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import '../controllers/landing_controller.dart';
 
 class LandingView extends GetView<LandingController> {
   const LandingView({super.key});
+
+  static const String _landingLottieAsset = 'assets/lotties/Home.json';
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +116,9 @@ class LandingView extends GetView<LandingController> {
                 width: controller.showContent.value ? 160 : 200,
                 height: controller.showContent.value ? 160 : 200,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: controller.showContent.value
+                      ? Colors.white.withOpacity(0.1)
+                      : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -125,54 +130,94 @@ class LandingView extends GetView<LandingController> {
                 width: controller.showContent.value ? 112 : 140,
                 height: controller.showContent.value ? 112 : 140,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: controller.showContent.value
+                      ? Colors.white.withOpacity(0.15)
+                      : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
               ),
             ),
             // Logo container
-            Obx(
-              () => AnimatedContainer(
+            Obx(() {
+              final isShown = controller.showContent.value;
+
+              return AnimatedContainer(
                 duration: const Duration(milliseconds: 800),
-                width: controller.showContent.value ? 80 : 96,
-                height: controller.showContent.value ? 80 : 96,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(
-                    controller.showContent.value ? 20 : 24,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
+                width: isShown ? 96 : 164,
+                height: isShown ? 96 : 164,
+                curve: Curves.easeInOut,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AnimatedScale(
+                      duration: const Duration(milliseconds: 650),
+                      curve: Curves.easeOutBack,
+                      scale: isShown ? 1 : 0.72,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeOut,
+                        opacity: isShown ? 1 : 0,
+                        child: Container(
+                          width: 96,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4F6F5F),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.25),
+                              width: 1.2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(isShown ? 1 : 0),
+                      child: Transform.scale(
+                        scale: isShown ? 1.55 : 1.35,
+                        child: Lottie.asset(
+                          _landingLottieAsset,
+                          repeat: true,
+                          fit: BoxFit.cover,
+                          frameRate: FrameRate.composition,
+                          options: LottieOptions(enableMergePaths: true),
+                          errorBuilder: (_, __, ___) => Icon(
+                            Icons.home_rounded,
+                            size: isShown ? 58 : 76,
+                            color: const Color(0xFF6B8E7A),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.home_rounded,
-                  size: controller.showContent.value ? 40 : 48,
-                  color: const Color(0xFF6B8E7A),
-                ),
-              ),
-            ),
+              );
+            }),
           ],
         ),
 
-        const SizedBox(height: 32),
+        const SizedBox(height: 10),
 
         // Title
         Obx(
-          () => AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 800),
-            style: TextStyle(
-              fontSize: controller.showContent.value ? 28 : 36,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 0.5,
-            ),
-            child: const Text('Ngolah Kost'),
-          ),
+          () => controller.showContent.value
+              ? const Text(
+                  'Ngolah Kost',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     );
