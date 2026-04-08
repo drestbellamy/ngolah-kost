@@ -224,23 +224,36 @@ class LoginView extends GetView<LoginController> {
                       SizedBox(
                         width: double.infinity,
                         height: 52,
-                        child: ElevatedButton(
-                          onPressed: controller.login,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFF2A65A),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                        child: Obx(
+                          () => ElevatedButton(
+                            onPressed: controller.isLoading.value
+                                ? null
+                                : controller.login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFF2A65A),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 4,
+                              shadowColor: Colors.black.withOpacity(0.1),
                             ),
-                            elevation: 4,
-                            shadowColor: Colors.black.withOpacity(0.1),
-                          ),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
+                            child: controller.isLoading.value
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : const Text(
+                                    'Login',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),
