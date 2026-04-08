@@ -11,6 +11,7 @@ class KamarController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();
   final NumberFormat _idrFormatter = NumberFormat.decimalPattern('id_ID');
   final selectedTab = 0.obs;
+  final isSortAsc = true.obs;
   final isLoading = false.obs;
   String? _kostId;
 
@@ -49,18 +50,18 @@ class KamarController extends GetxController {
         final kapasitas = _toInt(item['kapasitas'], fallback: 1);
         return {
           'id': item['id']?.toString() ?? '',
+          'namaKost': namaKost.value,
           'nomor': item['no_kamar']?.toString() ?? '-',
           'status': status,
           'penghuni': null,
           'kapasitas': kapasitas,
-          'terisi': status == 'Ditempati' ? 1 : 0,
+          'terisi': status == 'Kosong' ? 0 : 1,
           'harga': _formatHargaDisplay(_toInt(item['harga'])),
-          'statusColor': status == 'Ditempati'
-              ? const Color(0xFF10B981)
-              : const Color(0xFFF2A65A),
+          'statusColor': _statusColor(status),
         };
       }).toList();
 
+      await _syncOccupancyFromPenghuni(mapped);
       kamarList.assignAll(mapped);
       _recalculateStats();
     } catch (e) {
@@ -76,9 +77,49 @@ class KamarController extends GetxController {
     }
   }
 
+  Future<void> _syncOccupancyFromPenghuni(
+    List<Map<String, dynamic>> rooms,
+  ) async {
+    final tasks = rooms.map((room) async {
+      final kamarId = room['id']?.toString() ?? '';
+      if (kamarId.isEmpty) return;
+
+      final kapasitas = _toInt(room['kapasitas'], fallback: 1);
+      final count = await _supabaseService.getPenghuniCountByKamarId(kamarId);
+
+      final normalizedCount = count > kapasitas ? kapasitas : count;
+      final status = _statusByOccupancy(normalizedCount, kapasitas);
+
+      room['terisi'] = normalizedCount;
+      room['status'] = status;
+      room['statusColor'] = _statusColor(status);
+    });
+
+    await Future.wait(tasks);
+  }
+
   int _toInt(dynamic value, {int fallback = 0}) {
     if (value is int) return value;
     return int.tryParse(value?.toString() ?? '') ?? fallback;
+  }
+
+  int _extractRoomNumber(Map<String, dynamic> room) {
+    final nomor = room['nomor']?.toString() ?? '';
+    final match = RegExp(r'\d+').firstMatch(nomor);
+    if (match == null) return 0;
+    return int.tryParse(match.group(0) ?? '') ?? 0;
+  }
+
+  int _compareRooms(Map<String, dynamic> a, Map<String, dynamic> b) {
+    final numberA = _extractRoomNumber(a);
+    final numberB = _extractRoomNumber(b);
+    if (numberA != numberB) {
+      return numberA.compareTo(numberB);
+    }
+
+    final labelA = a['nomor']?.toString() ?? '';
+    final labelB = b['nomor']?.toString() ?? '';
+    return labelA.compareTo(labelB);
   }
 
   int _hargaToInt(String value) {
@@ -92,12 +133,32 @@ class KamarController extends GetxController {
 
   String _normalizeStatus(String? status) {
     final normalized = status?.toLowerCase().trim() ?? 'kosong';
-    return normalized == 'ditempati' ? 'Ditempati' : 'Kosong';
+    if (normalized == 'penuh') return 'Penuh';
+    if (normalized == 'terisi sebagian') return 'Terisi Sebagian';
+    return normalized == 'ditempati' ? 'Terisi Sebagian' : 'Kosong';
+  }
+
+  String _statusByOccupancy(int terisi, int kapasitas) {
+    if (terisi <= 0) return 'Kosong';
+    if (terisi >= kapasitas) return 'Penuh';
+    return 'Terisi Sebagian';
+  }
+
+  Color _statusColor(String status) {
+    if (status == 'Penuh') return const Color(0xFF10B981);
+    if (status == 'Terisi Sebagian') return const Color(0xFF3B82F6);
+    return const Color(0xFFF2A65A);
+  }
+
+  bool _isOccupiedStatus(String status) {
+    return status == 'Terisi Sebagian' || status == 'Penuh';
   }
 
   void _recalculateStats() {
     totalRuangan.value = kamarList.length;
-    ditempati.value = kamarList.where((k) => k['status'] == 'Ditempati').length;
+    ditempati.value = kamarList
+        .where((k) => _isOccupiedStatus(k['status']?.toString() ?? 'Kosong'))
+        .length;
     kosong.value = kamarList.where((k) => k['status'] == 'Kosong').length;
     totalPenghuni.value = kamarList.fold<int>(
       0,
@@ -109,23 +170,40 @@ class KamarController extends GetxController {
     selectedTab.value = index;
   }
 
+  void toggleSortOrder() {
+    isSortAsc.value = !isSortAsc.value;
+  }
+
   List<Map<String, dynamic>> get filteredKamar {
+    List<Map<String, dynamic>> filtered;
     if (selectedTab.value == 0) {
-      return kamarList;
+      filtered = List<Map<String, dynamic>>.from(kamarList);
     } else if (selectedTab.value == 1) {
-      return kamarList.where((k) => k['status'] == 'Kosong').toList();
+      filtered = kamarList.where((k) => k['status'] == 'Kosong').toList();
+    } else if (selectedTab.value == 2) {
+      filtered = kamarList
+          .where((k) => k['status'] == 'Terisi Sebagian')
+          .toList();
     } else {
-      return kamarList.where((k) => k['status'] == 'Ditempati').toList();
+      filtered = kamarList.where((k) => k['status'] == 'Penuh').toList();
     }
+
+    filtered.sort(_compareRooms);
+    if (!isSortAsc.value) {
+      filtered = filtered.reversed.toList();
+    }
+
+    return filtered;
   }
 
   void goBack() {
     Get.back();
   }
 
-  void navigateToInformasiKamar(Map<String, dynamic> kamar) {
+  Future<void> navigateToInformasiKamar(Map<String, dynamic> kamar) async {
     // Navigasi ke informasi kamar untuk kamar terisi atau kosong
-    Get.toNamed('/informasi-kamar', arguments: kamar);
+    await Get.toNamed('/informasi-kamar', arguments: kamar);
+    await fetchKamarData();
   }
 
   void tambahKamar() async {
@@ -176,7 +254,7 @@ class KamarController extends GetxController {
           noKamar: result['nomor'],
           harga: _hargaToInt(result['harga'].toString()),
           kapasitas: _toInt(result['kapasitas'], fallback: 1),
-          status: kamar['status'] == 'Ditempati' ? 'ditempati' : 'kosong',
+          status: kamar['status'] == 'Kosong' ? 'kosong' : 'ditempati',
         );
 
         await fetchKamarData();

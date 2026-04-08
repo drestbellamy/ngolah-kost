@@ -5,6 +5,56 @@ import '../app/modules/login/models/login_user_model.dart';
 class SupabaseService {
   final supabase = Supabase.instance.client;
 
+  // CREATE USER PENGHUNI (secure via RPC)
+  Future<String> createPenghuniUserSecure({
+    required String nama,
+    required String noTlpn,
+    required String username,
+    required String password,
+    String? kostPrefix,
+  }) async {
+    final baseParams = {
+      'p_nama': nama,
+      'p_no_tlpn': noTlpn,
+      'p_username': username,
+      'p_password': password,
+      'p_role': 'user',
+    };
+
+    dynamic response;
+    try {
+      final paramsWithPrefix = Map<String, dynamic>.from(baseParams);
+      if (kostPrefix != null && kostPrefix.trim().isNotEmpty) {
+        paramsWithPrefix['p_prefix'] = kostPrefix.trim().toUpperCase();
+      }
+
+      response = await supabase.rpc(
+        'create_user_secure',
+        params: paramsWithPrefix,
+      );
+    } on PostgrestException catch (e) {
+      final message = e.message.toLowerCase();
+
+      // Backward compatibility if DB function still uses old signature.
+      if (message.contains('p_prefix') || message.contains('function')) {
+        response = await supabase.rpc('create_user_secure', params: baseParams);
+      } else {
+        rethrow;
+      }
+    }
+
+    if (response is List && response.isNotEmpty) {
+      final row = Map<String, dynamic>.from(response.first as Map);
+      return (row['id'] ?? '').toString();
+    }
+
+    if (response is Map<String, dynamic>) {
+      return (response['id'] ?? '').toString();
+    }
+
+    throw Exception('Gagal membuat user penghuni');
+  }
+
   // LOGIN
   Future<LoginUserModel?> login(String username, String password) async {
     final response = await supabase.rpc(
@@ -155,14 +205,41 @@ class SupabaseService {
   Future<List<Map<String, dynamic>>> getPenghuniByKamarId(
     String kamarId,
   ) async {
-    final List<dynamic> response = await supabase
+    try {
+      final response = await supabase.rpc(
+        'get_penghuni_by_kamar_secure',
+        params: {'p_kamar_id': kamarId},
+      );
+
+      if (response is List) {
+        return response.map((item) => Map<String, dynamic>.from(item)).toList();
+      }
+    } catch (_) {
+      // Fallback to direct join query if RPC is not available yet.
+    }
+
+    final List<dynamic> fallback = await supabase
         .from('penghuni')
         .select(
-          'id, user_id, kamar_id, durasi_kontrak, tanggal_masuk, tanggal_keluar, status, created_at',
+          'id, user_id, kamar_id, durasi_kontrak, tanggal_masuk, tanggal_keluar, status, created_at, users:user_id(id, nama, no_tlpn, username)',
         )
         .eq('kamar_id', kamarId)
         .order('created_at', ascending: false);
 
-    return response.map((item) => Map<String, dynamic>.from(item)).toList();
+    return fallback.map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  // GET PENGHUNI COUNT BY KAMAR
+  Future<int> getPenghuniCountByKamarId(String kamarId) async {
+    final response = await supabase
+        .from('penghuni')
+        .select('id')
+        .eq('kamar_id', kamarId);
+
+    if (response is List) {
+      return response.length;
+    }
+
+    return 0;
   }
 }
