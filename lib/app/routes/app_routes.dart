@@ -19,4 +19,5 @@ abstract class Routes {
   static const userHistoryPembayaran = '/user-history-pembayaran';
   static const ringkasanKeuangan = '/ringkasan-keuangan';
   static const detailKeuanganKost = '/detail-keuangan-kost';
+  static const userTagihan = '/user-tagihan';
 }

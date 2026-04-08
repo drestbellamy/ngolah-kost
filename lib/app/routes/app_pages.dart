@@ -36,6 +36,8 @@ import '../modules/user_home/bindings/user_home_binding.dart';
 import '../modules/user_home/views/user_home_view.dart';
 import '../modules/user_history_pembayaran/bindings/user_history_pembayaran_binding.dart';
 import '../modules/user_history_pembayaran/views/user_history_pembayaran_view.dart';
+import '../modules/user_tagihan/bindings/user_tagihan_binding.dart';
+import '../modules/user_tagihan/views/user_tagihan_view.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -151,6 +153,11 @@ class AppPages {
       name: Routes.detailKeuanganKost,
       page: () => const DetailKeuanganKostView(),
       binding: DetailKeuanganKostBinding(),
+    ),
+    GetPage(
+      name: Routes.userTagihan,
+      page: () => const UserTagihanView(),
+      binding: UserTagihanBinding(),
     ),
   ];
 }

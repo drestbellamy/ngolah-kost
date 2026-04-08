@@ -40,7 +40,7 @@ class UserHomeView extends GetView<UserHomeController> {
                 ),
               ),
             ),
-            
+
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -69,7 +69,9 @@ class UserHomeView extends GetView<UserHomeController> {
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFF6B8E7A,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Icon(
@@ -83,21 +85,25 @@ class UserHomeView extends GetView<UserHomeController> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Obx(() => Text(
-                                    controller.kostName.value,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2F2F2F),
+                                  Obx(
+                                    () => Text(
+                                      controller.kostName.value,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF2F2F2F),
+                                      ),
                                     ),
-                                  )),
-                                  Obx(() => Text(
-                                    'Kamar ${controller.roomNumber.value}',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF6B7280),
+                                  ),
+                                  Obx(
+                                    () => Text(
+                                      'Kamar ${controller.roomNumber.value}',
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF6B7280),
+                                      ),
                                     ),
-                                  )),
+                                  ),
                                 ],
                               ),
                             ),
@@ -110,7 +116,9 @@ class UserHomeView extends GetView<UserHomeController> {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                            color: const Color(
+                              0xFF10B981,
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
@@ -125,14 +133,16 @@ class UserHomeView extends GetView<UserHomeController> {
                                 ),
                               ),
                               const SizedBox(width: 6),
-                              Obx(() => Text(
-                                controller.tenantStatus.value,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF10B981),
+                              Obx(
+                                () => Text(
+                                  controller.tenantStatus.value,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF10B981),
+                                  ),
                                 ),
-                              )),
+                              ),
                             ],
                           ),
                         ),
@@ -151,14 +161,16 @@ class UserHomeView extends GetView<UserHomeController> {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Obx(() => Text(
-                                    controller.nextPaymentDate.value,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF2F2F2F),
+                                  Obx(
+                                    () => Text(
+                                      controller.nextPaymentDate.value,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF2F2F2F),
+                                      ),
                                     ),
-                                  )),
+                                  ),
                                 ],
                               ),
                             ),
@@ -174,14 +186,16 @@ class UserHomeView extends GetView<UserHomeController> {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Obx(() => Text(
-                                    controller.nextPaymentAmount.value,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF2F2F2F),
+                                  Obx(
+                                    () => Text(
+                                      controller.nextPaymentAmount.value,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF2F2F2F),
+                                      ),
                                     ),
-                                  )),
+                                  ),
                                 ],
                               ),
                             ),
@@ -190,9 +204,9 @@ class UserHomeView extends GetView<UserHomeController> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Payment Due Alert
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -242,14 +256,16 @@ class UserHomeView extends GetView<UserHomeController> {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Obx(() => Text(
-                          controller.dueAmount.value,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF2F2F2F),
+                        Obx(
+                          () => Text(
+                            controller.dueAmount.value,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2F2F2F),
+                            ),
                           ),
-                        )),
+                        ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
@@ -294,9 +310,9 @@ class UserHomeView extends GetView<UserHomeController> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Payment Summary
                   const Text(
                     'Ringkasan Pembayaran',
@@ -307,7 +323,7 @@ class UserHomeView extends GetView<UserHomeController> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   Row(
                     children: [
                       Expanded(
@@ -330,7 +346,9 @@ class UserHomeView extends GetView<UserHomeController> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                                  color: const Color(
+                                    0xFF10B981,
+                                  ).withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -348,22 +366,26 @@ class UserHomeView extends GetView<UserHomeController> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Obx(() => Text(
-                                controller.totalLunas.value,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2F2F2F),
+                              Obx(
+                                () => Text(
+                                  controller.totalLunas.value,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2F2F2F),
+                                  ),
                                 ),
-                              )),
+                              ),
                               const SizedBox(height: 4),
-                              Obx(() => Text(
-                                controller.lunasDate.value,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  color: Color(0xFF10B981),
+                              Obx(
+                                () => Text(
+                                  controller.lunasDate.value,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Color(0xFF10B981),
+                                  ),
                                 ),
-                              )),
+                              ),
                             ],
                           ),
                         ),
@@ -389,7 +411,9 @@ class UserHomeView extends GetView<UserHomeController> {
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFF2A65A).withValues(alpha: 0.1),
+                                  color: const Color(
+                                    0xFFF2A65A,
+                                  ).withValues(alpha: 0.1),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -407,31 +431,35 @@ class UserHomeView extends GetView<UserHomeController> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              Obx(() => Text(
-                                controller.totalBelumBayar.value,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2F2F2F),
+                              Obx(
+                                () => Text(
+                                  controller.totalBelumBayar.value,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF2F2F2F),
+                                  ),
                                 ),
-                              )),
+                              ),
                               const SizedBox(height: 4),
-                              Obx(() => Text(
-                                controller.belumBayarDate.value,
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  color: Color(0xFFF2A65A),
+                              Obx(
+                                () => Text(
+                                  controller.belumBayarDate.value,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Color(0xFFF2A65A),
+                                  ),
                                 ),
-                              )),
+                              ),
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Announcements
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -458,92 +486,96 @@ class UserHomeView extends GetView<UserHomeController> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  
-                  Obx(() => Column(
-                    children: controller.announcements.map((announcement) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: Color(announcement['color']).withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
+
+                  Obx(
+                    () => Column(
+                      children: controller.announcements.map((announcement) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
                               ),
-                              child: Icon(
-                                announcement['icon'] == 'water'
-                                    ? Icons.water_drop_outlined
-                                    : Icons.celebration_outlined,
-                                color: Color(announcement['color']),
-                                size: 20,
+                            ],
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: Color(
+                                    announcement['color'],
+                                  ).withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  announcement['icon'] == 'water'
+                                      ? Icons.water_drop_outlined
+                                      : Icons.celebration_outlined,
+                                  color: Color(announcement['color']),
+                                  size: 20,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    announcement['title'],
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF2F2F2F),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    announcement['description'],
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF6B7280),
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.schedule,
-                                        size: 12,
-                                        color: Color(0xFF9CA3AF),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      announcement['title'],
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF2F2F2F),
                                       ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        announcement['date'],
-                                        style: const TextStyle(
-                                          fontSize: 10,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      announcement['description'],
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xFF6B7280),
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.schedule,
+                                          size: 12,
                                           color: Color(0xFF9CA3AF),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          announcement['date'],
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            color: Color(0xFF9CA3AF),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  )),
-                  
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+
                   const SizedBox(height: 24),
-                  
+
                   // Contact Management
                   const Text(
                     'Kontak Pengelola',
@@ -554,17 +586,14 @@ class UserHomeView extends GetView<UserHomeController> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: [
-                          Color(0xFF6B8E7A),
-                          Color(0xFF8FAA9F),
-                        ],
+                        colors: [Color(0xFF6B8E7A), Color(0xFF8FAA9F)],
                       ),
                       borderRadius: BorderRadius.circular(16),
                     ),
@@ -580,7 +609,7 @@ class UserHomeView extends GetView<UserHomeController> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         GestureDetector(
                           onTap: controller.callKostManagement,
                           child: Container(
@@ -597,21 +626,23 @@ class UserHomeView extends GetView<UserHomeController> {
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
-                                Obx(() => Text(
-                                  controller.phoneNumber.value,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
+                                Obx(
+                                  () => Text(
+                                    controller.phoneNumber.value,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                )),
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 12),
-                        
+
                         GestureDetector(
                           onTap: controller.emailKostManagement,
                           child: Container(
@@ -628,14 +659,16 @@ class UserHomeView extends GetView<UserHomeController> {
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
-                                Obx(() => Text(
-                                  controller.email.value,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
+                                Obx(
+                                  () => Text(
+                                    controller.email.value,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
-                                )),
+                                ),
                               ],
                             ),
                           ),
@@ -643,7 +676,7 @@ class UserHomeView extends GetView<UserHomeController> {
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 100), // Space for bottom navigation
                 ],
               ),
@@ -668,12 +701,34 @@ class UserHomeView extends GetView<UserHomeController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildBottomNavItem(Icons.home_outlined, 'Beranda', true, () {}),
-                _buildBottomNavItem(Icons.receipt_long_outlined, 'Tagihan', false, () {}),
-                _buildBottomNavItem(Icons.history_outlined, 'Riwayat', false, () {
-                  Get.toNamed(Routes.userHistoryPembayaran);
-                }),
-                _buildBottomNavItem(Icons.notifications_outlined, 'Info', false, () {}),
+                _buildBottomNavItem(
+                  Icons.home_outlined,
+                  'Beranda',
+                  true,
+                  () {},
+                ),
+                _buildBottomNavItem(
+                  Icons.receipt_long_outlined,
+                  'Tagihan',
+                  false,
+                  () {
+                    Get.offAllNamed(Routes.userTagihan);
+                  },
+                ),
+                _buildBottomNavItem(
+                  Icons.history_outlined,
+                  'Riwayat',
+                  false,
+                  () {
+                    Get.offAllNamed(Routes.userHistoryPembayaran);
+                  },
+                ),
+                _buildBottomNavItem(
+                  Icons.notifications_outlined,
+                  'Info',
+                  false,
+                  () {},
+                ),
               ],
             ),
           ),
@@ -682,9 +737,15 @@ class UserHomeView extends GetView<UserHomeController> {
     );
   }
 
-  Widget _buildBottomNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
+  Widget _buildBottomNavItem(
+    IconData icon,
+    String label,
+    bool isActive,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -698,7 +759,9 @@ class UserHomeView extends GetView<UserHomeController> {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
+              color: isActive
+                  ? const Color(0xFF6B8E7A)
+                  : const Color(0xFF9CA3AF),
               fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
