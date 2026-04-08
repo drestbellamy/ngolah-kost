@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../services/supabase_service.dart';
 
 class TambahPenghuniController extends GetxController {
+  final SupabaseService _supabaseService = SupabaseService();
+
   // Step management
   final currentStep = 1.obs;
 
   // Room info
+  final kamarId = ''.obs;
   final nomorKamar = ''.obs;
   final namaKost = ''.obs;
   final hargaPerBulan = ''.obs;
@@ -46,12 +50,24 @@ class TambahPenghuniController extends GetxController {
   final perTagihan = ''.obs;
   final totalNilaiKontrak = ''.obs;
 
+  // Inline error states
+  final namaError = RxnString();
+  final teleponError = RxnString();
+  final usernameError = RxnString();
+  final passwordError = RxnString();
+  final tanggalMasukError = RxnString();
+  final durasiKontrakError = RxnString();
+  final sistemPembayaranError = RxnString();
+  final submitError = RxnString();
+  final isSubmitting = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     // Load data from arguments
     if (Get.arguments != null) {
       final kamar = Get.arguments as Map<String, dynamic>;
+      kamarId.value = kamar['kamar_id']?.toString() ?? '';
       nomorKamar.value = kamar['nomor'] ?? '';
       namaKost.value = 'Green Valley Kost';
       hargaPerBulan.value = kamar['harga'] ?? '';
@@ -72,6 +88,7 @@ class TambahPenghuniController extends GetxController {
   }
 
   void handleBack() {
+    submitError.value = null;
     if (currentStep.value == 1) {
       Get.back();
     } else {
@@ -79,115 +96,118 @@ class TambahPenghuniController extends GetxController {
     }
   }
 
-  void handleNext() {
+  void handleNext() async {
     if (currentStep.value == 1) {
       if (_validateStep1()) {
         currentStep.value = 2;
       }
     } else {
       if (_validateStep2()) {
-        _submitForm();
+        await _submitForm();
       }
     }
   }
 
   bool _validateStep1() {
-    if (namaController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Nama lengkap harus diisi',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
+    final nama = namaController.text.trim();
+    final telepon = teleponController.text.trim();
+    final username = usernameController.text.trim();
+    final password = passwordController.text;
 
-    if (teleponController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Nomor telepon harus diisi',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
+    namaError.value = nama.isEmpty
+        ? 'Nama lengkap harus diisi'
+        : nama.length > 50
+        ? 'Nama maksimal 50 karakter'
+        : null;
 
-    if (usernameController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Username harus diisi',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
+    teleponError.value = telepon.isEmpty
+        ? 'Nomor telepon harus diisi'
+        : telepon.length < 10
+        ? 'Nomor telepon minimal 10 digit'
+        : telepon.length > 15
+        ? 'Nomor telepon maksimal 15 digit'
+        : null;
 
-    if (passwordController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Password harus diisi',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
+    usernameError.value = username.isEmpty
+        ? 'Username harus diisi'
+        : username.length < 4
+        ? 'Username minimal 4 karakter'
+        : username.length > 20
+        ? 'Username maksimal 20 karakter'
+        : null;
 
-    if (passwordController.text.length < 6) {
-      Get.snackbar(
-        'Error',
-        'Password minimal 6 karakter',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
+    passwordError.value = password.isEmpty
+        ? 'Password harus diisi'
+        : password.length < 6
+        ? 'Password minimal 6 karakter'
+        : password.length > 32
+        ? 'Password maksimal 32 karakter'
+        : null;
 
-    return true;
+    return namaError.value == null &&
+        teleponError.value == null &&
+        usernameError.value == null &&
+        passwordError.value == null;
   }
 
   bool _validateStep2() {
-    if (tanggalMasuk.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Tanggal mulai masuk harus dipilih',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
+    tanggalMasukError.value = tanggalMasuk.value.isEmpty
+        ? 'Tanggal mulai masuk harus dipilih'
+        : null;
+    durasiKontrakError.value = durasiKontrak.value.isEmpty
+        ? 'Durasi kontrak harus dipilih'
+        : null;
+    sistemPembayaranError.value = sistemPembayaran.value.isEmpty
+        ? 'Sistem pembayaran harus dipilih'
+        : null;
 
-    if (durasiKontrak.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Durasi kontrak harus dipilih',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
-
-    if (sistemPembayaran.value.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Sistem pembayaran harus dipilih',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return false;
-    }
-
-    return true;
+    return tanggalMasukError.value == null &&
+        durasiKontrakError.value == null &&
+        sistemPembayaranError.value == null;
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
+    if (isSubmitting.value) return;
+    submitError.value = null;
+
+    if (kamarId.value.isEmpty) {
+      submitError.value = 'ID kamar tidak ditemukan';
+      return;
+    }
+
+    if (tanggalMasukDate.value == null || durasiKontrakBulan.value <= 0) {
+      submitError.value = 'Data kontrak belum lengkap';
+      return;
+    }
+
+    final tanggalKeluarDate = DateTime(
+      tanggalMasukDate.value!.year,
+      tanggalMasukDate.value!.month + durasiKontrakBulan.value,
+      tanggalMasukDate.value!.day,
+    );
+
+    isSubmitting.value = true;
+    try {
+      await _supabaseService.createPenghuni(
+        kamarId: kamarId.value,
+        durasiKontrak: durasiKontrakBulan.value,
+        tanggalMasuk: tanggalMasukDate.value!,
+        tanggalKeluar: tanggalKeluarDate,
+        status: 'aktif',
+      );
+
+      await _supabaseService.updateKamarStatus(
+        id: kamarId.value,
+        status: 'ditempati',
+      );
+    } catch (e) {
+      submitError.value = 'Gagal menyimpan data penghuni. Coba lagi.';
+      isSubmitting.value = false;
+      return;
+    }
+
+    isSubmitting.value = false;
+
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -276,6 +296,7 @@ class TambahPenghuniController extends GetxController {
   }
 
   void setTanggalMasuk(DateTime date) {
+    submitError.value = null;
     tanggalMasukDate.value = date;
     // Format: 27 Maret 2026
     final months = [
@@ -294,10 +315,12 @@ class TambahPenghuniController extends GetxController {
       'Desember',
     ];
     tanggalMasuk.value = '${date.day} ${months[date.month]} ${date.year}';
+    tanggalMasukError.value = null;
     _calculateTanggalBerakhir();
   }
 
   void setDurasiKontrak(String durasi) {
+    submitError.value = null;
     durasiKontrak.value = durasi;
 
     // Extract months from durasi
@@ -319,6 +342,8 @@ class TambahPenghuniController extends GetxController {
     // Reset sistem pembayaran
     sistemPembayaran.value = '';
     sistemPembayaranBulan.value = 0;
+    durasiKontrakError.value = null;
+    sistemPembayaranError.value = null;
 
     // Calculate tanggal berakhir
     _calculateTanggalBerakhir();
@@ -351,7 +376,9 @@ class TambahPenghuniController extends GetxController {
   }
 
   void setSistemPembayaran(String sistem) {
+    submitError.value = null;
     sistemPembayaran.value = sistem;
+    sistemPembayaranError.value = null;
 
     // Extract months from sistem
     if (sistem.contains('1 Bulan')) {
@@ -426,5 +453,57 @@ class TambahPenghuniController extends GetxController {
       decimalDigits: 0,
     );
     return formatter.format(amount);
+  }
+
+  void onNamaChanged(String value) {
+    submitError.value = null;
+    if (namaError.value != null) {
+      final v = value.trim();
+      namaError.value = v.isEmpty
+          ? 'Nama lengkap harus diisi'
+          : v.length > 50
+          ? 'Nama maksimal 50 karakter'
+          : null;
+    }
+  }
+
+  void onTeleponChanged(String value) {
+    submitError.value = null;
+    if (teleponError.value != null) {
+      teleponError.value = value.isEmpty
+          ? 'Nomor telepon harus diisi'
+          : value.length < 10
+          ? 'Nomor telepon minimal 10 digit'
+          : value.length > 15
+          ? 'Nomor telepon maksimal 15 digit'
+          : null;
+    }
+  }
+
+  void onUsernameChanged(String value) {
+    submitError.value = null;
+    if (usernameError.value != null) {
+      final v = value.trim();
+      usernameError.value = v.isEmpty
+          ? 'Username harus diisi'
+          : v.length < 4
+          ? 'Username minimal 4 karakter'
+          : v.length > 20
+          ? 'Username maksimal 20 karakter'
+          : null;
+    }
+  }
+
+  void onPasswordChanged(String value) {
+    submitError.value = null;
+    if (passwordError.value != null) {
+      passwordError.value = value.isEmpty
+          ? 'Password harus diisi'
+          : value.length < 6
+          ? 'Password minimal 6 karakter'
+          : value.length > 32
+          ? 'Password maksimal 32 karakter'
+          : null;
+    }
   }
 }
