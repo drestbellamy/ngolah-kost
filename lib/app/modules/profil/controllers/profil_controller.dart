@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
 
 class ProfilController extends GetxController {
+  final authController = Get.find<AuthController>();
+
   // Observables for expanded states
   final isUsernameExpanded = false.obs;
   final isPasswordExpanded = false.obs;
@@ -17,7 +20,6 @@ class ProfilController extends GetxController {
   final obscureOldPassword = true.obs;
   final obscureNewPassword = true.obs;
   final obscureConfirmPassword = true.obs;
-
 
   void toggleUsername() {
     isUsernameExpanded.value = !isUsernameExpanded.value;
@@ -48,11 +50,11 @@ class ProfilController extends GetxController {
               Get.back();
 
               // TODO: Logika penyimpanan data/API call bisa diimplementasikan di sini
-              
+
               // Reset dan tutup form yang sedang terbuka
               isUsernameExpanded.value = false;
               isPasswordExpanded.value = false;
-              
+
               // Kosongkan field kata sandi
               oldPasswordController.clear();
               newPasswordController.clear();
@@ -71,7 +73,8 @@ class ProfilController extends GetxController {
     );
   }
 
-  void logout() {
+  Future<void> logout() async {
+    await authController.clearUser();
     Get.snackbar(
       'Logout',
       'Anda telah keluar',

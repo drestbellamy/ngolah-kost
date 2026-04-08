@@ -1,19 +1,23 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../app/modules/kost/models/kost_model.dart';
+import '../app/modules/login/models/login_user_model.dart';
 
 class SupabaseService {
   final supabase = Supabase.instance.client;
 
   // LOGIN
-  Future<Map<String, dynamic>?> login(String username, String password) async {
-    final data = await supabase
-        .from('users')
-        .select()
-        .eq('username', username)
-        .eq('password', password)
-        .maybeSingle();
+  Future<LoginUserModel?> login(String username, String password) async {
+    final response = await supabase.rpc(
+      'login_user_secure',
+      params: {'p_username': username, 'p_password': password},
+    );
 
-    return data;
+    if (response is! List || response.isEmpty) {
+      return null;
+    }
+
+    final row = Map<String, dynamic>.from(response.first as Map);
+    return LoginUserModel.fromMap(row);
   }
 
   // GET USERS
