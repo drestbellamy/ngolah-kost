@@ -34,6 +34,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Ngolah Kost',
       debugShowCheckedModeBanner: false,
+      initialRoute: initialRoute,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6B8E7A)),
         useMaterial3: true,
