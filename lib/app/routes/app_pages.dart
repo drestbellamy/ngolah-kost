@@ -38,6 +38,8 @@ import '../modules/user_history_pembayaran/bindings/user_history_pembayaran_bind
 import '../modules/user_history_pembayaran/views/user_history_pembayaran_view.dart';
 import '../modules/user_tagihan/bindings/user_tagihan_binding.dart';
 import '../modules/user_tagihan/views/user_tagihan_view.dart';
+import '../modules/user_info/bindings/user_info_binding.dart';
+import '../modules/user_info/views/user_info_view.dart';
 import '../core/middleware/auth_middleware.dart';
 import '../core/middleware/role_middleware.dart';
 import 'app_routes.dart';
@@ -178,6 +180,12 @@ class AppPages {
       name: Routes.userTagihan,
       page: () => const UserTagihanView(),
       binding: UserTagihanBinding(),
+      middlewares: [AuthMiddleware(), UserOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.userInfo,
+      page: () => const UserInfoView(),
+      binding: UserInfoBinding(),
       middlewares: [AuthMiddleware(), UserOnlyMiddleware()],
     ),
   ];
