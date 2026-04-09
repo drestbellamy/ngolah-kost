@@ -183,7 +183,7 @@ class SupabaseService {
   }
 
   // INSERT PENGHUNI
-  Future<void> createPenghuni({
+  Future<String> createPenghuni({
     String? userId,
     required String kamarId,
     required int durasiKontrak,
@@ -205,8 +205,13 @@ class SupabaseService {
       payload['sistem_pembayaran_bulan'] = sistemPembayaranBulan;
     }
 
+    dynamic inserted;
     try {
-      await supabase.from('penghuni').insert(payload);
+      inserted = await supabase
+          .from('penghuni')
+          .insert(payload)
+          .select('id')
+          .single();
     } on PostgrestException catch (e) {
       final message = '${e.message} ${e.details}'.toLowerCase();
 
@@ -215,11 +220,25 @@ class SupabaseService {
       if (payload.containsKey('sistem_pembayaran_bulan') &&
           message.contains('sistem_pembayaran_bulan')) {
         payload.remove('sistem_pembayaran_bulan');
-        await supabase.from('penghuni').insert(payload);
+        inserted = await supabase
+            .from('penghuni')
+            .insert(payload)
+            .select('id')
+            .single();
       } else {
         rethrow;
       }
     }
+
+    if (inserted is Map<String, dynamic>) {
+      return (inserted['id'] ?? '').toString();
+    }
+
+    if (inserted is Map) {
+      return (inserted['id'] ?? '').toString();
+    }
+
+    throw Exception('Gagal membuat data penghuni');
   }
 
   // GET PENGHUNI BY KAMAR
@@ -309,5 +328,119 @@ class SupabaseService {
     }
 
     return 0;
+  }
+
+  // INSERT TAGIHAN OTOMATIS BERDASARKAN KONTRAK
+  Future<void> createTagihanOtomatis({
+    required String penghuniId,
+    required DateTime tanggalMasuk,
+    required int durasiKontrakBulan,
+    required int sistemPembayaranBulan,
+    required int hargaBulanan,
+  }) async {
+    if (penghuniId.isEmpty || durasiKontrakBulan <= 0 || hargaBulanan <= 0) {
+      return;
+    }
+
+    final siklus = sistemPembayaranBulan <= 0 ? 1 : sistemPembayaranBulan;
+    final totalTagihan = (durasiKontrakBulan / siklus).ceil();
+    final jumlahPerTagihan = hargaBulanan * siklus;
+
+    final payload = <Map<String, dynamic>>[];
+    for (var i = 0; i < totalTagihan; i++) {
+      final periode = DateTime(
+        tanggalMasuk.year,
+        tanggalMasuk.month + (i * siklus),
+        1,
+      );
+
+      payload.add({
+        'penghuni_id': penghuniId,
+        'bulan': periode.month,
+        'tahun': periode.year,
+        'jumlah': jumlahPerTagihan,
+        'status': 'belum_dibayar',
+      });
+    }
+
+    if (payload.isEmpty) return;
+    await supabase.from('tagihan').insert(payload);
+  }
+
+  // GET TAGIHAN (enriched with penghuni, kamar, and kost labels)
+  Future<List<Map<String, dynamic>>> getTagihanList() async {
+    final raw = await supabase
+        .from('tagihan')
+        .select('id, penghuni_id, bulan, tahun, jumlah, status, created_at')
+        .order('tahun', ascending: false)
+        .order('bulan', ascending: false)
+        .order('created_at', ascending: false);
+
+    if (raw is! List) return [];
+
+    final rows = raw.map((item) => Map<String, dynamic>.from(item)).toList();
+    if (rows.isEmpty) return rows;
+
+    final penghuniLookup = await _buildPenghuniLookup();
+
+    return rows.map((row) {
+      final penghuniId = row['penghuni_id']?.toString() ?? '';
+      final info = penghuniLookup[penghuniId] ?? const <String, String>{};
+
+      row['nama_penghuni'] = info['nama'] ?? 'Penghuni';
+      row['nomor_kamar'] = info['nomor_kamar'] ?? '-';
+      row['nama_kost'] = info['nama_kost'] ?? '-';
+      return row;
+    }).toList();
+  }
+
+  // GET TAGIHAN BY PENGHUNI
+  Future<List<Map<String, dynamic>>> getTagihanByPenghuniId(
+    String penghuniId,
+  ) async {
+    if (penghuniId.trim().isEmpty) return [];
+
+    final raw = await supabase
+        .from('tagihan')
+        .select('id, penghuni_id, bulan, tahun, jumlah, status, created_at')
+        .eq('penghuni_id', penghuniId)
+        .order('tahun', ascending: false)
+        .order('bulan', ascending: false)
+        .order('created_at', ascending: false);
+
+    if (raw is! List) return [];
+    return raw.map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  Future<Map<String, Map<String, String>>> _buildPenghuniLookup() async {
+    final lookup = <String, Map<String, String>>{};
+
+    final kosts = await getKostList();
+    for (final kost in kosts) {
+      final kamarList = await getKamarByKostId(kost.id);
+
+      for (final kamar in kamarList) {
+        final kamarId = kamar['id']?.toString() ?? '';
+        if (kamarId.isEmpty) continue;
+
+        final penghuniRows = await getPenghuniByKamarId(kamarId);
+        for (final row in penghuniRows) {
+          final penghuniId = row['id']?.toString() ?? '';
+          if (penghuniId.isEmpty) continue;
+
+          final user = row['users'] is Map
+              ? Map<String, dynamic>.from(row['users'] as Map)
+              : <String, dynamic>{};
+
+          lookup[penghuniId] = {
+            'nama': (user['nama'] ?? row['nama'] ?? 'Penghuni').toString(),
+            'nomor_kamar': (kamar['no_kamar'] ?? '-').toString(),
+            'nama_kost': kost.name,
+          };
+        }
+      }
+    }
+
+    return lookup;
   }
 }
