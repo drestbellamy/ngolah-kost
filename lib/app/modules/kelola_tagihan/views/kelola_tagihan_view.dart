@@ -244,7 +244,10 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
               Expanded(
                 child: Text(
                   tagihan.namaKost,
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF6B7280),
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

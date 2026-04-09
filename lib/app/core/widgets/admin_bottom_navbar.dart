@@ -36,10 +36,7 @@ class AdminBottomNavbar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: const Border(
-          top: BorderSide(
-            color: Color(0xFFE5E7EB),
-            width: 1.1,
-          ),
+          top: BorderSide(color: Color(0xFFE5E7EB), width: 1.1),
         ),
         boxShadow: [
           BoxShadow(
