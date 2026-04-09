@@ -85,25 +85,25 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                         child: Row(
                           children: [
                             _buildFilterChip(
-                              'Semua (${controller.tagihanList.length})',
+                              'Semua (${controller.getCountByStatus('semua')})',
                               'semua',
                               const Color(0xFF6B8E7F),
                             ),
                             const SizedBox(width: 8),
                             _buildFilterChip(
-                              'Menunggu (${controller.tagihanList.where((t) => t.status == 'menunggu_verifikasi').length})',
+                              'Menunggu (${controller.getCountByStatus('menunggu_verifikasi')})',
                               'menunggu_verifikasi',
                               const Color(0xFFF2A65A),
                             ),
                             const SizedBox(width: 8),
                             _buildFilterChip(
-                              'Belum Dibayar (${controller.tagihanList.where((t) => t.status == 'belum_dibayar').length})',
+                              'Belum Dibayar (${controller.getCountByStatus('belum_dibayar')})',
                               'belum_dibayar',
                               const Color(0xFFEF4444),
                             ),
                             const SizedBox(width: 8),
                             _buildFilterChip(
-                              'Lunas (${controller.tagihanList.where((t) => t.status == 'lunas').length})',
+                              'Lunas (${controller.getCountByStatus('lunas')})',
                               'lunas',
                               const Color(0xFF10B981),
                             ),
@@ -112,11 +112,54 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                       ),
                     ),
 
+                    const SizedBox(height: 10),
+
+                    // Month Filter Trigger
+                    _buildMonthFilterTrigger(context),
+
                     const SizedBox(height: 16),
 
                     // Tagihan List
-                    Obx(
-                      () => ListView.builder(
+                    Obx(() {
+                      if (controller.isLoading.value) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 40),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+
+                      if (controller.errorMessage.value != null) {
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: Center(
+                            child: Text(
+                              controller.errorMessage.value!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFFB91C1C),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (controller.filteredTagihanList.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 40),
+                          child: Center(
+                            child: Text(
+                              'Belum ada data tagihan.',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF6B7280),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      return ListView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: controller.filteredTagihanList.length,
@@ -124,8 +167,8 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                           final tagihan = controller.filteredTagihanList[index];
                           return _buildTagihanCard(tagihan);
                         },
-                      ),
-                    ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -159,6 +202,147 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildMonthFilterTrigger(BuildContext context) {
+    return Obx(() {
+      final monthLabel = controller.getMonthFilterLabel(
+        controller.selectedMonthKey.value,
+      );
+
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE5E7EB)),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.calendar_month,
+              size: 18,
+              color: Color(0xFF6B7280),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Bulan: $monthLabel',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF374151),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: () => _showMonthFilterBottomSheet(context),
+              icon: const Icon(Icons.filter_list, size: 18),
+              label: const Text('Filter'),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF6B8E7F),
+              ),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  void _showMonthFilterBottomSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          top: false,
+          child: Obx(() {
+            final monthKeys = controller.monthFilterKeys;
+            final selected = controller.selectedMonthKey.value;
+
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD1D5DB),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  const Text(
+                    'Filter Bulan Tagihan',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF111827),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Pilih periode bulan yang ingin ditampilkan',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                  ),
+                  const SizedBox(height: 10),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 360),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: monthKeys.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (_, index) {
+                        final key = monthKeys[index];
+                        final isSelected = key == selected;
+                        return ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: Icon(
+                            isSelected
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_off,
+                            color: isSelected
+                                ? const Color(0xFF6B8E7F)
+                                : const Color(0xFF9CA3AF),
+                            size: 20,
+                          ),
+                          title: Text(
+                            controller.getMonthFilterLabel(key),
+                            style: TextStyle(
+                              fontWeight: isSelected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              color: isSelected
+                                  ? const Color(0xFF1F2937)
+                                  : const Color(0xFF4B5563),
+                            ),
+                          ),
+                          onTap: () {
+                            controller.changeMonthFilter(key);
+                            Navigator.of(sheetContext).pop();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 
@@ -244,7 +428,10 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
               Expanded(
                 child: Text(
                   tagihan.namaKost,
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF6B7280),
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
