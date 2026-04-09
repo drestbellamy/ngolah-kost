@@ -71,6 +71,9 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/landing_page1/
+    - assets/images/landing_page2/
+    - assets/images/landing_page3/
     - assets/lotties/
 
   # An image asset can refer to one or more resolution-specific "variants", see
