@@ -239,7 +239,7 @@ class TambahPenghuniController extends GetxController {
 
       usernameController.text = username;
 
-      await _supabaseService.createPenghuni(
+      final penghuniId = await _supabaseService.createPenghuni(
         userId: userId,
         kamarId: kamarId.value,
         durasiKontrak: durasiKontrakBulan.value,
@@ -247,6 +247,18 @@ class TambahPenghuniController extends GetxController {
         tanggalMasuk: tanggalMasukDate.value!,
         tanggalKeluar: tanggalKeluarDate,
         status: 'aktif',
+      );
+
+      if (penghuniId.isEmpty) {
+        throw Exception('Gagal menyimpan data penghuni');
+      }
+
+      await _supabaseService.createTagihanOtomatis(
+        penghuniId: penghuniId,
+        tanggalMasuk: tanggalMasukDate.value!,
+        durasiKontrakBulan: durasiKontrakBulan.value,
+        sistemPembayaranBulan: sistemPembayaranBulan.value,
+        hargaBulanan: hargaBulanan.value,
       );
 
       await _supabaseService.updateKamarStatus(
