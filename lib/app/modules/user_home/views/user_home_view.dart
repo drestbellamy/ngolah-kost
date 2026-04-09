@@ -727,7 +727,9 @@ class UserHomeView extends GetView<UserHomeController> {
                   Icons.notifications_outlined,
                   'Info',
                   false,
-                  () {},
+                  () {
+                    Get.offAllNamed(Routes.userInfo);
+                  },
                 ),
               ],
             ),

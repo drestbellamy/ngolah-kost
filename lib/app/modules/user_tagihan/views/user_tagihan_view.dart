@@ -278,7 +278,9 @@ class UserTagihanView extends GetView<UserTagihanController> {
                   'Info',
                   false,
                   true,
-                  () {},
+                  () {
+                    Get.offAllNamed(Routes.userInfo);
+                  },
                 ),
               ],
             ),
