@@ -243,6 +243,7 @@ class TambahPenghuniController extends GetxController {
         userId: userId,
         kamarId: kamarId.value,
         durasiKontrak: durasiKontrakBulan.value,
+        sistemPembayaranBulan: sistemPembayaranBulan.value,
         tanggalMasuk: tanggalMasukDate.value!,
         tanggalKeluar: tanggalKeluarDate,
         status: 'aktif',

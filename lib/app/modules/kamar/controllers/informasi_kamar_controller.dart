@@ -59,6 +59,8 @@ class InformasiKamarController extends GetxController {
           item['tanggal_keluar']?.toString() ?? '',
         );
         final durasi = item['durasi_kontrak'] ?? 0;
+        final siklusBulanRaw = _toInt(item['sistem_pembayaran_bulan']);
+        final siklusBulan = siklusBulanRaw <= 0 ? 1 : siklusBulanRaw;
         final statusDb = (item['status']?.toString().toLowerCase() ?? 'aktif');
         final namaUser = (user['nama'] ?? item['nama'] ?? 'Penghuni')
             .toString();
@@ -74,7 +76,7 @@ class InformasiKamarController extends GetxController {
           'username': usernameUser.isEmpty ? '-' : '@$usernameUser',
           'statusKontrak': statusDb == 'aktif' ? 'Aktif' : 'Berakhir',
           'durasiKontrak': '$durasi Bulan',
-          'siklusBayar': 'Bulanan (1 bulan)',
+          'siklusBayar': _formatSistemPembayaran(siklusBulan),
           'tanggalMulai': _formatDateId(tanggalMasukDate),
           'tanggalBerakhir': _formatDateId(tanggalKeluarDate),
           'hargaSewa': hargaPerBulan.value.replaceAll('/Bulan', ''),
@@ -93,6 +95,20 @@ class InformasiKamarController extends GetxController {
   String _formatDateId(DateTime? date) {
     if (date == null) return '-';
     return DateFormat('d MMMM yyyy', 'id_ID').format(date);
+  }
+
+  int _toInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  String _formatSistemPembayaran(int bulan) {
+    if (bulan <= 1) return 'Bulanan (1 bulan)';
+    if (bulan == 3) return '3 Bulanan';
+    if (bulan == 6) return '6 Bulanan';
+    if (bulan == 12) return 'Tahunan (1 tahun)';
+    if (bulan == 24) return '2 Tahunan';
+    return '$bulan Bulanan';
   }
 
   void toggleExpand(int index) {

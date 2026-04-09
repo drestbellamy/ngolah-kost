@@ -187,18 +187,39 @@ class SupabaseService {
     String? userId,
     required String kamarId,
     required int durasiKontrak,
+    int? sistemPembayaranBulan,
     required DateTime tanggalMasuk,
     required DateTime tanggalKeluar,
     String status = 'aktif',
   }) async {
-    await supabase.from('penghuni').insert({
+    final payload = <String, dynamic>{
       'user_id': userId,
       'kamar_id': kamarId,
       'durasi_kontrak': durasiKontrak,
       'tanggal_masuk': tanggalMasuk.toIso8601String().split('T').first,
       'tanggal_keluar': tanggalKeluar.toIso8601String().split('T').first,
       'status': status,
-    });
+    };
+
+    if (sistemPembayaranBulan != null && sistemPembayaranBulan > 0) {
+      payload['sistem_pembayaran_bulan'] = sistemPembayaranBulan;
+    }
+
+    try {
+      await supabase.from('penghuni').insert(payload);
+    } on PostgrestException catch (e) {
+      final message = '${e.message} ${e.details}'.toLowerCase();
+
+      // Backward compatibility for DB schema that does not have
+      // sistem_pembayaran_bulan yet.
+      if (payload.containsKey('sistem_pembayaran_bulan') &&
+          message.contains('sistem_pembayaran_bulan')) {
+        payload.remove('sistem_pembayaran_bulan');
+        await supabase.from('penghuni').insert(payload);
+      } else {
+        rethrow;
+      }
+    }
   }
 
   // GET PENGHUNI BY KAMAR
@@ -212,7 +233,10 @@ class SupabaseService {
       );
 
       if (response is List) {
-        return response.map((item) => Map<String, dynamic>.from(item)).toList();
+        final rows = response
+            .map((item) => Map<String, dynamic>.from(item))
+            .toList();
+        return await _attachSistemPembayaranBulan(rows, kamarId);
       }
     } catch (_) {
       // Fallback to direct join query if RPC is not available yet.
@@ -221,12 +245,56 @@ class SupabaseService {
     final List<dynamic> fallback = await supabase
         .from('penghuni')
         .select(
-          'id, user_id, kamar_id, durasi_kontrak, tanggal_masuk, tanggal_keluar, status, created_at, users:user_id(id, nama, no_tlpn, username)',
+          'id, user_id, kamar_id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, created_at, users:user_id(id, nama, no_tlpn, username)',
         )
         .eq('kamar_id', kamarId)
         .order('created_at', ascending: false);
 
     return fallback.map((item) => Map<String, dynamic>.from(item)).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> _attachSistemPembayaranBulan(
+    List<Map<String, dynamic>> rows,
+    String kamarId,
+  ) async {
+    if (rows.isEmpty) return rows;
+
+    final hasColumnInRpc = rows.any(
+      (row) => row.containsKey('sistem_pembayaran_bulan'),
+    );
+    if (hasColumnInRpc) return rows;
+
+    try {
+      final raw = await supabase
+          .from('penghuni')
+          .select('id, sistem_pembayaran_bulan')
+          .eq('kamar_id', kamarId);
+
+      if (raw is! List) return rows;
+
+      final byId = <String, int>{};
+      for (final item in raw) {
+        final map = Map<String, dynamic>.from(item as Map);
+        final id = map['id']?.toString() ?? '';
+        if (id.isEmpty) continue;
+        final value = map['sistem_pembayaran_bulan'];
+        if (value is int) {
+          byId[id] = value;
+        } else {
+          byId[id] = int.tryParse(value?.toString() ?? '') ?? 0;
+        }
+      }
+
+      return rows.map((row) {
+        final id = row['id']?.toString() ?? '';
+        if (id.isNotEmpty && byId.containsKey(id)) {
+          row['sistem_pembayaran_bulan'] = byId[id];
+        }
+        return row;
+      }).toList();
+    } catch (_) {
+      return rows;
+    }
   }
 
   // GET PENGHUNI COUNT BY KAMAR
