@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/penghuni_controller.dart';
+import '../models/penghuni_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 
 class PenghuniView extends GetView<PenghuniController> {
@@ -8,8 +9,6 @@ class PenghuniView extends GetView<PenghuniController> {
 
   @override
   Widget build(BuildContext context) {
-    // Memaksa refresh data dummy pada setiap build (agar update instan saat Hot Reload)
-    controller.loadPenghuniData();
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
@@ -139,41 +138,42 @@ class PenghuniView extends GetView<PenghuniController> {
 
             const SizedBox(height: 16),
 
-            // Filter Chips
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+            // Filter Chips + Sort
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
                 children: [
-                  Obx(
-                    () => _buildFilterChip(
-                      'Semua Kost',
-                      controller.penghuniList.length,
-                      controller.selectedFilter.value == 'Semua Kost',
+                  Expanded(
+                    child: SizedBox(
+                      height: 40,
+                      child: Obx(() {
+                        final selected = controller.selectedFilter.value;
+                        final countVersion = controller.kostCounts.values
+                            .fold<int>(0, (sum, item) => sum + item);
+
+                        return ListView.separated(
+                          key: ValueKey('kost-chip-$selected-$countVersion'),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: controller.kostFilterOptions.length,
+                          separatorBuilder: (_, _) => const SizedBox(width: 8),
+                          itemBuilder: (context, index) {
+                            final option = controller.kostFilterOptions[index];
+                            final count = controller.getPenghuniCountByKost(
+                              option,
+                            );
+                            return _buildFilterChip(
+                              option,
+                              count,
+                              selected == option,
+                              count > 0,
+                            );
+                          },
+                        );
+                      }),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Obx(
-                    () => _buildFilterChip(
-                      'Green Valley Kost',
-                      controller.penghuniList
-                          .where((p) => p.namaKost == 'Green Valley Kost')
-                          .length,
-                      controller.selectedFilter.value == 'Green Valley Kost',
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Obx(
-                    () => _buildFilterChip(
-                      'Sunrise Boarding House',
-                      controller.penghuniList
-                          .where((p) => p.namaKost == 'Sunrise Boarding House')
-                          .length,
-                      controller.selectedFilter.value ==
-                          'Sunrise Boarding House',
-                    ),
-                  ),
+                  _buildSortButton(),
                 ],
               ),
             ),
@@ -182,16 +182,56 @@ class PenghuniView extends GetView<PenghuniController> {
 
             // List Penghuni
             Expanded(
-              child: Obx(
-                () => ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: controller.filteredPenghuniList.length,
-                  itemBuilder: (context, index) {
-                    final penghuni = controller.filteredPenghuniList[index];
-                    return _buildPenghuniCard(penghuni);
-                  },
-                ),
-              ),
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (controller.errorMessage.value != null) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        controller.errorMessage.value!,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFFB91C1C),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (controller.filteredPenghuniList.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Text(
+                        controller.emptyStateText,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Color(0xFF6B7280),
+                          fontSize: 14,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: controller.loadPenghuniData,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: controller.filteredPenghuniList.length,
+                    itemBuilder: (context, index) {
+                      final penghuni = controller.filteredPenghuniList[index];
+                      return _buildPenghuniCard(penghuni);
+                    },
+                  ),
+                );
+              }),
             ),
           ],
         ),
@@ -200,60 +240,128 @@ class PenghuniView extends GetView<PenghuniController> {
     );
   }
 
-  Widget _buildFilterChip(String label, int count, bool isSelected) {
-    return GestureDetector(
-      onTap: () => controller.filterByKost(label),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF6B8E7F) : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFF6B8E7F)
-                : const Color(0xFFE5E7EB),
-          ),
-        ),
-        child: Row(
-          children: [
-            if (isSelected)
-              const Padding(
-                padding: EdgeInsets.only(right: 6),
-                child: Icon(Icons.apartment, size: 16, color: Colors.white),
-              ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF6B7280),
-              ),
+  Widget _buildFilterChip(
+    String label,
+    int count,
+    bool isSelected,
+    bool hasPenghuni,
+  ) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: () => controller.filterByKost(label),
+        child: AnimatedContainer(
+          key: ValueKey('$label-$count-$isSelected'),
+          duration: const Duration(milliseconds: 120),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF6B8E7F) : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFF6B8E7F)
+                  : const Color(0xFFE5E7EB),
             ),
-            const SizedBox(width: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? Colors.white.withOpacity(0.2)
-                    : const Color(0xFFF3F4F6),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                count.toString(),
+          ),
+          child: Row(
+            children: [
+              if (isSelected)
+                const Padding(
+                  padding: EdgeInsets.only(right: 6),
+                  child: Icon(Icons.apartment, size: 16, color: Colors.white),
+                ),
+              if (!isSelected && hasPenghuni)
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF10B981),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              Text(
+                label,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
                   color: isSelected ? Colors.white : const Color(0xFF6B7280),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? Colors.white.withOpacity(0.2)
+                      : const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildPenghuniCard(penghuni) {
+  Widget _buildSortButton() {
+    return Obx(() {
+      final isAsc = controller.isSortAsc.value;
+      return Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: controller.toggleSortOrder,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isAsc
+                      ? Icons.arrow_upward_rounded
+                      : Icons.arrow_downward_rounded,
+                  size: 14,
+                  color: const Color(0xFF6B7280),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  isAsc ? 'Asc' : 'Desc',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildPenghuniCard(PenghuniModel penghuni) {
+    final roomLabel = controller.getRoomDisplayLabel(penghuni);
+    final occupancyLabel = controller.getOccupancyStatusLabel(penghuni);
+
     return GestureDetector(
       onTap: () => controller.goToDetail(penghuni),
       child: Container(
@@ -346,23 +454,58 @@ class PenghuniView extends GetView<PenghuniController> {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF6B8E7F),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    penghuni.nomorKamar,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withOpacity(0.14),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.person_rounded,
+                            size: 12,
+                            color: Color(0xFF10B981),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            occupancyLabel,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF10B981),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6B8E7F),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        roomLabel,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
