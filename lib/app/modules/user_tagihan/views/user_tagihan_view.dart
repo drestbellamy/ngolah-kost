@@ -169,13 +169,27 @@ class UserTagihanView extends GetView<UserTagihanController> {
                         const SizedBox(height: 12),
                         Obx(
                           () => _buildMetodePembayaranOption(
+                            title: 'QRIS',
+                            isSelected:
+                                controller.metodePembayaran.value == 'QRIS',
+                            onTap: () =>
+                                controller.metodePembayaran.value = 'QRIS',
+                            isExpanded:
+                                controller.metodePembayaran.value == 'QRIS',
+                            expandedContent: _buildQRISInfo(),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Obx(
+                          () => _buildMetodePembayaranOption(
                             title: 'Tunai',
                             isSelected:
                                 controller.metodePembayaran.value == 'Tunai',
                             onTap: () =>
                                 controller.metodePembayaran.value = 'Tunai',
-                            isExpanded: false,
-                            expandedContent: null,
+                            isExpanded:
+                                controller.metodePembayaran.value == 'Tunai',
+                            expandedContent: _buildTunaiInfo(),
                           ),
                         ),
 
@@ -261,7 +275,7 @@ class UserTagihanView extends GetView<UserTagihanController> {
                   Icons.receipt_long_outlined,
                   'Tagihan',
                   true,
-                  true,
+                  false,
                   () {},
                 ),
                 _buildBottomNavItem(
@@ -529,6 +543,8 @@ class UserTagihanView extends GetView<UserTagihanController> {
                 Icon(
                   title == 'Transfer Bank'
                       ? Icons.account_balance
+                      : title == 'QRIS'
+                      ? Icons.qr_code_2
                       : Icons.money,
                   color: const Color(0xFFFBBF24),
                 ),
@@ -593,9 +609,7 @@ class UserTagihanView extends GetView<UserTagihanController> {
           width: double.infinity,
           height: 48,
           child: OutlinedButton.icon(
-            onPressed: () {
-              // Logika upload foto
-            },
+            onPressed: _showUploadBottomSheet,
             icon: const Icon(Icons.upload_file, color: Colors.white, size: 18),
             label: const Text(
               'Unggah Bukti Transfer',
@@ -614,6 +628,140 @@ class UserTagihanView extends GetView<UserTagihanController> {
           ),
         ),
       ],
+    );
+  }
+
+  // Container Rekening untuk QRIS
+  Widget _buildQRISInfo() {
+    return Column(
+      children: [
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF9FAFB),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Container(
+                width: 200,
+                height: 200,
+                color: Colors.transparent,
+                child: const Icon(
+                  Icons.qr_code_2,
+                  size: 150,
+                  color: Color(0xFF1F2937),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _showUploadBottomSheet,
+                icon: const Icon(
+                  Icons.upload_file,
+                  color: Colors.white,
+                  size: 16,
+                ),
+                label: const Text(
+                  'Unggah Bukti',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6B8E7A),
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  // Logika download QR
+                },
+                icon: const Icon(Icons.download, color: Colors.white, size: 16),
+                label: const Text(
+                  'Download',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6B8E7A),
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Container Info untuk Tunai
+  Widget _buildTunaiInfo() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEFF6FF), // blue-50
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFBFDBFE)), // blue-200
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.info,
+            color: Color(0xFF3B82F6), // blue-500
+            size: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Instruksi Pembayaran Tunai',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1E3A8A), // blue-900
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Silakan lakukan pembayaran langsung kepada pemilik atau pengelola kost. Pastikan Anda menerima konfirmasi setelah pembayaran.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF1D4ED8), // blue-700
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -681,6 +829,115 @@ class UserTagihanView extends GetView<UserTagihanController> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showUploadBottomSheet() {
+    Get.bottomSheet(
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Foto Profil',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1F2937),
+              ),
+            ),
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: () {
+                Get.back();
+                // Logika pilih dari galeri di sini
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF9FAFB),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFFBEB),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.image_outlined,
+                        color: Color(0xFFF59E0B),
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Pilih dari Galeri',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F2937),
+                          ),
+                        ),
+                        Text(
+                          'Pilih foto yang sudah ada',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Get.back(),
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFFF3F4F6),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Batal',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4B5563),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+      isScrollControlled: true,
     );
   }
 }
