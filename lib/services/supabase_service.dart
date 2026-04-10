@@ -272,6 +272,77 @@ class SupabaseService {
     return fallback.map((item) => Map<String, dynamic>.from(item)).toList();
   }
 
+  // GET SINGLE PENGHUNI DETAIL (enriched for detail page refresh)
+  Future<Map<String, dynamic>?> getPenghuniDetailById(String penghuniId) async {
+    if (penghuniId.trim().isEmpty) return null;
+
+    try {
+      final raw = await supabase
+          .from('penghuni')
+          .select(
+            'id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, users:user_id(nama, no_tlpn), kamar:kamar_id(no_kamar, harga, kost:kost_id(nama_kost))',
+          )
+          .eq('id', penghuniId)
+          .maybeSingle();
+
+      final map = _asStringMap(raw);
+      if (map != null && map.isNotEmpty) {
+        final user = _asStringMap(map['users']) ?? <String, dynamic>{};
+        final kamar = _asStringMap(map['kamar']) ?? <String, dynamic>{};
+        final kost = _asStringMap(kamar['kost']) ?? <String, dynamic>{};
+
+        return {
+          'id': map['id']?.toString() ?? penghuniId,
+          'nama': (user['nama'] ?? '').toString(),
+          'no_tlpn': (user['no_tlpn'] ?? '').toString(),
+          'durasi_kontrak': map['durasi_kontrak'],
+          'sistem_pembayaran_bulan': map['sistem_pembayaran_bulan'],
+          'tanggal_masuk': map['tanggal_masuk'],
+          'tanggal_keluar': map['tanggal_keluar'],
+          'status': map['status'],
+          'nomor_kamar': (kamar['no_kamar'] ?? '').toString(),
+          'harga': kamar['harga'],
+          'nama_kost': (kost['nama_kost'] ?? '').toString(),
+        };
+      }
+    } catch (_) {
+      // Fall back to scan-based approach below.
+    }
+
+    // Fallback that reuses existing RLS-safe penghuni reader.
+    final kosts = await getKostList();
+    for (final kost in kosts) {
+      final kamarList = await getKamarByKostId(kost.id);
+      for (final kamar in kamarList) {
+        final kamarId = kamar['id']?.toString() ?? '';
+        if (kamarId.isEmpty) continue;
+
+        final rows = await getPenghuniByKamarId(kamarId);
+        for (final row in rows) {
+          final id = row['id']?.toString() ?? '';
+          if (id != penghuniId) continue;
+
+          final user = _asStringMap(row['users']) ?? <String, dynamic>{};
+          return {
+            'id': id,
+            'nama': (user['nama'] ?? row['nama'] ?? '').toString(),
+            'no_tlpn': (user['no_tlpn'] ?? row['no_tlpn'] ?? '').toString(),
+            'durasi_kontrak': row['durasi_kontrak'],
+            'sistem_pembayaran_bulan': row['sistem_pembayaran_bulan'],
+            'tanggal_masuk': row['tanggal_masuk'],
+            'tanggal_keluar': row['tanggal_keluar'],
+            'status': row['status'],
+            'nomor_kamar': (kamar['no_kamar'] ?? '').toString(),
+            'harga': kamar['harga'],
+            'nama_kost': kost.name,
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
   Future<List<Map<String, dynamic>>> _attachSistemPembayaranBulan(
     List<Map<String, dynamic>> rows,
     String kamarId,
@@ -330,6 +401,188 @@ class SupabaseService {
     return 0;
   }
 
+  // UPDATE KONTRAK PENGHUNI
+  Future<void> updatePenghuniKontrak({
+    required String penghuniId,
+    required DateTime tanggalMasuk,
+    required int durasiKontrakBulan,
+    required int sistemPembayaranBulan,
+    String status = 'aktif',
+  }) async {
+    if (penghuniId.trim().isEmpty) {
+      throw Exception('ID penghuni tidak valid');
+    }
+    if (durasiKontrakBulan <= 0) {
+      throw Exception('Durasi kontrak harus lebih dari 0 bulan');
+    }
+
+    final tanggalKeluar = DateTime(
+      tanggalMasuk.year,
+      tanggalMasuk.month + durasiKontrakBulan,
+      tanggalMasuk.day,
+    );
+
+    final normalizedSiklus = sistemPembayaranBulan <= 0
+        ? 1
+        : (sistemPembayaranBulan > durasiKontrakBulan
+              ? durasiKontrakBulan
+              : sistemPembayaranBulan);
+
+    final payload = <String, dynamic>{
+      'tanggal_masuk': tanggalMasuk.toIso8601String().split('T').first,
+      'tanggal_keluar': tanggalKeluar.toIso8601String().split('T').first,
+      'durasi_kontrak': durasiKontrakBulan,
+      'status': status,
+      'sistem_pembayaran_bulan': normalizedSiklus,
+    };
+
+    try {
+      await supabase.from('penghuni').update(payload).eq('id', penghuniId);
+    } on PostgrestException catch (e) {
+      final message = '${e.message} ${e.details}'.toLowerCase();
+
+      // Backward compatibility if schema has not added sistem_pembayaran_bulan.
+      if (message.contains('sistem_pembayaran_bulan')) {
+        payload.remove('sistem_pembayaran_bulan');
+        await supabase.from('penghuni').update(payload).eq('id', penghuniId);
+      } else {
+        rethrow;
+      }
+    }
+  }
+
+  // SINKRON TAGIHAN BERDASARKAN KONTRAK (idempotent)
+  Future<void> sinkronTagihanKontrak({
+    required String penghuniId,
+    required DateTime tanggalMasuk,
+    required int durasiKontrakBulan,
+    required int sistemPembayaranBulan,
+    required int hargaBulanan,
+  }) async {
+    if (penghuniId.trim().isEmpty || durasiKontrakBulan <= 0) return;
+    if (hargaBulanan <= 0) return;
+
+    final siklus = sistemPembayaranBulan <= 0
+        ? 1
+        : (sistemPembayaranBulan > durasiKontrakBulan
+              ? durasiKontrakBulan
+              : sistemPembayaranBulan);
+    final totalTagihan = (durasiKontrakBulan / siklus).ceil();
+    final jumlahPerTagihan = hargaBulanan * siklus;
+
+    final payload = <Map<String, dynamic>>[];
+
+    for (var i = 0; i < totalTagihan; i++) {
+      final periode = DateTime(
+        tanggalMasuk.year,
+        tanggalMasuk.month + (i * siklus),
+        1,
+      );
+
+      payload.add({
+        'penghuni_id': penghuniId,
+        'bulan': periode.month,
+        'tahun': periode.year,
+        'jumlah': jumlahPerTagihan,
+        'status': 'belum_dibayar',
+      });
+    }
+
+    // Rebuild unpaid schedule from scratch so old periods don't linger in kelola tagihan.
+    await supabase
+        .from('tagihan')
+        .delete()
+        .eq('penghuni_id', penghuniId)
+        .neq('status', 'lunas');
+
+    if (payload.isEmpty) return;
+
+    await supabase
+        .from('tagihan')
+        .upsert(
+          payload,
+          onConflict: 'penghuni_id,bulan,tahun',
+          ignoreDuplicates: true,
+        );
+  }
+
+  // AKHIRI KONTRAK PENGHUNI
+  Future<void> akhiriKontrakPenghuni({required String penghuniId}) async {
+    if (penghuniId.trim().isEmpty) {
+      throw Exception('ID penghuni tidak valid');
+    }
+
+    final now = DateTime.now();
+    final today = now.toIso8601String().split('T').first;
+
+    final raw = await supabase
+        .from('penghuni')
+        .select('id, kamar_id')
+        .eq('id', penghuniId)
+        .maybeSingle();
+
+    final row = _asStringMap(raw);
+
+    final kamarId = row?['kamar_id']?.toString() ?? '';
+
+    await supabase
+        .from('penghuni')
+        .update({'status': 'berakhir', 'tanggal_keluar': today})
+        .eq('id', penghuniId);
+
+    final pending = await supabase
+        .from('tagihan')
+        .select('id, bulan, tahun, status')
+        .eq('penghuni_id', penghuniId)
+        .eq('status', 'belum_dibayar');
+
+    if (pending is List) {
+      for (final item in pending) {
+        final map = Map<String, dynamic>.from(item as Map);
+        final id = map['id']?.toString() ?? '';
+        if (id.isEmpty) continue;
+
+        final bulan = _toInt(map['bulan']);
+        final tahun = _toInt(map['tahun']);
+        final isFuture =
+            tahun > now.year || (tahun == now.year && bulan > now.month);
+
+        if (isFuture) {
+          await supabase.from('tagihan').delete().eq('id', id);
+        }
+      }
+    }
+
+    if (kamarId.isNotEmpty) {
+      final activeRows = await supabase
+          .from('penghuni')
+          .select('id')
+          .eq('kamar_id', kamarId)
+          .eq('status', 'aktif');
+
+      final activeCount = activeRows is List ? activeRows.length : 0;
+
+      final kamarRaw = await supabase
+          .from('kamar')
+          .select('kapasitas')
+          .eq('id', kamarId)
+          .maybeSingle();
+
+      final kamarMap = _asStringMap(kamarRaw);
+      final kapasitas = _toInt(kamarMap?['kapasitas']);
+
+      await supabase
+          .from('kamar')
+          .update({
+            'status': _kamarStatusByOccupancy(
+              activeCount,
+              kapasitas <= 0 ? 1 : kapasitas,
+            ),
+          })
+          .eq('id', kamarId);
+    }
+  }
+
   // INSERT TAGIHAN OTOMATIS BERDASARKAN KONTRAK
   Future<void> createTagihanOtomatis({
     required String penghuniId,
@@ -342,7 +595,11 @@ class SupabaseService {
       return;
     }
 
-    final siklus = sistemPembayaranBulan <= 0 ? 1 : sistemPembayaranBulan;
+    final siklus = sistemPembayaranBulan <= 0
+        ? 1
+        : (sistemPembayaranBulan > durasiKontrakBulan
+              ? durasiKontrakBulan
+              : sistemPembayaranBulan);
     final totalTagihan = (durasiKontrakBulan / siklus).ceil();
     final jumlahPerTagihan = hargaBulanan * siklus;
 
@@ -364,7 +621,13 @@ class SupabaseService {
     }
 
     if (payload.isEmpty) return;
-    await supabase.from('tagihan').insert(payload);
+    await supabase
+        .from('tagihan')
+        .upsert(
+          payload,
+          onConflict: 'penghuni_id,bulan,tahun',
+          ignoreDuplicates: true,
+        );
   }
 
   // GET TAGIHAN (enriched with penghuni, kamar, and kost labels)
@@ -442,5 +705,29 @@ class SupabaseService {
     }
 
     return lookup;
+  }
+
+  int _toInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  double _toDouble(dynamic value) {
+    if (value is int) return value.toDouble();
+    if (value is double) return value;
+    return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  Map<String, dynamic>? _asStringMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is! Map) return null;
+
+    return value.map((key, val) => MapEntry(key.toString(), val));
+  }
+
+  String _kamarStatusByOccupancy(int terisi, int kapasitas) {
+    if (terisi <= 0) return 'kosong';
+    if (terisi >= kapasitas) return 'penuh';
+    return 'terisi';
   }
 }

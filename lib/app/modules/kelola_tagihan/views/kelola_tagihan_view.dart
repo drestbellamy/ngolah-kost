@@ -32,144 +32,149 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
 
             // Content
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    // Search Bar
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: TextField(
-                        controller: controller.searchController,
-                        onChanged: controller.searchTagihan,
-                        decoration: InputDecoration(
-                          hintText: 'Cari penghuni, kamar, atau kost...',
-                          hintStyle: const TextStyle(
-                            color: Color(0xFFA0AEC0),
-                            fontSize: 14,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            color: Color(0xFF9CA3AF),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Filter Chips
-                    Obx(
-                      () => SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            _buildFilterChip(
-                              'Semua (${controller.getCountByStatus('semua')})',
-                              'semua',
-                              const Color(0xFF6B8E7F),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildFilterChip(
-                              'Menunggu (${controller.getCountByStatus('menunggu_verifikasi')})',
-                              'menunggu_verifikasi',
-                              const Color(0xFFF2A65A),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildFilterChip(
-                              'Belum Dibayar (${controller.getCountByStatus('belum_dibayar')})',
-                              'belum_dibayar',
-                              const Color(0xFFEF4444),
-                            ),
-                            const SizedBox(width: 8),
-                            _buildFilterChip(
-                              'Lunas (${controller.getCountByStatus('lunas')})',
-                              'lunas',
-                              const Color(0xFF10B981),
+              child: RefreshIndicator(
+                onRefresh: controller.loadTagihanData,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // Search Bar
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
+                        child: TextField(
+                          controller: controller.searchController,
+                          onChanged: controller.searchTagihan,
+                          decoration: InputDecoration(
+                            hintText: 'Cari penghuni, kamar, atau kost...',
+                            hintStyle: const TextStyle(
+                              color: Color(0xFFA0AEC0),
+                              fontSize: 14,
+                            ),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 10),
+                      const SizedBox(height: 16),
 
-                    // Month Filter Trigger
-                    _buildMonthFilterTrigger(context),
+                      // Filter Chips
+                      Obx(
+                        () => SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              _buildFilterChip(
+                                'Semua (${controller.getCountByStatus('semua')})',
+                                'semua',
+                                const Color(0xFF6B8E7F),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildFilterChip(
+                                'Menunggu (${controller.getCountByStatus('menunggu_verifikasi')})',
+                                'menunggu_verifikasi',
+                                const Color(0xFFF2A65A),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildFilterChip(
+                                'Belum Dibayar (${controller.getCountByStatus('belum_dibayar')})',
+                                'belum_dibayar',
+                                const Color(0xFFEF4444),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildFilterChip(
+                                'Lunas (${controller.getCountByStatus('lunas')})',
+                                'lunas',
+                                const Color(0xFF10B981),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 10),
 
-                    // Tagihan List
-                    Obx(() {
-                      if (controller.isLoading.value) {
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 40),
-                          child: Center(child: CircularProgressIndicator()),
-                        );
-                      }
+                      // Month Filter Trigger
+                      _buildMonthFilterTrigger(context),
 
-                      if (controller.errorMessage.value != null) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 40),
-                          child: Center(
-                            child: Text(
-                              controller.errorMessage.value!,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFFB91C1C),
+                      const SizedBox(height: 16),
+
+                      // Tagihan List
+                      Obx(() {
+                        if (controller.isLoading.value) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 40),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+
+                        if (controller.errorMessage.value != null) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 40),
+                            child: Center(
+                              child: Text(
+                                controller.errorMessage.value!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFFB91C1C),
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }
+                          );
+                        }
 
-                      if (controller.filteredTagihanList.isEmpty) {
-                        return const Padding(
-                          padding: EdgeInsets.only(top: 40),
-                          child: Center(
-                            child: Text(
-                              'Belum ada data tagihan.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF6B7280),
+                        if (controller.filteredTagihanList.isEmpty) {
+                          return const Padding(
+                            padding: EdgeInsets.only(top: 40),
+                            child: Center(
+                              child: Text(
+                                'Belum ada data tagihan.',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF6B7280),
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      }
+                          );
+                        }
 
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.filteredTagihanList.length,
-                        itemBuilder: (context, index) {
-                          final tagihan = controller.filteredTagihanList[index];
-                          return _buildTagihanCard(tagihan);
-                        },
-                      );
-                    }),
-                  ],
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: controller.filteredTagihanList.length,
+                          itemBuilder: (context, index) {
+                            final tagihan =
+                                controller.filteredTagihanList[index];
+                            return _buildTagihanCard(tagihan);
+                          },
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ),
             ),
