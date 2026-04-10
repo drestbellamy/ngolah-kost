@@ -11,152 +11,176 @@ class UserInfoView extends GetView<UserInfoController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SafeArea(
-              child: CustomHeader(
-                title: 'Informasi Kost',
-                subtitle: 'Pengumuman & berita terbaru',
-                showBackButton: false,
-              ),
+      body: Column(
+        children: [
+          SafeArea(
+            bottom: false,
+            child: CustomHeader(
+              title: 'Informasi Kost',
+              subtitle: 'Pengumuman & berita terbaru',
+              showBackButton: false,
             ),
-            const SizedBox(height: 24),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 24),
 
-            // Toggle Buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Obx(
-                  () => Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.changeTab(0),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: controller.selectedTabIndex.value == 0
-                                  ? const Color(0xFF6B8E7A)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.notifications_none_outlined,
-                                  size: 16,
-                                  color: controller.selectedTabIndex.value == 0
-                                      ? Colors.white
-                                      : const Color(0xFF6B8E7A),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Pengumuman',
-                                  style: TextStyle(
+                  // Toggle Buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Obx(
+                        () => Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => controller.changeTab(0),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
                                     color:
                                         controller.selectedTabIndex.value == 0
-                                        ? Colors.white
-                                        : const Color(0xFF6B8E7A),
-                                    fontWeight: FontWeight.w600,
+                                        ? const Color(0xFF6B8E7A)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.notifications_none_outlined,
+                                        size: 16,
+                                        color:
+                                            controller.selectedTabIndex.value ==
+                                                0
+                                            ? Colors.white
+                                            : const Color(0xFF6B8E7A),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Pengumuman',
+                                        style: TextStyle(
+                                          color:
+                                              controller
+                                                      .selectedTabIndex
+                                                      .value ==
+                                                  0
+                                              ? Colors.white
+                                              : const Color(0xFF6B8E7A),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () => controller.changeTab(1),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: controller.selectedTabIndex.value == 1
-                                  ? const Color(0xFF6B8E7A)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.menu_book_outlined,
-                                  size: 16,
-                                  color: controller.selectedTabIndex.value == 1
-                                      ? Colors.white
-                                      : const Color(0xFF6B8E7A),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Peraturan',
-                                  style: TextStyle(
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => controller.changeTab(1),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
                                     color:
                                         controller.selectedTabIndex.value == 1
-                                        ? Colors.white
-                                        : const Color(0xFF6B8E7A),
-                                    fontWeight: FontWeight.w600,
+                                        ? const Color(0xFF6B8E7A)
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.menu_book_outlined,
+                                        size: 16,
+                                        color:
+                                            controller.selectedTabIndex.value ==
+                                                1
+                                            ? Colors.white
+                                            : const Color(0xFF6B8E7A),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Peraturan',
+                                        style: TextStyle(
+                                          color:
+                                              controller
+                                                      .selectedTabIndex
+                                                      .value ==
+                                                  1
+                                              ? Colors.white
+                                              : const Color(0xFF6B8E7A),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+
+                  const SizedBox(height: 24),
+
+                  // Content List
+                  Obx(() {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
+                      child: controller.selectedTabIndex.value == 0
+                          ? ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: controller.announcements.length,
+                              itemBuilder: (context, index) {
+                                final announcement =
+                                    controller.announcements[index];
+                                return _buildAnnouncementCard(announcement);
+                              },
+                            )
+                          : ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: controller.rules.length,
+                              itemBuilder: (context, index) {
+                                final rule = controller.rules[index];
+                                return _buildRuleCard(rule);
+                              },
+                            ),
+                    );
+                  }),
+
+                  const SizedBox(height: 100), // Padding for bottom nav
+                ],
               ),
             ),
-
-            const SizedBox(height: 24),
-
-            // Content List
-            Obx(() {
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 8,
-                ),
-                child: controller.selectedTabIndex.value == 0
-                    ? ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.announcements.length,
-                        itemBuilder: (context, index) {
-                          final announcement = controller.announcements[index];
-                          return _buildAnnouncementCard(announcement);
-                        },
-                      )
-                    : ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.rules.length,
-                        itemBuilder: (context, index) {
-                          final rule = controller.rules[index];
-                          return _buildRuleCard(rule);
-                        },
-                      ),
-              );
-            }),
-
-            const SizedBox(height: 100), // Padding for bottom nav
-          ],
-        ),
+          ),
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
