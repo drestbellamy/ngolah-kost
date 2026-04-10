@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/kost_controller.dart';
+import '../models/kost_model.dart';
+import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../routes/app_routes.dart';
 
 class KostView extends GetView<KostController> {
@@ -9,104 +12,59 @@ class KostView extends GetView<KostController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
         child: Column(
           children: [
             // Header
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 25,
-                    offset: const Offset(0, 20),
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  // Decorative circles
-                  Positioned(
-                    right: -120,
-                    top: -180,
-                    child: Container(
-                      width: 256,
-                      height: 256,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: -80,
-                    bottom: -100,
-                    child: Container(
-                      width: 192,
-                      height: 192,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-
-                  // Content
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Unit Kost',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          'Kelola unit kost Anda',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFFA8D5BA),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            const CustomHeader(
+              title: 'Unit Kost',
+              subtitle: 'Kelola unit kost Anda',
+              showBackButton: false,
             ),
 
             // List Kost
             Expanded(
-              child: Obx(
-                () => ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: controller.kostList.length,
-                  itemBuilder: (context, index) {
-                    final kost = controller.kostList[index];
-                    return _buildKostCard(kost);
-                  },
-                ),
+              child: FutureBuilder<List<KostModel>>(
+                future: controller.kostFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Gagal memuat data kost: ${snapshot.error}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Color(0xFFE53E3E)),
+                      ),
+                    );
+                  }
+
+                  if (controller.kostList.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Belum ada data kost',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF718096),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return Obx(
+                    () => ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: controller.kostList.length,
+                      itemBuilder: (context, index) {
+                        final kost = controller.kostList[index];
+                        return _buildKostCard(kost);
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -117,11 +75,11 @@ class KostView extends GetView<KostController> {
         backgroundColor: const Color(0xFFFF9F66),
         child: const Icon(Icons.add, color: Colors.white),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: const AdminBottomNavbar(currentIndex: 1),
     );
   }
 
-  Widget _buildKostCard(kost) {
+  Widget _buildKostCard(KostModel kost) {
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.kamar, arguments: kost),
       child: Container(
@@ -164,6 +122,8 @@ class KostView extends GetView<KostController> {
                     children: [
                       Text(
                         kost.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -255,56 +215,6 @@ class KostView extends GetView<KostController> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFF6B8E7F),
-        unselectedItemColor: const Color(0xFFA0AEC0),
-        selectedFontSize: 12,
-        unselectedFontSize: 12,
-        elevation: 0,
-        currentIndex: 1,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              Get.offNamed(Routes.home);
-              break;
-            case 1:
-              // Sudah di halaman Kost
-              break;
-            case 2:
-              Get.offNamed(Routes.penghuni);
-              break;
-            case 3:
-              Get.offNamed(Routes.profil);
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.apartment), label: 'Kost'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Penghuni'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
       ),
     );
   }
