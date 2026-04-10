@@ -44,13 +44,30 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   }
 
   Widget _buildPilihGedungContent() {
+    if (controller.isLoadingGedung.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (controller.gedungKostList.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            controller.errorMessage.value ?? 'Belum ada data kost.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       child: Column(
         children: controller.gedungKostList
             .map(
               (gedung) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: 14),
                 child: _buildGedungCard(gedung),
               ),
             )
@@ -60,15 +77,21 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   }
 
   Widget _buildGedungCard(GedungKostModel gedung) {
+    final totalPengumuman = controller.getPengumumanCountForKost(gedung.id);
+    final hasPengumuman = totalPengumuman > 0;
+
     return InkWell(
-      onTap: () => controller.pilihGedungKost(gedung),
-      borderRadius: BorderRadius.circular(14),
+      onTap: () {
+        controller.pilihGedungKost(gedung);
+      },
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(10),
+        constraints: const BoxConstraints(minHeight: 120),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: const Color(0xFFF8F8F8),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: const Color(0xFFE7E9E8)),
           boxShadow: [
             BoxShadow(
@@ -82,19 +105,19 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 58,
+              height: 58,
               decoration: BoxDecoration(
                 color: const Color(0xFFE9ECEA),
-                borderRadius: BorderRadius.circular(13),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: const Icon(
                 Icons.apartment_outlined,
                 color: Color(0xFF6B8E7A),
-                size: 24,
+                size: 26,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,65 +127,96 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 17,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF2D2F34),
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(top: 0.5),
+                        padding: EdgeInsets.only(top: 1),
                         child: Icon(
                           Icons.location_on_outlined,
-                          size: 14,
+                          size: 15,
                           color: Color(0xFF7A8292),
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           gedung.alamat,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 13.5,
                             color: Color(0xFF6C7383),
+                            height: 1.3,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5EFE9),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      '${gedung.totalKamar} Rooms',
-                      style: const TextStyle(
-                        color: Color(0xFF507562),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE5EFE9),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          '${gedung.totalKamar} Rooms',
+                          style: const TextStyle(
+                            color: Color(0xFF507562),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: hasPengumuman
+                              ? const Color(0xFFEFF6FF)
+                              : const Color(0xFFFEF3F2),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          hasPengumuman
+                              ? '$totalPengumuman Pengumuman'
+                              : '0 Pengumuman',
+                          style: TextStyle(
+                            color: hasPengumuman
+                                ? const Color(0xFF1D4ED8)
+                                : const Color(0xFFB42318),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             const Padding(
-              padding: EdgeInsets.only(top: 2),
+              padding: EdgeInsets.only(top: 4),
               child: Icon(
                 Icons.chevron_right,
-                size: 20,
+                size: 22,
                 color: Color(0xFF7A8292),
               ),
             ),
@@ -173,74 +227,103 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   }
 
   Widget _buildKelolaPengumumanContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-      child: Column(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6B8E7A),
-              minimumSize: const Size(double.infinity, 46),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+    return RefreshIndicator(
+      onRefresh: controller.refreshPengumumanAktif,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
+        child: Column(
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6B8E7A),
+                minimumSize: const Size(double.infinity, 46),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 0,
               ),
-              elevation: 0,
-            ),
-            onPressed: _showAddPengumumanDialog,
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add, color: Colors.white, size: 22),
-                SizedBox(width: 8),
-                Text(
-                  'Tambah Pengumuman',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
+              onPressed: controller.isSavingPengumuman.value
+                  ? null
+                  : _showAddPengumumanDialog,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, color: Colors.white, size: 22),
+                  SizedBox(width: 8),
+                  Text(
+                    'Tambah Pengumuman',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          Obx(() {
-            if (controller.pengumumanList.isEmpty) {
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 28,
-                  horizontal: 20,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
-                ),
-                child: const Text(
-                  'Belum ada pengumuman untuk gedung kost ini.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 16,
-                    height: 1.4,
-                  ),
-                ),
-              );
-            }
+            const SizedBox(height: 12),
+            if (controller.isLoadingPengumuman.value)
+              const Padding(
+                padding: EdgeInsets.only(top: 24),
+                child: CircularProgressIndicator(),
+              )
+            else if (controller.errorMessage.value != null)
+              _buildErrorCard(controller.errorMessage.value!)
+            else if (controller.pengumumanList.isEmpty)
+              _buildEmptyCard()
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: controller.pengumumanList.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final item = controller.pengumumanList[index];
+                  return _buildPengumumanCard(item);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
-            return ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: controller.pengumumanList.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                final item = controller.pengumumanList[index];
-                return _buildPengumumanCard(item);
-              },
-            );
-          }),
-        ],
+  Widget _buildErrorCard(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Color(0xFFB91C1C),
+          fontSize: 14,
+          height: 1.4,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+      ),
+      child: const Text(
+        'Belum ada pengumuman untuk gedung kost ini.',
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Color(0xFF6B7280), fontSize: 16, height: 1.4),
       ),
     );
   }
@@ -529,6 +612,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   }
 
   void _showAddPengumumanDialog() {
+    final formKey = GlobalKey<FormState>();
     final judulController = TextEditingController();
     final deskripsiController = TextEditingController();
 
@@ -566,73 +650,140 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                 const SizedBox(height: 20),
                 _buildInfoBannerModal(),
                 const SizedBox(height: 20),
-                const Text(
-                  'Judul *',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: judulController,
-                  decoration: _inputDecoration('Contoh: Pemeliharaan Air'),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Deskripsi *',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: deskripsiController,
-                  maxLines: 4,
-                  decoration: _inputDecoration('Tulis detail pengumuman...'),
+                Form(
+                  key: formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Judul *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: judulController,
+                        maxLength: 80,
+                        decoration: _inputDecoration(
+                          'Contoh: Pemeliharaan Air',
+                        ),
+                        validator: (value) {
+                          final text = (value ?? '').trim();
+                          if (text.isEmpty) {
+                            return 'Judul pengumuman wajib diisi';
+                          }
+                          if (text.length < 5) {
+                            return 'Minimal 5 karakter';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Deskripsi *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: deskripsiController,
+                        maxLines: 4,
+                        maxLength: 500,
+                        decoration: _inputDecoration(
+                          'Tulis detail pengumuman...',
+                        ),
+                        validator: (value) {
+                          final text = (value ?? '').trim();
+                          if (text.isEmpty) {
+                            return 'Deskripsi pengumuman wajib diisi';
+                          }
+                          if (text.length < 10) {
+                            return 'Minimal 10 karakter';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 28),
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Get.back(),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF6B7280),
-                          side: const BorderSide(color: Color(0xFFD1D5DB)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                      child: Obx(
+                        () => OutlinedButton(
+                          onPressed: controller.isSavingPengumuman.value
+                              ? null
+                              : () => Get.back(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF6B7280),
+                            side: const BorderSide(color: Color(0xFFD1D5DB)),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Batal',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          child: const Text(
+                            'Batal',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (judulController.text.trim().isEmpty ||
-                              deskripsiController.text.trim().isEmpty) {
-                            return;
-                          }
+                      child: Obx(
+                        () => ElevatedButton(
+                          onPressed: controller.isSavingPengumuman.value
+                              ? null
+                              : () async {
+                                  final judul = judulController.text.trim();
+                                  final deskripsi = deskripsiController.text
+                                      .trim();
 
-                          controller.addPengumuman(
-                            judulController.text,
-                            deskripsiController.text,
-                          );
-                          Get.back();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6B8E7A),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                                  final isValid =
+                                      formKey.currentState?.validate() ?? false;
+                                  if (!isValid) {
+                                    return;
+                                  }
+
+                                  try {
+                                    final success = await controller
+                                        .addPengumuman(judul, deskripsi);
+                                    if (success) {
+                                      Get.back();
+                                      Get.snackbar(
+                                        'Berhasil',
+                                        'Pengumuman berhasil ditambahkan',
+                                      );
+                                    }
+                                  } catch (e) {
+                                    _showFormException(
+                                      e,
+                                      'Terjadi kesalahan saat menambahkan pengumuman',
+                                    );
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6B8E7A),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
                           ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Tambah',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          child: Text(
+                            controller.isSavingPengumuman.value
+                                ? 'Menyimpan...'
+                                : 'Tambah',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                     ),
@@ -648,6 +799,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   }
 
   void _showEditPengumumanDialog(PengumumanModel item) {
+    final formKey = GlobalKey<FormState>();
     final judulController = TextEditingController(text: item.title);
     final deskripsiController = TextEditingController(text: item.description);
 
@@ -685,74 +837,144 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                 const SizedBox(height: 20),
                 _buildInfoBannerModal(),
                 const SizedBox(height: 20),
-                const Text(
-                  'Judul *',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: judulController,
-                  decoration: _inputDecoration('Contoh: Pemeliharaan Air'),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Deskripsi *',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: deskripsiController,
-                  maxLines: 4,
-                  decoration: _inputDecoration('Tulis detail pengumuman...'),
+                Form(
+                  key: formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Judul *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: judulController,
+                        maxLength: 80,
+                        decoration: _inputDecoration(
+                          'Contoh: Pemeliharaan Air',
+                        ),
+                        validator: (value) {
+                          final text = (value ?? '').trim();
+                          if (text.isEmpty) {
+                            return 'Judul pengumuman wajib diisi';
+                          }
+                          if (text.length < 5) {
+                            return 'Minimal 5 karakter';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Deskripsi *',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: deskripsiController,
+                        maxLines: 4,
+                        maxLength: 500,
+                        decoration: _inputDecoration(
+                          'Tulis detail pengumuman...',
+                        ),
+                        validator: (value) {
+                          final text = (value ?? '').trim();
+                          if (text.isEmpty) {
+                            return 'Deskripsi pengumuman wajib diisi';
+                          }
+                          if (text.length < 10) {
+                            return 'Minimal 10 karakter';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 28),
                 Row(
                   children: [
                     Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Get.back(),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF6B7280),
-                          side: const BorderSide(color: Color(0xFFD1D5DB)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                      child: Obx(
+                        () => OutlinedButton(
+                          onPressed: controller.isSavingPengumuman.value
+                              ? null
+                              : () => Get.back(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF6B7280),
+                            side: const BorderSide(color: Color(0xFFD1D5DB)),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                           ),
-                        ),
-                        child: const Text(
-                          'Batal',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          child: const Text(
+                            'Batal',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (judulController.text.trim().isEmpty ||
-                              deskripsiController.text.trim().isEmpty) {
-                            return;
-                          }
+                      child: Obx(
+                        () => ElevatedButton(
+                          onPressed: controller.isSavingPengumuman.value
+                              ? null
+                              : () async {
+                                  final judul = judulController.text.trim();
+                                  final deskripsi = deskripsiController.text
+                                      .trim();
 
-                          controller.editPengumuman(
-                            item.id,
-                            judulController.text,
-                            deskripsiController.text,
-                          );
-                          Get.back();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6B8E7A),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                                  final isValid =
+                                      formKey.currentState?.validate() ?? false;
+                                  if (!isValid) {
+                                    return;
+                                  }
+
+                                  try {
+                                    final success = await controller
+                                        .editPengumuman(
+                                          item.id,
+                                          judul,
+                                          deskripsi,
+                                        );
+                                    if (success) {
+                                      Get.back();
+                                      Get.snackbar(
+                                        'Berhasil',
+                                        'Pengumuman berhasil diperbarui',
+                                      );
+                                    }
+                                  } catch (e) {
+                                    _showFormException(
+                                      e,
+                                      'Terjadi kesalahan saat memperbarui pengumuman',
+                                    );
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF6B8E7A),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
                           ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Simpan',
-                          style: TextStyle(fontWeight: FontWeight.w600),
+                          child: Text(
+                            controller.isSavingPengumuman.value
+                                ? 'Menyimpan...'
+                                : 'Simpan',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ),
                     ),
@@ -814,41 +1036,65 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
               Row(
                 children: [
                   Expanded(
-                    child: TextButton(
-                      onPressed: () => Get.back(),
-                      style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFFF7F7F7),
-                        foregroundColor: const Color(0xFF6B7280),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => TextButton(
+                        onPressed: controller.isSavingPengumuman.value
+                            ? null
+                            : () => Get.back(),
+                        style: TextButton.styleFrom(
+                          backgroundColor: const Color(0xFFF7F7F7),
+                          foregroundColor: const Color(0xFF6B7280),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        controller.deletePengumuman(id);
-                        Get.back();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF3B30),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => ElevatedButton(
+                        onPressed: controller.isSavingPengumuman.value
+                            ? null
+                            : () async {
+                                try {
+                                  final success = await controller
+                                      .deletePengumuman(id);
+                                  if (success) {
+                                    Get.back();
+                                    Get.snackbar(
+                                      'Berhasil',
+                                      'Pengumuman berhasil dihapus',
+                                    );
+                                  }
+                                } catch (e) {
+                                  _showFormException(
+                                    e,
+                                    'Terjadi kesalahan saat menghapus pengumuman',
+                                  );
+                                }
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF3B30),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Delete',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        child: Text(
+                          controller.isSavingPengumuman.value
+                              ? 'Menghapus...'
+                              : 'Delete',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
@@ -891,6 +1137,21 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
         ],
       ),
     );
+  }
+
+  void _showFormException(Object error, String fallbackMessage) {
+    final raw = error.toString().trim();
+    var message = raw;
+
+    if (message.startsWith('Exception:')) {
+      message = message.substring('Exception:'.length).trim();
+    }
+
+    if (message.isEmpty) {
+      message = fallbackMessage;
+    }
+
+    Get.snackbar('Error', message);
   }
 
   InputDecoration _inputDecoration(String hint) {

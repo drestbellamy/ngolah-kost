@@ -675,6 +675,240 @@ class SupabaseService {
     return raw.map((item) => Map<String, dynamic>.from(item)).toList();
   }
 
+  // GET PENGUMUMAN BY KOST
+  Future<List<Map<String, dynamic>>> getPengumumanByKostId(
+    String kostId,
+  ) async {
+    if (kostId.trim().isEmpty) return [];
+
+    final attempts = <({String select, String kostField, String? orderField})>[
+      (
+        select: 'id, kost_id, judul, isi, tanggal',
+        kostField: 'kost_id',
+        orderField: 'tanggal',
+      ),
+      (
+        select: 'id, id_kost, judul, isi, tanggal',
+        kostField: 'id_kost',
+        orderField: 'tanggal',
+      ),
+      (
+        select: 'id, kost_id, judul, deskripsi, tanggal',
+        kostField: 'kost_id',
+        orderField: 'tanggal',
+      ),
+      (
+        select: 'id, id_kost, judul, deskripsi, tanggal',
+        kostField: 'id_kost',
+        orderField: 'tanggal',
+      ),
+      (
+        select: 'id, kost_id, judul, isi, created_at',
+        kostField: 'kost_id',
+        orderField: 'created_at',
+      ),
+      (
+        select: 'id, kost_id, title, description, created_at',
+        kostField: 'kost_id',
+        orderField: 'created_at',
+      ),
+      (
+        select: 'id, id_kost, title, description, created_at',
+        kostField: 'id_kost',
+        orderField: 'created_at',
+      ),
+      (
+        select: 'id, kost_id, title, content, created_at',
+        kostField: 'kost_id',
+        orderField: 'created_at',
+      ),
+      (
+        select: 'id, id_kost, title, content, created_at',
+        kostField: 'id_kost',
+        orderField: 'created_at',
+      ),
+      (select: '*', kostField: 'kost_id', orderField: 'tanggal'),
+      (select: '*', kostField: 'id_kost', orderField: 'tanggal'),
+      (select: '*', kostField: 'kost_id', orderField: 'created_at'),
+      (select: '*', kostField: 'id_kost', orderField: 'created_at'),
+      (select: '*', kostField: 'kost_id', orderField: null),
+      (select: '*', kostField: 'id_kost', orderField: null),
+    ];
+
+    for (final attempt in attempts) {
+      try {
+        dynamic query = supabase
+            .from('pengumuman')
+            .select(attempt.select)
+            .eq(attempt.kostField, kostId);
+
+        if (attempt.orderField != null) {
+          query = query.order(attempt.orderField!, ascending: false);
+        }
+
+        final raw = await query;
+        if (raw is! List) return [];
+
+        return raw.map((item) => Map<String, dynamic>.from(item)).toList();
+      } catch (_) {
+        // Try next schema/column variation.
+      }
+    }
+
+    throw Exception('Gagal memuat data pengumuman');
+  }
+
+  // GET JUMLAH PENGUMUMAN BY KOST
+  Future<int> getPengumumanCountByKostId(String kostId) async {
+    if (kostId.trim().isEmpty) return 0;
+
+    final attempts = <({String select, String kostField})>[
+      (select: 'id', kostField: 'kost_id'),
+      (select: 'id', kostField: 'id_kost'),
+      (select: '*', kostField: 'kost_id'),
+      (select: '*', kostField: 'id_kost'),
+    ];
+
+    for (final attempt in attempts) {
+      try {
+        final raw = await supabase
+            .from('pengumuman')
+            .select(attempt.select)
+            .eq(attempt.kostField, kostId);
+
+        if (raw is List) return raw.length;
+      } catch (_) {
+        // Try next schema/column variation.
+      }
+    }
+
+    return 0;
+  }
+
+  // INSERT PENGUMUMAN
+  Future<void> createPengumuman({
+    required String kostId,
+    required String title,
+    required String description,
+  }) async {
+    if (kostId.trim().isEmpty) {
+      throw Exception('ID kost tidak valid');
+    }
+
+    final judul = title.trim();
+    final deskripsi = description.trim();
+    final nowIso = DateTime.now().toIso8601String();
+    if (judul.isEmpty || deskripsi.isEmpty) {
+      throw Exception('Judul dan deskripsi pengumuman wajib diisi');
+    }
+
+    final payloads = <Map<String, dynamic>>[
+      {
+        'kost_id': kostId,
+        'judul': judul,
+        'deskripsi': deskripsi,
+        'tanggal': nowIso,
+      },
+      {
+        'id_kost': kostId,
+        'judul': judul,
+        'deskripsi': deskripsi,
+        'tanggal': nowIso,
+      },
+      {'kost_id': kostId, 'judul': judul, 'isi': deskripsi, 'tanggal': nowIso},
+      {'id_kost': kostId, 'judul': judul, 'isi': deskripsi, 'tanggal': nowIso},
+      {
+        'kost_id': kostId,
+        'title': judul,
+        'description': deskripsi,
+        'tanggal': nowIso,
+      },
+      {
+        'id_kost': kostId,
+        'title': judul,
+        'description': deskripsi,
+        'tanggal': nowIso,
+      },
+      {
+        'kost_id': kostId,
+        'title': judul,
+        'content': deskripsi,
+        'tanggal': nowIso,
+      },
+      {
+        'id_kost': kostId,
+        'title': judul,
+        'content': deskripsi,
+        'tanggal': nowIso,
+      },
+    ];
+
+    PostgrestException? lastError;
+    for (final payload in payloads) {
+      try {
+        await supabase.from('pengumuman').insert(payload);
+        return;
+      } on PostgrestException catch (e) {
+        lastError = e;
+      }
+    }
+
+    if (lastError != null) {
+      throw Exception(_formatPostgrestError(lastError));
+    }
+
+    throw Exception('Gagal menambahkan pengumuman');
+  }
+
+  // UPDATE PENGUMUMAN
+  Future<void> updatePengumuman({
+    required String id,
+    required String title,
+    required String description,
+  }) async {
+    if (id.trim().isEmpty) {
+      throw Exception('ID pengumuman tidak valid');
+    }
+
+    final judul = title.trim();
+    final deskripsi = description.trim();
+    if (judul.isEmpty || deskripsi.isEmpty) {
+      throw Exception('Judul dan deskripsi pengumuman wajib diisi');
+    }
+
+    final payloads = <Map<String, dynamic>>[
+      {'judul': judul, 'deskripsi': deskripsi},
+      {'judul': judul, 'isi': deskripsi},
+      {'title': judul, 'description': deskripsi},
+      {'title': judul, 'content': deskripsi},
+    ];
+
+    PostgrestException? lastError;
+    for (final payload in payloads) {
+      try {
+        await supabase.from('pengumuman').update(payload).eq('id', id);
+        return;
+      } on PostgrestException catch (e) {
+        lastError = e;
+      }
+    }
+
+    if (lastError != null) {
+      throw Exception(_formatPostgrestError(lastError));
+    }
+
+    throw Exception('Gagal memperbarui pengumuman');
+  }
+
+  // DELETE PENGUMUMAN
+  Future<void> deletePengumuman(String id) async {
+    if (id.trim().isEmpty) {
+      throw Exception('ID pengumuman tidak valid');
+    }
+
+    await supabase.from('pengumuman').delete().eq('id', id);
+  }
+
   Future<Map<String, Map<String, String>>> _buildPenghuniLookup() async {
     final lookup = <String, Map<String, String>>{};
 
@@ -710,6 +944,28 @@ class SupabaseService {
   int _toInt(dynamic value) {
     if (value is int) return value;
     return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  String _formatPostgrestError(PostgrestException error) {
+    final dynamic raw = error;
+    final code = (raw.code ?? '').toString().trim();
+    final message = (raw.message ?? error.toString()).toString().trim();
+    final details = (raw.details ?? '').toString().trim();
+    final hintText = (raw.hint ?? '').toString().trim();
+    final parts = <String>[];
+
+    if (code.isNotEmpty) {
+      parts.add('code=$code');
+    }
+    if (details.isNotEmpty && details.toLowerCase() != 'null') {
+      parts.add('details=$details');
+    }
+    if (hintText.isNotEmpty && hintText.toLowerCase() != 'null') {
+      parts.add('hint=$hintText');
+    }
+
+    if (parts.isEmpty) return message;
+    return '$message (${parts.join(" | ")})';
   }
 
   double _toDouble(dynamic value) {

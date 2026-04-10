@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../../services/supabase_service.dart';
 
 class GedungKostModel {
   final String id;
@@ -47,36 +48,23 @@ class PengumumanModel {
 }
 
 class KelolaPengumumanController extends GetxController {
-  final gedungKostList = const <GedungKostModel>[
-    GedungKostModel(
-      id: '1',
-      nama: 'Sunrise Boarding House',
-      alamat: 'Jl. Gatot Subroto No. 45, Jakarta',
-      totalKamar: 8,
-    ),
-    GedungKostModel(
-      id: '2',
-      nama: 'Peaceful Haven Kost',
-      alamat: 'Jl. Thamrin No. 67, Jakarta',
-      totalKamar: 10,
-    ),
-    GedungKostModel(
-      id: '3',
-      nama: 'Urban Residence',
-      alamat: 'Jl. HR Rasuna Said No. 89, Jakarta',
-      totalKamar: 15,
-    ),
-    GedungKostModel(
-      id: '4',
-      nama: 'Green Valley Kost',
-      alamat: 'Jl. Sudirman No. 123, Jakarta',
-      totalKamar: 12,
-    ),
-  ];
+  final SupabaseService _supabaseService = SupabaseService();
+
+  final gedungKostList = <GedungKostModel>[].obs;
 
   final selectedGedung = Rxn<GedungKostModel>();
   final pengumumanList = <PengumumanModel>[].obs;
-  final Map<String, List<PengumumanModel>> _pengumumanByGedung = {};
+  final pengumumanCountByKost = <String, int>{}.obs;
+  final isLoadingGedung = false.obs;
+  final isLoadingPengumuman = false.obs;
+  final isSavingPengumuman = false.obs;
+  final errorMessage = RxnString();
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadGedungKost();
+  }
 
   String _formatDate(DateTime date) {
     const months = [
@@ -96,115 +84,249 @@ class KelolaPengumumanController extends GetxController {
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 
-  List<PengumumanModel> _seedPengumuman(String kostName) {
-    return [
-      PengumumanModel(
-        id: '1',
-        kostName: kostName,
-        title: 'Pemeliharaan Air',
-        description:
-            'Air akan dimatikan sementara pada tanggal 22 Maret 2026 pukul 08:00 - 12:00 untuk pemeliharaan rutin sistem water heater di semua kamar.',
-        date: '18 Maret 2026',
-      ),
-      PengumumanModel(
-        id: '2',
-        kostName: kostName,
-        title: 'Libur Lebaran 2026',
-        description:
-            'Kantor pengelola kost akan tutup pada tanggal 30 Maret - 3 April 2026. Untuk keadaan darurat, hubungi nomor emergency.',
-        date: '18 Maret 2026',
-      ),
-      PengumumanModel(
-        id: '3',
-        kostName: kostName,
-        title: 'Perbaikan WiFi Selesai',
-        description:
-            'Perbaikan jaringan WiFi di lantai 2 dan 3 telah selesai. Kecepatan internet sekarang sudah kembali normal.',
-        date: '12 Maret 2026',
-      ),
-    ];
+  Future<void> loadGedungKost() async {
+    isLoadingGedung.value = true;
+    errorMessage.value = null;
+
+    try {
+      final kosts = await _supabaseService.getKostList();
+      final mapped = kosts
+          .map(
+            (kost) => GedungKostModel(
+              id: kost.id,
+              nama: kost.name.trim().isEmpty ? 'Kost' : kost.name.trim(),
+              alamat: kost.address.trim().isEmpty ? '-' : kost.address.trim(),
+              totalKamar: kost.roomCount,
+            ),
+          )
+          .toList();
+
+      gedungKostList.assignAll(mapped);
+      await _loadPengumumanCounts(mapped);
+
+      final activeGedung = selectedGedung.value;
+      if (activeGedung != null) {
+        final refreshed = mapped.firstWhereOrNull(
+          (item) => item.id == activeGedung.id,
+        );
+        if (refreshed == null) {
+          kembaliKePilihGedung();
+        } else {
+          selectedGedung.value = refreshed;
+        }
+      }
+    } catch (_) {
+      errorMessage.value = 'Gagal memuat daftar kost.';
+      gedungKostList.clear();
+      pengumumanCountByKost.clear();
+      kembaliKePilihGedung();
+    } finally {
+      isLoadingGedung.value = false;
+    }
   }
 
-  List<PengumumanModel> _clonePengumuman(List<PengumumanModel> source) {
-    return source.map((item) => item.copyWith()).toList();
-  }
+  Future<void> _loadPengumumanCounts(List<GedungKostModel> gedungList) async {
+    if (gedungList.isEmpty) {
+      pengumumanCountByKost.clear();
+      return;
+    }
 
-  void pilihGedungKost(GedungKostModel gedung) {
-    selectedGedung.value = gedung;
-
-    _pengumumanByGedung.putIfAbsent(
-      gedung.id,
-      () => _seedPengumuman(gedung.nama),
+    final pairs = await Future.wait(
+      gedungList.map((gedung) async {
+        final count = await _supabaseService.getPengumumanCountByKostId(
+          gedung.id,
+        );
+        return MapEntry(gedung.id, count);
+      }),
     );
-    pengumumanList.value = _clonePengumuman(_pengumumanByGedung[gedung.id]!);
+
+    pengumumanCountByKost.assignAll({
+      for (final pair in pairs) pair.key: pair.value,
+    });
+  }
+
+  Future<void> pilihGedungKost(GedungKostModel gedung) async {
+    selectedGedung.value = gedung;
+    await _loadPengumumanByGedung(gedung);
   }
 
   void kembaliKePilihGedung() {
     selectedGedung.value = null;
     pengumumanList.clear();
+    errorMessage.value = null;
   }
 
-  void _sinkronkanPengumumanKeGedungAktif() {
+  Future<void> refreshPengumumanAktif() async {
     final gedung = selectedGedung.value;
-    if (gedung == null) {
-      return;
-    }
+    if (gedung == null) return;
 
-    _pengumumanByGedung[gedung.id] = _clonePengumuman(pengumumanList);
+    await _loadPengumumanByGedung(gedung);
   }
 
-  void addPengumuman(String title, String description) {
+  Future<void> _loadPengumumanByGedung(GedungKostModel gedung) async {
+    isLoadingPengumuman.value = true;
+    errorMessage.value = null;
+
+    try {
+      final rows = await _supabaseService.getPengumumanByKostId(gedung.id);
+      final mapped = rows
+          .map((row) {
+            final title = (row['judul'] ?? row['title'] ?? '')
+                .toString()
+                .trim();
+            final description =
+                (row['deskripsi'] ??
+                        row['description'] ??
+                        row['isi'] ??
+                        row['content'] ??
+                        '')
+                    .toString()
+                    .trim();
+
+            final rawKostName = (row['nama_kost'] ?? row['kost_name'] ?? '')
+                .toString()
+                .trim();
+            final kostName = rawKostName.isEmpty ? gedung.nama : rawKostName;
+
+            final createdAtRaw =
+                row['tanggal']?.toString() ??
+                row['created_at']?.toString() ??
+                '';
+            final createdAt = DateTime.tryParse(createdAtRaw) ?? DateTime.now();
+
+            return PengumumanModel(
+              id: row['id']?.toString() ?? '',
+              kostName: kostName,
+              title: title,
+              description: description,
+              date: _formatDate(createdAt),
+            );
+          })
+          .where((item) => item.id.isNotEmpty)
+          .toList();
+
+      pengumumanList.assignAll(mapped);
+      pengumumanCountByKost[gedung.id] = mapped.length;
+    } catch (_) {
+      errorMessage.value = 'Gagal memuat data pengumuman.';
+      pengumumanList.clear();
+    } finally {
+      isLoadingPengumuman.value = false;
+    }
+  }
+
+  int getPengumumanCountForKost(String kostId) {
+    return pengumumanCountByKost[kostId] ?? 0;
+  }
+
+  Future<bool> addPengumuman(String title, String description) async {
     final selected = selectedGedung.value;
     if (selected == null) {
-      return;
+      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      return false;
     }
 
-    if (title.trim().isEmpty || description.trim().isEmpty) {
-      return;
+    final judul = title.trim();
+    final deskripsi = description.trim();
+    if (judul.isEmpty || deskripsi.isEmpty) {
+      Get.snackbar('Error', 'Judul dan deskripsi wajib diisi');
+      return false;
     }
 
-    pengumumanList.insert(
-      0,
-      PengumumanModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        kostName: selected.nama,
-        title: title.trim(),
-        description: description.trim(),
-        date: _formatDate(DateTime.now()),
-      ),
-    );
-    _sinkronkanPengumumanKeGedungAktif();
+    try {
+      isSavingPengumuman.value = true;
+      await _supabaseService.createPengumuman(
+        kostId: selected.id,
+        title: judul,
+        description: deskripsi,
+      );
+      await _loadPengumumanByGedung(selected);
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        _resolveErrorMessage(e, 'Gagal menambahkan pengumuman'),
+      );
+      return false;
+    } finally {
+      isSavingPengumuman.value = false;
+    }
   }
 
-  void editPengumuman(String id, String title, String description) {
+  Future<bool> editPengumuman(
+    String id,
+    String title,
+    String description,
+  ) async {
     final selected = selectedGedung.value;
     if (selected == null) {
-      return;
+      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      return false;
     }
 
-    if (title.trim().isEmpty || description.trim().isEmpty) {
-      return;
+    final judul = title.trim();
+    final deskripsi = description.trim();
+    if (judul.isEmpty || deskripsi.isEmpty) {
+      Get.snackbar('Error', 'Judul dan deskripsi wajib diisi');
+      return false;
     }
 
-    final index = pengumumanList.indexWhere((item) => item.id == id);
-    if (index == -1) {
-      return;
+    try {
+      isSavingPengumuman.value = true;
+      await _supabaseService.updatePengumuman(
+        id: id,
+        title: judul,
+        description: deskripsi,
+      );
+      await _loadPengumumanByGedung(selected);
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        _resolveErrorMessage(e, 'Gagal memperbarui pengumuman'),
+      );
+      return false;
+    } finally {
+      isSavingPengumuman.value = false;
     }
-
-    pengumumanList[index] = pengumumanList[index].copyWith(
-      kostName: selected.nama,
-      title: title.trim(),
-      description: description.trim(),
-    );
-    _sinkronkanPengumumanKeGedungAktif();
   }
 
-  void deletePengumuman(String id) {
-    if (selectedGedung.value == null) {
-      return;
+  Future<bool> deletePengumuman(String id) async {
+    final selected = selectedGedung.value;
+    if (selected == null) {
+      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      return false;
     }
 
-    pengumumanList.removeWhere((item) => item.id == id);
-    _sinkronkanPengumumanKeGedungAktif();
+    try {
+      isSavingPengumuman.value = true;
+      await _supabaseService.deletePengumuman(id);
+      await _loadPengumumanByGedung(selected);
+      return true;
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        _resolveErrorMessage(e, 'Gagal menghapus pengumuman'),
+      );
+      return false;
+    } finally {
+      isSavingPengumuman.value = false;
+    }
+  }
+
+  String _resolveErrorMessage(Object error, String fallback) {
+    final raw = error.toString().trim();
+    if (raw.isEmpty) return fallback;
+
+    var message = raw;
+    if (message.startsWith('Exception:')) {
+      message = message.substring('Exception:'.length).trim();
+    }
+
+    if (message.length > 180) {
+      message = '${message.substring(0, 180)}...';
+    }
+
+    return message.isEmpty ? fallback : message;
   }
 }
