@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/user_home_controller.dart';
 
@@ -690,101 +691,7 @@ class UserHomeView extends GetView<UserHomeController> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildBottomNavItem(
-                  Icons.home_outlined,
-                  'Beranda',
-                  true,
-                  () {},
-                ),
-                _buildBottomNavItem(
-                  Icons.receipt_long_outlined,
-                  'Tagihan',
-                  false,
-                  () {
-                    Get.offAllNamed(Routes.userTagihan);
-                  },
-                ),
-                _buildBottomNavItem(
-                  Icons.history_outlined,
-                  'Riwayat',
-                  false,
-                  () {
-                    Get.offAllNamed(Routes.userHistoryPembayaran);
-                  },
-                ),
-                _buildBottomNavItem(
-                  Icons.notifications_outlined,
-                  'Info',
-                  false,
-                  () {
-                    Get.offAllNamed(Routes.userInfo);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavItem(
-    IconData icon,
-    String label,
-    bool isActive,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: isActive
-                  ? const Color(0xFF6B8E7A)
-                  : const Color(0xFF9CA3AF),
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
-          if (isActive)
-            Container(
-              margin: const EdgeInsets.only(top: 4),
-              width: 4,
-              height: 4,
-              decoration: const BoxDecoration(
-                color: Color(0xFF6B8E7A),
-                shape: BoxShape.circle,
-              ),
-            ),
-        ],
-      ),
+      bottomNavigationBar: const UserBottomNavbar(currentIndex: 0),
     );
   }
 }
