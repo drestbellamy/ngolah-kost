@@ -44,13 +44,30 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   }
 
   Widget _buildPilihGedungContent() {
+    if (controller.isLoadingGedung.value) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (controller.gedungKostList.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            controller.errorMessage.value ?? 'Belum ada data kost.',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+          ),
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
       child: Column(
         children: controller.gedungKostList
             .map(
               (gedung) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.only(bottom: 14),
                 child: _buildGedungCard(gedung),
               ),
             )
@@ -60,15 +77,19 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   }
 
   Widget _buildGedungCard(GedungKostModel gedung) {
+    final totalPeraturan = controller.getPeraturanCountForKost(gedung.id);
+    final hasPeraturan = totalPeraturan > 0;
+
     return InkWell(
       onTap: () => controller.pilihGedungKost(gedung),
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(10),
+        constraints: const BoxConstraints(minHeight: 120),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: const Color(0xFFF8F8F8),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: const Color(0xFFE7E9E8)),
           boxShadow: [
             BoxShadow(
@@ -82,19 +103,19 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 58,
+              height: 58,
               decoration: BoxDecoration(
                 color: const Color(0xFFE9ECEA),
-                borderRadius: BorderRadius.circular(13),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: const Icon(
                 Icons.apartment_outlined,
                 color: Color(0xFF6B8E7A),
-                size: 24,
+                size: 26,
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,65 +125,96 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 17,
                       fontWeight: FontWeight.w700,
                       color: Color(0xFF2D2F34),
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.only(top: 0.5),
+                        padding: EdgeInsets.only(top: 1),
                         child: Icon(
                           Icons.location_on_outlined,
-                          size: 14,
+                          size: 15,
                           color: Color(0xFF7A8292),
                         ),
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           gedung.alamat,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
-                            fontSize: 13,
+                            fontSize: 13.5,
                             color: Color(0xFF6C7383),
+                            height: 1.3,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5EFE9),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      '${gedung.totalKamar} Rooms',
-                      style: const TextStyle(
-                        color: Color(0xFF507562),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE5EFE9),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          '${gedung.totalKamar} Rooms',
+                          style: const TextStyle(
+                            color: Color(0xFF507562),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: hasPeraturan
+                              ? const Color(0xFFEFF6FF)
+                              : const Color(0xFFFEF3F2),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          hasPeraturan
+                              ? '$totalPeraturan Peraturan'
+                              : '0 Peraturan',
+                          style: TextStyle(
+                            color: hasPeraturan
+                                ? const Color(0xFF1D4ED8)
+                                : const Color(0xFFB42318),
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             const Padding(
-              padding: EdgeInsets.only(top: 2),
+              padding: EdgeInsets.only(top: 4),
               child: Icon(
                 Icons.chevron_right,
-                size: 20,
+                size: 22,
                 color: Color(0xFF7A8292),
               ),
             ),
@@ -173,42 +225,73 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   }
 
   Widget _buildKelolaPeraturanContent() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-      child: Column(
-        children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF6B8E7A),
-              minimumSize: const Size(double.infinity, 46),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14),
+    return RefreshIndicator(
+      onRefresh: controller.refreshPeraturanAktif,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
+        child: Column(
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6B8E7A),
+                minimumSize: const Size(double.infinity, 46),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 0,
               ),
-              elevation: 0,
+              onPressed: controller.isSavingPeraturan.value
+                  ? null
+                  : _showAddModal,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, color: Colors.white, size: 22),
+                  SizedBox(width: 8),
+                  Text(
+                    'Tambah Kategori Peraturan',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            onPressed: _showAddModal,
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add, color: Colors.white, size: 22),
-                SizedBox(width: 8),
-                Text(
-                  'Tambah Kategori Peraturan',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
+            const SizedBox(height: 12),
+            _buildInfoBannerModal(),
+            const SizedBox(height: 12),
+            if (controller.isLoadingPeraturan.value)
+              const Padding(
+                padding: EdgeInsets.only(top: 24),
+                child: CircularProgressIndicator(),
+              )
+            else if (controller.errorMessage.value != null)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 16,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                ),
+                child: Text(
+                  controller.errorMessage.value!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFFB91C1C),
+                    fontSize: 14,
+                    height: 1.4,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          _buildInfoBannerModal(),
-          const SizedBox(height: 12),
-          Obx(() {
-            if (controller.kategoriList.isEmpty) {
-              return Container(
+              )
+            else if (controller.kategoriList.isEmpty)
+              Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(
                   vertical: 28,
@@ -220,7 +303,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                   border: Border.all(color: const Color(0xFFE5E7EB)),
                 ),
                 child: const Text(
-                  'Belum ada kategori peraturan. Tambahkan kategori pertama untuk gedung kost ini.',
+                  'Belum ada peraturan. Tambahkan peraturan untuk gedung kost ini.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Color(0xFF6B7280),
@@ -228,21 +311,21 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                     height: 1.4,
                   ),
                 ),
-              );
-            }
-
-            return ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: controller.kategoriList.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                final kategori = controller.kategoriList[index];
-                return _buildKategoriCard(kategori);
-              },
-            );
-          }),
-        ],
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: controller.kategoriList.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final kategori = controller.kategoriList[index];
+                  return _buildKategoriCard(kategori);
+                },
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -351,6 +434,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   }
 
   void _showAddModal() {
+    final formKey = GlobalKey<FormState>();
     controller.resetForm();
     Get.dialog(
       Dialog(
@@ -383,59 +467,118 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               const SizedBox(height: 20),
               _buildInfoBannerModal(),
               const SizedBox(height: 20),
-              _buildLabel('Nama Kategori'),
-              const SizedBox(height: 8),
-              TextField(
-                controller: controller.namaController,
-                decoration: _inputDecoration('Contoh: Jam Malam & Keamanan'),
-                style: const TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 20),
-              _buildLabel('Deskripsi'),
-              const SizedBox(height: 8),
-              TextField(
-                onTap: controller.requestFocusToDeskripsi,
-                controller: controller.deskripsiController,
-                maxLines: 5,
-                decoration: _inputDecoration('Masukan Deskripsi'),
-                style: const TextStyle(fontSize: 14),
+              Form(
+                key: formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel('Nama Kategori'),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: controller.namaController,
+                      maxLength: 80,
+                      decoration: _inputDecoration(
+                        'Contoh: Jam Malam & Keamanan',
+                      ),
+                      style: const TextStyle(fontSize: 14),
+                      validator: (value) {
+                        final text = (value ?? '').trim();
+                        if (text.isEmpty) {
+                          return 'Nama kategori wajib diisi';
+                        }
+                        if (text.length < 3) {
+                          return 'Minimal 3 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 6),
+                    _buildLabel('Deskripsi'),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      onTap: controller.requestFocusToDeskripsi,
+                      controller: controller.deskripsiController,
+                      maxLines: 5,
+                      maxLength: 500,
+                      decoration: _inputDecoration('Masukan Deskripsi'),
+                      style: const TextStyle(fontSize: 14),
+                      validator: (value) {
+                        final text = (value ?? '').trim();
+                        if (text.isEmpty || text == '1.') {
+                          return 'Deskripsi peraturan wajib diisi';
+                        }
+                        if (text.length < 10) {
+                          return 'Minimal 10 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF6B7280),
-                        side: const BorderSide(color: Color(0xFFD1D5DB)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF6B7280),
+                          side: const BorderSide(color: Color(0xFFD1D5DB)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
-                      ),
-                      onPressed: () => Get.back(),
-                      child: const Text(
-                        'Batal',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        onPressed: controller.isSavingPeraturan.value
+                            ? null
+                            : () => Get.back(),
+                        child: const Text(
+                          'Batal',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6B8E7A),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6B8E7A),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      onPressed: controller.tambahKategori,
-                      child: const Text(
-                        'Tambah',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        onPressed: controller.isSavingPeraturan.value
+                            ? null
+                            : () async {
+                            final isValid =
+                              formKey.currentState?.validate() ?? false;
+                            if (!isValid) {
+                              return;
+                            }
+
+                                final success = await controller
+                                    .tambahKategori();
+                                if (success) {
+                                  Get.back();
+                                  Get.snackbar(
+                                    'Berhasil',
+                                    'Peraturan berhasil ditambahkan',
+                                  );
+                                }
+                              },
+                        child: Text(
+                          controller.isSavingPeraturan.value
+                              ? 'Menyimpan...'
+                              : 'Tambah',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
@@ -450,8 +593,8 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
   }
 
   void _showEditModal(PeraturanModel kategori) {
-    controller.namaController.text = kategori.nama;
-    controller.deskripsiController.text = kategori.deskripsi;
+    final formKey = GlobalKey<FormState>();
+    controller.setFormForEdit(kategori);
 
     Get.dialog(
       Dialog(
@@ -484,59 +627,119 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               const SizedBox(height: 20),
               _buildInfoBannerModal(),
               const SizedBox(height: 20),
-              _buildLabel('Nama Kategori'),
-              const SizedBox(height: 8),
-              TextField(
-                controller: controller.namaController,
-                decoration: _inputDecoration('Contoh: Jam Malam & Keamanan'),
-                style: const TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 20),
-              _buildLabel('Deskripsi'),
-              const SizedBox(height: 8),
-              TextField(
-                onTap: controller.requestFocusToDeskripsi,
-                controller: controller.deskripsiController,
-                maxLines: 5,
-                decoration: _inputDecoration('Masukan Deskripsi'),
-                style: const TextStyle(fontSize: 14),
+              Form(
+                key: formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildLabel('Nama Kategori'),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: controller.namaController,
+                      maxLength: 80,
+                      decoration: _inputDecoration(
+                        'Contoh: Jam Malam & Keamanan',
+                      ),
+                      style: const TextStyle(fontSize: 14),
+                      validator: (value) {
+                        final text = (value ?? '').trim();
+                        if (text.isEmpty) {
+                          return 'Nama kategori wajib diisi';
+                        }
+                        if (text.length < 3) {
+                          return 'Minimal 3 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 6),
+                    _buildLabel('Deskripsi'),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      onTap: controller.requestFocusToDeskripsi,
+                      controller: controller.deskripsiController,
+                      maxLines: 5,
+                      maxLength: 500,
+                      decoration: _inputDecoration('Masukan Deskripsi'),
+                      style: const TextStyle(fontSize: 14),
+                      validator: (value) {
+                        final text = (value ?? '').trim();
+                        if (text.isEmpty || text == '1.') {
+                          return 'Deskripsi peraturan wajib diisi';
+                        }
+                        if (text.length < 10) {
+                          return 'Minimal 10 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF6B7280),
-                        side: const BorderSide(color: Color(0xFFD1D5DB)),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF6B7280),
+                          side: const BorderSide(color: Color(0xFFD1D5DB)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
-                      ),
-                      onPressed: () => Get.back(),
-                      child: const Text(
-                        'Batal',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        onPressed: controller.isSavingPeraturan.value
+                            ? null
+                            : () => Get.back(),
+                        child: const Text(
+                          'Batal',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6B8E7A),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6B8E7A),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      onPressed: () => controller.editKategori(kategori.id),
-                      child: const Text(
-                        'Simpan',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        onPressed: controller.isSavingPeraturan.value
+                            ? null
+                            : () async {
+                                final isValid =
+                                    formKey.currentState?.validate() ?? false;
+                                if (!isValid) {
+                                  return;
+                                }
+
+                                final success = await controller.editKategori(
+                                  kategori.id,
+                                );
+                                if (success) {
+                                  Get.back();
+                                  Get.snackbar(
+                                    'Berhasil',
+                                    'Peraturan berhasil diperbarui',
+                                  );
+                                }
+                              },
+                        child: Text(
+                          controller.isSavingPeraturan.value
+                              ? 'Menyimpan...'
+                              : 'Simpan',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
@@ -598,38 +801,59 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               Row(
                 children: [
                   Expanded(
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: const Color(0xFFF3F4F6),
-                        foregroundColor: const Color(0xFF6B7280),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: const Color(0xFFF3F4F6),
+                          foregroundColor: const Color(0xFF6B7280),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
-                      ),
-                      onPressed: () => Get.back(),
-                      child: const Text(
-                        'Batal',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        onPressed: controller.isSavingPeraturan.value
+                            ? null
+                            : () => Get.back(),
+                        child: const Text(
+                          'Batal',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF3B30),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                    child: Obx(
+                      () => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF3B30),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
                         ),
-                        elevation: 0,
-                      ),
-                      onPressed: () => controller.hapusKategori(kategori.id),
-                      child: const Text(
-                        'Hapus',
-                        style: TextStyle(fontWeight: FontWeight.w600),
+                        onPressed: controller.isSavingPeraturan.value
+                            ? null
+                            : () async {
+                                final success = await controller.hapusKategori(
+                                  kategori.id,
+                                );
+                                if (success) {
+                                  Get.back();
+                                  Get.snackbar(
+                                    'Berhasil',
+                                    'Peraturan berhasil dihapus',
+                                  );
+                                }
+                              },
+                        child: Text(
+                          controller.isSavingPeraturan.value
+                              ? 'Menghapus...'
+                              : 'Hapus',
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
