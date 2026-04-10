@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import '../controllers/landing_controller.dart';
+import 'landing2_view.dart';
+import 'landing3_view.dart';
 
 class LandingView extends GetView<LandingController> {
   const LandingView({super.key});
@@ -64,23 +66,23 @@ class LandingView extends GetView<LandingController> {
             onPageChanged: controller.onPageChanged,
             children: [
               _buildFirstOnboardingPage(context),
-              _buildPlaceholderPage(
-                title: 'Pantau Hunian Secara Real-Time',
-                subtitle:
-                    'Geser lagi ke kiri untuk lanjut ke halaman berikutnya.',
-              ),
-              _buildPlaceholderPage(
-                title: 'Semua Data Keuangan Tersusun',
-                subtitle: 'Satu langkah lagi untuk mulai pakai aplikasi.',
-                showButton: true,
-              ),
+              const Landing2View(), // Menggunakan Landing Page 2 yang baru dibuat
+              const Landing3View(), // Menggunakan Landing Page 3 yang baru dibuat
             ],
           ),
           Positioned(
             left: 0,
             right: 0,
             bottom: 18,
-            child: _buildPageIndicator(),
+            child: Obx(
+              () => AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: controller.currentPage.value == 2
+                    ? 0.0
+                    : 1.0, // Sembunyikan indicator di slide 3
+                child: _buildPageIndicator(),
+              ),
+            ),
           ),
         ],
       ),
