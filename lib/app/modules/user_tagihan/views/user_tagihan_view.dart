@@ -291,8 +291,10 @@ class UserTagihanView extends GetView<UserTagihanController> {
                   Icons.notifications_outlined,
                   'Info',
                   false,
-                  false,
-                  () {},
+                  true,
+                  () {
+                    Get.offAllNamed(Routes.userInfo);
+                  },
                 ),
               ],
             ),

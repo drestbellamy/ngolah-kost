@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../services/supabase_service.dart';
 import '../models/penghuni_model.dart';
 import '../controllers/kelola_kontrak_controller.dart';
 import 'widgets/kelola_kontrak_bottom_sheet.dart';
 
 class PenghuniDetailView extends StatelessWidget {
   const PenghuniDetailView({super.key});
+
+  static final SupabaseService _supabaseService = SupabaseService();
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +66,7 @@ class PenghuniDetailView extends StatelessWidget {
     }
 
     final PenghuniModel penghuni = penghuniArg;
-    final billingHistory = _buildBillingHistory(penghuni);
+    final billingFuture = _loadBillingHistory(penghuni);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -615,28 +618,47 @@ class PenghuniDetailView extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          if (billingHistory.isNotEmpty)
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: billingHistory.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: 12),
-                              itemBuilder: (context, index) {
-                                final history = billingHistory[index];
-                                return _buildHistoryItem(history);
-                              },
-                            )
-                          else
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Text(
-                                  'Belum ada data history pembayaran.',
-                                  style: TextStyle(color: Color(0xFF6B7280)),
-                                ),
-                              ),
-                            ),
+                          FutureBuilder<List<PembayaranModel>>(
+                            future: billingFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              }
+
+                              final billingHistory = snapshot.data ?? const [];
+                              if (billingHistory.isEmpty) {
+                                return const Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: Text(
+                                      'Belum ada data history pembayaran.',
+                                      style: TextStyle(
+                                        color: Color(0xFF6B7280),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: billingHistory.length,
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 12),
+                                itemBuilder: (context, index) {
+                                  final history = billingHistory[index];
+                                  return _buildHistoryItem(history);
+                                },
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -758,41 +780,51 @@ class PenghuniDetailView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      history.bulan,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2D3748),
+                    Expanded(
+                      child: Text(
+                        history.bulan,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF2D3748),
+                        ),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isLunas
-                            ? const Color(0xFFD1FAE5).withOpacity(0.5)
-                            : const Color(0xFFFEE2E2).withOpacity(0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        history.status,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                    const SizedBox(width: 8),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 132),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
                           color: isLunas
-                              ? const Color(0xFF059669)
-                              : const Color(0xFFDC2626),
+                              ? const Color(0xFFD1FAE5).withOpacity(0.5)
+                              : const Color(0xFFFEE2E2).withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          history.status,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isLunas
+                                ? const Color(0xFF059669)
+                                : const Color(0xFFDC2626),
+                          ),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Text(
                   'Rp ${history.jumlah.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
                   style: const TextStyle(
@@ -811,11 +843,14 @@ class PenghuniDetailView extends StatelessWidget {
                         color: Color(0xFF9CA3AF),
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        'Jatuh tempo: ${history.jatuhTempo}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF6B7280),
+                      Expanded(
+                        child: Text(
+                          'Jatuh tempo: ${history.jatuhTempo}',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF6B7280),
+                          ),
                         ),
                       ),
                     ],
@@ -901,24 +936,83 @@ class PenghuniDetailView extends StatelessWidget {
     );
   }
 
+  Future<List<PembayaranModel>> _loadBillingHistory(
+    PenghuniModel penghuni,
+  ) async {
+    try {
+      final rows = await _supabaseService.getTagihanByPenghuniId(penghuni.id);
+      if (rows.isEmpty) {
+        return _buildBillingHistory(penghuni);
+      }
+
+      final siklusBulan = _resolveSiklusBulan(penghuni.sistemPembayaran);
+
+      return rows.map((row) {
+        final bulan = _toInt(row['bulan']);
+        final tahun = _toInt(row['tahun']);
+        final startPeriode = (bulan >= 1 && bulan <= 12 && tahun > 0)
+            ? DateTime(tahun, bulan, 1)
+            : null;
+        final periodLabel = startPeriode == null
+            ? '-'
+            : _formatPeriodeLabel(startPeriode, siklusBulan);
+        final dueDate = startPeriode == null
+            ? '-'
+            : _formatDueDate(startPeriode);
+
+        return PembayaranModel(
+          bulan: periodLabel,
+          jumlah: _toDouble(row['jumlah']),
+          jatuhTempo: dueDate,
+          status: _mapTagihanStatus(row['status']?.toString()),
+          tanggalBayar: row['tanggal_bayar']?.toString(),
+        );
+      }).toList();
+    } catch (_) {
+      return _buildBillingHistory(penghuni);
+    }
+  }
+
+  int _toInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  double _toDouble(dynamic value) {
+    if (value is int) return value.toDouble();
+    if (value is double) return value;
+    return double.tryParse(value?.toString() ?? '') ?? 0;
+  }
+
+  String _mapTagihanStatus(String? rawStatus) {
+    final status = (rawStatus ?? '').trim().toLowerCase();
+    if (status == 'lunas') return 'Lunas';
+    if (status == 'menunggu_verifikasi') return 'Menunggu Verifikasi';
+    return 'Belum Dibayar';
+  }
+
   List<PembayaranModel> _buildBillingHistory(PenghuniModel penghuni) {
     final startDate = _parseDate(penghuni.tanggalMasuk);
     if (startDate == null || penghuni.durasiKontrak <= 0) {
       return penghuni.historyPembayaran;
     }
 
+    final siklusBulan = _resolveSiklusBulan(penghuni.sistemPembayaran);
+    final totalTagihan = (penghuni.durasiKontrak / siklusBulan).ceil();
+    final jumlahPerTagihan = penghuni.sewaBulanan * siklusBulan;
+
     final existingHistory = {
       for (final item in penghuni.historyPembayaran)
         item.bulan.toLowerCase(): item,
     };
 
-    return List.generate(penghuni.durasiKontrak, (index) {
+    return List.generate(totalTagihan, (index) {
       final dueDate = DateTime(
         startDate.year,
-        startDate.month + index,
+        startDate.month + (index * siklusBulan),
         startDate.day,
       );
-      final bulanLabel = _formatMonthLabel(dueDate);
+      final bulanLabel = _formatPeriodeLabel(dueDate, siklusBulan);
       final existing = existingHistory[bulanLabel.toLowerCase()];
       if (existing != null) {
         return existing;
@@ -926,7 +1020,7 @@ class PenghuniDetailView extends StatelessWidget {
 
       return PembayaranModel(
         bulan: bulanLabel,
-        jumlah: penghuni.sewaBulanan,
+        jumlah: jumlahPerTagihan,
         jatuhTempo: _formatDueDate(dueDate),
         status: 'Belum Dibayar',
       );
@@ -947,8 +1041,26 @@ class PenghuniDetailView extends StatelessWidget {
     return '${_monthNames[date.month]} ${date.year}';
   }
 
+  String _formatPeriodeLabel(DateTime start, int siklusBulan) {
+    if (siklusBulan <= 1) {
+      return _formatMonthLabel(start);
+    }
+
+    final end = DateTime(start.year, start.month + siklusBulan - 1, start.day);
+    return '${_monthNames[start.month]}-\n${_monthNames[end.month]} ${end.year}';
+  }
+
   String _formatDueDate(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')} ${_monthNames[date.month]} ${date.year}';
+  }
+
+  int _resolveSiklusBulan(String sistemPembayaran) {
+    final raw = sistemPembayaran.toLowerCase();
+    if (raw.contains('24') || raw.contains('2 tahun')) return 24;
+    if (raw.contains('12') || raw.contains('tahunan')) return 12;
+    if (raw.contains('6')) return 6;
+    if (raw.contains('3')) return 3;
+    return 1;
   }
 
   int? _monthNumber(String month) {

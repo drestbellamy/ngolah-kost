@@ -296,7 +296,9 @@ class UserHistoryPembayaranView
                 Icons.notifications_outlined,
                 'Info',
                 false,
-                () {},
+                () {
+                  Get.offAllNamed(Routes.userInfo);
+                },
               ),
             ],
           ),

@@ -884,5 +884,4 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
       ],
     );
   }
-
 }
