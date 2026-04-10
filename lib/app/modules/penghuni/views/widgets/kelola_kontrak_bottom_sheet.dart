@@ -104,7 +104,7 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  controller.penghuni?.tanggalBerakhir ?? 'N/A',
+                                  controller.currentEndDateLabel,
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -125,11 +125,15 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  'Sudah berakhir',
+                                  controller.remainingTimeLabel,
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.red.shade600,
+                                    color:
+                                        controller.remainingTimeLabel ==
+                                            'Sudah berakhir'
+                                        ? Colors.red.shade600
+                                        : const Color(0xFF16A34A),
                                   ),
                                 ),
                               ],
@@ -306,6 +310,7 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Obx(() {
+                controller.previewTick.value;
                 final duration = controller.calculateNewDuration();
                 return Column(
                   children: [
@@ -320,7 +325,7 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '15 Juli 2025',
+                          controller.newEndDateLabel,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -360,32 +365,51 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed: () => Get.back(),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF6B7280),
-                  side: const BorderSide(color: Color(0xFFE5E7EB)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Obx(
+                () => OutlinedButton(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () => Get.back(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF6B7280),
+                    side: const BorderSide(color: Color(0xFFE5E7EB)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  child: const Text('Batal'),
                 ),
-                child: const Text('Batal'),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: controller.perpanjangKontrak,
-                icon: const Icon(Icons.check_circle, size: 20),
-                label: const Text('Perpanjang'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6B8E7F),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Obx(
+                () => ElevatedButton.icon(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : controller.perpanjangKontrak,
+                  icon: controller.isLoading.value
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.check_circle, size: 20),
+                  label: Text(
+                    controller.isLoading.value ? 'Menyimpan...' : 'Perpanjang',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6B8E7F),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -470,20 +494,35 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        TextField(
-          readOnly: true,
-          decoration: InputDecoration(
-            labelText: 'Tanggal Berakhir Kontrak',
-            hintText: '15 Januari 2025',
-            hintStyle: const TextStyle(color: Color(0xFF2D3748)),
-            filled: true,
-            fillColor: const Color(0xFFF7FAFC),
-            border: OutlineInputBorder(
+        Obx(() {
+          controller.previewTick.value;
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF7FAFC),
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
             ),
-          ),
-        ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Tanggal Berakhir Kontrak',
+                  style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  controller.editEndDateLabel,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
         const SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.all(16),
@@ -503,41 +542,54 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Total tagihan:',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
-                  ),
-                  Text(
-                    '12x @ Rp 1.500.000',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFFF2A65A),
+              Obx(() {
+                controller.previewTick.value;
+                return Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total tagihan:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                        Text(
+                          controller.editTotalTagihanLabel,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFF2A65A),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Total nilai kontrak:',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
-                  ),
-                  Text(
-                    'Rp 18.000.000',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF2D3748),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total nilai kontrak:',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                        Text(
+                          controller.editTotalNilaiKontrakLabel,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2D3748),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                );
+              }),
             ],
           ),
         ),
@@ -545,32 +597,51 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed: () => Get.back(),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF6B7280),
-                  side: const BorderSide(color: Color(0xFFE5E7EB)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Obx(
+                () => OutlinedButton(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () => Get.back(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF6B7280),
+                    side: const BorderSide(color: Color(0xFFE5E7EB)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  child: const Text('Batal'),
                 ),
-                child: const Text('Batal'),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: controller.editKontrak,
-                icon: const Icon(Icons.check_circle, size: 20),
-                label: const Text('Simpan'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF2A65A),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Obx(
+                () => ElevatedButton.icon(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : controller.editKontrak,
+                  icon: controller.isLoading.value
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.check_circle, size: 20),
+                  label: Text(
+                    controller.isLoading.value ? 'Menyimpan...' : 'Simpan',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFF2A65A),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),
@@ -637,32 +708,53 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed: () => Get.back(),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF6B7280),
-                  side: const BorderSide(color: Color(0xFFE5E7EB)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Obx(
+                () => OutlinedButton(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () => Get.back(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF6B7280),
+                    side: const BorderSide(color: Color(0xFFE5E7EB)),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
+                  child: const Text('Batal'),
                 ),
-                child: const Text('Batal'),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton.icon(
-                onPressed: controller.akhiriKontrak,
-                icon: const Icon(Icons.cancel, size: 20),
-                label: const Text('Akhiri Kontrak'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEF4444),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              child: Obx(
+                () => ElevatedButton.icon(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : controller.akhiriKontrak,
+                  icon: controller.isLoading.value
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.cancel, size: 20),
+                  label: Text(
+                    controller.isLoading.value
+                        ? 'Memproses...'
+                        : 'Akhiri Kontrak',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFEF4444),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
               ),

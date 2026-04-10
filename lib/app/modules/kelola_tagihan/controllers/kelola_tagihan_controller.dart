@@ -79,7 +79,8 @@ class KelolaTagihanController extends GetxController {
   }
 
   int getTotalTagihan() {
-    return tagihanList.length;
+    // Keep header count aligned with what user currently sees in the list.
+    return filteredTagihanList.length;
   }
 
   int getCountByStatus(String status) {

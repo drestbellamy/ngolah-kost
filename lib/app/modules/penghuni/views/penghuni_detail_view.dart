@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../services/supabase_service.dart';
 import '../models/penghuni_model.dart';
 import '../controllers/kelola_kontrak_controller.dart';
+import '../controllers/penghuni_controller.dart';
 import 'widgets/kelola_kontrak_bottom_sheet.dart';
 
 class PenghuniDetailView extends StatelessWidget {
@@ -67,6 +68,7 @@ class PenghuniDetailView extends StatelessWidget {
 
     final PenghuniModel penghuni = penghuniArg;
     final billingFuture = _loadBillingHistory(penghuni);
+    final contractBadge = _getContractBadge(penghuni);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -268,23 +270,23 @@ class PenghuniDetailView extends StatelessWidget {
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFEF4444),
+                                  color: contractBadge.backgroundColor,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Row(
+                                child: Row(
                                   children: [
                                     Icon(
                                       Icons.access_time,
                                       size: 16,
-                                      color: Colors.white,
+                                      color: contractBadge.textColor,
                                     ),
-                                    SizedBox(width: 6),
+                                    const SizedBox(width: 6),
                                     Text(
-                                      'Berakhir',
+                                      contractBadge.label,
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.white,
+                                        color: contractBadge.textColor,
                                       ),
                                     ),
                                   ],
@@ -542,7 +544,7 @@ class PenghuniDetailView extends StatelessWidget {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton.icon(
-                              onPressed: () {
+                              onPressed: () async {
                                 // Hapus controller lama jika ada
                                 if (Get.isRegistered<
                                   KelolaKontrakController
@@ -556,9 +558,23 @@ class PenghuniDetailView extends StatelessWidget {
                                 controller.penghuni = penghuni;
                                 controller.initializeEditForm();
 
-                                Get.bottomSheet(
+                                final result = await Get.bottomSheet<bool>(
                                   const KelolaKontrakBottomSheet(),
                                   isScrollControlled: true,
+                                );
+
+                                if (result != true) return;
+
+                                final refreshed =
+                                    await _loadLatestPenghuniModel(
+                                      penghuni.id,
+                                      fallback: penghuni,
+                                    );
+
+                                Get.offNamed(
+                                  '/penghuni/detail',
+                                  arguments: refreshed,
+                                  preventDuplicates: false,
                                 );
                               },
                               icon: const Icon(Icons.refresh, size: 20),
@@ -942,12 +958,63 @@ class PenghuniDetailView extends StatelessWidget {
     try {
       final rows = await _supabaseService.getTagihanByPenghuniId(penghuni.id);
       if (rows.isEmpty) {
-        return _buildBillingHistory(penghuni);
+        return [];
+      }
+
+      final expectedKeys = _buildExpectedBillingKeys(penghuni);
+
+      final byKey = <String, Map<String, dynamic>>{};
+      for (final raw in rows) {
+        final row = Map<String, dynamic>.from(raw);
+        final bulan = _toInt(row['bulan']);
+        final tahun = _toInt(row['tahun']);
+        if (bulan < 1 || bulan > 12 || tahun <= 0) {
+          continue;
+        }
+
+        final key = '$tahun-${bulan.toString().padLeft(2, '0')}';
+        final status = (row['status'] ?? '').toString().toLowerCase().trim();
+
+        final inContract = expectedKeys.contains(key);
+        final isPaid = status == 'lunas';
+        if (!inContract && !isPaid) {
+          continue;
+        }
+
+        final existing = byKey[key];
+        if (existing == null) {
+          byKey[key] = row;
+          continue;
+        }
+
+        final existingStatus = (existing['status'] ?? '')
+            .toString()
+            .toLowerCase()
+            .trim();
+        final existingPaid = existingStatus == 'lunas';
+        if (!existingPaid && isPaid) {
+          byKey[key] = row;
+        }
+      }
+
+      final filteredRows = byKey.values.toList()
+        ..sort((a, b) {
+          final tahunA = _toInt(a['tahun']);
+          final tahunB = _toInt(b['tahun']);
+          if (tahunA != tahunB) return tahunB.compareTo(tahunA);
+
+          final bulanA = _toInt(a['bulan']);
+          final bulanB = _toInt(b['bulan']);
+          return bulanB.compareTo(bulanA);
+        });
+
+      if (filteredRows.isEmpty) {
+        return [];
       }
 
       final siklusBulan = _resolveSiklusBulan(penghuni.sistemPembayaran);
 
-      return rows.map((row) {
+      return filteredRows.map((row) {
         final bulan = _toInt(row['bulan']);
         final tahun = _toInt(row['tahun']);
         final startPeriode = (bulan >= 1 && bulan <= 12 && tahun > 0)
@@ -969,8 +1036,119 @@ class PenghuniDetailView extends StatelessWidget {
         );
       }).toList();
     } catch (_) {
-      return _buildBillingHistory(penghuni);
+      return penghuni.historyPembayaran;
     }
+  }
+
+  Set<String> _buildExpectedBillingKeys(PenghuniModel penghuni) {
+    final startDate = _parseDate(penghuni.tanggalMasuk);
+    if (startDate == null || penghuni.durasiKontrak <= 0) {
+      return <String>{};
+    }
+
+    final siklus = _resolveSiklusBulan(penghuni.sistemPembayaran);
+    final total = (penghuni.durasiKontrak / siklus).ceil();
+    final keys = <String>{};
+
+    for (var i = 0; i < total; i++) {
+      final periode = DateTime(
+        startDate.year,
+        startDate.month + (i * siklus),
+        1,
+      );
+      keys.add('${periode.year}-${periode.month.toString().padLeft(2, '0')}');
+    }
+
+    return keys;
+  }
+
+  Future<PenghuniModel> _loadLatestPenghuniModel(
+    String penghuniId, {
+    required PenghuniModel fallback,
+  }) async {
+    if (Get.isRegistered<PenghuniController>()) {
+      final penghuniController = Get.find<PenghuniController>();
+      final fromController = penghuniController.penghuniList.firstWhereOrNull(
+        (item) => item.id == penghuniId,
+      );
+      if (fromController != null) {
+        return fromController;
+      }
+    }
+
+    final row = await _supabaseService.getPenghuniDetailById(penghuniId);
+    if (row == null) return fallback;
+
+    final durasi = _toInt(row['durasi_kontrak']);
+    final sewa = _toDouble(row['harga']);
+    final siklusRaw = _toInt(row['sistem_pembayaran_bulan']);
+
+    final durasiFinal = durasi <= 0 ? fallback.durasiKontrak : durasi;
+    final sewaFinal = sewa <= 0 ? fallback.sewaBulanan : sewa;
+    var siklusFinal = siklusRaw <= 0 ? 1 : siklusRaw;
+    if (siklusFinal > durasiFinal) {
+      siklusFinal = durasiFinal;
+    }
+
+    final tanggalMasuk = _formatDateFromRaw(row['tanggal_masuk']);
+    final tanggalKeluar = _formatDateFromRaw(row['tanggal_keluar']);
+
+    return PenghuniModel(
+      id: row['id']?.toString() ?? fallback.id,
+      nama: (row['nama']?.toString().trim().isNotEmpty ?? false)
+          ? row['nama'].toString()
+          : fallback.nama,
+      noTelepon: (row['no_tlpn']?.toString().trim().isNotEmpty ?? false)
+          ? row['no_tlpn'].toString()
+          : fallback.noTelepon,
+      nomorKamar: (row['nomor_kamar']?.toString().trim().isNotEmpty ?? false)
+          ? row['nomor_kamar'].toString()
+          : fallback.nomorKamar,
+      namaKost: (row['nama_kost']?.toString().trim().isNotEmpty ?? false)
+          ? row['nama_kost'].toString()
+          : fallback.namaKost,
+      sewaBulanan: sewaFinal,
+      tanggalMasuk: tanggalMasuk == '-' ? fallback.tanggalMasuk : tanggalMasuk,
+      durasiKontrak: durasiFinal,
+      sistemPembayaran: _formatSistemPembayaranFromBulan(siklusFinal),
+      tanggalBerakhir: tanggalKeluar == '-'
+          ? fallback.tanggalBerakhir
+          : tanggalKeluar,
+      totalNilaiKontrak: sewaFinal * durasiFinal,
+      historyPembayaran: fallback.historyPembayaran,
+    );
+  }
+
+  String _formatDateFromRaw(dynamic value) {
+    final dt = DateTime.tryParse(value?.toString() ?? '');
+    if (dt == null) return '-';
+
+    const bulan = [
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
+
+    return '${dt.day} ${bulan[dt.month]} ${dt.year}';
+  }
+
+  String _formatSistemPembayaranFromBulan(int bulan) {
+    if (bulan <= 1) return 'Bulanan (1 bulan)';
+    if (bulan == 3) return '3 Bulanan';
+    if (bulan == 6) return '6 Bulanan';
+    if (bulan == 12) return 'Tahunan (1 tahun)';
+    if (bulan == 24) return '2 Tahunan';
+    return '$bulan Bulanan';
   }
 
   int _toInt(dynamic value) {
@@ -1061,6 +1239,48 @@ class PenghuniDetailView extends StatelessWidget {
     if (raw.contains('6')) return 6;
     if (raw.contains('3')) return 3;
     return 1;
+  }
+
+  ({String label, Color backgroundColor, Color textColor}) _getContractBadge(
+    PenghuniModel penghuni,
+  ) {
+    final endDate = _parseDate(penghuni.tanggalBerakhir);
+    if (endDate == null) {
+      return (
+        label: 'Aktif',
+        backgroundColor: const Color(0xFF16A34A),
+        textColor: Colors.white,
+      );
+    }
+
+    final today = DateTime.now();
+    final diff = DateTime(
+      endDate.year,
+      endDate.month,
+      endDate.day,
+    ).difference(DateTime(today.year, today.month, today.day));
+
+    if (diff.inDays < 0) {
+      return (
+        label: 'Berakhir',
+        backgroundColor: const Color(0xFFEF4444),
+        textColor: Colors.white,
+      );
+    }
+
+    if (diff.inDays <= 30) {
+      return (
+        label: 'Segera Berakhir',
+        backgroundColor: const Color(0xFFF59E0B),
+        textColor: Colors.white,
+      );
+    }
+
+    return (
+      label: 'Aktif',
+      backgroundColor: const Color(0xFF16A34A),
+      textColor: Colors.white,
+    );
   }
 
   int? _monthNumber(String month) {
