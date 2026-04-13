@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import '../../../../services/supabase_service.dart';
 import '../models/metode_pembayaran_model.dart';
 
 class TambahMetodePembayaranController extends GetxController {
+  final SupabaseService _supabaseService = SupabaseService();
+
   final selectedKostList = <Map<String, dynamic>>[].obs;
   final selectedTipe = ''.obs;
   final selectedQrisImage = ''.obs; // For QRIS image path
+  final isUploadingQris = false.obs;
+  final isLoadingKost = false.obs;
+  final isSaving = false.obs;
+  final errorMessage = RxnString();
 
   final namaBankController = TextEditingController();
   final nomorRekeningController = TextEditingController();
@@ -15,41 +23,11 @@ class TambahMetodePembayaranController extends GetxController {
   final isEditMode = false.obs;
   MetodePembayaranModel? editingMetode;
 
-  // Dummy data kost
-  final availableKostList = [
-    {
-      'id': '1',
-      'nama': 'Green Valley Kost',
-      'alamat': 'Jl. Sudirman No. 123, Jakarta',
-      'jumlahKamar': 12,
-    },
-    {
-      'id': '2',
-      'nama': 'Sunrise Boarding House',
-      'alamat': 'Jl. Gatot Subroto No. 45, Jakarta',
-      'jumlahKamar': 8,
-    },
-    {
-      'id': '3',
-      'nama': 'Peaceful Haven Kost',
-      'alamat': 'Jl. Thamrin No. 67, Jakarta',
-      'jumlahKamar': 10,
-    },
-    {
-      'id': '4',
-      'nama': 'Urban Residence',
-      'alamat': 'Jl. HR Rasuna Said No. 89, Jakarta',
-      'jumlahKamar': 15,
-    },
-    {
-      'id': '5',
-      'nama': 'Cozy Corner Kost',
-      'alamat': 'Jl. Kuningan No. 34, Jakarta',
-      'jumlahKamar': 6,
-    },
-  ];
+  final availableKostList = <Map<String, dynamic>>[].obs;
 
   bool get canSave {
+    if (isSaving.value) return false;
+    if (isUploadingQris.value) return false;
     if (selectedKostList.isEmpty) return false;
     if (selectedTipe.value.isEmpty) return false;
 
@@ -71,40 +49,121 @@ class TambahMetodePembayaranController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Check if edit mode
-    if (Get.arguments != null && Get.arguments is MetodePembayaranModel) {
+    if (Get.arguments is MetodePembayaranModel) {
       isEditMode.value = true;
       editingMetode = Get.arguments as MetodePembayaranModel;
-
-      // Pre-fill data
       selectedTipe.value = editingMetode!.jenis;
 
       if (editingMetode!.jenis == 'bank') {
         namaBankController.text = editingMetode!.nama;
         nomorRekeningController.text = editingMetode!.nomorRekening;
-        atasNamaController.text =
-            ''; // Atas nama tidak ada di model, bisa dikosongkan
+        atasNamaController.text = editingMetode!.atasNama;
       } else if (editingMetode!.jenis == 'qris') {
         namaBankController.text = editingMetode!.nama;
         selectedQrisImage.value = editingMetode!.qrisImagePath ?? '';
       }
 
-      // Set selected kost
-      final kost = availableKostList.firstWhere(
-        (k) => k['nama'] == editingMetode!.namaKost,
-        orElse: () => availableKostList[0],
-      );
-      selectedKostList.value = [kost];
+      final previewKostId = editingMetode!.kostId;
+      selectedKostList.value = [
+        {
+          'id': previewKostId,
+          'nama': editingMetode!.namaKost,
+          'alamat': '-',
+          'jumlahKamar': 0,
+        },
+      ];
     }
 
-    // Listen to text changes to update button state
     namaBankController.addListener(_updateState);
     nomorRekeningController.addListener(_updateState);
     atasNamaController.addListener(_updateState);
+
+    loadAvailableKost();
+  }
+
+  Future<void> loadAvailableKost() async {
+    isLoadingKost.value = true;
+    errorMessage.value = null;
+
+    try {
+      final kosts = await _supabaseService.getKostList();
+      final mapped = kosts
+          .map(
+            (kost) => <String, dynamic>{
+              'id': kost.id,
+              'nama': kost.name.trim().isEmpty ? 'Kost' : kost.name.trim(),
+              'alamat': kost.address.trim().isEmpty ? '-' : kost.address.trim(),
+              'jumlahKamar': kost.roomCount,
+            },
+          )
+          .toList();
+
+      availableKostList.assignAll(mapped);
+      _syncSelectedKostAfterLoad();
+      selectedKostList.refresh();
+    } catch (e) {
+      availableKostList.clear();
+      errorMessage.value = _resolveErrorMessage(e, 'Gagal memuat daftar kost.');
+      Get.snackbar(
+        'Error',
+        errorMessage.value ?? 'Gagal memuat daftar kost.',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      isLoadingKost.value = false;
+    }
+  }
+
+  void _syncSelectedKostAfterLoad() {
+    if (selectedKostList.isEmpty || availableKostList.isEmpty) return;
+
+    final selectedIds = selectedKostList
+        .map((item) => (item['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+
+    if (selectedIds.isNotEmpty) {
+      final matchedById = availableKostList
+          .where((item) => selectedIds.contains((item['id'] ?? '').toString()))
+          .toList();
+
+      if (matchedById.isNotEmpty) {
+        selectedKostList.assignAll(matchedById);
+        return;
+      }
+    }
+
+    final selectedNames = selectedKostList
+        .map((item) => (item['nama'] ?? '').toString())
+        .where((name) => name.trim().isNotEmpty)
+        .toSet();
+
+    final matchedByName = availableKostList
+        .where(
+          (item) => selectedNames.contains((item['nama'] ?? '').toString()),
+        )
+        .toList();
+
+    if (matchedByName.isNotEmpty) {
+      selectedKostList.assignAll(matchedByName);
+    }
+  }
+
+  String _resolveErrorMessage(Object error, String fallback) {
+    var message = error.toString().trim();
+    if (message.startsWith('Exception:')) {
+      message = message.substring('Exception:'.length).trim();
+    }
+    if (message.length > 180) {
+      message = '${message.substring(0, 180)}...';
+    }
+    return message.isEmpty ? fallback : message;
   }
 
   void _updateState() {
-    // Trigger rebuild for canSave getter
     selectedKostList.refresh();
   }
 
@@ -118,11 +177,38 @@ class TambahMetodePembayaranController extends GetxController {
 
   void setTipe(String tipe) {
     selectedTipe.value = tipe;
+    selectedKostList.refresh();
   }
 
   void showPilihKostBottomSheet() {
+    if (isLoadingKost.value) {
+      Get.snackbar(
+        'Info',
+        'Daftar kost sedang dimuat, tunggu sebentar.',
+        backgroundColor: const Color(0xFF3B82F6),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    if (availableKostList.isEmpty) {
+      Get.snackbar(
+        'Info',
+        'Belum ada data kost yang bisa dipilih.',
+        backgroundColor: const Color(0xFF3B82F6),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
     final tempSelected = <String>[
-      ...selectedKostList.map((k) => k['id'] as String),
+      ...selectedKostList
+          .map((k) => (k['id'] ?? '').toString())
+          .where((id) => id.isNotEmpty),
     ];
 
     Get.bottomSheet(
@@ -203,7 +289,9 @@ class TambahMetodePembayaranController extends GetxController {
                           } else {
                             tempSelected.clear();
                             tempSelected.addAll(
-                              availableKostList.map((k) => k['id'] as String),
+                              availableKostList
+                                  .map((k) => (k['id'] ?? '').toString())
+                                  .where((id) => id.isNotEmpty),
                             );
                           }
                         });
@@ -237,15 +325,16 @@ class TambahMetodePembayaranController extends GetxController {
                     itemCount: availableKostList.length,
                     itemBuilder: (context, index) {
                       final kost = availableKostList[index];
-                      final isSelected = tempSelected.contains(kost['id']);
+                      final kostId = (kost['id'] ?? '').toString();
+                      final isSelected = tempSelected.contains(kostId);
 
                       return GestureDetector(
                         onTap: () {
                           setState(() {
                             if (isSelected) {
-                              tempSelected.remove(kost['id']);
+                              tempSelected.remove(kostId);
                             } else {
-                              tempSelected.add(kost['id'] as String);
+                              tempSelected.add(kostId);
                             }
                           });
                         },
@@ -353,7 +442,11 @@ class TambahMetodePembayaranController extends GetxController {
                           ? null
                           : () {
                               selectedKostList.value = availableKostList
-                                  .where((k) => tempSelected.contains(k['id']))
+                                  .where(
+                                    (k) => tempSelected.contains(
+                                      (k['id'] ?? '').toString(),
+                                    ),
+                                  )
                                   .toList();
                               Get.back();
                             },
@@ -388,46 +481,169 @@ class TambahMetodePembayaranController extends GetxController {
   }
 
   void removeKost(String id) {
-    selectedKostList.removeWhere((k) => k['id'] == id);
+    selectedKostList.removeWhere((k) => (k['id'] ?? '').toString() == id);
   }
 
-  void simpan() {
-    if (!canSave) return;
+  Future<void> simpan() async {
+    if (!canSave || isSaving.value || isUploadingQris.value) return;
 
-    Get.back();
+    final selectedKostIds = selectedKostList
+        .map((item) => (item['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet()
+        .toList();
 
-    if (isEditMode.value) {
+    if (selectedKostIds.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'Pilih minimal satu kost terlebih dahulu',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    final tipe = MetodePembayaranModel.normalizeJenis(selectedTipe.value);
+    final nama = tipe == 'cash' ? 'Tunai' : namaBankController.text.trim();
+    final noRek = tipe == 'bank' ? nomorRekeningController.text.trim() : '-';
+    final atasNama = tipe == 'bank' ? atasNamaController.text.trim() : null;
+    final qrImage = tipe == 'qris' ? selectedQrisImage.value.trim() : null;
+
+    try {
+      isSaving.value = true;
+
+      if (isEditMode.value && editingMetode != null) {
+        await _supabaseService.updateMetodePembayaran(
+          id: editingMetode!.id,
+          kostId: selectedKostIds.first,
+          tipe: tipe,
+          nama: nama,
+          noRek: noRek,
+          atasNama: atasNama,
+          qrImage: qrImage,
+          isActive: editingMetode!.isActive,
+        );
+
+        Get.back(result: true);
+        Get.snackbar(
+          'Berhasil',
+          'Metode pembayaran berhasil diperbarui',
+          backgroundColor: const Color(0xFF10B981),
+          colorText: Colors.white,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 2),
+        );
+        return;
+      }
+
+      for (final kostId in selectedKostIds) {
+        await _supabaseService.createMetodePembayaran(
+          kostId: kostId,
+          tipe: tipe,
+          nama: nama,
+          noRek: noRek,
+          atasNama: atasNama,
+          qrImage: qrImage,
+          isActive: true,
+        );
+      }
+
+      Get.back(result: true);
       Get.snackbar(
         'Berhasil',
-        'Metode pembayaran berhasil diperbarui',
+        'Metode pembayaran berhasil ditambahkan untuk ${selectedKostIds.length} kost',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
         snackPosition: SnackPosition.TOP,
         duration: const Duration(seconds: 2),
       );
-    } else {
+    } catch (e) {
       Get.snackbar(
-        'Berhasil',
-        'Metode pembayaran berhasil ditambahkan untuk ${selectedKostList.length} kost',
-        backgroundColor: const Color(0xFF10B981),
+        'Error',
+        _resolveErrorMessage(e, 'Gagal menyimpan metode pembayaran'),
+        backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
         snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 3),
       );
+    } finally {
+      isSaving.value = false;
     }
   }
 
-  void pickQrisImage() {
-    // Simulate image picker for UI/UX purposes
-    selectedQrisImage.value = 'assets/images/qris_sample.png';
-    Get.snackbar(
-      'Berhasil',
-      'Gambar QRIS berhasil dipilih',
-      backgroundColor: const Color(0xFF10B981),
-      colorText: Colors.white,
-      snackPosition: SnackPosition.TOP,
-      duration: const Duration(seconds: 2),
+  Future<void> pickQrisImage() async {
+    if (isUploadingQris.value) return;
+
+    String? selectedKostId;
+    for (final item in selectedKostList) {
+      final id = (item['id'] ?? '').toString();
+      if (id.trim().isNotEmpty) {
+        selectedKostId = id;
+        break;
+      }
+    }
+
+    if (selectedKostId == null) {
+      return;
+    }
+
+    final picker = ImagePicker();
+    final file = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+      maxWidth: 1600,
     );
+
+    if (file == null) {
+      return;
+    }
+
+    final metodeName = namaBankController.text.trim().isEmpty
+        ? 'qris'
+        : namaBankController.text.trim();
+
+    final fileName = file.name.trim();
+    final ext = fileName.contains('.')
+        ? fileName.split('.').last.trim().toLowerCase()
+        : 'jpg';
+
+    try {
+      isUploadingQris.value = true;
+
+      final bytes = await file.readAsBytes();
+      final publicUrl = await _supabaseService.uploadMetodePembayaranQrisImage(
+        imageBytes: bytes,
+        fileExt: ext,
+        kostId: selectedKostId,
+        namaMetode: metodeName,
+      );
+
+      selectedQrisImage.value = publicUrl;
+      selectedKostList.refresh();
+
+      Get.snackbar(
+        'Berhasil',
+        'Gambar QRIS berhasil diupload',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        _resolveErrorMessage(e, 'Gagal upload gambar QRIS'),
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      isUploadingQris.value = false;
+      selectedKostList.refresh();
+    }
   }
 
   void removeQrisImage() {

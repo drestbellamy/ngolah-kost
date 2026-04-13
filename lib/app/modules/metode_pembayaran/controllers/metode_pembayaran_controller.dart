@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../services/supabase_service.dart';
 import '../models/metode_pembayaran_model.dart';
 
 class MetodePembayaranController extends GetxController {
+  final SupabaseService _supabaseService = SupabaseService();
+
   final metodePembayaranList = <MetodePembayaranModel>[].obs;
   final filteredList = <MetodePembayaranModel>[].obs;
+  final kostFilterOptions = <String>['Semua Kost'].obs;
+
+  final isLoading = false.obs;
+  final errorMessage = RxnString();
+  final updatingStatusIds = <String>{}.obs;
 
   final selectedKost = 'Semua Kost'.obs;
   final selectedFilter = 'Semua'.obs; // 'Semua', 'Bank', 'Cash', 'QRIS'
@@ -12,126 +20,175 @@ class MetodePembayaranController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadDummyData();
+    loadMetodePembayaran();
   }
 
-  void loadDummyData() {
-    metodePembayaranList.value = [
-      MetodePembayaranModel(
-        id: '1',
-        nama: 'BCA',
-        jenis: 'bank',
-        nomorRekening: '7890',
-        namaKost: 'Green Valley Kost',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '2',
-        nama: 'BRI',
-        jenis: 'bank',
-        nomorRekening: '3210',
-        namaKost: 'Green Valley Kost',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '3',
-        nama: 'Mandiri',
-        jenis: 'bank',
-        nomorRekening: '4455',
-        namaKost: 'Green Valley Kost',
-        isActive: false,
-      ),
-      MetodePembayaranModel(
-        id: '4',
-        nama: 'Cash Payment',
-        jenis: 'cash',
-        nomorRekening: '-',
-        namaKost: 'Green Valley Kost',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '5',
-        nama: 'BNI',
-        jenis: 'bank',
-        nomorRekening: '2211',
-        namaKost: 'Sunrise Boarding House',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '6',
-        nama: 'Mandiri',
-        jenis: 'bank',
-        nomorRekening: '9900',
-        namaKost: 'Sunrise Boarding House',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '7',
-        nama: 'BCA',
-        jenis: 'bank',
-        nomorRekening: '5566',
-        namaKost: 'Peaceful Haven Kost',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '8',
-        nama: 'Cash Payment',
-        jenis: 'cash',
-        nomorRekening: '-',
-        namaKost: 'Peaceful Haven Kost',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '9',
-        nama: 'BRI',
-        jenis: 'bank',
-        nomorRekening: '7788',
-        namaKost: 'Urban Residence',
-        isActive: true,
-      ),
-      MetodePembayaranModel(
-        id: '10',
-        nama: 'Mandiri',
-        jenis: 'bank',
-        nomorRekening: '3344',
-        namaKost: 'Cozy Corner Kost',
-        isActive: true,
-      ),
-      // QRIS Payment Methods
-      MetodePembayaranModel(
-        id: '11',
-        nama: 'QRIS Dana',
-        jenis: 'qris',
-        nomorRekening: '-',
-        namaKost: 'Green Valley Kost',
-        isActive: true,
-        qrisImagePath: 'assets/images/qris_dana.png',
-      ),
-      MetodePembayaranModel(
-        id: '12',
-        nama: 'QRIS GoPay',
-        jenis: 'qris',
-        nomorRekening: '-',
-        namaKost: 'Sunrise Boarding House',
-        isActive: true,
-        qrisImagePath: 'assets/images/qris_gopay.png',
-      ),
-      MetodePembayaranModel(
-        id: '13',
-        nama: 'QRIS OVO',
-        jenis: 'qris',
-        nomorRekening: '-',
-        namaKost: 'Peaceful Haven Kost',
-        isActive: false,
-        qrisImagePath: 'assets/images/qris_ovo.png',
-      ),
-    ];
+  Future<void> loadMetodePembayaran({bool showLoading = true}) async {
+    if (showLoading) {
+      isLoading.value = true;
+    }
+    errorMessage.value = null;
 
-    print('Total payment methods loaded: ${metodePembayaranList.length}');
-    print(
-      'QRIS methods: ${metodePembayaranList.where((m) => m.jenis == 'qris').length}',
+    try {
+      final kostFuture = _supabaseService.getKostList();
+      final metodeFuture = _supabaseService.getMetodePembayaranList();
+
+      final kostList = await kostFuture;
+      final metodeRows = await metodeFuture;
+
+      final kostNameById = <String, String>{
+        for (final kost in kostList)
+          kost.id: kost.name.trim().isEmpty ? 'Kost' : kost.name.trim(),
+      };
+
+      final mapped = metodeRows
+          .map(
+            (row) =>
+                MetodePembayaranModel.fromMap(row, kostNameById: kostNameById),
+          )
+          .where((item) => item.id.isNotEmpty)
+          .toList();
+
+      metodePembayaranList.assignAll(mapped);
+      _syncKostFilterOptions(kostList.map((k) => k.name).toList(), mapped);
+      applyFilter();
+    } catch (e) {
+      metodePembayaranList.clear();
+      filteredList.clear();
+      kostFilterOptions.assignAll(['Semua Kost']);
+      selectedKost.value = 'Semua Kost';
+      errorMessage.value = _resolveErrorMessage(
+        e,
+        'Gagal memuat data metode pembayaran.',
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void _syncKostFilterOptions(
+    List<String> kostNamesFromMaster,
+    List<MetodePembayaranModel> metodeList,
+  ) {
+    final names = <String>{};
+
+    for (final name in kostNamesFromMaster) {
+      final cleaned = name.trim();
+      if (cleaned.isNotEmpty) names.add(cleaned);
+    }
+    for (final item in metodeList) {
+      final cleaned = item.namaKost.trim();
+      if (cleaned.isNotEmpty) names.add(cleaned);
+    }
+
+    final options = ['Semua Kost', ...names.toList()..sort()];
+    kostFilterOptions.assignAll(options);
+
+    if (!options.contains(selectedKost.value)) {
+      selectedKost.value = 'Semua Kost';
+    }
+  }
+
+  Future<void> refreshList() async {
+    await loadMetodePembayaran(showLoading: false);
+  }
+
+  String _resolveErrorMessage(Object error, String fallback) {
+    var message = error.toString().trim();
+    if (message.startsWith('Exception:')) {
+      message = message.substring('Exception:'.length).trim();
+    }
+    if (message.length > 180) {
+      message = '${message.substring(0, 180)}...';
+    }
+    return message.isEmpty ? fallback : message;
+  }
+
+  Future<void> _handleDeleteConfirmed(String id) async {
+    try {
+      await _supabaseService.deleteMetodePembayaran(id);
+      metodePembayaranList.removeWhere((m) => m.id == id);
+      applyFilter();
+
+      Get.back();
+      Get.snackbar(
+        'Berhasil',
+        'Metode pembayaran berhasil dihapus',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        _resolveErrorMessage(e, 'Gagal menghapus metode pembayaran'),
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  Future<void> _handleFormResult(dynamic result) async {
+    if (result == true) {
+      await loadMetodePembayaran(showLoading: false);
+    }
+  }
+
+  Future<void> tambahMetode() async {
+    final result = await Get.toNamed('/tambah-metode-pembayaran');
+    await _handleFormResult(result);
+  }
+
+  Future<void> editMetode(String id) async {
+    final metode = metodePembayaranList.firstWhereOrNull((m) => m.id == id);
+    if (metode == null) return;
+
+    final result = await Get.toNamed(
+      '/edit-metode-pembayaran',
+      arguments: metode,
     );
+    await _handleFormResult(result);
+  }
+
+  Future<void> toggleStatus(String id) async {
+    final index = metodePembayaranList.indexWhere((m) => m.id == id);
+    if (index == -1) return;
+    if (updatingStatusIds.contains(id)) return;
+
+    final current = metodePembayaranList[index];
+    final targetStatus = !current.isActive;
+
+    updatingStatusIds.add(id);
+
+    metodePembayaranList[index] = current.copyWith(isActive: targetStatus);
+    metodePembayaranList.refresh();
     applyFilter();
+
+    try {
+      await _supabaseService.updateMetodePembayaranStatus(
+        id: id,
+        isActive: targetStatus,
+      );
+    } catch (e) {
+      // Rollback UI if backend update fails.
+      metodePembayaranList[index] = current;
+      metodePembayaranList.refresh();
+      applyFilter();
+
+      Get.snackbar(
+        'Error',
+        _resolveErrorMessage(e, 'Gagal memperbarui status metode pembayaran'),
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      updatingStatusIds.remove(id);
+    }
   }
 
   void applyFilter() {
@@ -146,14 +203,6 @@ class MetodePembayaranController extends GetxController {
           (selectedFilter.value == 'QRIS' && metode.jenis == 'qris');
       return matchKost && matchJenis;
     }).toList();
-
-    print(
-      'Filter applied - Kost: ${selectedKost.value}, Jenis: ${selectedFilter.value}',
-    );
-    print('Filtered results: ${filteredList.length} items');
-    print(
-      'QRIS in filtered: ${filteredList.where((m) => m.jenis == 'qris').length}',
-    );
   }
 
   void setKostFilter(String kost) {
@@ -174,30 +223,9 @@ class MetodePembayaranController extends GetxController {
     return metodePembayaranList.length;
   }
 
-  void toggleStatus(String id) {
-    final index = metodePembayaranList.indexWhere((m) => m.id == id);
-    if (index != -1) {
-      final metode = metodePembayaranList[index];
-      metodePembayaranList[index] = MetodePembayaranModel(
-        id: metode.id,
-        nama: metode.nama,
-        jenis: metode.jenis,
-        nomorRekening: metode.nomorRekening,
-        namaKost: metode.namaKost,
-        isActive: !metode.isActive,
-      );
-      metodePembayaranList.refresh();
-      applyFilter();
-    }
-  }
-
-  void editMetode(String id) {
-    final metode = metodePembayaranList.firstWhere((m) => m.id == id);
-    Get.toNamed('/edit-metode-pembayaran', arguments: metode);
-  }
-
   void deleteMetode(String id) {
-    final metode = metodePembayaranList.firstWhere((m) => m.id == id);
+    final metode = metodePembayaranList.firstWhereOrNull((m) => m.id == id);
+    if (metode == null) return;
 
     Get.dialog(
       Dialog(
@@ -276,18 +304,8 @@ class MetodePembayaranController extends GetxController {
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: TextButton(
-                        onPressed: () {
-                          metodePembayaranList.removeWhere((m) => m.id == id);
-                          applyFilter();
-                          Get.back();
-                          Get.snackbar(
-                            'Berhasil',
-                            'Metode pembayaran berhasil dihapus',
-                            backgroundColor: const Color(0xFF10B981),
-                            colorText: Colors.white,
-                            snackPosition: SnackPosition.TOP,
-                            duration: const Duration(seconds: 2),
-                          );
+                        onPressed: () async {
+                          await _handleDeleteConfirmed(id);
                         },
                         child: const Text(
                           'Delete',
@@ -307,9 +325,5 @@ class MetodePembayaranController extends GetxController {
         ),
       ),
     );
-  }
-
-  void tambahMetode() {
-    Get.toNamed('/tambah-metode-pembayaran');
   }
 }

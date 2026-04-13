@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/metode_pembayaran_controller.dart';
+import '../models/metode_pembayaran_model.dart';
 
 class MetodePembayaranView extends GetView<MetodePembayaranController> {
   const MetodePembayaranView({super.key});
@@ -75,121 +76,219 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
 
             // Content
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Filter by Boarding House
-                    const Text(
-                      'Filter berdasarkan kost',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2D3748),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Obx(
-                      () => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Filter by Boarding House
+                        const Text(
+                          'Filter berdasarkan kost',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2D3748),
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE5E7EB)),
-                        ),
-                        child: DropdownButton<String>(
-                          value: controller.selectedKost.value,
-                          isExpanded: true,
-                          underline: const SizedBox(),
-                          icon: const Icon(Icons.keyboard_arrow_down),
-                          dropdownColor: Colors.white,
-                          items:
-                              [
-                                'Semua Kost',
-                                'Green Valley Kost',
-                                'Sunrise Boarding House',
-                                'Peaceful Haven Kost',
-                                'Urban Residence',
-                                'Cozy Corner Kost',
-                              ].map((String value) {
+                        const SizedBox(height: 12),
+                        Obx(() {
+                          final options = controller.kostFilterOptions.isEmpty
+                              ? const <String>['Semua Kost']
+                              : controller.kostFilterOptions;
+
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7EB),
+                              ),
+                            ),
+                            child: DropdownButton<String>(
+                              value: controller.selectedKost.value,
+                              isExpanded: true,
+                              underline: const SizedBox(),
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              dropdownColor: Colors.white,
+                              items: options.map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
                                   child: Text(value),
                                 );
                               }).toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              controller.setKostFilter(value);
-                            }
-                          },
+                              onChanged: (value) {
+                                if (value != null) {
+                                  controller.setKostFilter(value);
+                                }
+                              },
+                            ),
+                          );
+                        }),
+
+                        Obx(() {
+                          final message = controller.errorMessage.value;
+                          if (message == null || message.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFE5E5),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                message,
+                                style: const TextStyle(
+                                  color: Color(0xFFB91C1C),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+
+                        const SizedBox(height: 20),
+
+                        // Filter Chips
+                        Obx(
+                          () => Row(
+                            children: [
+                              Flexible(
+                                child: _buildFilterChip(
+                                  'Semua',
+                                  controller.selectedFilter.value == 'Semua',
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: _buildFilterChip(
+                                  'Bank',
+                                  controller.selectedFilter.value == 'Bank',
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: _buildFilterChip(
+                                  'QRIS',
+                                  controller.selectedFilter.value == 'QRIS',
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: _buildFilterChip(
+                                  'Cash',
+                                  controller.selectedFilter.value == 'Cash',
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(height: 20),
 
-                    const SizedBox(height: 20),
+                  // Grid Metode Pembayaran (scrollable area)
+                  Expanded(
+                    child: Obx(() {
+                      return RefreshIndicator(
+                        onRefresh: controller.refreshList,
+                        color: const Color(0xFF6B8E7A),
+                        child: () {
+                          if (controller.isLoading.value &&
+                              controller.metodePembayaranList.isEmpty) {
+                            return ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: const [
+                                SizedBox(
+                                  height: 260,
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF6B8E7A),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
 
-                    // Filter Chips
-                    Obx(
-                      () => Row(
-                        children: [
-                          Flexible(
-                            child: _buildFilterChip(
-                              'Semua',
-                              controller.selectedFilter.value == 'Semua',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: _buildFilterChip(
-                              'Bank',
-                              controller.selectedFilter.value == 'Bank',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: _buildFilterChip(
-                              'QRIS',
-                              controller.selectedFilter.value == 'QRIS',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: _buildFilterChip(
-                              'Cash',
-                              controller.selectedFilter.value == 'Cash',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                          if (controller.filteredList.isEmpty) {
+                            return ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 28,
+                                    horizontal: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: const Color(0xFFE5E7EB),
+                                    ),
+                                  ),
+                                  child: const Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.account_balance_wallet_outlined,
+                                        size: 30,
+                                        color: Color(0xFF9CA3AF),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'Belum ada metode pembayaran',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xFF6B7280),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
 
-                    const SizedBox(height: 20),
-
-                    // Grid Metode Pembayaran
-                    Obx(
-                      () => GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
-                              childAspectRatio: 0.85,
-                            ),
-                        itemCount: controller.filteredList.length,
-                        itemBuilder: (context, index) {
-                          final metode = controller.filteredList[index];
-                          return _buildMetodeCard(metode);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
+                          return GridView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio: 0.76,
+                                ),
+                            itemCount: controller.filteredList.length,
+                            itemBuilder: (context, index) {
+                              final metode = controller.filteredList[index];
+                              return _buildMetodeCard(metode);
+                            },
+                          );
+                        }(),
+                      );
+                    }),
+                  ),
+                ],
               ),
             ),
           ],
@@ -204,28 +303,26 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
   }
 
   Widget _buildFilterChip(String label, bool isSelected) {
-    return Flexible(
-      child: GestureDetector(
-        onTap: () => controller.setJenisFilter(label),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF6B8E7A) : Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: isSelected
-                  ? const Color(0xFF6B8E7A)
-                  : const Color(0xFFE5E7EB),
-            ),
+    return GestureDetector(
+      onTap: () => controller.setJenisFilter(label),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF6B8E7A) : Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFF6B8E7A)
+                : const Color(0xFFE5E7EB),
           ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : const Color(0xFF6B7280),
-              ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: isSelected ? Colors.white : const Color(0xFF6B7280),
             ),
           ),
         ),
@@ -233,7 +330,40 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
     );
   }
 
-  Widget _buildMetodeCard(metode) {
+  Widget _buildRekeningInfo(MetodePembayaranModel metode) {
+    if (metode.jenis == 'qris') {
+      return const Text(
+        'QR Code Pembayaran',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF6B7280),
+        ),
+      );
+    }
+
+    if (metode.jenis == 'cash') {
+      return const Text(
+        'Pembayaran Tunai',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF6B7280),
+        ),
+      );
+    }
+
+    return Text(
+      metode.nomorRekening,
+      style: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: Color(0xFF2D3748),
+      ),
+    );
+  }
+
+  Widget _buildMetodeCard(MetodePembayaranModel metode) {
     final isActive = metode.isActive;
     final opacity = isActive ? 1.0 : 0.4;
 
@@ -312,7 +442,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
 
             // Nama Bank
             Text(
-              metode.nama,
+              metode.jenis == 'cash' ? 'Tunai' : metode.nama,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -332,37 +462,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
 
             const SizedBox(height: 8),
 
-            // Nomor Rekening / QRIS Info
-            if (metode.jenis == 'qris')
-              const Text(
-                'QR Code Payment',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF6B7280),
-                ),
-              )
-            else
-              Row(
-                children: [
-                  const Text(
-                    '•••• ',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF6B7280),
-                    ),
-                  ),
-                  Text(
-                    metode.nomorRekening,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D3748),
-                    ),
-                  ),
-                ],
-              ),
+            _buildRekeningInfo(metode),
 
             const Spacer(),
 

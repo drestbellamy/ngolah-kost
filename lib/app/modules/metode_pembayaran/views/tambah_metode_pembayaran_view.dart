@@ -119,6 +119,52 @@ class TambahMetodePembayaranView
                           ),
                           const SizedBox(height: 16),
 
+                          // Info inline untuk QRIS
+                          Obx(() {
+                            if (controller.selectedKostList.isEmpty &&
+                                controller.selectedTipe.value == 'qris') {
+                              return Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFDCEEFF),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(6),
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFF3B82F6),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(
+                                            Icons.info_outline,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        const Expanded(
+                                          child: Text(
+                                            'Pilih kost terlebih dahulu sebelum upload QRIS',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              color: Color(0xFF1E40AF),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                ],
+                              );
+                            }
+                            return const SizedBox();
+                          }),
+
                           // Button Pilih Kost
                           SizedBox(
                             width: double.infinity,
@@ -333,7 +379,7 @@ class TambahMetodePembayaranView
                                 Expanded(
                                   child: _buildTipeButton(
                                     icon: Icons.money,
-                                    label: 'Cash / Tunai',
+                                    label: 'Tunai',
                                     isSelected:
                                         controller.selectedTipe.value == 'cash',
                                     onTap: () => controller.setTipe('cash'),
@@ -447,6 +493,44 @@ class TambahMetodePembayaranView
                                   ),
                                   const SizedBox(height: 8),
                                   Obx(() {
+                                    if (controller.isUploadingQris.value) {
+                                      return Container(
+                                        width: double.infinity,
+                                        height: 120,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF9FAFB),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: const Color(0xFFE5E7EB),
+                                          ),
+                                        ),
+                                        child: const Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              width: 24,
+                                              height: 24,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2.5,
+                                                color: Color(0xFF6B8E7A),
+                                              ),
+                                            ),
+                                            SizedBox(height: 10),
+                                            Text(
+                                              'Mengupload gambar QRIS...',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Color(0xFF6B7280),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+
                                     if (controller
                                         .selectedQrisImage
                                         .value
@@ -488,9 +572,15 @@ class TambahMetodePembayaranView
                                         ),
                                       );
                                     } else {
+                                      final qrisUrl =
+                                          controller.selectedQrisImage.value;
+                                      final canPreview = qrisUrl.startsWith(
+                                        'http',
+                                      );
+
                                       return Container(
                                         width: double.infinity,
-                                        height: 120,
+                                        height: 200,
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF9FAFB),
                                           borderRadius: BorderRadius.circular(
@@ -502,25 +592,23 @@ class TambahMetodePembayaranView
                                         ),
                                         child: Stack(
                                           children: [
-                                            Center(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.qr_code,
-                                                    size: 32,
-                                                    color: Color(0xFF10B981),
-                                                  ),
-                                                  SizedBox(height: 8),
-                                                  Text(
-                                                    'Gambar QRIS berhasil dipilih',
-                                                    style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Color(0xFF10B981),
-                                                    ),
-                                                  ),
-                                                ],
+                                            Positioned.fill(
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                child: canPreview
+                                                    ? Image.network(
+                                                        qrisUrl,
+                                                        fit: BoxFit.contain,
+                                                        errorBuilder:
+                                                            (
+                                                              context,
+                                                              error,
+                                                              stackTrace,
+                                                            ) =>
+                                                                _buildQrisUploadOkFallback(),
+                                                      )
+                                                    : _buildQrisUploadOkFallback(),
                                               ),
                                             ),
                                             Positioned(
@@ -609,6 +697,23 @@ class TambahMetodePembayaranView
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildQrisUploadOkFallback() {
+    return Container(
+      color: const Color(0xFFF9FAFB),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.qr_code, size: 32, color: Color(0xFF10B981)),
+          SizedBox(height: 8),
+          Text(
+            'Gambar QRIS berhasil diupload',
+            style: TextStyle(fontSize: 12, color: Color(0xFF10B981)),
+          ),
+        ],
       ),
     );
   }
