@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../app/modules/kost/models/kost_model.dart';
 import '../app/modules/login/models/login_user_model.dart';
 
 class SupabaseService {
+  static const String _metodePembayaranQrisBucket = 'metode-pembayaran-qris';
+
   final supabase = Supabase.instance.client;
 
   // CREATE USER PENGHUNI (secure via RPC)
@@ -85,6 +89,198 @@ class SupabaseService {
     return response
         .map((item) => KostModel.fromMap(item as Map<String, dynamic>))
         .toList();
+  }
+
+  // GET METODE PEMBAYARAN
+  Future<List<Map<String, dynamic>>> getMetodePembayaranList() async {
+    final attempts = <({String select, bool orderByCreatedAt})>[
+      (
+        select:
+            'id, kost_id, tipe, nama, no_rek, atas_nama, qr_image, is_active, created_at, kost:kost_id(id, nama_kost)',
+        orderByCreatedAt: true,
+      ),
+      (
+        select:
+            'id, kost_id, tipe, nama, no_rek, atas_nama, qr_image, is_active, created_at',
+        orderByCreatedAt: true,
+      ),
+      (select: '*', orderByCreatedAt: true),
+      (select: '*', orderByCreatedAt: false),
+    ];
+
+    for (final attempt in attempts) {
+      try {
+        dynamic query = supabase
+            .from('metode_pembayaran')
+            .select(attempt.select);
+
+        if (attempt.orderByCreatedAt) {
+          query = query.order('created_at', ascending: false);
+        }
+
+        final raw = await query;
+        if (raw is! List) return [];
+
+        return raw.map((item) => Map<String, dynamic>.from(item)).toList();
+      } catch (_) {
+        // Try next shape in case schema differs between environments.
+      }
+    }
+
+    throw Exception('Gagal memuat metode pembayaran');
+  }
+
+  // INSERT METODE PEMBAYARAN
+  Future<void> createMetodePembayaran({
+    required String kostId,
+    required String tipe,
+    required String nama,
+    String? noRek,
+    String? atasNama,
+    String? qrImage,
+    bool isActive = true,
+  }) async {
+    if (kostId.trim().isEmpty) {
+      throw Exception('Kost wajib dipilih');
+    }
+
+    final normalizedTipe = _normalizeMetodePembayaranTipe(tipe);
+    final cleanNama = nama.trim();
+    if (cleanNama.isEmpty) {
+      throw Exception('Nama metode pembayaran wajib diisi');
+    }
+
+    final payload = <String, dynamic>{
+      'kost_id': kostId.trim(),
+      'tipe': normalizedTipe,
+      'nama': cleanNama,
+      'no_rek': (noRek ?? '').trim().isEmpty ? '-' : noRek!.trim(),
+      'atas_nama': (atasNama ?? '').trim().isEmpty ? null : atasNama!.trim(),
+      'qr_image': (qrImage ?? '').trim().isEmpty ? null : qrImage!.trim(),
+      'is_active': isActive,
+    };
+
+    try {
+      await supabase.from('metode_pembayaran').insert(payload);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPDATE METODE PEMBAYARAN
+  Future<void> updateMetodePembayaran({
+    required String id,
+    required String kostId,
+    required String tipe,
+    required String nama,
+    String? noRek,
+    String? atasNama,
+    String? qrImage,
+    bool? isActive,
+  }) async {
+    if (id.trim().isEmpty) {
+      throw Exception('ID metode pembayaran tidak valid');
+    }
+    if (kostId.trim().isEmpty) {
+      throw Exception('Kost wajib dipilih');
+    }
+
+    final normalizedTipe = _normalizeMetodePembayaranTipe(tipe);
+    final cleanNama = nama.trim();
+    if (cleanNama.isEmpty) {
+      throw Exception('Nama metode pembayaran wajib diisi');
+    }
+
+    final payload = <String, dynamic>{
+      'kost_id': kostId.trim(),
+      'tipe': normalizedTipe,
+      'nama': cleanNama,
+      'no_rek': (noRek ?? '').trim().isEmpty ? '-' : noRek!.trim(),
+      'atas_nama': (atasNama ?? '').trim().isEmpty ? null : atasNama!.trim(),
+      'qr_image': (qrImage ?? '').trim().isEmpty ? null : qrImage!.trim(),
+    };
+
+    if (isActive != null) {
+      payload['is_active'] = isActive;
+    }
+
+    try {
+      await supabase.from('metode_pembayaran').update(payload).eq('id', id);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // DELETE METODE PEMBAYARAN
+  Future<void> deleteMetodePembayaran(String id) async {
+    if (id.trim().isEmpty) {
+      throw Exception('ID metode pembayaran tidak valid');
+    }
+
+    try {
+      await supabase.from('metode_pembayaran').delete().eq('id', id);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPDATE STATUS METODE PEMBAYARAN
+  Future<void> updateMetodePembayaranStatus({
+    required String id,
+    required bool isActive,
+  }) async {
+    if (id.trim().isEmpty) {
+      throw Exception('ID metode pembayaran tidak valid');
+    }
+
+    try {
+      await supabase
+          .from('metode_pembayaran')
+          .update({'is_active': isActive})
+          .eq('id', id);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPLOAD QRIS IMAGE TO STORAGE
+  Future<String> uploadMetodePembayaranQrisImage({
+    required Uint8List imageBytes,
+    required String fileExt,
+    required String kostId,
+    required String namaMetode,
+  }) async {
+    if (imageBytes.isEmpty) {
+      throw Exception('File QRIS tidak valid');
+    }
+
+    final extension = _normalizeFileExtension(fileExt);
+    final safeKostId = kostId.trim().isEmpty ? 'umum' : kostId.trim();
+    final fileName =
+        '${DateTime.now().millisecondsSinceEpoch}_${_slugify(namaMetode)}.$extension';
+    final objectPath = '$safeKostId/$fileName';
+
+    try {
+      await supabase.storage
+          .from(_metodePembayaranQrisBucket)
+          .uploadBinary(
+            objectPath,
+            imageBytes,
+            fileOptions: FileOptions(
+              upsert: false,
+              cacheControl: '3600',
+              contentType: _contentTypeFromFileExtension(extension),
+            ),
+          );
+
+      return supabase.storage
+          .from(_metodePembayaranQrisBucket)
+          .getPublicUrl(objectPath);
+    } on StorageException catch (e) {
+      throw Exception(e.message);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
   }
 
   // INSERT KOST
@@ -1210,5 +1406,47 @@ class SupabaseService {
     if (terisi <= 0) return 'kosong';
     if (terisi >= kapasitas) return 'penuh';
     return 'terisi';
+  }
+
+  String _normalizeFileExtension(String rawExt) {
+    final cleaned = rawExt.trim().toLowerCase().replaceAll('.', '');
+    if (cleaned == 'png' ||
+        cleaned == 'jpeg' ||
+        cleaned == 'jpg' ||
+        cleaned == 'webp') {
+      return cleaned;
+    }
+    return 'jpg';
+  }
+
+  String _contentTypeFromFileExtension(String ext) {
+    switch (ext) {
+      case 'png':
+        return 'image/png';
+      case 'webp':
+        return 'image/webp';
+      case 'jpeg':
+      case 'jpg':
+      default:
+        return 'image/jpeg';
+    }
+  }
+
+  String _slugify(String value) {
+    final cleaned = value.trim().toLowerCase();
+    if (cleaned.isEmpty) return 'qris';
+
+    final onlySafe = cleaned.replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+    final compact = onlySafe.replaceAll(RegExp(r'-+'), '-');
+    return compact.replaceAll(RegExp(r'^-|-$'), '').isEmpty
+        ? 'qris'
+        : compact.replaceAll(RegExp(r'^-|-$'), '');
+  }
+
+  String _normalizeMetodePembayaranTipe(String tipe) {
+    final normalized = tipe.trim().toLowerCase();
+    if (normalized == 'cash' || normalized == 'tunai') return 'cash';
+    if (normalized == 'qris' || normalized == 'qr') return 'qris';
+    return 'bank';
   }
 }
