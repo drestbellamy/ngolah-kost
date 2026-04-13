@@ -400,147 +400,184 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                                   ) ??
                                                   0.0);
 
-                                  return Row(
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  item['nama']?.toString() ??
-                                                      'Pengeluaran',
-                                                  style: const TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: Color(0xFF2F2F2F),
-                                                  ),
-                                                ),
-                                                Text(
-                                                  '-${controller.formatCurrency(amount)}',
-                                                  style: const TextStyle(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Color(0xFFEF4444),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              item['deskripsi']?.toString() ??
-                                                  '-',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                Icon(
-                                                  Icons.calendar_today,
-                                                  size: 12,
-                                                  color: Colors.grey[500],
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  controller.formatDate(
-                                                    item['tanggal'],
-                                                  ),
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey[500],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      // Action buttons
                                       Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          IconButton(
-                                            onPressed: () async {
-                                              final result =
-                                                  await Get.bottomSheet(
-                                                    TambahPengeluaranBottomSheet(
-                                                      initialData: item,
-                                                    ),
-                                                    isScrollControlled: true,
-                                                    backgroundColor:
-                                                        Colors.transparent,
-                                                  );
-
-                                              if (result != null) {
-                                                controller.editPengeluaran(
-                                                  index,
-                                                  result,
-                                                );
-                                              }
-                                            },
-                                            icon: const Icon(
-                                              Icons.edit,
-                                              size: 20,
-                                              color: Color(0xFF6B8E7A),
+                                          Expanded(
+                                            child: Text(
+                                              item['nama']?.toString() ??
+                                                  'Pengeluaran',
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                color: Color(0xFF2F2F2F),
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
-                                            padding: EdgeInsets.zero,
-                                            constraints: const BoxConstraints(),
                                           ),
                                           const SizedBox(width: 12),
-                                          IconButton(
-                                            onPressed: () {
-                                              Get.dialog(
-                                                AlertDialog(
-                                                  title: const Text(
-                                                    'Hapus Pengeluaran',
-                                                  ),
-                                                  content: Text(
-                                                    'Apakah Anda yakin ingin menghapus "${item['nama']?.toString() ?? 'pengeluaran ini'}"?',
-                                                  ),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () =>
-                                                          Get.back(),
-                                                      child: const Text(
-                                                        'Batal',
+                                          Text(
+                                            '-${controller.formatCurrency(amount)}',
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold,
+                                              color: Color(0xFFEF4444),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        item['deskripsi']?.toString() ?? '-',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey[600],
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_today,
+                                                size: 12,
+                                                color: Colors.grey[500],
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                controller.formatDate(
+                                                  item['tanggal'],
+                                                ),
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.grey[500],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              IconButton(
+                                                onPressed: () async {
+                                                  final result =
+                                                      await Get.bottomSheet(
+                                                        TambahPengeluaranBottomSheet(
+                                                          initialData: item,
+                                                        ),
+                                                        isScrollControlled:
+                                                            true,
+                                                        backgroundColor:
+                                                            Colors.transparent,
+                                                      );
+
+                                                  if (result != null) {
+                                                    controller.editPengeluaran(
+                                                      index,
+                                                      result,
+                                                    );
+                                                  }
+                                                },
+                                                icon: const Icon(
+                                                  Icons.edit,
+                                                  size: 20,
+                                                  color: Color(0xFF6B8E7A),
+                                                ),
+                                                padding: EdgeInsets.zero,
+                                                constraints:
+                                                    const BoxConstraints(),
+                                              ),
+                                              const SizedBox(width: 4),
+                                              IconButton(
+                                                onPressed: () {
+                                                  Get.dialog(
+                                                    AlertDialog(
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              16,
+                                                            ),
                                                       ),
-                                                    ),
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Get.back();
-                                                        controller
-                                                            .deletePengeluaran(
-                                                              index,
-                                                            );
-                                                      },
-                                                      child: const Text(
-                                                        'Hapus',
+                                                      title: const Text(
+                                                        'Hapus Pengeluaran',
                                                         style: TextStyle(
+                                                          fontSize: 18,
+                                                          fontWeight:
+                                                              FontWeight.bold,
                                                           color: Color(
-                                                            0xFFEF4444,
+                                                            0xFF2F2F2F,
                                                           ),
                                                         ),
                                                       ),
+                                                      content: Text(
+                                                        'Apakah Anda yakin ingin menghapus "${item['nama']?.toString() ?? 'pengeluaran ini'}"?',
+                                                        style: const TextStyle(
+                                                          fontSize: 14,
+                                                          color: Color(
+                                                            0xFF6B7280,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () =>
+                                                              Get.back(),
+                                                          style:
+                                                              TextButton.styleFrom(
+                                                                foregroundColor:
+                                                                    const Color(
+                                                                      0xFF6B7280,
+                                                                    ),
+                                                              ),
+                                                          child: const Text(
+                                                            'Batal',
+                                                          ),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Get.back();
+                                                            controller
+                                                                .deletePengeluaran(
+                                                                  index,
+                                                                );
+                                                          },
+                                                          style:
+                                                              TextButton.styleFrom(
+                                                                foregroundColor:
+                                                                    const Color(
+                                                                      0xFFEF4444,
+                                                                    ),
+                                                              ),
+                                                          child: const Text(
+                                                            'Hapus',
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
+                                                  );
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete,
+                                                  size: 20,
+                                                  color: Color(0xFFEF4444),
                                                 ),
-                                              );
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              size: 20,
-                                              color: Color(0xFFEF4444),
-                                            ),
-                                            padding: EdgeInsets.zero,
-                                            constraints: const BoxConstraints(),
+                                                padding: EdgeInsets.zero,
+                                                constraints:
+                                                    const BoxConstraints(),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
