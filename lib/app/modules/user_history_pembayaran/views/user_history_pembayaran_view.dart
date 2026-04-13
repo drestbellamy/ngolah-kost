@@ -19,7 +19,7 @@ class UserHistoryPembayaranView
             child: CustomHeader(
               title: 'Riwayat Pembayaran',
               subtitle: 'Lihat Semua Transaksi',
-              showBackButton: true,
+              showBackButton: false,
             ),
           ),
 
