@@ -12,13 +12,39 @@ class FinancialChart extends StatelessWidget {
     required this.labels,
   });
 
+  // Format label sumbu Y - selalu bilangan bulat
+  String _formatYAxisLabel(double value) {
+    return '${value.round()}Jt';
+  }
+
+  // Hitung nice max value untuk sumbu Y - bulatkan ke atas
+  double _calculateNiceMaxValue(double maxValue) {
+    if (maxValue == 0) return 4.0; // Default minimal 4 untuk spacing yang baik
+
+    // Bulatkan ke atas
+    final rounded = maxValue.ceil().toDouble();
+
+    // Pastikan minimal 4 untuk spacing yang baik
+    if (rounded < 4) return 4.0;
+
+    // Jika lebih dari 4, bulatkan ke kelipatan yang bagus
+    if (rounded <= 5) return 5.0;
+    if (rounded <= 10) return 10.0;
+
+    // Untuk nilai lebih besar, bulatkan ke kelipatan 5
+    return ((rounded / 5).ceil() * 5).toDouble();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Calculate max value for Y-axis labels
-    final maxValue = [
-      ...pemasukanData,
-      ...pengeluaranData,
-    ].reduce((a, b) => a > b ? a : b);
+    final allValues = [...pemasukanData, ...pengeluaranData];
+    final maxValue = allValues.isEmpty
+        ? 1.0
+        : allValues.reduce((a, b) => a > b ? a : b);
+
+    // Gunakan nice max value untuk sumbu Y
+    final displayMaxValue = _calculateNiceMaxValue(maxValue);
 
     return Column(
       children: [
@@ -33,10 +59,10 @@ class FinancialChart extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _buildYLabel('${maxValue.toStringAsFixed(0)}Jt'),
-                    _buildYLabel('${(maxValue * 0.75).toStringAsFixed(0)}Jt'),
-                    _buildYLabel('${(maxValue * 0.5).toStringAsFixed(0)}Jt'),
-                    _buildYLabel('${(maxValue * 0.25).toStringAsFixed(0)}Jt'),
+                    _buildYLabel(_formatYAxisLabel(displayMaxValue)),
+                    _buildYLabel(_formatYAxisLabel(displayMaxValue * 0.75)),
+                    _buildYLabel(_formatYAxisLabel(displayMaxValue * 0.5)),
+                    _buildYLabel(_formatYAxisLabel(displayMaxValue * 0.25)),
                     _buildYLabel('0Jt'),
                   ],
                 ),
@@ -51,6 +77,7 @@ class FinancialChart extends StatelessWidget {
                     painter: ChartPainter(
                       pemasukanData: pemasukanData,
                       pengeluaranData: pengeluaranData,
+                      maxValue: displayMaxValue,
                     ),
                   ),
                 ),
@@ -84,20 +111,19 @@ class FinancialChart extends StatelessWidget {
 class ChartPainter extends CustomPainter {
   final List<double> pemasukanData;
   final List<double> pengeluaranData;
+  final double maxValue;
 
-  ChartPainter({required this.pemasukanData, required this.pengeluaranData});
+  ChartPainter({
+    required this.pemasukanData,
+    required this.pengeluaranData,
+    required this.maxValue,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
-
-    // Find max value for scaling
-    final maxValue = [
-      ...pemasukanData,
-      ...pengeluaranData,
-    ].reduce((a, b) => a > b ? a : b);
 
     final spacing = size.width / (pemasukanData.length - 1);
     final heightScale = (size.height - 40) / maxValue;

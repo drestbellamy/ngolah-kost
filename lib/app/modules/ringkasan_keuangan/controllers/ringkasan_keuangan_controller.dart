@@ -1,63 +1,58 @@
 import 'package:get/get.dart';
+import '../../../../services/supabase_service.dart';
 import '../models/ringkasan_keuangan_model.dart';
 
 class RingkasanKeuanganController extends GetxController {
+  final SupabaseService _supabaseService = SupabaseService();
+
   final kostList = <RingkasanKeuanganModel>[].obs;
   final totalPemasukan = 0.0.obs;
   final totalPengeluaran = 0.0.obs;
   final totalLabaBersih = 0.0.obs;
+  final isLoading = false.obs;
+  final errorMessage = RxnString();
 
   @override
   void onInit() {
     super.onInit();
-    loadDummyData();
+    loadKeuanganData();
   }
 
-  void loadDummyData() {
-    kostList.value = [
-      RingkasanKeuanganModel(
-        kostId: '1',
-        kostName: 'Green Valley Kost',
-        kostAddress: 'Jl. Sudirman No. 123, Jakarta',
-        pemasukan: 1500000,
-        pengeluaran: 1100000,
-        labaBersih: 450000,
-      ),
-      RingkasanKeuanganModel(
-        kostId: '2',
-        kostName: 'Sunrise Boarding House',
-        kostAddress: 'Jl. Gatot Subroto No. 45, Jakarta',
-        pemasukan: 0,
-        pengeluaran: 1000000,
-        labaBersih: -1000000,
-      ),
-      RingkasanKeuanganModel(
-        kostId: '3',
-        kostName: 'Peaceful Haven Kost',
-        kostAddress: 'Jl. Thamrin No. 67, Jakarta',
-        pemasukan: 0,
-        pengeluaran: 250000,
-        labaBersih: -250000,
-      ),
-      RingkasanKeuanganModel(
-        kostId: '4',
-        kostName: 'Urban Residence',
-        kostAddress: 'Jl. HR Rasuna Said No. 89, Jakarta',
-        pemasukan: 1700000,
-        pengeluaran: 180000,
-        labaBersih: 1500000,
-      ),
-      RingkasanKeuanganModel(
-        kostId: '5',
-        kostName: 'Cozy Corner Kost',
-        kostAddress: 'Jl. Kuningan No. 34, Jakarta',
-        pemasukan: 0,
-        pengeluaran: 150000,
-        labaBersih: -1500000,
-      ),
-    ];
+  Future<void> loadKeuanganData() async {
+    isLoading.value = true;
+    errorMessage.value = null;
 
-    calculateTotals();
+    try {
+      final kosts = await _supabaseService.getKostList();
+      final List<RingkasanKeuanganModel> tempList = [];
+
+      for (final kost in kosts) {
+        final ringkasan = await _supabaseService.getRingkasanKeuanganByKostId(
+          kost.id,
+        );
+
+        tempList.add(
+          RingkasanKeuanganModel(
+            kostId: kost.id,
+            kostName: kost.name.trim().isEmpty ? 'Kost' : kost.name.trim(),
+            kostAddress: kost.address.trim().isEmpty
+                ? '-'
+                : kost.address.trim(),
+            pemasukan: ringkasan['pemasukan'] ?? 0.0,
+            pengeluaran: ringkasan['pengeluaran'] ?? 0.0,
+            labaBersih: ringkasan['labaBersih'] ?? 0.0,
+          ),
+        );
+      }
+
+      kostList.value = tempList;
+      calculateTotals();
+    } catch (e) {
+      errorMessage.value = 'Gagal memuat data keuangan: ${e.toString()}';
+      kostList.clear();
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void calculateTotals() {
