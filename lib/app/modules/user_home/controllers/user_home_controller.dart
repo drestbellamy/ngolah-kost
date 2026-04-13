@@ -49,13 +49,7 @@ class UserHomeController extends GetxController {
   final email = 'KostHummatech@gmail.com'.obs;
 
   void payNow() {
-    Get.snackbar(
-      'Info',
-      'Fitur pembayaran akan segera hadir',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: const Color(0xFF6B8E7A),
-      colorText: Colors.white,
-    );
+    Get.toNamed(Routes.userTagihan);
   }
 
   void viewAllAnnouncements() {
