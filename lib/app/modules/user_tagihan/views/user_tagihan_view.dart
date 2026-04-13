@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/user_tagihan_controller.dart';
 import '../../../data/models/tagihan_user_model.dart';
 import '../../../routes/app_routes.dart';
@@ -14,101 +15,13 @@ class UserTagihanView extends GetView<UserTagihanController> {
       backgroundColor: const Color(0xFFF9FAFB),
       body: Column(
         children: [
-          // Header melengkung persis gambar & Total Card
-          SizedBox(
-            height: 250,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  height: 180,
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF6B8E7A),
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: SafeArea(
-                    bottom: false,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 20,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Tagihan',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Lihat Semua Tagihan',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white.withValues(alpha: 0.8),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 130, // Kartu agar overlap setengah dari boundary header
-                  left: 24,
-                  right: 24,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Total yang dibayar',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF374151),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Obx(
-                          () => Text(
-                            NumberFormat.currency(
-                              locale: 'id',
-                              symbol: 'Rp ',
-                              decimalDigits: 0,
-                            ).format(controller.totalBayarTerpilih),
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF6B8E7A),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+          // Header melengkung persis gambar
+          SafeArea(
+            bottom: false,
+            child: CustomHeader(
+              title: 'Tagihan',
+              subtitle: 'Bayar Tagihan Anda',
+              showBackButton: false,
             ),
           ),
 
@@ -244,60 +157,49 @@ class UserTagihanView extends GetView<UserTagihanController> {
           ), // end Expanded
         ], // end Column children
       ), // end Column
-      // Bottom Navigation Bar identik
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildBottomNavItem(
-                  Icons.home_outlined,
-                  'Beranda',
-                  false,
-                  false,
-                  () {
-                    Get.offAllNamed(Routes.userHome);
-                  },
-                ),
-                _buildBottomNavItem(
-                  Icons.receipt_long_outlined,
-                  'Tagihan',
-                  true,
-                  false,
-                  () {},
-                ),
-                _buildBottomNavItem(
-                  Icons.history_outlined,
-                  'Riwayat',
-                  false,
-                  false,
-                  () {
-                    Get.offAllNamed(Routes.userHistoryPembayaran);
-                  },
-                ),
-                _buildBottomNavItem(
-                  Icons.notifications_outlined,
-                  'Info',
-                  false,
-                  true,
-                  () {
-                    Get.offAllNamed(Routes.userInfo);
-                  },
-                ),
-              ],
-            ),
+      bottomNavigationBar: _buildBottomNavBar(),
+    );
+  }
+
+  Widget _buildBottomNavBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildBottomNavItem(Icons.home_outlined, 'Beranda', false, () {
+                Get.offAllNamed(Routes.userHome);
+              }),
+              _buildBottomNavItem(
+                Icons.receipt_long_outlined,
+                'Tagihan',
+                true,
+                () {},
+              ),
+              _buildBottomNavItem(Icons.history_outlined, 'Riwayat', false, () {
+                Get.offAllNamed(Routes.userHistoryPembayaran);
+              }),
+              _buildBottomNavItem(
+                Icons.notifications_outlined,
+                'Info',
+                false,
+                () {
+                  Get.offAllNamed(Routes.userInfo);
+                },
+              ),
+            ],
           ),
         ),
       ),
@@ -770,7 +672,6 @@ class UserTagihanView extends GetView<UserTagihanController> {
     IconData icon,
     String label,
     bool isActive,
-    bool hasRedDot,
     VoidCallback onTap,
   ) {
     return GestureDetector(
@@ -779,42 +680,10 @@ class UserTagihanView extends GetView<UserTagihanController> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: isActive
-                      ? const Color(0xFFF3F4F6)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Icon(
-                  icon,
-                  color: isActive
-                      ? const Color(0xFF6B8E7A)
-                      : const Color(0xFF9CA3AF),
-                  size: 24,
-                ),
-              ),
-              if (hasRedDot)
-                Positioned(
-                  right: 18,
-                  top: 8,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFEF4444),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-            ],
+          Icon(
+            icon,
+            color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
+            size: 24,
           ),
           const SizedBox(height: 4),
           Text(
@@ -827,6 +696,16 @@ class UserTagihanView extends GetView<UserTagihanController> {
               fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
+          if (isActive)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              width: 4,
+              height: 4,
+              decoration: const BoxDecoration(
+                color: Color(0xFF6B8E7A),
+                shape: BoxShape.circle,
+              ),
+            ),
         ],
       ),
     );
