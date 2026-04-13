@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/widgets/user_bottom_navbar.dart';
 import '../controllers/user_tagihan_controller.dart';
 import '../../../data/models/tagihan_user_model.dart';
-import '../../../routes/app_routes.dart';
+
 
 class UserTagihanView extends GetView<UserTagihanController> {
   const UserTagihanView({super.key});
@@ -20,7 +21,7 @@ class UserTagihanView extends GetView<UserTagihanController> {
             bottom: false,
             child: CustomHeader(
               title: 'Tagihan',
-              subtitle: 'Bayar Tagihan Anda',
+              subtitle: 'Lihat Semua Tagihan',
               showBackButton: false,
             ),
           ),
@@ -29,6 +30,57 @@ class UserTagihanView extends GetView<UserTagihanController> {
           Expanded(
             child: CustomScrollView(
               slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 20,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Total yang dibayar',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF4B5563),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Obx(
+                            () => Text(
+                              NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp ',
+                                decimalDigits: 0,
+                              ).format(controller.totalBayarTerpilih),
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF6B8E7A),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 SliverPadding(
                   padding: const EdgeInsets.all(24.0),
                   sliver: Obx(() {
@@ -157,52 +209,7 @@ class UserTagihanView extends GetView<UserTagihanController> {
           ), // end Expanded
         ], // end Column children
       ), // end Column
-      bottomNavigationBar: _buildBottomNavBar(),
-    );
-  }
-
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildBottomNavItem(Icons.home_outlined, 'Beranda', false, () {
-                Get.offAllNamed(Routes.userHome);
-              }),
-              _buildBottomNavItem(
-                Icons.receipt_long_outlined,
-                'Tagihan',
-                true,
-                () {},
-              ),
-              _buildBottomNavItem(Icons.history_outlined, 'Riwayat', false, () {
-                Get.offAllNamed(Routes.userHistoryPembayaran);
-              }),
-              _buildBottomNavItem(
-                Icons.notifications_outlined,
-                'Info',
-                false,
-                () {
-                  Get.offAllNamed(Routes.userInfo);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+      bottomNavigationBar: const UserBottomNavbar(currentIndex: 1),
     );
   }
 
@@ -662,50 +669,6 @@ class UserTagihanView extends GetView<UserTagihanController> {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  // Komponen Navigasi Bawah
-  Widget _buildBottomNavItem(
-    IconData icon,
-    String label,
-    bool isActive,
-    VoidCallback onTap,
-  ) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF9CA3AF),
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: isActive
-                  ? const Color(0xFF6B8E7A)
-                  : const Color(0xFF9CA3AF),
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
-          if (isActive)
-            Container(
-              margin: const EdgeInsets.only(top: 4),
-              width: 4,
-              height: 4,
-              decoration: const BoxDecoration(
-                color: Color(0xFF6B8E7A),
-                shape: BoxShape.circle,
-              ),
-            ),
         ],
       ),
     );
