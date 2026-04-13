@@ -274,12 +274,12 @@ class DetailKeuanganKostController extends GetxController {
   }
 
   String formatCurrency(double amount) {
-    if (amount >= 1000000) {
-      return 'Rp ${(amount / 1000000).toStringAsFixed(1)} Jt';
-    } else if (amount >= 1000) {
-      return 'Rp ${(amount / 1000).toStringAsFixed(0)} Rb';
-    }
-    return 'Rp ${amount.toStringAsFixed(0)}';
+    final formatter = NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    );
+    return formatter.format(amount);
   }
 
   String _formatAmount(double amount) {
