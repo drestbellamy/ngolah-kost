@@ -1226,6 +1226,90 @@ class SupabaseService {
     throw Exception('Gagal memperbarui pengumuman');
   }
 
+  // INSERT PENGELUARAN
+  Future<void> createPengeluaran({
+    required String kostId,
+    required String nama,
+    required double jumlah,
+    required DateTime tanggal,
+    String? deskripsi,
+  }) async {
+    if (kostId.trim().isEmpty) {
+      throw Exception('ID kost tidak valid');
+    }
+
+    final cleanNama = nama.trim();
+    if (cleanNama.isEmpty) {
+      throw Exception('Nama pengeluaran wajib diisi');
+    }
+
+    if (jumlah <= 0) {
+      throw Exception('Jumlah pengeluaran harus lebih dari 0');
+    }
+
+    final payload = <String, dynamic>{
+      'kost_id': kostId.trim(),
+      'nama': cleanNama,
+      'jumlah': jumlah.toInt(), // Convert to integer
+      'tanggal': tanggal.toIso8601String().split('T').first,
+      'deskripsi': (deskripsi ?? '').trim().isEmpty ? null : deskripsi!.trim(),
+    };
+
+    try {
+      await supabase.from('pengeluaran').insert(payload);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPDATE PENGELUARAN
+  Future<void> updatePengeluaran({
+    required String id,
+    required String nama,
+    required double jumlah,
+    required DateTime tanggal,
+    String? deskripsi,
+  }) async {
+    if (id.trim().isEmpty) {
+      throw Exception('ID pengeluaran tidak valid');
+    }
+
+    final cleanNama = nama.trim();
+    if (cleanNama.isEmpty) {
+      throw Exception('Nama pengeluaran wajib diisi');
+    }
+
+    if (jumlah <= 0) {
+      throw Exception('Jumlah pengeluaran harus lebih dari 0');
+    }
+
+    final payload = <String, dynamic>{
+      'nama': cleanNama,
+      'jumlah': jumlah.toInt(),
+      'tanggal': tanggal.toIso8601String().split('T').first,
+      'deskripsi': (deskripsi ?? '').trim().isEmpty ? null : deskripsi!.trim(),
+    };
+
+    try {
+      await supabase.from('pengeluaran').update(payload).eq('id', id);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // DELETE PENGELUARAN
+  Future<void> deletePengeluaran(String id) async {
+    if (id.trim().isEmpty) {
+      throw Exception('ID pengeluaran tidak valid');
+    }
+
+    try {
+      await supabase.from('pengeluaran').delete().eq('id', id);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
   // DELETE PENGUMUMAN
   Future<void> deletePengumuman(String id) async {
     if (id.trim().isEmpty) {

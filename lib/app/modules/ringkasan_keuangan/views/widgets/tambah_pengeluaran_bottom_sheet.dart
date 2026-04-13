@@ -1,13 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class TambahPengeluaranBottomSheet extends StatelessWidget {
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController amountController = TextEditingController();
-  final Rx<DateTime> selectedDate = DateTime.now().obs;
+  final Map<String, dynamic>? initialData;
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final TextEditingController amountController;
+  final Rx<DateTime> selectedDate;
 
-  TambahPengeluaranBottomSheet({super.key});
+  TambahPengeluaranBottomSheet({super.key, this.initialData})
+    : titleController = TextEditingController(
+        text: initialData?['nama']?.toString() ?? '',
+      ),
+      descriptionController = TextEditingController(
+        text: initialData?['deskripsi']?.toString() ?? '',
+      ),
+      amountController = TextEditingController(
+        text: initialData != null ? _extractAmount(initialData['jumlah']) : '',
+      ),
+      selectedDate =
+          (initialData != null
+                  ? _parseDate(initialData['tanggal'])
+                  : DateTime.now())
+              .obs;
+
+  static String _extractAmount(dynamic jumlah) {
+    if (jumlah == null) return '';
+    if (jumlah is int) return jumlah.toString();
+    if (jumlah is double) return jumlah.toInt().toString();
+    // Parse dari string jika ada
+    final str = jumlah.toString();
+    final numOnly = str.replaceAll(RegExp(r'[^0-9]'), '');
+    return numOnly;
+  }
+
+  static DateTime _parseDate(dynamic dateValue) {
+    if (dateValue == null) return DateTime.now();
+    if (dateValue is DateTime) return dateValue;
+    try {
+      return DateTime.parse(dateValue.toString());
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +75,11 @@ class TambahPengeluaranBottomSheet extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Tambah Pengeluaran',
-                  style: TextStyle(
+                Text(
+                  initialData == null
+                      ? 'Tambah Pengeluaran'
+                      : 'Edit Pengeluaran',
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2F2F2F),

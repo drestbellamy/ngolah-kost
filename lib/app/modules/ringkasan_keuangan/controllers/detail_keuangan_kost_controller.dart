@@ -152,59 +152,125 @@ class DetailKeuanganKostController extends GetxController {
     }
   }
 
-  void addPengeluaran(Map<String, dynamic> data) {
-    final amount = double.tryParse(data['amount']) ?? 0;
-    final date = data['date'] as DateTime;
+  void addPengeluaran(Map<String, dynamic> data) async {
+    try {
+      final amount = double.tryParse(data['amount']) ?? 0;
+      final date = data['date'] as DateTime;
+      final title = data['title'] as String;
+      final description = data['description'] as String;
 
-    pengeluaranList.add({
-      'title': data['title'],
-      'description': data['description'],
-      'date': '${date.day} ${_getMonthName(date.month)} ${date.year}',
-      'amount': '-Rp ${_formatAmount(amount)}',
-    });
+      // Simpan ke database
+      await _supabaseService.createPengeluaran(
+        kostId: kostId.value,
+        nama: title,
+        jumlah: amount,
+        tanggal: date,
+        deskripsi: description,
+      );
 
-    Get.snackbar(
-      'Berhasil',
-      'Pengeluaran berhasil ditambahkan',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF10B981),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-    );
+      // Reload data
+      await loadPengeluaranData();
+      await loadChartData();
+
+      Get.snackbar(
+        'Berhasil',
+        'Pengeluaran berhasil ditambahkan',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        'Gagal menambahkan pengeluaran: ${e.toString()}',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
-  void editPengeluaran(int index, Map<String, dynamic> data) {
-    final amount = double.tryParse(data['amount']) ?? 0;
-    final date = data['date'] as DateTime;
+  void editPengeluaran(int index, Map<String, dynamic> data) async {
+    try {
+      final amount = double.tryParse(data['amount']) ?? 0;
+      final date = data['date'] as DateTime;
+      final title = data['title'] as String;
+      final description = data['description'] as String;
 
-    pengeluaranList[index] = {
-      'title': data['title'],
-      'description': data['description'],
-      'date': '${date.day} ${_getMonthName(date.month)} ${date.year}',
-      'amount': '-Rp ${_formatAmount(amount)}',
-    };
+      // Get ID from list
+      final pengeluaranId = pengeluaranList[index]['id']?.toString() ?? '';
+      if (pengeluaranId.isEmpty) {
+        throw Exception('ID pengeluaran tidak ditemukan');
+      }
 
-    Get.snackbar(
-      'Berhasil',
-      'Pengeluaran berhasil diupdate',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF10B981),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-    );
+      // Update di database
+      await _supabaseService.updatePengeluaran(
+        id: pengeluaranId,
+        nama: title,
+        jumlah: amount,
+        tanggal: date,
+        deskripsi: description,
+      );
+
+      // Reload data
+      await loadPengeluaranData();
+      await loadChartData();
+
+      Get.snackbar(
+        'Berhasil',
+        'Pengeluaran berhasil diupdate',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        'Gagal mengupdate pengeluaran: ${e.toString()}',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
-  void deletePengeluaran(int index) {
-    pengeluaranList.removeAt(index);
+  void deletePengeluaran(int index) async {
+    try {
+      // Get ID from list
+      final pengeluaranId = pengeluaranList[index]['id']?.toString() ?? '';
+      if (pengeluaranId.isEmpty) {
+        throw Exception('ID pengeluaran tidak ditemukan');
+      }
 
-    Get.snackbar(
-      'Berhasil',
-      'Pengeluaran berhasil dihapus',
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: const Color(0xFF10B981),
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-    );
+      // Delete dari database
+      await _supabaseService.deletePengeluaran(pengeluaranId);
+
+      // Reload data
+      await loadPengeluaranData();
+      await loadChartData();
+
+      Get.snackbar(
+        'Berhasil',
+        'Pengeluaran berhasil dihapus',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        'Gagal menghapus pengeluaran: ${e.toString()}',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    }
   }
 
   String formatCurrency(double amount) {
