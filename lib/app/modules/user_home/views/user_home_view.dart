@@ -68,19 +68,13 @@ class UserHomeView extends GetView<UserHomeController> {
                         children: [
                           Row(
                             children: [
-                              Container(
-                                width: 48,
-                                height: 48,
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF6B8E7A,
-                                  ).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(
-                                  Icons.home_outlined,
-                                  color: Color(0xFF6B8E7A),
-                                  size: 24,
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.asset(
+                                  'assets/images/Ngolah-kost_logo.png',
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                               const SizedBox(width: 12),
