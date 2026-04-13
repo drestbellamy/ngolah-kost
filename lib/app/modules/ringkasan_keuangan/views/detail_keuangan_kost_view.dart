@@ -203,8 +203,23 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            Obx(
-                              () => ListView.separated(
+                            Obx(() {
+                              if (controller.pemasukanList.isEmpty) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                    child: Text(
+                                      'Belum ada data pemasukan',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF9CA3AF),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return ListView.separated(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: controller.pemasukanList.length,
@@ -212,6 +227,16 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                     const Divider(height: 24),
                                 itemBuilder: (context, index) {
                                   final item = controller.pemasukanList[index];
+                                  final jumlah = item['jumlah'];
+                                  final amount = jumlah is int
+                                      ? jumlah.toDouble()
+                                      : (jumlah is double
+                                            ? jumlah
+                                            : double.tryParse(
+                                                    jumlah?.toString() ?? '0',
+                                                  ) ??
+                                                  0.0);
+
                                   return Row(
                                     children: [
                                       Expanded(
@@ -220,7 +245,8 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              item['name']!,
+                                              item['deskripsi']?.toString() ??
+                                                  'Pembayaran',
                                               style: const TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w600,
@@ -229,7 +255,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              item['detail']!,
+                                              controller.formatDate(
+                                                item['tanggal'],
+                                              ),
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.grey[600],
@@ -239,7 +267,7 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                         ),
                                       ),
                                       Text(
-                                        item['amount']!,
+                                        '+${controller.formatCurrency(amount)}',
                                         style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
@@ -249,8 +277,8 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                     ],
                                   );
                                 },
-                              ),
-                            ),
+                              );
+                            }),
                           ],
                         ),
                       ),
@@ -337,8 +365,23 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                               ],
                             ),
                             const SizedBox(height: 16),
-                            Obx(
-                              () => ListView.separated(
+                            Obx(() {
+                              if (controller.pengeluaranList.isEmpty) {
+                                return const Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Center(
+                                    child: Text(
+                                      'Belum ada data pengeluaran',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF9CA3AF),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return ListView.separated(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: controller.pengeluaranList.length,
@@ -347,156 +390,156 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                 itemBuilder: (context, index) {
                                   final item =
                                       controller.pengeluaranList[index];
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  final jumlah = item['jumlah'];
+                                  final amount = jumlah is int
+                                      ? jumlah.toDouble()
+                                      : (jumlah is double
+                                            ? jumlah
+                                            : double.tryParse(
+                                                    jumlah?.toString() ?? '0',
+                                                  ) ??
+                                                  0.0);
+
+                                  return Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      item['title']!,
-                                                      style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color: Color(
-                                                          0xFF2F2F2F,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      item['amount']!,
-                                                      style: const TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Color(
-                                                          0xFFEF4444,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 4),
                                                 Text(
-                                                  item['description']!,
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: Colors.grey[600],
+                                                  item['nama']?.toString() ??
+                                                      'Pengeluaran',
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Color(0xFF2F2F2F),
                                                   ),
                                                 ),
-                                                const SizedBox(height: 4),
-                                                Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons.calendar_today,
-                                                      size: 12,
-                                                      color: Colors.grey[500],
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    Text(
-                                                      item['date']!,
-                                                      style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.grey[500],
-                                                      ),
-                                                    ),
-                                                  ],
+                                                Text(
+                                                  '-${controller.formatCurrency(amount)}',
+                                                  style: const TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Color(0xFFEF4444),
+                                                  ),
                                                 ),
                                               ],
                                             ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              item['deskripsi']?.toString() ??
+                                                  '-',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Icon(
+                                                  Icons.calendar_today,
+                                                  size: 12,
+                                                  color: Colors.grey[500],
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  controller.formatDate(
+                                                    item['tanggal'],
+                                                  ),
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey[500],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      // Action buttons
+                                      Row(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              // Edit functionality (simplified for now)
+                                              Get.snackbar(
+                                                'Info',
+                                                'Edit pengeluaran: ${item['title']}',
+                                                snackPosition:
+                                                    SnackPosition.TOP,
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.edit,
+                                              size: 20,
+                                              color: Color(0xFF6B8E7A),
+                                            ),
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
                                           ),
-                                          const SizedBox(width: 8),
-                                          // Action buttons
-                                          Row(
-                                            children: [
-                                              IconButton(
-                                                onPressed: () {
-                                                  // Edit functionality (simplified for now)
-                                                  Get.snackbar(
-                                                    'Info',
-                                                    'Edit pengeluaran: ${item['title']}',
-                                                    snackPosition:
-                                                        SnackPosition.TOP,
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.edit,
-                                                  size: 20,
-                                                  color: Color(0xFF6B8E7A),
-                                                ),
-                                                padding: EdgeInsets.zero,
-                                                constraints:
-                                                    const BoxConstraints(),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              IconButton(
-                                                onPressed: () {
-                                                  Get.dialog(
-                                                    AlertDialog(
-                                                      title: const Text(
-                                                        'Hapus Pengeluaran',
+                                          const SizedBox(width: 12),
+                                          IconButton(
+                                            onPressed: () {
+                                              Get.dialog(
+                                                AlertDialog(
+                                                  title: const Text(
+                                                    'Hapus Pengeluaran',
+                                                  ),
+                                                  content: Text(
+                                                    'Apakah Anda yakin ingin menghapus "${item['nama']?.toString() ?? 'pengeluaran ini'}"?',
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () =>
+                                                          Get.back(),
+                                                      child: const Text(
+                                                        'Batal',
                                                       ),
-                                                      content: Text(
-                                                        'Apakah Anda yakin ingin menghapus "${item['title']}"?',
-                                                      ),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () =>
-                                                              Get.back(),
-                                                          child: const Text(
-                                                            'Batal',
-                                                          ),
-                                                        ),
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            Get.back();
-                                                            controller
-                                                                .deletePengeluaran(
-                                                                  index,
-                                                                );
-                                                          },
-                                                          child: const Text(
-                                                            'Hapus',
-                                                            style: TextStyle(
-                                                              color: Color(
-                                                                0xFFEF4444,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
                                                     ),
-                                                  );
-                                                },
-                                                icon: const Icon(
-                                                  Icons.delete,
-                                                  size: 20,
-                                                  color: Color(0xFFEF4444),
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Get.back();
+                                                        controller
+                                                            .deletePengeluaran(
+                                                              index,
+                                                            );
+                                                      },
+                                                      child: const Text(
+                                                        'Hapus',
+                                                        style: TextStyle(
+                                                          color: Color(
+                                                            0xFFEF4444,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                padding: EdgeInsets.zero,
-                                                constraints:
-                                                    const BoxConstraints(),
-                                              ),
-                                            ],
+                                              );
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              size: 20,
+                                              color: Color(0xFFEF4444),
+                                            ),
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
                                           ),
                                         ],
                                       ),
                                     ],
                                   );
                                 },
-                              ),
-                            ),
+                              );
+                            }),
                           ],
                         ),
                       ),

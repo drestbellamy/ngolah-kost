@@ -981,6 +981,136 @@ class SupabaseService {
     return 0;
   }
 
+  // GET PEMASUKAN BY KOST
+  Future<List<Map<String, dynamic>>> getPemasukanByKostId(String kostId) async {
+    if (kostId.trim().isEmpty) return [];
+
+    try {
+      // Join pemasukan dengan penghuni, kamar, dan kost
+      final raw = await supabase
+          .from('pemasukan')
+          .select('''
+            id, 
+            penghuni_id, 
+            jumlah, 
+            tanggal, 
+            periode_bulan,
+            keterangan,
+            created_at,
+            penghuni:penghuni_id(
+              kamar:kamar_id(
+                kost_id
+              )
+            )
+          ''')
+          .order('tanggal', ascending: false);
+
+      if (raw is! List) return [];
+
+      // Filter by kost_id
+      final filtered = raw
+          .where((item) {
+            try {
+              final penghuni = item['penghuni'];
+              if (penghuni is Map) {
+                final kamar = penghuni['kamar'];
+                if (kamar is Map) {
+                  return kamar['kost_id'] == kostId;
+                }
+              }
+              return false;
+            } catch (_) {
+              return false;
+            }
+          })
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+
+      return filtered;
+    } catch (e) {
+      print('Error getPemasukanByKostId: $e');
+      return [];
+    }
+  }
+
+  // GET PEMBAYARAN BY KOST (DEPRECATED - use getPemasukanByKostId instead)
+  Future<List<Map<String, dynamic>>> getPembayaranByKostId(
+    String kostId,
+  ) async {
+    if (kostId.trim().isEmpty) return [];
+
+    try {
+      final raw = await supabase
+          .from('pembayaran')
+          .select('id, jumlah, tanggal, deskripsi, created_at')
+          .eq('kost_id', kostId)
+          .order('tanggal', ascending: false);
+
+      if (raw is! List) return [];
+      return raw.map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (e) {
+      print('Error getPembayaranByKostId: $e');
+      return [];
+    }
+  }
+
+  // GET PENGELUARAN BY KOST
+  Future<List<Map<String, dynamic>>> getPengeluaranByKostId(
+    String kostId,
+  ) async {
+    if (kostId.trim().isEmpty) return [];
+
+    try {
+      final raw = await supabase
+          .from('pengeluaran')
+          .select('id, nama, jumlah, tanggal, deskripsi, created_at')
+          .eq('kost_id', kostId)
+          .order('tanggal', ascending: false);
+
+      if (raw is! List) return [];
+      return raw.map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (e) {
+      print('Error getPengeluaranByKostId: $e');
+      return [];
+    }
+  }
+
+  // GET RINGKASAN KEUANGAN BY KOST
+  Future<Map<String, dynamic>> getRingkasanKeuanganByKostId(
+    String kostId,
+  ) async {
+    if (kostId.trim().isEmpty) {
+      return {'pemasukan': 0.0, 'pengeluaran': 0.0, 'labaBersih': 0.0};
+    }
+
+    try {
+      final pemasukanList = await getPemasukanByKostId(kostId);
+      final pengeluaranList = await getPengeluaranByKostId(kostId);
+
+      final totalPemasukan = pemasukanList.fold<double>(0.0, (sum, item) {
+        final jumlah = item['jumlah'];
+        if (jumlah is int) return sum + jumlah.toDouble();
+        if (jumlah is double) return sum + jumlah;
+        return sum + (double.tryParse(jumlah?.toString() ?? '0') ?? 0.0);
+      });
+
+      final totalPengeluaran = pengeluaranList.fold<double>(0.0, (sum, item) {
+        final jumlah = item['jumlah'];
+        if (jumlah is int) return sum + jumlah.toDouble();
+        if (jumlah is double) return sum + jumlah;
+        return sum + (double.tryParse(jumlah?.toString() ?? '0') ?? 0.0);
+      });
+
+      return {
+        'pemasukan': totalPemasukan,
+        'pengeluaran': totalPengeluaran,
+        'labaBersih': totalPemasukan - totalPengeluaran,
+      };
+    } catch (_) {
+      return {'pemasukan': 0.0, 'pengeluaran': 0.0, 'labaBersih': 0.0};
+    }
+  }
+
   // INSERT PENGUMUMAN
   Future<void> createPengumuman({
     required String kostId,
