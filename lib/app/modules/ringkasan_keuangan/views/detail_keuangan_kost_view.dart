@@ -468,14 +468,23 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                       Row(
                                         children: [
                                           IconButton(
-                                            onPressed: () {
-                                              // Edit functionality (simplified for now)
-                                              Get.snackbar(
-                                                'Info',
-                                                'Edit pengeluaran: ${item['title']}',
-                                                snackPosition:
-                                                    SnackPosition.TOP,
-                                              );
+                                            onPressed: () async {
+                                              final result =
+                                                  await Get.bottomSheet(
+                                                    TambahPengeluaranBottomSheet(
+                                                      initialData: item,
+                                                    ),
+                                                    isScrollControlled: true,
+                                                    backgroundColor:
+                                                        Colors.transparent,
+                                                  );
+
+                                              if (result != null) {
+                                                controller.editPengeluaran(
+                                                  index,
+                                                  result,
+                                                );
+                                              }
                                             },
                                             icon: const Icon(
                                               Icons.edit,
