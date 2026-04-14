@@ -5,6 +5,7 @@ import 'widgets/dashboard_card.dart';
 import 'widgets/menu_item.dart';
 import 'widgets/ringkasan_keuangan_widget.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
+import '../../../core/widgets/custom_header.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -16,201 +17,100 @@ class HomeView extends GetView<HomeController> {
       body: SafeArea(
         child: Column(
           children: [
+            // Header - dengan background image
+            const CustomHeader(
+              title: 'Dashboard Admin',
+              subtitle: 'Kelola rumah kost Anda',
+              showBackButton: false,
+              backgroundImage: 'assets/images/dashboard_admin/header_admin.png',
+            ),
+
+            // Konten
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header with gradient and notification overlay
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        // Header Container
-                        Container(
-                          width: double.infinity,
+                    const SizedBox(height: 24),
+
+                    // Verification Alert Card
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: GestureDetector(
+                        onTap: controller.navigateToVerifikasi,
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
+                              colors: [
+                                Color(0xFFFF6900),
+                                Color(0xFFF54900),
+                              ],
                             ),
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(24),
-                              bottomRight: Radius.circular(24),
-                            ),
+                            borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 25,
-                                offset: const Offset(0, 20),
-                              ),
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 8),
+                                color: Colors.black.withOpacity(0.12),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6),
                               ),
                             ],
                           ),
-                          child: Stack(
+                          child: Row(
                             children: [
-                              // Decorative circles
-                              Positioned(
-                                right: -64,
-                                top: -64,
-                                child: Container(
-                                  width: 256,
-                                  height: 256,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.05),
-                                    shape: BoxShape.circle,
-                                  ),
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const Icon(
+                                  Icons.info_outline,
+                                  color: Colors.white,
+                                  size: 24,
                                 ),
                               ),
-                              Positioned(
-                                left: -48,
-                                bottom: -48,
-                                child: Container(
-                                  width: 192,
-                                  height: 192,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.05),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-
-                              // Content
-                              Padding(
-                                padding: const EdgeInsets.all(24),
+                              const SizedBox(width: 12),
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Dashboard Admin',
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                    Obx(
+                                      () => Text(
+                                        '${controller.menungguVerifikasi.value} Pembayaran\nPerlu Verifikasi',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          height: 1.3,
+                                        ),
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 4),
                                     const Text(
-                                      'Kelola rumah kost Anda',
+                                      'Klik untuk memeriksa bukti transfer',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Color(0xFFA8D5BA),
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xFFFFEDD4),
                                       ),
                                     ),
-                                    const SizedBox(height: 32),
-
-                                    // Decorative building icons
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        _buildDecorativeIcon(80, 0.2),
-                                        const SizedBox(width: 8),
-                                        _buildDecorativeIcon(96, 0.3),
-                                        const SizedBox(width: 8),
-                                        _buildDecorativeIcon(80, 0.2),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 32),
                                   ],
                                 ),
+                              ),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                                size: 20,
                               ),
                             ],
                           ),
                         ),
-
-                        // Verification Alert - Overlapping
-                        Positioned(
-                          left: 24,
-                          right: 24,
-                          bottom: -54,
-                          child: GestureDetector(
-                            onTap: controller.navigateToVerifikasi,
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFFFF6900),
-                                    Color(0xFFF54900),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 25,
-                                    offset: const Offset(0, 20),
-                                  ),
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 48,
-                                    height: 48,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                    child: const Icon(
-                                      Icons.info_outline,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Obx(
-                                          () => Text(
-                                            '${controller.menungguVerifikasi.value} Pembayaran\nPerlu Verifikasi',
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              height: 1.3,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        const Text(
-                                          'Klik untuk memeriksa bukti transfer',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xFFFFEDD4),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
 
-                    const SizedBox(height: 78),
+                    const SizedBox(height: 20),
 
                     // Dashboard Cards Grid
                     Padding(
@@ -374,28 +274,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildDecorativeIcon(double height, double opacity) {
-    return Container(
-      width: 64,
-      height: height,
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(opacity),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(12),
-          topRight: Radius.circular(12),
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Icon(
-            Icons.home_work,
-            color: Colors.white.withOpacity(0.6),
-            size: height > 90 ? 40 : 32,
-          ),
-          const SizedBox(height: 12),
-        ],
-      ),
-    );
-  }
 }
+
+
