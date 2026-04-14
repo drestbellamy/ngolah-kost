@@ -9,6 +9,7 @@ class CustomHeader extends StatelessWidget {
   final VoidCallback? onBackPressed;
   final Widget? trailing;
   final Widget? progressIndicator;
+  final String? backgroundImage;
 
   const CustomHeader({
     super.key,
@@ -19,6 +20,7 @@ class CustomHeader extends StatelessWidget {
     this.onBackPressed,
     this.trailing,
     this.progressIndicator,
+    this.backgroundImage,
   });
 
   @override
@@ -26,11 +28,23 @@ class CustomHeader extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
-        ),
+        gradient: backgroundImage == null
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
+              )
+            : null,
+        image: backgroundImage != null
+            ? DecorationImage(
+                image: AssetImage(backgroundImage!),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.10),
+                  BlendMode.darken,
+                ),
+              )
+            : null,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
@@ -78,7 +92,7 @@ class CustomHeader extends StatelessWidget {
 
           // Content
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
