@@ -1663,4 +1663,72 @@ class SupabaseService {
     if (normalized == 'qris' || normalized == 'qr') return 'qris';
     return 'bank';
   }
+
+  // GET DASHBOARD STATISTICS
+  Future<Map<String, int>> getDashboardStatistics() async {
+    try {
+      // Get total kost
+      final kostList = await getKostList();
+      final totalKost = kostList.length;
+
+      // Get total kamar and kamar kosong
+      int totalKamar = 0;
+      int kamarKosong = 0;
+      int totalPenghuni = 0;
+
+      for (final kost in kostList) {
+        final kamarList = await getKamarByKostId(kost.id);
+        totalKamar += kamarList.length;
+
+        for (final kamar in kamarList) {
+          final status = (kamar['status']?.toString() ?? '').toLowerCase();
+          if (status == 'kosong') {
+            kamarKosong++;
+          }
+
+          // Count active penghuni
+          final kamarId = kamar['id']?.toString() ?? '';
+          if (kamarId.isNotEmpty) {
+            final penghuniList = await getPenghuniByKamarId(kamarId);
+            final activePenghuni = penghuniList.where((p) {
+              final status = (p['status']?.toString() ?? '').toLowerCase();
+              return status == 'aktif';
+            }).length;
+            totalPenghuni += activePenghuni;
+          }
+        }
+      }
+
+      // Get tagihan statistics
+      final tagihanList = await getTagihanList();
+      final tagihanBelumBayar = tagihanList.where((t) {
+        final status = (t['status']?.toString() ?? '').toLowerCase();
+        return status == 'belum_dibayar';
+      }).length;
+
+      final menungguVerifikasi = tagihanList.where((t) {
+        final status = (t['status']?.toString() ?? '').toLowerCase();
+        return status == 'menunggu_verifikasi';
+      }).length;
+
+      return {
+        'totalKost': totalKost,
+        'totalKamar': totalKamar,
+        'kamarKosong': kamarKosong,
+        'totalPenghuni': totalPenghuni,
+        'tagihanBelumBayar': tagihanBelumBayar,
+        'menungguVerifikasi': menungguVerifikasi,
+      };
+    } catch (e) {
+      print('Error getDashboardStatistics: $e');
+      return {
+        'totalKost': 0,
+        'totalKamar': 0,
+        'kamarKosong': 0,
+        'totalPenghuni': 0,
+        'tagihanBelumBayar': 0,
+        'menungguVerifikasi': 0,
+      };
+    }
+  }
 }
