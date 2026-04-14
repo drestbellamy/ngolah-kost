@@ -1,176 +1,221 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import '../controllers/landing_controller.dart';
 
-class Landing2View extends StatelessWidget {
+class Landing2View extends GetView<LandingController> {
   const Landing2View({super.key});
 
   static const String _landingLottieAsset = 'assets/lotties/Home.json';
   static const String _landingPage2BackgroundAsset =
-      'assets/images/landing_page2/gedung.png';
-  static const String _landingPage2EllipseAsset =
-      'assets/images/landing_page2/ellipse.png';
-  static const String _landingPage2Rumah1Asset =
-      'assets/images/landing_page2/rumah1.png';
-  static const String _landingPage2Rumah2Asset =
-      'assets/images/landing_page2/rumah2.png';
-  static const String _landingPage2Rumah3Asset =
-      'assets/images/landing_page2/rumah3.png';
-  static const String _landingPage2Rumah4Asset =
-      'assets/images/landing_page2/rumah4.png';
-  static const String _landingPage2Rumah5Asset =
-      'assets/images/landing_page2/rumah5.png';
-  static const String _landingPage2Rumah6Asset =
-      'assets/images/landing_page2/rumah6.png';
-  static const String _landingPage2PersonAsset =
-      'assets/images/landing_page2/person2.png';
+      'assets/images/landing_page2/kamar.png';
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          children: [
-            // Background Image & Top Section
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: constraints.maxHeight * 0.55,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(
-                    _landingPage2BackgroundAsset,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: const Color(0xFF6B8E7A),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'Image not found\nassets/images/landing_page2/gedung.png',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, fontSize: 12),
-                      ),
-                    ),
-                  ),
-                  Container(color: const Color(0xFF6B8E7A).withOpacity(0.20)),
-                  Positioned(
-                    top: constraints.maxHeight * 0.07,
-                    left: 0,
-                    right: 0,
-                    child: _buildBrandHeader(
-                      titleColor: Colors.white,
-                      subtitleColor: Colors.white.withOpacity(0.92),
-                      logoBackground: const Color(0xFF4F6F5F),
-                      subtitle: '',
-                    ),
-                  ),
-                ],
-              ),
+    return _buildSecondOnboardingPage(context);
+  }
+
+  Widget _buildSecondOnboardingPage(BuildContext context) {
+    return Stack(
+      children: [
+        // Container putih sebagai base belakang (agar ujung bawah terlihat putih mulus)
+        Container(color: Colors.white),
+
+        // Top full background image dengan border radius di bawah
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: MediaQuery.of(context).size.height * 0.45,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(40),
             ),
-
-            // Bottom White Section (Using Stack)
-            Positioned(
-              top: constraints.maxHeight * 0.45,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Stack(
-                fit: StackFit.expand,
-                clipBehavior: Clip.none,
-                children: [
-                  // LENGKUNGAN PADA BACKGROUND PUTIH
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 250, // Tinggi lengkungan sama dengan landing 1
-                    child: Image.asset(
-                      _landingPage2EllipseAsset,
-                      fit: BoxFit.fill,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const SizedBox(),
-                    ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  _landingPage2BackgroundAsset, // Pakai gambar kamar dari landing page 2
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    color: const Color(0xFF6B8E7A),
+                    alignment: Alignment.center,
+                    child: const Text('Image not found'),
                   ),
+                ),
+                Container(color: Colors.black.withOpacity(0.05)),
+              ],
+            ),
+          ),
+        ),
 
-                  // KOTAK PUTIH DI BAWAH LENGKUNGAN
-                  Positioned(
-                    top: 118,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Container(
+        // Top Right 'Lewati' button
+        SafeArea(
+          child: Align(
+            alignment: Alignment.topRight,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0, right: 24.0),
+              child: GestureDetector(
+                onTap: controller.navigateToLogin,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
+                    'Lewati',
+                    style: TextStyle(
                       color: Colors.white,
-                      child: IgnorePointer(child: _buildDecorativeHouses()),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
                     ),
                   ),
-
-                  // KONTEN (Teks & Avatar)
-                  Positioned.fill(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 50),
-                          const Text(
-                            'Atur Penghuni & Kamar', // Text diubah sedikit untuk slide 2
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF6D947F),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: const TextSpan(
-                              style: TextStyle(
-                                fontSize: 12,
-                            color: Color(0xFF6C8F7B),
-                                height: 1.5,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text:
-                                      'Tambahkan data penghuni baru, atur kamar yang tersedia, dan pantau status hunian secara',
-                                ),
-                                TextSpan(
-                                  text: ' real-time.',
-                                  style: TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                TextSpan(text: ''),
-                              ],
-                            ),
-                          ),
-                          const Spacer(),
-                          Expanded(
-                            flex: 100,
-                            child: Transform.scale(
-                              scale: 1.10,
-                              alignment: Alignment.bottomCenter,
-                              child: Image.asset(
-                                _landingPage2PersonAsset,
-                                fit: BoxFit.contain,
-                                alignment: Alignment.bottomCenter,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const SizedBox(),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+
+        // Center Logo overlay
+        Positioned(
+          top: MediaQuery.of(context).size.height * 0.10,
+          left: 0,
+          right: 0,
+          child: _buildBrandHeader(
+            titleColor: Colors.white,
+            subtitleColor: Colors.transparent,
+            logoBackground: const Color(0xFF6E947F), // Match design green
+            subtitle: '',
+          ),
+        ),
+
+        // Bottom White Content Sheet
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          height: MediaQuery.of(context).size.height * 0.45,
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.fromLTRB(28, 48, 28, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Atur Penghuni & Kamar',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF5F8571), // Dark green
+                  ),
+                ),
+                const SizedBox(height: 16),
+                RichText(
+                  text: const TextSpan(
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Color(0xFF6C8F7B), // Light grayish green
+                      height: 1.5,
+                    ),
+                    children: [
+                      TextSpan(
+                        text:
+                            'Tambahkan data penghuni baru, atur kamar yang tersedia, dan pantau status hunian secara ',
+                      ),
+                      TextSpan(
+                        text: 'real-time.',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Spacer(),
+
+                // Indicators
+                Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0E8E3),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 28, // Ini yang aktif (halaman 2)
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6E947F),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0E8E3),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.pageController.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6E947F),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Selanjutnya',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -225,7 +270,10 @@ class Landing2View extends StatelessWidget {
           ],
         ),
         Transform.translate(
-          offset: const Offset(0, -12),
+          offset: const Offset(
+            0,
+            -26,// Menambah nilai minus agar lebih dekat
+          ), // Mengurangi jarak antara animasi dan teks
           child: Column(
             children: [
               Text(
@@ -238,7 +286,7 @@ class Landing2View extends StatelessWidget {
                   height: 0.1,
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.35),
+                      color: Colors.black.withOpacity(0.50),
                       offset: const Offset(0, 2),
                       blurRadius: 6,
                     ),
@@ -246,88 +294,19 @@ class Landing2View extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              if (subtitle.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    subtitle,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: subtitleColor,
-                      height: 1.45,
-                    ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: subtitleColor,
+                    height: 1.45,
                   ),
                 ),
+              ),
             ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDecorativeHouses() {
-    return Stack(
-      children: [
-        Positioned(
-          right: 50,
-          top: 0,
-          child: Image.asset(
-            _landingPage2Rumah1Asset,
-            width: 40,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const SizedBox(),
-          ),
-        ),
-        Positioned(
-          left: 95,
-          top: 30,
-          child: Image.asset(
-            _landingPage2Rumah2Asset,
-            width: 60,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const SizedBox(),
-          ),
-        ),
-        Positioned(
-          left: 11,
-          top: 80,
-          child: Image.asset(
-            _landingPage2Rumah3Asset,
-            width: 100,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const SizedBox(),
-          ),
-        ),
-        Positioned(
-          right: 28,
-          top: 70,
-          child: Image.asset(
-            _landingPage2Rumah4Asset,
-            width: 130,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const SizedBox(),
-          ),
-        ),
-        // Tambahan rumah 5 dan 6 karena lebih banyak
-        Positioned(
-          bottom: 0,
-          left: 0,
-          child: Image.asset(
-            _landingPage2Rumah5Asset,
-            width: 180,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const SizedBox(),
-          ),
-        ),
-        Positioned(
-          right: 66,
-          bottom: 2,
-          child: Image.asset(
-            _landingPage2Rumah6Asset,
-            width: 80,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) => const SizedBox(),
           ),
         ),
       ],
