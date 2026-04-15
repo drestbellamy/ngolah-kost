@@ -1664,6 +1664,234 @@ class SupabaseService {
     return 'bank';
   }
 
+  // UPLOAD FOTO PROFIL TO STORAGE
+  Future<String> uploadFotoProfilAdmin({
+    required Uint8List imageBytes,
+    required String fileExt,
+    required String userId,
+  }) async {
+    if (imageBytes.isEmpty) {
+      throw Exception('File foto tidak valid');
+    }
+
+    final extension = _normalizeFileExtension(fileExt);
+    final fileName =
+        '${DateTime.now().millisecondsSinceEpoch}_$userId.$extension';
+    final objectPath = 'admin/$fileName';
+
+    try {
+      await supabase.storage
+          .from('foto-profil')
+          .uploadBinary(
+            objectPath,
+            imageBytes,
+            fileOptions: FileOptions(
+              upsert: false,
+              cacheControl: '3600',
+              contentType: _contentTypeFromFileExtension(extension),
+            ),
+          );
+
+      return supabase.storage.from('foto-profil').getPublicUrl(objectPath);
+    } on StorageException catch (e) {
+      throw Exception(e.message);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPDATE FOTO PROFIL USER (using RPC for better security)
+  Future<void> updateFotoProfilUser({
+    required String userId,
+    String? fotoProfilUrl,
+  }) async {
+    if (userId.trim().isEmpty) {
+      throw Exception('ID user tidak valid');
+    }
+
+    try {
+      // Try using RPC function first (if available)
+      try {
+        await supabase.rpc(
+          'update_user_foto_profil',
+          params: {'p_user_id': userId, 'p_foto_profil_url': fotoProfilUrl},
+        );
+        return;
+      } catch (rpcError) {
+        print('RPC not available, trying direct update: $rpcError');
+      }
+
+      // Fallback to direct update
+      await supabase
+          .from('users')
+          .update({'foto_profil': fotoProfilUrl})
+          .eq('id', userId);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // GET USER BY ID
+  Future<Map<String, dynamic>?> getUserById(String userId) async {
+    if (userId.trim().isEmpty) return null;
+
+    try {
+      // Try using RPC function first (bypass RLS)
+      try {
+        final result = await supabase.rpc(
+          'get_user_by_id',
+          params: {'p_user_id': userId},
+        );
+
+        if (result is List && result.isNotEmpty) {
+          return Map<String, dynamic>.from(result.first);
+        }
+      } catch (rpcError) {
+        print(
+          'RPC get_user_by_id not available, trying direct query: $rpcError',
+        );
+      }
+
+      // Fallback to direct query
+      final raw = await supabase
+          .from('users')
+          .select('id, username, nama, no_tlpn, role, foto_profil, is_active')
+          .eq('id', userId)
+          .maybeSingle();
+
+      return _asStringMap(raw);
+    } catch (e) {
+      print('Error getUserById: $e');
+      return null;
+    }
+  }
+
+  // VERIFY PASSWORD
+  Future<void> verifyPassword({
+    required String userId,
+    required String password,
+  }) async {
+    if (userId.trim().isEmpty) {
+      throw Exception('ID user tidak valid');
+    }
+
+    if (password.isEmpty) {
+      throw Exception('Password tidak boleh kosong');
+    }
+
+    try {
+      // Use RPC function to verify password
+      final result = await supabase.rpc(
+        'verify_user_password',
+        params: {'p_user_id': userId, 'p_password': password},
+      );
+
+      // Check if password is correct
+      if (result == false || result == 0) {
+        throw Exception('Password tidak sesuai');
+      }
+    } on PostgrestException catch (e) {
+      if (e.message.contains('not find the function')) {
+        throw Exception(
+          'Fitur verifikasi password belum tersedia. Hubungi administrator.',
+        );
+      }
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPDATE USERNAME
+  Future<void> updateUsername({
+    required String userId,
+    required String newUsername,
+  }) async {
+    if (userId.trim().isEmpty) {
+      throw Exception('ID user tidak valid');
+    }
+
+    if (newUsername.trim().isEmpty) {
+      throw Exception('Username tidak boleh kosong');
+    }
+
+    try {
+      // Check if username already exists
+      final existing = await supabase
+          .from('users')
+          .select('id')
+          .eq('username', newUsername)
+          .neq('id', userId)
+          .maybeSingle();
+
+      if (existing != null) {
+        throw Exception('Username sudah digunakan');
+      }
+
+      // Try using RPC function first
+      try {
+        await supabase.rpc(
+          'update_user_username',
+          params: {'p_user_id': userId, 'p_new_username': newUsername},
+        );
+        return;
+      } catch (rpcError) {
+        print(
+          'RPC update_user_username not available, trying direct update: $rpcError',
+        );
+      }
+
+      // Fallback to direct update
+      await supabase
+          .from('users')
+          .update({'username': newUsername})
+          .eq('id', userId);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPDATE PASSWORD
+  Future<void> updatePassword({
+    required String userId,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    if (userId.trim().isEmpty) {
+      throw Exception('ID user tidak valid');
+    }
+
+    if (oldPassword.isEmpty || newPassword.isEmpty) {
+      throw Exception('Password tidak boleh kosong');
+    }
+
+    if (newPassword.length < 6) {
+      throw Exception('Password minimal 6 karakter');
+    }
+
+    try {
+      // Use RPC function to verify old password and update
+      final result = await supabase.rpc(
+        'update_user_password',
+        params: {
+          'p_user_id': userId,
+          'p_old_password': oldPassword,
+          'p_new_password': newPassword,
+        },
+      );
+
+      // Check if update was successful
+      if (result == false || result == 0) {
+        throw Exception('Password lama tidak sesuai');
+      }
+    } on PostgrestException catch (e) {
+      if (e.message.contains('not find the function')) {
+        throw Exception(
+          'Fitur ubah password belum tersedia. Hubungi administrator.',
+        );
+      }
+      throw Exception(_formatPostgrestError(e));
+    }
+  }
+
   // GET DASHBOARD STATISTICS
   Future<Map<String, int>> getDashboardStatistics() async {
     try {
