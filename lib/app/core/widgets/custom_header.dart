@@ -65,30 +65,32 @@ class CustomHeader extends StatelessWidget {
       child: Stack(
         children: [
           // Decorative circles
-          Positioned(
-            right: -120,
-            top: -180,
-            child: Container(
-              width: 256,
-              height: 256,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                shape: BoxShape.circle,
+          if (backgroundImage == null) ...[
+            Positioned(
+              right: -120,
+              top: -180,
+              child: Container(
+                width: 256,
+                height: 256,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  shape: BoxShape.circle,
+                ),
               ),
             ),
-          ),
-          Positioned(
-            left: -80,
-            bottom: -100,
-            child: Container(
-              width: 192,
-              height: 192,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.05),
-                shape: BoxShape.circle,
+            Positioned(
+              left: -80,
+              bottom: -100,
+              child: Container(
+                width: 192,
+                height: 192,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  shape: BoxShape.circle,
+                ),
               ),
             ),
-          ),
+          ],
 
           // Content
           Padding(
