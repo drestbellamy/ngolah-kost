@@ -7,6 +7,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/kost/bindings/kost_binding.dart';
 import '../modules/kost/views/kost_view.dart';
+import '../modules/kost/views/add_kost_view.dart';
+import '../modules/kost/views/edit_kost_view.dart';
 import '../modules/kamar/bindings/kamar_binding.dart';
 import '../modules/kamar/views/kamar_view.dart';
 import '../modules/penghuni/bindings/penghuni_binding.dart';
@@ -71,6 +73,18 @@ class AppPages {
     GetPage(
       name: Routes.kost,
       page: () => const KostView(),
+      binding: KostBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.addKost,
+      page: () => const AddKostView(),
+      binding: KostBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.editKost,
+      page: () => const EditKostView(),
       binding: KostBinding(),
       middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
     ),
