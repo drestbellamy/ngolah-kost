@@ -1,69 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/profil_controller.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
-import '../../../routes/app_routes.dart';
 
 class ProfilView extends GetView<ProfilController> {
   const ProfilView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Load profile setiap kali view di-build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.loadUserProfile();
+    });
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  _buildUsernameSection(),
-                  const SizedBox(height: 16),
-                  _buildPasswordSection(),
-                  const SizedBox(height: 24),
-                  // Render Save Button if any section is expanded
-                  Obx(() {
-                    if (controller.isUsernameExpanded.value ||
-                        controller.isPasswordExpanded.value) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: controller.saveChanges,
-                            icon: const Icon(Icons.save_outlined, size: 20),
-                            label: const Text(
-                              'Simpan Perubahan',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await controller.loadUserProfile();
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    _buildUsernameSection(),
+                    const SizedBox(height: 16),
+                    _buildPasswordSection(),
+                    const SizedBox(height: 24),
+                    // Render Save Button if any section is expanded
+                    Obx(() {
+                      if (controller.isUsernameExpanded.value ||
+                          controller.isPasswordExpanded.value) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton.icon(
+                              onPressed: controller.saveChanges,
+                              icon: const Icon(Icons.save_outlined, size: 20),
+                              label: const Text(
+                                'Simpan Perubahan',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF5E8675),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF5E8675),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                elevation: 0,
                               ),
-                              elevation: 0,
                             ),
                           ),
-                        ),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
-                  _buildLogoutButton(),
-                  const SizedBox(height: 40),
-                ],
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                    _buildLogoutButton(),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: const AdminBottomNavbar(currentIndex: 3),
@@ -90,7 +103,7 @@ class ProfilView extends GetView<ProfilController> {
               width: 150,
               height: 150,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
             ),
@@ -102,7 +115,7 @@ class ProfilView extends GetView<ProfilController> {
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
+                color: Colors.white.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
             ),
@@ -119,33 +132,37 @@ class ProfilView extends GetView<ProfilController> {
               children: [
                 Row(
                   children: [
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Profil Admin',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Kelola akun Anda',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Get.offAllNamed(Routes.home),
+                        icon: const Icon(Icons.refresh, color: Colors.white),
+                        onPressed: () => controller.loadUserProfile(),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Profil Admin',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Kelola akun Anda',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
-                        ),
-                      ],
                     ),
                   ],
                 ),
@@ -188,10 +205,10 @@ class ProfilView extends GetView<ProfilController> {
                               iconColor: const Color(0xFF5E8675),
                               iconBgColor: const Color(
                                 0xFF5E8675,
-                              ).withOpacity(0.1),
+                              ).withValues(alpha: 0.1),
                               title: 'Ambil Foto',
                               subtitle: 'Gunakan kamera',
-                              onTap: () => Get.back(),
+                              onTap: () => controller.pickImageFromCamera(),
                             ),
                             const SizedBox(height: 12),
                             _buildPhotoOption(
@@ -199,11 +216,31 @@ class ProfilView extends GetView<ProfilController> {
                               iconColor: const Color(0xFFF59E0B),
                               iconBgColor: const Color(
                                 0xFFF59E0B,
-                              ).withOpacity(0.1),
+                              ).withValues(alpha: 0.1),
                               title: 'Pilih dari Galeri',
                               subtitle: 'Pilih foto yang sudah ada',
-                              onTap: () => Get.back(),
+                              onTap: () => controller.pickImageFromGallery(),
                             ),
+                            Obx(() {
+                              if (controller.fotoProfilUrl.value != null) {
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 12),
+                                    _buildPhotoOption(
+                                      icon: Icons.delete_outline,
+                                      iconColor: Colors.red,
+                                      iconBgColor: Colors.red.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      title: 'Hapus Foto',
+                                      subtitle: 'Hapus foto profil saat ini',
+                                      onTap: () => controller.deletePhoto(),
+                                    ),
+                                  ],
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            }),
                             const SizedBox(height: 16),
                             SizedBox(
                               width: double.infinity,
@@ -232,27 +269,82 @@ class ProfilView extends GetView<ProfilController> {
                       ),
                     );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Color(0xFF5E8675),
-                      child: Icon(
-                        Icons.account_circle,
-                        size: 80,
-                        color: Colors.white,
+                  child: Obx(
+                    () => Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Stack(
+                        children: [
+                          // Gunakan CachedNetworkImage untuk loading yang lebih smooth
+                          controller.fotoProfilUrl.value != null
+                              ? CachedNetworkImage(
+                                  imageUrl: controller.fotoProfilUrl.value!,
+                                  imageBuilder: (context, imageProvider) =>
+                                      CircleAvatar(
+                                        radius: 40,
+                                        backgroundImage: imageProvider,
+                                        backgroundColor: const Color(
+                                          0xFF5E8675,
+                                        ),
+                                      ),
+                                  placeholder: (context, url) => CircleAvatar(
+                                    radius: 40,
+                                    backgroundColor: const Color(0xFF5E8675),
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const CircleAvatar(
+                                        radius: 40,
+                                        backgroundColor: Color(0xFF5E8675),
+                                        child: Icon(
+                                          Icons.account_circle,
+                                          size: 80,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                )
+                              : const CircleAvatar(
+                                  radius: 40,
+                                  backgroundColor: Color(0xFF5E8675),
+                                  child: Icon(
+                                    Icons.account_circle,
+                                    size: 80,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                          // Loading overlay saat upload
+                          if (controller.isUploadingPhoto.value)
+                            Positioned.fill(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'admin',
-                  style: TextStyle(
+                Text(
+                  controller.authController.currentUser?.username ?? 'admin',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -280,7 +372,7 @@ class ProfilView extends GetView<ProfilController> {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               spreadRadius: 2,
               blurRadius: 10,
               offset: const Offset(0, 3),
@@ -318,14 +410,14 @@ class ProfilView extends GetView<ProfilController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Username',
+                      'Username Baru',
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: controller.usernameController,
                       decoration: InputDecoration(
-                        hintText: 'admin',
+                        hintText: 'Masukkan username baru',
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
@@ -353,6 +445,69 @@ class ProfilView extends GetView<ProfilController> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Konfirmasi Password',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    Obx(
+                      () => TextFormField(
+                        controller:
+                            controller.confirmPasswordForUsernameController,
+                        obscureText:
+                            controller.obscureConfirmPasswordForUsername.value,
+                        decoration: InputDecoration(
+                          hintText: 'Masukkan password untuk konfirmasi',
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.grey.shade300,
+                              width: 1,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: Colors.grey.shade300,
+                              width: 1,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF5E8675),
+                              width: 1.5,
+                            ),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.obscureConfirmPasswordForUsername.value
+                                  ? CupertinoIcons.eye_slash
+                                  : CupertinoIcons.eye,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () =>
+                                controller
+                                    .obscureConfirmPasswordForUsername
+                                    .value = !controller
+                                    .obscureConfirmPasswordForUsername
+                                    .value,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 4),
+                      child: Text(
+                        'Masukkan password Anda untuk konfirmasi perubahan',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -372,7 +527,7 @@ class ProfilView extends GetView<ProfilController> {
           borderRadius: BorderRadius.circular(15),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               spreadRadius: 2,
               blurRadius: 10,
               offset: const Offset(0, 3),
@@ -533,8 +688,8 @@ class ProfilView extends GetView<ProfilController> {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        highlightColor: Colors.black.withOpacity(0.05),
-        splashColor: Colors.black.withOpacity(0.05),
+        highlightColor: Colors.black.withValues(alpha: 0.05),
+        splashColor: Colors.black.withValues(alpha: 0.05),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           child: Row(
