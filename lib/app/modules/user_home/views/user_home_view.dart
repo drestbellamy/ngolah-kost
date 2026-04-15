@@ -23,18 +23,19 @@ class UserHomeView extends GetView<UserHomeController> {
                 subtitle: 'Selamat datang kembali',
                 showBackButton: false,
                 trailing: GestureDetector(
-                  onTap: controller.showLogoutDialog,
+                  onTap: () => Get.toNamed(Routes.userProfil),
                   child: Container(
                     width: 48,
                     height: 48,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Colors.grey[200],
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
                     ),
                     child: const Icon(
-                      Icons.logout,
-                      color: Colors.white,
-                      size: 24,
+                      Icons.person,
+                      size: 32,
+                      color: Colors.grey,
                     ),
                   ),
                 ),
