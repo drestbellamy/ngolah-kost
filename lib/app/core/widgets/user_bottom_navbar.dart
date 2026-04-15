@@ -4,14 +4,14 @@ import '../../routes/app_routes.dart';
 
 class UserBottomNavbar extends StatelessWidget {
   final int currentIndex;
-  
+
   // Nanti badge notifikasi bisa dibuat dinamis melalui State Management/Controller.
   // Sementara ini dibuat sebagai opsi opsional.
   final bool hasTagihanNotification;
   final bool hasInfoNotification;
 
   const UserBottomNavbar({
-    super.key, 
+    super.key,
     required this.currentIndex,
     this.hasTagihanNotification = true,
     this.hasInfoNotification = true,
@@ -23,10 +23,7 @@ class UserBottomNavbar extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         border: const Border(
-          top: BorderSide(
-            color: Color(0xFFE5E7EB),
-            width: 1,
-          ),
+          top: BorderSide(color: Color(0xFFE5E7EB), width: 1),
         ),
       ),
       child: SafeArea(
@@ -81,6 +78,17 @@ class UserBottomNavbar extends StatelessWidget {
                   }
                 },
               ),
+              _buildNavItem(
+                icon: Icons.person_outline,
+                activeIcon: Icons.person,
+                label: 'Profil',
+                isActive: currentIndex == 4,
+                onTap: () {
+                  if (currentIndex != 4) {
+                    Get.offAllNamed(Routes.userProfil);
+                  }
+                },
+              ),
             ],
           ),
         ),
@@ -103,7 +111,9 @@ class UserBottomNavbar extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF6B8E7A).withValues(alpha: 0.1) : Colors.transparent,
+          color: isActive
+              ? const Color(0xFF6B8E7A).withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -114,7 +124,9 @@ class UserBottomNavbar extends StatelessWidget {
               children: [
                 Icon(
                   isActive ? activeIcon : icon,
-                  color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF6C727F),
+                  color: isActive
+                      ? const Color(0xFF6B8E7A)
+                      : const Color(0xFF6C727F),
                   size: 24,
                 ),
                 if (hasNotification)
@@ -138,7 +150,9 @@ class UserBottomNavbar extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: isActive ? const Color(0xFF6B8E7A) : const Color(0xFF6C727F),
+                color: isActive
+                    ? const Color(0xFF6B8E7A)
+                    : const Color(0xFF6C727F),
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
