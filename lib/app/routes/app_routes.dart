@@ -3,6 +3,8 @@ abstract class Routes {
   static const login = '/login';
   static const home = '/home';
   static const kost = '/kost';
+  static const addKost = '/add-kost';
+  static const editKost = '/edit-kost';
   static const kamar = '/kamar';
   static const penghuni = '/penghuni';
   static const penghuniDetail = '/penghuni/detail';
