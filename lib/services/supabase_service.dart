@@ -6,6 +6,7 @@ import '../app/modules/login/models/login_user_model.dart';
 
 class SupabaseService {
   static const String _metodePembayaranQrisBucket = 'metode-pembayaran-qris';
+  static const String _buktiPembayaranBucket = 'bukti-pembayaran';
 
   final supabase = Supabase.instance.client;
 
@@ -280,6 +281,70 @@ class SupabaseService {
       throw Exception(e.message);
     } on PostgrestException catch (e) {
       throw Exception(_formatPostgrestError(e));
+    }
+  }
+
+  // UPLOAD BUKTI PEMBAYARAN TO STORAGE
+  Future<String> uploadBuktiPembayaran({
+    required Uint8List imageBytes,
+    required String fileExt,
+    required String penghuniId,
+  }) async {
+    if (imageBytes.isEmpty) {
+      throw Exception('File bukti pembayaran tidak valid');
+    }
+
+    final extension = _normalizeFileExtension(fileExt);
+    final fileName =
+        'bukti_${penghuniId}_${DateTime.now().millisecondsSinceEpoch}.$extension';
+
+    try {
+      await supabase.storage
+          .from(_buktiPembayaranBucket)
+          .uploadBinary(
+            fileName,
+            imageBytes,
+            fileOptions: FileOptions(
+              upsert: false,
+              cacheControl: '3600',
+              contentType: _contentTypeFromFileExtension(extension),
+            ),
+          );
+
+      return supabase.storage
+          .from(_buktiPembayaranBucket)
+          .getPublicUrl(fileName);
+    } on StorageException catch (e) {
+      throw Exception(e.message);
+    }
+  }
+
+  // CREATE PEMBAYARAN WITH BUKTI (using RPC)
+  Future<void> createPembayaran({
+    required String penghuniId,
+    required String tagihanId,
+    required double totalJumlah,
+    required String metodeId,
+    required String buktiPembayaranUrl,
+  }) async {
+    try {
+      // Use RPC function to bypass RLS
+      await supabase.rpc(
+        'insert_pembayaran',
+        params: {
+          'p_penghuni_id': penghuniId,
+          'p_tagihan_id': tagihanId,
+          'p_jumlah': totalJumlah.toInt(),
+          'p_metode_id': metodeId,
+          'p_bukti_pembayaran': buktiPembayaranUrl,
+          'p_status': 'pending',
+          'p_tanggal': DateTime.now().toIso8601String(),
+        },
+      );
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    } catch (e) {
+      throw Exception('Gagal membuat pembayaran: ${e.toString()}');
     }
   }
 
@@ -580,6 +645,140 @@ class SupabaseService {
       }).toList();
     } catch (_) {
       return rows;
+    }
+  }
+
+  // GET PENGHUNI BY USER ID (for user profile)
+  Future<Map<String, dynamic>?> getPenghuniByUserId(String userId) async {
+    if (userId.trim().isEmpty) return null;
+
+    try {
+      print('Fetching penghuni data for userId: $userId'); // Debug
+
+      // Get penghuni data with user info via RPC or direct query
+      // Try using RPC first if available
+      try {
+        final rpcResult = await supabase.rpc(
+          'get_user_profile_data',
+          params: {'p_user_id': userId},
+        );
+
+        if (rpcResult != null && rpcResult is List && rpcResult.isNotEmpty) {
+          final data = Map<String, dynamic>.from(rpcResult.first as Map);
+          print('Profile data from RPC: $data'); // Debug
+
+          // If kost_id is not in RPC result, fetch it separately
+          if (!data.containsKey('kost_id') || data['kost_id'] == null) {
+            print('kost_id not in RPC result, fetching separately...'); // Debug
+            final penghuniId = data['id']?.toString() ?? '';
+            if (penghuniId.isNotEmpty) {
+              final penghuniRaw = await supabase
+                  .from('penghuni')
+                  .select('kamar_id')
+                  .eq('id', penghuniId)
+                  .maybeSingle();
+
+              if (penghuniRaw != null) {
+                final kamarId = penghuniRaw['kamar_id']?.toString() ?? '';
+                if (kamarId.isNotEmpty) {
+                  final kamarRaw = await supabase
+                      .from('kamar')
+                      .select('kost_id')
+                      .eq('id', kamarId)
+                      .maybeSingle();
+
+                  if (kamarRaw != null) {
+                    data['kost_id'] = kamarRaw['kost_id']?.toString() ?? '';
+                    print(
+                      'Added kost_id to RPC result: ${data['kost_id']}',
+                    ); // Debug
+                  }
+                }
+              }
+            }
+          }
+
+          return data;
+        }
+      } catch (rpcError) {
+        print('RPC not available, using fallback query: $rpcError');
+      }
+
+      // Fallback: Get penghuni with joined user data
+      final raw = await supabase
+          .from('penghuni')
+          .select('''
+            id, 
+            user_id, 
+            durasi_kontrak, 
+            sistem_pembayaran_bulan, 
+            tanggal_masuk, 
+            tanggal_keluar, 
+            status, 
+            kamar_id,
+            users!inner(nama, no_tlpn)
+            ''')
+          .eq('user_id', userId)
+          .eq('status', 'aktif')
+          .maybeSingle();
+
+      final map = _asStringMap(raw);
+      if (map == null || map.isEmpty) {
+        print('No penghuni data found'); // Debug
+        return null;
+      }
+
+      print('Penghuni data fetched: $map'); // Debug
+
+      // Extract user data from joined result
+      final userData = _asStringMap(map['users']);
+      final nama = userData?['nama']?.toString() ?? '';
+      final noTlpn = userData?['no_tlpn']?.toString() ?? '';
+
+      print('User data from join: nama=$nama, no_tlpn=$noTlpn'); // Debug
+
+      // Get kamar data
+      final kamarId = map['kamar_id']?.toString() ?? '';
+      final kamarRaw = await supabase
+          .from('kamar')
+          .select('no_kamar, harga, kost_id')
+          .eq('id', kamarId)
+          .maybeSingle();
+
+      final kamar = _asStringMap(kamarRaw) ?? <String, dynamic>{};
+      print('Kamar data fetched: $kamar'); // Debug
+
+      // Get kost data
+      final kostId = kamar['kost_id']?.toString() ?? '';
+      final kostRaw = await supabase
+          .from('kost')
+          .select('nama_kost')
+          .eq('id', kostId)
+          .maybeSingle();
+
+      final kost = _asStringMap(kostRaw) ?? <String, dynamic>{};
+      print('Kost data fetched: $kost'); // Debug
+
+      final result = {
+        'id': map['id']?.toString() ?? '',
+        'nama': nama,
+        'no_tlpn': noTlpn,
+        'durasi_kontrak': map['durasi_kontrak'],
+        'sistem_pembayaran_bulan': map['sistem_pembayaran_bulan'],
+        'tanggal_masuk': map['tanggal_masuk'],
+        'tanggal_keluar': map['tanggal_keluar'],
+        'status': map['status'],
+        'nomor_kamar': (kamar['no_kamar'] ?? '').toString(),
+        'harga': kamar['harga'],
+        'kost_id': kostId, // Add kost_id to result
+        'nama_kost': (kost['nama_kost'] ?? '').toString(),
+      };
+
+      print('Final result: $result'); // Debug
+      return result;
+    } catch (e) {
+      print('Error getPenghuniByUserId: $e');
+      rethrow;
     }
   }
 
@@ -1051,6 +1250,63 @@ class SupabaseService {
     } catch (e) {
       print('Error getPembayaranByKostId: $e');
       return [];
+    }
+  }
+
+  // GET PEMBAYARAN BY PENGHUNI ID
+  Future<List<Map<String, dynamic>>> getPembayaranByPenghuniId(
+    String penghuniId,
+  ) async {
+    if (penghuniId.trim().isEmpty) return [];
+
+    try {
+      final raw = await supabase
+          .from('pembayaran')
+          .select('*')
+          .eq('penghuni_id', penghuniId)
+          .order('tanggal', ascending: false);
+
+      if (raw is! List) return [];
+      return raw.map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (e) {
+      print('Error getPembayaranByPenghuniId: $e');
+      return [];
+    }
+  }
+
+  // GET TAGIHAN BY ID
+  Future<Map<String, dynamic>?> getTagihanById(String tagihanId) async {
+    if (tagihanId.trim().isEmpty) return null;
+
+    try {
+      final raw = await supabase
+          .from('tagihan')
+          .select('*')
+          .eq('id', tagihanId)
+          .single();
+
+      return Map<String, dynamic>.from(raw);
+    } catch (e) {
+      print('Error getTagihanById: $e');
+      return null;
+    }
+  }
+
+  // GET METODE PEMBAYARAN BY ID
+  Future<Map<String, dynamic>?> getMetodePembayaranById(String metodeId) async {
+    if (metodeId.trim().isEmpty) return null;
+
+    try {
+      final raw = await supabase
+          .from('metode_pembayaran')
+          .select('*')
+          .eq('id', metodeId)
+          .single();
+
+      return Map<String, dynamic>.from(raw);
+    } catch (e) {
+      print('Error getMetodePembayaranById: $e');
+      return null;
     }
   }
 

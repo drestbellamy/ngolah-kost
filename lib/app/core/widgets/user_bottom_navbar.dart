@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
+import '../controllers/notification_controller.dart';
 
 class UserBottomNavbar extends StatelessWidget {
   final int currentIndex;
 
-  // Nanti badge notifikasi bisa dibuat dinamis melalui State Management/Controller.
-  // Sementara ini dibuat sebagai opsi opsional.
-  final bool hasTagihanNotification;
-  final bool hasInfoNotification;
-
-  const UserBottomNavbar({
-    super.key,
-    required this.currentIndex,
-    this.hasTagihanNotification = true,
-    this.hasInfoNotification = true,
-  });
+  const UserBottomNavbar({super.key, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
+    // Get notification status without reactive binding
+    bool hasTagihanNotif = false;
+    bool hasInfoNotif = false;
+
+    if (Get.isRegistered<NotificationController>()) {
+      final controller = Get.find<NotificationController>();
+      hasTagihanNotif = controller.hasTagihanNotification.value;
+      hasInfoNotif = controller.hasInfoNotification.value;
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -48,7 +49,7 @@ class UserBottomNavbar extends StatelessWidget {
                 activeIcon: Icons.receipt_long,
                 label: 'Tagihan',
                 isActive: currentIndex == 1,
-                hasNotification: hasTagihanNotification,
+                hasNotification: hasTagihanNotif,
                 onTap: () {
                   if (currentIndex != 1) {
                     Get.offAllNamed(Routes.userTagihan);
@@ -71,7 +72,7 @@ class UserBottomNavbar extends StatelessWidget {
                 activeIcon: Icons.notifications,
                 label: 'Info',
                 isActive: currentIndex == 3,
-                hasNotification: hasInfoNotification,
+                hasNotification: hasInfoNotif,
                 onTap: () {
                   if (currentIndex != 3) {
                     Get.offAllNamed(Routes.userInfo);

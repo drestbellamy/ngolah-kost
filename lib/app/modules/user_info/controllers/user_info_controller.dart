@@ -1,138 +1,125 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../services/supabase_service.dart';
+import '../../../core/controllers/auth_controller.dart';
+import '../../../core/controllers/notification_controller.dart';
+import '../../../data/models/pengumuman_model.dart';
+import '../../../data/models/peraturan_model.dart';
 
-class UserInfoController extends GetxController {
+class UserInfoController extends GetxController with WidgetsBindingObserver {
+  final SupabaseService _supabaseService = SupabaseService();
+  final AuthController _authController = Get.find<AuthController>();
+
   final RxInt selectedTabIndex = 0.obs;
+  final RxBool isLoading = true.obs;
+  final RxString errorMessage = ''.obs;
 
-  final RxList<Announcement> announcements = [
-    Announcement(
-      title: 'Pemeliharaan Air',
-      content:
-          'Air akan dimatikan sementara pada tanggal 22 Maret 2026 pukul 08:00 - 12:00 untuk pemeliharaan rutin sistem water heater di semua kamar. Harap simpan persediaan air.',
-      date: '18 Maret 2026',
-      type: AnnouncementType.pemeliharaan,
-    ),
-    Announcement(
-      title: 'Libur Lebaran 2026',
-      content:
-          'Kantor pengelola kost akan tutup pada tanggal 30 Maret - 3 April 2026. Untuk keadaan darurat, hubungi nomor emergency: 0812-3456-7890 (24 jam).',
-      date: '15 Maret 2026',
-      type: AnnouncementType.libur,
-    ),
-    Announcement(
-      title: 'Pembayaran Bulan April',
-      content:
-          'Pembayaran sewa bulan April 2026 sudah dapat dilakukan mulai tanggal 15 Maret. Jatuh tempo tetap tanggal 5 April 2026. Mohon segera lakukan pembayaran.',
-      date: '14 Maret 2026',
-      type: AnnouncementType.pembayaran,
-    ),
-    Announcement(
-      title: 'Perbaikan WIFI Selesai',
-      content:
-          'Perbaikan jaringan WiFi di lantai 2 dan 3 telah selesai. Kecepatan internet sekarang sudah kembali normal. Terima kasih atas kesabaran Anda.',
-      date: '12 Maret 2026',
-      type: AnnouncementType.fasilitas,
-    ),
-    Announcement(
-      title: 'Tata Tertib Parkir Baru',
-      content:
-          'Mulai 1 April 2026, semua kendaraan wajib memiliki stiker parkir. Silakan ambil stiker di kantor pengelola (gratis). Kendaraan tanpa stiker tidak diperkenankan parkir.',
-      date: '10 Maret 2026',
-      type: AnnouncementType.peraturan,
-    ),
-  ].obs;
+  final RxList<PengumumanModel> pengumumanList = <PengumumanModel>[].obs;
+  final RxList<PeraturanModel> peraturanList = <PeraturanModel>[].obs;
 
-  final RxList<Rule> rules = [
-    Rule(
-      title: 'Jam Malam & Keamanan',
-      items: [
-        'Jam malam pukul 22:00 WIB untuk tamu',
-        'Pintu utama ditutup pukul 23:00 WIB (gunakan kunci kamar untuk akses)',
-        'CCTV aktif 24 jam di area umum',
-        'Wajib mengisi buku tamu untuk tamu yang menginap',
-        'Maksimal 2 tamu per kamar',
-      ],
-      type: RuleType.jamMalam,
-    ),
-    Rule(
-      title: 'Kebersihan & Kerapihan',
-      items: [
-        'Buang sampah di tempat yang telah disediakan',
-        'Jaga kebersihan kamar mandi bersama',
-        'Tidak boleh menjemur pakaian di balkon depan',
-        'Area jemuran tersedia di lantai atas',
-        'Pembersihan kamar mandi umum setiap hari pukul 08:00',
-      ],
-      type: RuleType.kebersihan,
-    ),
-    Rule(
-      title: 'Fasilitas Umum',
-      items: [
-        'WiFi tersedia 24 jam (username & password di papan pengumuman)',
-        'Dapur bersama dapat digunakan hingga pukul 22:00',
-        'Ruang tamu dapat digunakan hingga pukul 23:00',
-        'Mesin cuci tersedia (Rp 5.000/kali pakai)',
-        'Tidak boleh membawa barang elektronik berlebihan ke kamar',
-      ],
-      type: RuleType.fasilitas,
-    ),
-    Rule(
-      title: 'Parkir & Kendaraan',
-      items: [
-        'Parkir motor/mobil hanya di area yang ditentukan',
-        'Wajib memiliki stiker parkir (ambil di kantor)',
-        'Tidak boleh parkir di area jalan atau pintu darurat',
-        'Kendaraan tamu wajib lapor ke petugas',
-        'Kehilangan kendaraan bukan tanggung jawab pengelola',
-      ],
-      type: RuleType.kendaraan,
-    ),
-    Rule(
-      title: 'Larangan',
-      items: [
-        'Dilarang membawa senjata tajam, narkoba, atau minuman keras',
-        'Dilarang berjudi atau melakukan kegiatan ilegal',
-        'Dilarang membuat keributan setelah pukul 22:00',
-        'Dilarang memelihara binatang peliharaan',
-        'Dilarang memasak dahi di dalam kamar',
-      ],
-      type: RuleType.larangan,
-    ),
-    Rule(
-      title: 'Penting!',
-      items: [
-        'Mohon untuk mematuhi semua peraturan yang berlaku demi kenyamanan bersama. Pelanggaran terhadap peraturan dapat berakibat teguran, denda, hingga pengeluaran dari kost.',
-      ],
-      type: RuleType.penting,
-    ),
-  ].obs;
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+    loadData();
+    _markInfoAsSeen();
+
+    // Auto refresh disabled - user can manually refresh with pull-to-refresh
+  }
+
+  void _markInfoAsSeen() {
+    // Mark info as seen when page is opened
+    if (Get.isRegistered<NotificationController>()) {
+      final notificationController = Get.find<NotificationController>();
+      // Immediately hide badge for better UX
+      notificationController.hasInfoNotification.value = false;
+      // Then update database in background
+      notificationController.markInfoAsSeen();
+    }
+  }
+
+  @override
+  void onClose() {
+    // No timer to cancel
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Refresh data saat app kembali ke foreground
+    if (state == AppLifecycleState.resumed) {
+      loadData();
+    }
+  }
+
+  Future<void> loadData() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      // Get user ID from AuthController
+      final userId = _authController.currentUser?.id;
+
+      if (userId == null || userId.isEmpty) {
+        throw Exception('Sesi login tidak ditemukan. Silakan login kembali.');
+      }
+
+      // Get penghuni data to find kost_id
+      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+
+      if (penghuniData == null) {
+        // User belum terdaftar sebagai penghuni
+        pengumumanList.value = [];
+        peraturanList.value = [];
+        isLoading.value = false;
+        return;
+      }
+
+      final kostId = penghuniData['kost_id']?.toString() ?? '';
+      if (kostId.isEmpty) {
+        throw Exception('Data kost tidak ditemukan');
+      }
+
+      // Fetch pengumuman dan peraturan
+      await Future.wait([_loadPengumuman(kostId), _loadPeraturan(kostId)]);
+    } catch (e) {
+      errorMessage.value = e.toString().replaceAll('Exception: ', '');
+      print('Error loading data: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> _loadPengumuman(String kostId) async {
+    try {
+      final data = await _supabaseService.getPengumumanByKostId(kostId);
+      pengumumanList.value = data
+          .map((item) => PengumumanModel.fromMap(item))
+          .toList();
+    } catch (e) {
+      print('Error loading pengumuman: $e');
+    }
+  }
+
+  Future<void> _loadPeraturan(String kostId) async {
+    try {
+      final data = await _supabaseService.getPeraturanByKostId(kostId);
+      peraturanList.value = data
+          .map((item) => PeraturanModel.fromMap(item))
+          .toList();
+    } catch (e) {
+      print('Error loading peraturan: $e');
+    }
+  }
 
   void changeTab(int index) {
     selectedTabIndex.value = index;
   }
-}
 
-enum AnnouncementType { pemeliharaan, libur, pembayaran, fasilitas, peraturan }
-
-enum RuleType { jamMalam, kebersihan, fasilitas, kendaraan, larangan, penting }
-
-class Announcement {
-  final String title;
-  final String content;
-  final String date;
-  final AnnouncementType type;
-
-  Announcement({
-    required this.title,
-    required this.content,
-    required this.date,
-    required this.type,
-  });
-}
-
-class Rule {
-  final String title;
-  final List<String> items;
-  final RuleType type;
-
-  Rule({required this.title, required this.items, required this.type});
+  @override
+  Future<void> refresh() async {
+    await loadData();
+  }
 }
