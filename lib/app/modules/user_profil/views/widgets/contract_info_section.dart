@@ -35,24 +35,32 @@ class ContractInfoSection extends GetView<UserProfilController> {
                   color: Color(0xFF333333),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Text(
-                  'Aktif',
-                  style: TextStyle(
-                    color: Color(0xFF4CAF50),
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+              Obx(() {
+                final profile = controller.userProfile.value;
+                final isActive = profile?.status == 'aktif';
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
                   ),
-                ),
-              ),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? const Color(0xFFE8F5E9)
+                        : const Color(0xFFFEF2F2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    isActive ? 'Aktif' : 'Tidak Aktif',
+                    style: TextStyle(
+                      color: isActive
+                          ? const Color(0xFF4CAF50)
+                          : const Color(0xFFEF4444),
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 16),

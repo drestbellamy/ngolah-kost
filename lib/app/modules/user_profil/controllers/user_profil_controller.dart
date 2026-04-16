@@ -75,9 +75,29 @@ class UserProfilController extends GetxController {
       print('Fetched data: $data'); // Debug log
 
       if (data == null) {
-        throw Exception(
-          'Data penghuni tidak ditemukan. Pastikan admin sudah menambahkan data kontrak Anda.',
-        );
+        // Jika data tidak ditemukan, set profile dengan data kosong
+        userProfile.value = UserProfileModel.fromMap({
+          'nama': 'Data tidak tersedia',
+          'no_telepon': '-',
+          'nomor_kamar': '-',
+          'harga_per_bulan': 0,
+          'tanggal_masuk': '',
+          'tanggal_keluar': '',
+          'durasi_kontrak': 0,
+          'sistem_pembayaran': 'bulanan',
+          'status': 'tidak_aktif',
+          'total_tagihan': 0,
+          'jumlah_per_tagihan': 0,
+          'total_nilai_kontrak': 0,
+        });
+
+        namaKost.value = 'Kost tidak tersedia';
+        alamatKost.value = '-';
+
+        // Set error message untuk ditampilkan di bagian bawah
+        errorMessage.value =
+            'Data penghuni tidak ditemukan. Pastikan admin sudah menambahkan data kontrak Anda.';
+        return;
       }
 
       userProfile.value = UserProfileModel.fromMap(data);
