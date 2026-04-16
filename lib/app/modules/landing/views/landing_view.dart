@@ -11,14 +11,7 @@ class LandingView extends GetView<LandingController> {
   static const String _landingLottieAsset = 'assets/lotties/Home.json';
   static const String _landingPage1BackgroundAsset =
       'assets/images/landing_page1/gedung.png';
-  static const String _landingPage1Circle1Asset =
-      'assets/images/landing_page1/circle1.png';
-  static const String _landingPage1Circle2Asset =
-      'assets/images/landing_page1/circle2.png';
-  static const String _landingPage1Circle3Asset =
-      'assets/images/landing_page1/circle3.png';
-  static const String _landingPage1Circle4Asset =
-      'assets/images/landing_page1/circle4.png';
+
 
   @override
   Widget build(BuildContext context) {

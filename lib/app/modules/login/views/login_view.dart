@@ -6,381 +6,386 @@ import '../controllers/login_controller.dart';
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
 
-  static const String _loginLottieAsset = 'assets/lotties/Home.json';
-  static const String _loginBackgroundAsset =
-      'assets/images/login_page/gedung.png';
-  static const String _loginEllipseAsset =
-      'assets/images/login_page/ellipse.png';
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
 
+    
+    const double logoVerticalOffset = -55; 
+    const double logoBottomPadding = 0;   
+    const double logoSize          = 100; 
+    const double lottieScale       = 0.40; 
+    const double textLogoGap       = -26; 
+    final  double imageHeightRatio = 0.55; 
+
+  
+    const Color  fieldBorderColor   = Color(0xFF6B8E7A); 
+    const Color  fieldFocusColor    = Color(0xFF6B8E7A); 
+    const Color  fieldIconColor     = Color(0xFF6B7280); 
+    const Color  fieldHintColor     = Color(0xFFAAAAAA); 
+    const Color  fieldTextColor     = Color(0xFF333333);  
+    const Color  fieldFillColor     = Colors.white;      
+    const double fieldBorderRadius  = 20;  
+    const double fieldBorderWidth   = 1.4; 
+    const double fieldFocusWidth    = 2.4;
+    const double fieldVertPadding   = 15;  
+    const double fieldHorizPadding  = 12; 
+    const double usernamePasswordFieldGap = 18;
+
+
+
+    final imageHeight = size.height * imageHeightRatio;
+
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: size.height,
-          child: SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      height: constraints.maxHeight * 0.55,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          Image.asset(
-                            _loginBackgroundAsset,
-                            fit: BoxFit.cover,
-                            alignment: Alignment.topCenter,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Container(color: const Color(0xFF6B8E7A)),
-                          ),
-                          Container(
-                            color: const Color(0xFF6B8E7A).withOpacity(0.20),
-                          ),
-                          Positioned(
-                            top: constraints.maxHeight * 0.07,
-                            left: 0,
-                            right: 0,
-                            child: _buildBrandHeader(
-                              titleColor: Colors.white,
-                              logoBackground: const Color(0xFF4F6F5F),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+      backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
+      body: Stack(
+        children: [
+          // ── Background Image ──────────────────────────────────
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: imageHeight,
+            child: Image.asset(
+              'assets/images/login_page/gedung.png',
+              fit: BoxFit.cover,
+            ),
+          ),
 
-                    Positioned(
-                      top: constraints.maxHeight * 0.45,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        clipBehavior: Clip.none,
-                        children: [
-                          Positioned(
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            height: 250,
-                            child: Image.asset(
-                              _loginEllipseAsset,
-                              fit: BoxFit.fill,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const SizedBox(),
-                            ),
-                          ),
-                          Positioned(
-                            top: 118,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            child: Container(color: Colors.white),
-                          ),
-                          Positioned.fill(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
-                              child: SingleChildScrollView(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 24),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 66),
-                                      const Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF6D947F),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 32),
+          // ── Subtle dark overlay on image ──────────────────────
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: imageHeight,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Color(0x22000000),
+                  ],
+                ),
+              ),
+            ),
+          ),
 
-                                      const Text(
-                                        'Username',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFF2F2F2F),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      TextField(
-                                        controller:
-                                            controller.usernameController,
-                                        decoration: InputDecoration(
-                                          hintText: 'Username',
-                                          prefixIcon: const Icon(
-                                            Icons.person_outline,
-                                            size: 22,
-                                            color: Color(0xFF6B8E7A),
-                                          ),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFF6B8E7A),
-                                              width: 1.2,
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFFB5C3BC),
-                                              width: 1.2,
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                            borderSide: const BorderSide(
-                                              color: Color(0xFF6B8E7A),
-                                              width: 1.8,
-                                            ),
-                                          ),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                                horizontal: 16,
-                                                vertical: 16,
-                                              ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20),
+          // ── White card background ─────────────────────────────
+          Positioned(
+            top: imageHeight - 30,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+              ),
+            ),
+          ),
 
-                                      const Text(
-                                        'Password',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFF2F2F2F),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Obx(
-                                        () => TextField(
-                                          controller:
-                                              controller.passwordController,
-                                          obscureText:
-                                              controller.isPasswordHidden.value,
-                                          decoration: InputDecoration(
-                                            hintText: 'Password',
-                                            prefixIcon: const Icon(
-                                              Icons.lock_outline,
-                                              size: 22,
-                                              color: Color(0xFF6B8E7A),
-                                            ),
-                                            suffixIcon: IconButton(
-                                              icon: Icon(
-                                                controller
-                                                        .isPasswordHidden
-                                                        .value
-                                                    ? Icons
-                                                          .visibility_off_outlined
-                                                    : Icons.visibility_outlined,
-                                                size: 20,
-                                                color: const Color(0xFF6B7280),
-                                              ),
-                                              onPressed: controller
-                                                  .togglePasswordVisibility,
-                                            ),
-                                            filled: true,
-                                            fillColor: Colors.white,
-                                            border: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              borderSide: const BorderSide(
-                                                color: Color(0xFF6B8E7A),
-                                                width: 1.2,
-                                              ),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              borderSide: const BorderSide(
-                                                color: Color(0xFFB5C3BC),
-                                                width: 1.2,
-                                              ),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                              borderSide: const BorderSide(
-                                                color: Color(0xFF6B8E7A),
-                                                width: 1.8,
-                                              ),
-                                            ),
-                                            contentPadding:
-                                                const EdgeInsets.symmetric(
-                                                  horizontal: 16,
-                                                  vertical: 16,
-                                                ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 40),
-
-                                      Container(
-                                        width: double.infinity,
-                                        height: 56,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(
-                                                0.15,
-                                              ),
-                                              blurRadius: 16,
-                                              spreadRadius: 2,
-                                              offset: const Offset(0, 6),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Obx(
-                                          () => ElevatedButton(
-                                            onPressed:
-                                                controller.isLoading.value
-                                                ? null
-                                                : controller.login,
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(
-                                                0xFF6D947F,
-                                              ),
-                                              foregroundColor: Colors.white,
-                                              elevation: 0,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                              ),
-                                            ),
-                                            child: controller.isLoading.value
-                                                ? const SizedBox(
-                                                    width: 20,
-                                                    height: 20,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                          strokeWidth: 2,
-                                                          color: Colors.white,
-                                                        ),
-                                                  )
-                                                : const Text(
-                                                    'Login',
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                      letterSpacing: 0.5,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ),
+          // ── Main content column ───────────────────────────────
+          Column(
+            children: [
+              // Image section with logo & app name
+              SizedBox(
+                height: imageHeight,
+                child: SafeArea(
+                  bottom: false,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // ── Logo + teks dibungkus satu Transform ──
+                      Transform.translate(
+                        offset: Offset(0, logoVerticalOffset),
+                        child: Column(
+                          children: [
+                            // ── Animated logo ──
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // Green rounded square background
+                                Container(
+                                  width: logoSize,
+                                  height: logoSize,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6E947F),
+                                    borderRadius: BorderRadius.circular(24),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(alpha: 0.25),
+                                      width: 1.2,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.50),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                                   ),
                                 ),
+                                // Lottie animation
+                                Padding(
+                                  padding: const EdgeInsets.all(1),
+                                  child: Transform.scale(
+                                    scale: lottieScale,
+                                    child: Lottie.asset(
+                                      'assets/lotties/Home.json',
+                                      repeat: true,
+                                      fit: BoxFit.cover,
+                                      frameRate: FrameRate.composition,
+                                      options: LottieOptions(enableMergePaths: true),
+                                      errorBuilder: (_, e, s) => const Icon(
+                                        Icons.home_rounded,
+                                        size: 58,
+                                        color: Color(0xFF6B8E7A),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: logoBottomPadding),
+
+                            // ── App name — jarak diatur lewat textLogoGap ──
+                            Transform.translate(
+                              offset: Offset(0, textLogoGap),
+                              child: Text(
+                                'Ngolah Kost',
+                                style: TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                  letterSpacing: 0.4,
+                                  height: 0.1,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withValues(alpha: 0.50),
+                                      offset: const Offset(0, 2),
+                                      blurRadius: 6,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              },
-            ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // White card content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Greeting
+                      const Text(
+                        'Selamat Datang',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A7A5A),
+                          height: 1,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Silakan masuk ke akun Anda untuk melanjutkan',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF9E9E9E),
+                          height: 1.4,
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+
+                      // Username field
+                      _buildTextField(
+                        textController: controller.usernameController,
+                        hintText: 'Username',
+                        icon: Icons.person_outline_rounded,
+                        borderColor:   fieldBorderColor,
+                        focusColor:    fieldFocusColor,
+                        iconColor:     fieldIconColor,
+                        hintColor:     fieldHintColor,
+                        textColor:     fieldTextColor,
+                        fillColor:     fieldFillColor,
+                        borderRadius:  fieldBorderRadius,
+                        borderWidth:   fieldBorderWidth,
+                        focusWidth:    fieldFocusWidth,
+                        vertPadding:   fieldVertPadding,
+                        horizPadding:  fieldHorizPadding,
+                      ),
+                      const SizedBox(height: usernamePasswordFieldGap),
+
+                      // Password field
+                      Obx(() => _buildTextField(
+                            textController: controller.passwordController,
+                            hintText: 'Password',
+                            icon: Icons.lock_outline_rounded,
+                            isPassword: true,
+                            obscureText: controller.isPasswordHidden.value,
+                            onTogglePassword:
+                                controller.togglePasswordVisibility,
+                            borderColor:   fieldBorderColor,
+                            focusColor:    fieldFocusColor,
+                            iconColor:     fieldIconColor,
+                            hintColor:     fieldHintColor,
+                            textColor:     fieldTextColor,
+                            fillColor:     fieldFillColor,
+                            borderRadius:  fieldBorderRadius,
+                            borderWidth:   fieldBorderWidth,
+                            focusWidth:    fieldFocusWidth,
+                            vertPadding:   fieldVertPadding,
+                            horizPadding:  fieldHorizPadding,
+                          )),
+
+                      const SizedBox(height: 55),
+
+                      // Login button
+                      Obx(() => SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              onPressed: controller.isLoading.value
+                                  ? null
+                                  : controller.login,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF4E7B63),
+                                disabledBackgroundColor:
+                                    const Color(0xFF4E7B63).withValues(alpha: 0.6),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: controller.isLoading.value
+                                  ? const SizedBox(
+                                      width: 24,
+                                      height: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Masuk',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                            letterSpacing: 0.4,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Icon(
+                                          Icons.arrow_forward_rounded,
+                                          color: Colors.white,
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                            ),
+                          )),
+
+                      // Bottom safe area padding
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.bottom + 24,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildBrandHeader({
-    required Color titleColor,
-    required Color logoBackground,
-  }) {
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: logoBackground,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.25),
-                  width: 1.2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.50),
-                    blurRadius: 6,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(1),
-              child: Transform.scale(
-                scale: 0.40,
-                child: Lottie.asset(
-                  _loginLottieAsset,
-                  repeat: true,
-                  fit: BoxFit.cover,
-                  frameRate: FrameRate.composition,
-                  options: LottieOptions(enableMergePaths: true),
-                  errorBuilder: (_, __, ___) => const Icon(
-                    Icons.home_rounded,
-                    size: 58,
-                    color: Color(0xFF6B8E7A),
-                  ),
-                ),
-              ),
-            ),
-          ],
+  Widget _buildTextField({
+    required TextEditingController textController,
+    required String hintText,
+    required IconData icon,
+    bool isPassword = false,
+    bool obscureText = false,
+    VoidCallback? onTogglePassword,
+    Color borderColor    = const Color(0xFF6B8E7A),
+    Color focusColor     = const Color(0xFF6B8E7A),
+    Color iconColor      = const Color(0xFF6B7280),
+    Color hintColor      = const Color(0xFFAAAAAA),
+    Color textColor      = const Color(0xFF333333),
+    Color fillColor      = Colors.white,
+    double borderRadius  = 22,
+    double borderWidth   = 1.4,
+    double focusWidth    = 1.2,
+    double vertPadding   = 14,
+    double horizPadding  = 18,
+  }
+  
+  ) {
+    return TextField(
+      controller: textController,
+      obscureText: obscureText,
+      style: TextStyle(
+        fontSize: 15,
+        color: textColor,
+      ),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: hintColor,
+          fontSize: 15,
         ),
-        Transform.translate(
-          offset: const Offset(0, -12),
-          child: Text(
-            'Ngolah Kost',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: titleColor,
-              letterSpacing: 0.4,
-              height: 0.1,
-              shadows: [
-                Shadow(
-                  color: Colors.black.withOpacity(0.35),
-                  offset: const Offset(0, 2),
-                  blurRadius: 6,
-                ),
-              ],
-            ),
-          ),
+        prefixIcon: Icon(
+          icon,
+          color: iconColor,
+          size: 22,
         ),
-      ],
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  obscureText
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  color: iconColor,
+                  size: 22,
+                ),
+                onPressed: onTogglePassword,
+              )
+            : null,
+        filled: true,
+        fillColor: fillColor,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: horizPadding,
+          vertical: vertPadding,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+          borderSide: BorderSide(color: borderColor),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+          borderSide: BorderSide(color: borderColor, width: borderWidth),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(borderRadius),
+          borderSide: BorderSide(color: focusColor, width: focusWidth),
+        ),
+      ),
     );
   }
 }
