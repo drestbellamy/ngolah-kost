@@ -65,6 +65,14 @@ class ContractInfoSection extends GetView<UserProfilController> {
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
+            icon: Icons.attach_money,
+            iconColor: const Color(0xFFE5A83D),
+            iconBgColor: const Color(0xFFFFF7E6),
+            label: 'Harga per Bulan',
+            value: _formatCurrency(controller.hargaPerBulan),
+          ),
+          const SizedBox(height: 16),
+          _buildInfoRow(
             icon: Icons.calendar_today_outlined,
             iconColor: const Color(0xFFE5A83D),
             iconBgColor: const Color(0xFFFFF7E6),
