@@ -30,6 +30,14 @@ class KelolaTagihanController extends GetxController {
         final bulan = _toInt(row['bulan']);
         final tahun = _toInt(row['tahun']);
 
+        // Parse tanggal jatuh tempo dan batas pembayaran
+        final tanggalJatuhTempo = row['tanggal_jatuh_tempo'] != null
+            ? DateTime.tryParse(row['tanggal_jatuh_tempo'].toString())
+            : null;
+        final batasPembayaran = row['batas_pembayaran'] != null
+            ? DateTime.tryParse(row['batas_pembayaran'].toString())
+            : null;
+
         return TagihanModel(
           id: row['id']?.toString() ?? '',
           namaPenghuni: (row['nama_penghuni'] ?? 'Penghuni').toString(),
@@ -37,9 +45,22 @@ class KelolaTagihanController extends GetxController {
           nomorKamar: (row['nomor_kamar'] ?? '-').toString(),
           bulan: bulan,
           tahun: tahun,
-          tanggalJatuhTempo: _formatPeriode(bulan, tahun),
+          tanggalJatuhTempo: tanggalJatuhTempo != null
+              ? _formatTanggalLengkap(tanggalJatuhTempo)
+              : _formatTanggalJatuhTempo(bulan, tahun),
+          batasPembayaran: batasPembayaran != null
+              ? _formatTanggalLengkap(batasPembayaran)
+              : '-',
           jumlahTagihan: _toDouble(row['jumlah']),
           status: _normalizeStatus(row['status']?.toString()),
+          pembayaranId: row['pembayaran_id']?.toString(),
+          buktiPembayaranUrl: row['bukti_pembayaran_url']?.toString(),
+          metodePembayaran: row['metode_pembayaran_id']?.toString(),
+          tanggalPembayaran: row['tanggal_pembayaran'] != null
+              ? DateTime.tryParse(row['tanggal_pembayaran'].toString())
+              : null,
+          isTerlambat: row['is_terlambat'] == true,
+          hariTerlambat: _toInt(row['hari_terlambat']),
         );
       }).toList();
 
@@ -49,7 +70,8 @@ class KelolaTagihanController extends GetxController {
       selectedMonthKey.value = 'semua';
 
       _applyFilters();
-    } catch (_) {
+    } catch (e) {
+      print('Error loading tagihan: $e');
       errorMessage.value = 'Gagal memuat data tagihan.';
       selectedMonthKey.value = 'semua';
       tagihanList.clear();
@@ -162,6 +184,46 @@ class KelolaTagihanController extends GetxController {
     return '${namaBulan[bulan]} $tahun';
   }
 
+  String _formatTanggalJatuhTempo(int bulan, int tahun) {
+    if (bulan < 1 || bulan > 12 || tahun <= 0) return '-';
+    const namaBulan = [
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    // Tanggal jatuh tempo diasumsikan tanggal 10 setiap bulan
+    return '10 ${namaBulan[bulan]} $tahun';
+  }
+
+  String _formatTanggalLengkap(DateTime date) {
+    const namaBulan = [
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    return '${date.day} ${namaBulan[date.month]} ${date.year}';
+  }
+
   bool _matchesSelectedMonth(TagihanModel tagihan) {
     final selected = selectedMonthKey.value;
     if (selected == 'semua') return true;
@@ -177,6 +239,88 @@ class KelolaTagihanController extends GetxController {
     if (s == 'lunas') return 'lunas';
     if (s == 'menunggu_verifikasi') return 'menunggu_verifikasi';
     return 'belum_dibayar';
+  }
+
+  Future<void> verifikasiPembayaran(TagihanModel tagihan) async {
+    if (tagihan.pembayaranId == null) {
+      Get.snackbar(
+        'Error',
+        'Data pembayaran tidak ditemukan',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+
+      await _supabaseService.verifikasiPembayaran(
+        tagihanId: tagihan.id,
+        pembayaranId: tagihan.pembayaranId!,
+      );
+
+      Get.back(); // Close bottom sheet
+      Get.snackbar(
+        'Berhasil',
+        'Pembayaran telah diverifikasi dan status tagihan diubah menjadi lunas',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+      );
+
+      // Reload data
+      await loadTagihanData();
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memverifikasi pembayaran: ${e.toString()}',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> tolakPembayaran(TagihanModel tagihan) async {
+    if (tagihan.pembayaranId == null) {
+      Get.snackbar(
+        'Error',
+        'Data pembayaran tidak ditemukan',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      isLoading.value = true;
+
+      await _supabaseService.tolakPembayaran(
+        tagihanId: tagihan.id,
+        pembayaranId: tagihan.pembayaranId!,
+      );
+
+      Get.back(); // Close bottom sheet
+      Get.snackbar(
+        'Ditolak',
+        'Pembayaran telah ditolak dan status tagihan dikembalikan',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+
+      // Reload data
+      await loadTagihanData();
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menolak pembayaran: ${e.toString()}',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../controllers/kelola_tagihan_controller.dart';
 import '../../models/tagihan_model.dart';
 
 class VerifikasiPembayaranBottomSheet extends StatelessWidget {
@@ -9,6 +10,8 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<KelolaTagihanController>();
+
     return DraggableScrollableSheet(
       initialChildSize: 0.75,
       minChildSize: 0.5,
@@ -126,34 +129,80 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            'assets/images/transfer_receipt.jpeg',
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                height: 400,
-                                padding: const EdgeInsets.all(40),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.receipt_long,
-                                      size: 80,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Bukti Transfer',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey.shade600,
+                          child: tagihan.buktiPembayaranUrl != null
+                              ? Image.network(
+                                  tagihan.buktiPembayaranUrl!,
+                                  fit: BoxFit.contain,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                        if (loadingProgress == null)
+                                          return child;
+                                        return Container(
+                                          height: 400,
+                                          padding: const EdgeInsets.all(40),
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              value:
+                                                  loadingProgress
+                                                          .expectedTotalBytes !=
+                                                      null
+                                                  ? loadingProgress
+                                                            .cumulativeBytesLoaded /
+                                                        loadingProgress
+                                                            .expectedTotalBytes!
+                                                  : null,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      height: 400,
+                                      padding: const EdgeInsets.all(40),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.error_outline,
+                                            size: 80,
+                                            color: Colors.grey.shade400,
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'Gagal memuat bukti pembayaran',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey.shade600,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
+                                    );
+                                  },
+                                )
+                              : Container(
+                                  height: 400,
+                                  padding: const EdgeInsets.all(40),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.receipt_long,
+                                        size: 80,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'Bukti pembayaran tidak tersedia',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              );
-                            },
-                          ),
                         ),
                       ),
 
@@ -211,16 +260,16 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Periode',
+                                    'Batas Bayar',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Color(0xFF9CA3AF),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  const Text(
-                                    'Maret 2026',
-                                    style: TextStyle(
+                                  Text(
+                                    tagihan.batasPembayaran,
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF2D3748),
@@ -320,15 +369,7 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          Get.back();
-                          Get.snackbar(
-                            'Ditolak',
-                            'Pembayaran telah ditolak',
-                            backgroundColor: const Color(0xFFEF4444),
-                            colorText: Colors.white,
-                          );
-                        },
+                        onPressed: () => controller.tolakPembayaran(tagihan),
                         icon: const Icon(Icons.close, size: 20),
                         label: const Text('Tolak'),
                         style: ElevatedButton.styleFrom(
@@ -345,15 +386,8 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          Get.back();
-                          Get.snackbar(
-                            'Berhasil',
-                            'Pembayaran telah diverifikasi',
-                            backgroundColor: const Color(0xFF10B981),
-                            colorText: Colors.white,
-                          );
-                        },
+                        onPressed: () =>
+                            controller.verifikasiPembayaran(tagihan),
                         icon: const Icon(Icons.check_circle, size: 20),
                         label: const Text('Terima'),
                         style: ElevatedButton.styleFrom(

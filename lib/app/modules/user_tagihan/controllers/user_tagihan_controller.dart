@@ -109,8 +109,15 @@ class UserTagihanController extends GetxController {
             'id_ID',
           ).format(periodeDate);
 
-          // Create jatuh tempo (assume 20th of the month)
-          final jatuhTempo = DateTime(tahun, bulan, 20);
+          // Get jatuh tempo from database or fallback to 20th of the month
+          DateTime jatuhTempo;
+          if (item['tanggal_jatuh_tempo'] != null) {
+            jatuhTempo =
+                DateTime.tryParse(item['tanggal_jatuh_tempo'].toString()) ??
+                DateTime(tahun, bulan, 20);
+          } else {
+            jatuhTempo = DateTime(tahun, bulan, 20);
+          }
 
           // Convert status
           final displayStatus = status == 'lunas' ? 'Lunas' : 'Belum Dibayar';
