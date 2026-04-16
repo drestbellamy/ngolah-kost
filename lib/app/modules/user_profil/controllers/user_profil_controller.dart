@@ -1,24 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
+import '../../../data/models/user_profile_model.dart';
+import '../../../../services/supabase_service.dart';
 
 class UserProfilController extends GetxController {
-  final userName = ''.obs;
-  final userPhone = ''.obs;
-  final nomorKamar = ''.obs;
-  final hargaPerBulan = 0.obs;
-  final tanggalMasuk = ''.obs;
+  final _supabaseService = SupabaseService();
+  final _authController = Get.find<AuthController>();
+  final imagePicker = ImagePicker();
 
-  // Kontrak Info
-  final durasiKontrak = ''.obs;
-  final sistemPembayaran = ''.obs;
-  final periodeKontrak = ''.obs;
-  final totalTagihan = ''.obs;
-  final perTagihan = 0.obs;
-  final totalNilaiKontrak = 0.obs;
-
+  final Rxn<UserProfileModel> userProfile = Rxn<UserProfileModel>();
   final isLoading = true.obs;
+  final errorMessage = ''.obs;
+  final fotoProfilUrl = Rxn<String>();
+  final isUploadingPhoto = false.obs;
+  final namaKost = ''.obs;
+  final alamatKost = ''.obs;
+  final username = ''.obs;
+
+  // Computed properties
+  String get userName => userProfile.value?.nama ?? '';
+  String get userPhone => userProfile.value?.noTelepon ?? '';
+  String get nomorKamar => userProfile.value?.nomorKamar ?? '';
+  int get hargaPerBulan => userProfile.value?.hargaPerBulan ?? 0;
+  String get tanggalMasuk =>
+      _formatTanggal(userProfile.value?.tanggalMasuk ?? '');
+  String get durasiKontrak => userProfile.value?.durasiKontrakText ?? '';
+  String get sistemPembayaran => userProfile.value?.sistemPembayaranText ?? '';
+  String get periodeKontrak => _getPeriodeKontrak();
+  int get totalTagihan => userProfile.value?.totalTagihan ?? 0;
+  int get perTagihan => userProfile.value?.jumlahPerTagihan ?? 0;
+  int get totalNilaiKontrak => userProfile.value?.totalNilaiKontrak ?? 0;
 
   @override
   void onInit() {
@@ -26,31 +41,104 @@ class UserProfilController extends GetxController {
     fetchUserProfile();
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    // Load profile lagi saat halaman siap
+    fetchUserProfile();
+  }
+
   Future<void> fetchUserProfile() async {
     try {
       isLoading.value = true;
+      errorMessage.value = '';
 
-      // Delay simulasi loading
-      await Future.delayed(const Duration(seconds: 1));
+      final userId = _authController.currentUser?.id;
+      if (userId == null || userId.isEmpty) {
+        throw Exception('User tidak ditemukan. Silakan login kembali.');
+      }
 
-      // Dummy Data Ahmad
-      userName.value = 'Ahmad';
-      userPhone.value = '081234567890';
+      print('Fetching profile for user_id: $userId'); // Debug log
 
-      // Kamar
-      nomorKamar.value = 'A-102';
-      hargaPerBulan.value = 1500000;
+      // Fetch user data untuk foto profil dan username
+      final userData = await _supabaseService.getUserById(userId);
+      if (userData != null) {
+        fotoProfilUrl.value = userData['foto_profil']?.toString();
+        username.value = userData['username']?.toString() ?? '';
+        print('Foto profil loaded: ${fotoProfilUrl.value}');
+        print('Username loaded: ${username.value}');
+      }
 
-      // Kontrak
-      durasiKontrak.value = '6 Bulan';
-      sistemPembayaran.value = '2 Bulan Sekali';
-      tanggalMasuk.value = '27 Maret 2026';
-      periodeKontrak.value = '27 Maret 2026 - 27 September 2026';
-      totalNilaiKontrak.value = 9000000;
+      // Fetch data penghuni berdasarkan user_id
+      final data = await _supabaseService.getPenghuniByUserId(userId);
+
+      print('Fetched data: $data'); // Debug log
+
+      if (data == null) {
+        throw Exception(
+          'Data penghuni tidak ditemukan. Pastikan admin sudah menambahkan data kontrak Anda.',
+        );
+      }
+
+      userProfile.value = UserProfileModel.fromMap(data);
+
+      // Get nama kost dan alamat
+      final kostId = data['kost_id']?.toString() ?? '';
+      if (kostId.isNotEmpty) {
+        final kostData = await _supabaseService.supabase
+            .from('kost')
+            .select('nama_kost, alamat')
+            .eq('id', kostId)
+            .maybeSingle();
+
+        if (kostData != null) {
+          namaKost.value = kostData['nama_kost']?.toString() ?? '';
+          alamatKost.value = kostData['alamat']?.toString() ?? '';
+          print('Kost loaded: ${namaKost.value}, ${alamatKost.value}');
+        }
+      }
+
+      print('Profile loaded: ${userProfile.value?.nama}'); // Debug log
     } catch (e) {
-      print('Error fetching profile: $e');
+      errorMessage.value = e.toString();
+      print('Error in fetchUserProfile: $e'); // Debug log
+      Get.snackbar(
+        'Error',
+        'Gagal memuat profil: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
+        colorText: Colors.red,
+        duration: const Duration(seconds: 5),
+      );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  String _formatTanggal(String tanggal) {
+    if (tanggal.isEmpty) return '';
+    try {
+      final date = DateTime.parse(tanggal);
+      return DateFormat('d MMMM yyyy', 'id_ID').format(date);
+    } catch (e) {
+      return tanggal;
+    }
+  }
+
+  String _getPeriodeKontrak() {
+    final profile = userProfile.value;
+    if (profile == null) return '';
+
+    try {
+      final mulai = DateTime.parse(profile.tanggalMasuk);
+      final selesai = DateTime.parse(profile.tanggalKeluar);
+
+      final mulaiStr = DateFormat('d MMMM yyyy', 'id_ID').format(mulai);
+      final selesaiStr = DateFormat('d MMMM yyyy', 'id_ID').format(selesai);
+
+      return '$mulaiStr - $selesaiStr';
+    } catch (e) {
+      return '';
     }
   }
 
@@ -73,5 +161,179 @@ class UserProfilController extends GetxController {
         ],
       ),
     );
+  }
+
+  Future<void> pickImageFromCamera() async {
+    try {
+      final XFile? image = await imagePicker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        await uploadPhoto(image);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal mengambil foto: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> pickImageFromGallery() async {
+    try {
+      final XFile? image = await imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 85,
+      );
+
+      if (image != null) {
+        await uploadPhoto(image);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memilih foto: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> uploadPhoto(XFile image) async {
+    final userId = _authController.currentUser?.id;
+    if (userId == null || userId.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'User tidak ditemukan',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      isUploadingPhoto.value = true;
+      Get.back(); // Close bottom sheet
+
+      final bytes = await image.readAsBytes();
+      final fileExt = image.path.split('.').last;
+
+      print('=== UPLOAD PHOTO DEBUG ===');
+      print('User ID: $userId');
+
+      // Upload to storage
+      final photoUrl = await _supabaseService.uploadFotoProfilAdmin(
+        imageBytes: bytes,
+        fileExt: fileExt,
+        userId: userId,
+      );
+
+      print('Photo uploaded to storage: $photoUrl');
+
+      // Update database
+      await _supabaseService.updateFotoProfilUser(
+        userId: userId,
+        fotoProfilUrl: photoUrl,
+      );
+
+      fotoProfilUrl.value = photoUrl;
+
+      Get.snackbar(
+        'Berhasil',
+        'Foto profil berhasil diperbarui',
+        backgroundColor: const Color(0xFF6B8E7A),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      print('❌ Upload photo error: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal mengupload foto: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isUploadingPhoto.value = false;
+    }
+  }
+
+  Future<void> deletePhoto() async {
+    final userId = _authController.currentUser?.id;
+    if (userId == null || userId.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'User tidak ditemukan',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      Get.back(); // Close bottom sheet
+
+      // Show confirmation dialog
+      final confirmed = await Get.dialog<bool>(
+        AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          title: const Text('Hapus Foto Profil'),
+          content: const Text('Apakah Anda yakin ingin menghapus foto profil?'),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(result: false),
+              child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              onPressed: () => Get.back(result: true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+
+      isUploadingPhoto.value = true;
+
+      // Update database to set foto_profil to null
+      await _supabaseService.updateFotoProfilUser(
+        userId: userId,
+        fotoProfilUrl: null,
+      );
+
+      fotoProfilUrl.value = null;
+
+      Get.snackbar(
+        'Berhasil',
+        'Foto profil berhasil dihapus',
+        backgroundColor: const Color(0xFF6B8E7A),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal menghapus foto: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isUploadingPhoto.value = false;
+    }
   }
 }

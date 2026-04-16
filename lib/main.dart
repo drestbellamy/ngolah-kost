@@ -4,6 +4,7 @@ import 'app/routes/app_pages.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/core/controllers/auth_controller.dart';
+import 'app/core/controllers/notification_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,11 @@ void main() async {
 
   final authController = Get.put(AuthController(), permanent: true);
   await authController.loadSession();
+
+  // Initialize NotificationController after auth
+  if (authController.currentUser != null) {
+    Get.put(NotificationController(), permanent: true);
+  }
 
   runApp(MyApp(initialRoute: authController.initialRoute));
 }
