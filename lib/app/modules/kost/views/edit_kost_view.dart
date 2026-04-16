@@ -161,6 +161,30 @@ class EditKostView extends GetView<KostController> {
                                             color: Color(0xFF4A5568),
                                           ),
                                         ),
+                                        const SizedBox(height: 4),
+                                        const FittedBox(
+                                          fit: BoxFit.scaleDown,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.info_outline,
+                                                size: 14,
+                                                color: Color(0xFF5B88E5),
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text(
+                                                'Sesuaikan detail lokasi \n secara manual',
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontStyle: FontStyle.italic,
+                                                  color: Color(0xFF5B88E5),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ],
                                   ),
@@ -196,6 +220,30 @@ class EditKostView extends GetView<KostController> {
                                           fontSize: 13,
                                           fontWeight: FontWeight.w500,
                                           color: Color(0xFF4A5568),
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.info_outline,
+                                              size: 14,
+                                              color: Color(0xFF5B88E5),
+                                            ),
+                                            SizedBox(width: 4),
+                                            Text(
+                                              'Sesuaikan detail lokasi \n secara manual',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                fontStyle: FontStyle.italic,
+                                                color: Color(0xFF5B88E5),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
