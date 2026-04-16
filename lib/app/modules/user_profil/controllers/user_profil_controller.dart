@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
 import '../../../data/models/user_profile_model.dart';
@@ -354,6 +355,54 @@ class UserProfilController extends GetxController {
       );
     } finally {
       isUploadingPhoto.value = false;
+    }
+  }
+
+  // Open map with address
+  Future<void> openMap() async {
+    final address = alamatKost.value;
+
+    if (address.isEmpty || address == '-') {
+      Get.snackbar(
+        'Info',
+        'Alamat tidak tersedia',
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      // Encode address for URL
+      final encodedAddress = Uri.encodeComponent(address);
+
+      // Create Google Maps URL
+      final url = Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$encodedAddress',
+      );
+
+      // Launch URL
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched) {
+        Get.snackbar(
+          'Error',
+          'Tidak dapat membuka peta',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      print('Error opening map: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal membuka peta: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     }
   }
 }

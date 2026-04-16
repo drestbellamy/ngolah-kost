@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import '../../controllers/user_profil_controller.dart';
 
 class RoomInfoSection extends GetView<UserProfilController> {
@@ -25,7 +24,7 @@ class RoomInfoSection extends GetView<UserProfilController> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Informasi Kamar',
+            'Informasi Kost',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -42,15 +41,6 @@ class RoomInfoSection extends GetView<UserProfilController> {
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
-            icon: Icons.location_on_outlined,
-            iconColor: const Color(0xFFEF4444),
-            iconBgColor: const Color(0xFFFEF2F2),
-            label: 'Alamat',
-            value: controller.alamatKost.value,
-            isExpanded: true,
-          ),
-          const SizedBox(height: 16),
-          _buildInfoRow(
             icon: Icons.door_front_door_outlined,
             iconColor: const Color(0xFF6B8E7A),
             iconBgColor: const Color(0xFFF0F5F2),
@@ -59,12 +49,40 @@ class RoomInfoSection extends GetView<UserProfilController> {
           ),
           const SizedBox(height: 16),
           _buildInfoRow(
-            icon: Icons.attach_money,
-            iconColor: const Color(0xFFE5A83D),
-            iconBgColor: const Color(0xFFFFF7E6),
-            label: 'Harga per Bulan',
-            value: _formatCurrency(controller.hargaPerBulan),
+            icon: Icons.location_on_outlined,
+            iconColor: const Color(0xFFEF4444),
+            iconBgColor: const Color(0xFFFEF2F2),
+            label: 'Alamat',
+            value: controller.alamatKost.value,
+            isExpanded: true,
           ),
+          const SizedBox(height: 8),
+          Obx(() {
+            final hasAddress =
+                controller.alamatKost.value.isNotEmpty &&
+                controller.alamatKost.value != '-';
+            if (!hasAddress) return const SizedBox.shrink();
+
+            return Padding(
+              padding: const EdgeInsets.only(left: 42),
+              child: OutlinedButton.icon(
+                onPressed: () => controller.openMap(),
+                icon: const Icon(Icons.map_outlined, size: 16),
+                label: const Text('Buka di Google Maps'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF6B8E7A),
+                  side: const BorderSide(color: Color(0xFF6B8E7A)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                ),
+              ),
+            );
+          }),
         ],
       ),
     );
@@ -103,6 +121,7 @@ class RoomInfoSection extends GetView<UserProfilController> {
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
+                  color: Colors.black,
                 ),
                 maxLines: isExpanded ? 3 : 1,
                 overflow: TextOverflow.ellipsis,
@@ -112,13 +131,5 @@ class RoomInfoSection extends GetView<UserProfilController> {
         ),
       ],
     );
-  }
-
-  String _formatCurrency(int amount) {
-    return NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    ).format(amount);
   }
 }
