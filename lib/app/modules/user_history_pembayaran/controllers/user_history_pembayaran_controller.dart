@@ -1,48 +1,199 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../../core/controllers/auth_controller.dart';
+import '../../../../services/supabase_service.dart';
 
 class UserHistoryPembayaranController extends GetxController {
-  // Payment history data
-  final paymentHistory = <Map<String, dynamic>>[
-    {
-      'id': 1,
-      'month': 'Februari 2026',
-      'method': 'Transfer Bank',
-      'amount': 'Rp 1.500.000',
-      'date': '15 Feb 2026',
-      'status': 'Terverifikasi',
-    },
-    {
-      'id': 2,
-      'month': 'Januari 2026',
-      'method': 'Tunai',
-      'amount': 'Rp 1.500.000',
-      'date': '18 Jan 2026',
-      'status': 'Terverifikasi',
-    },
-    {
-      'id': 3,
-      'month': 'Desember 2025',
-      'method': 'Transfer Bank',
-      'amount': 'Rp 1.500.000',
-      'date': '10 Des 2025',
-      'status': 'Terverifikasi',
-    },
-    {
-      'id': 4,
-      'month': 'November 2025',
-      'method': 'Tunai',
-      'amount': 'Rp 1.500.000',
-      'date': '15 Nov 2025',
-      'status': 'Terverifikasi',
-    },
-  ].obs;
+  final _supabaseService = SupabaseService();
+  final authController = Get.find<AuthController>();
 
-  // Calculate total payment
-  String get totalPayment {
-    final total = paymentHistory.length * 1500000;
-    return 'Rp ${total.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}';
+  final paymentHistory = <Map<String, dynamic>>[].obs;
+  final isLoading = true.obs;
+  final errorMessage = ''.obs;
+  final selectedFilter = 0.obs; // 0: Semua, 1: Lunas, 2: Pending
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadPaymentHistory();
   }
 
-  // Get payment count
-  int get paymentCount => paymentHistory.length;
+  // Filtered payment history based on selected filter
+  List<Map<String, dynamic>> get filteredPaymentHistory {
+    if (selectedFilter.value == 0) {
+      return paymentHistory; // Semua
+    } else if (selectedFilter.value == 1) {
+      // Lunas/Terverifikasi
+      return paymentHistory
+          .where(
+            (p) => p['rawStatus'] == 'lunas' || p['rawStatus'] == 'verified',
+          )
+          .toList();
+    } else {
+      // Pending
+      return paymentHistory.where((p) => p['rawStatus'] == 'pending').toList();
+    }
+  }
+
+  void changeFilter(int index) {
+    selectedFilter.value = index;
+  }
+
+  Future<void> loadPaymentHistory() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final userId = authController.currentUser?.id;
+      if (userId == null || userId.isEmpty) {
+        throw Exception('User tidak ditemukan');
+      }
+
+      print('Loading payment history for userId: $userId'); // Debug
+
+      // Get penghuni data first
+      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      if (penghuniData == null) {
+        throw Exception('Data penghuni tidak ditemukan');
+      }
+
+      final penghuniId = penghuniData['id']?.toString() ?? '';
+      final nomorKamar = penghuniData['nomor_kamar']?.toString() ?? '';
+
+      print('Penghuni ID: $penghuniId, Nomor Kamar: $nomorKamar'); // Debug
+
+      if (penghuniId.isEmpty) {
+        throw Exception('ID penghuni tidak valid');
+      }
+
+      // Get pembayaran data from database
+      final pembayaranList = await _supabaseService.getPembayaranByPenghuniId(
+        penghuniId,
+      );
+      print('Pembayaran data fetched: ${pembayaranList.length} items'); // Debug
+
+      // Convert to payment history format
+      final List<Map<String, dynamic>> history = [];
+      for (final item in pembayaranList) {
+        final status = item['status']?.toString() ?? 'pending';
+        final jumlah = item['jumlah'] as int? ?? 0;
+        final tanggal = item['tanggal']?.toString() ?? '';
+        final metodeId = item['metode_id']?.toString() ?? '';
+        final tagihanId = item['tagihan_id']?.toString() ?? '';
+
+        // Get tagihan info for month/year
+        String monthName = 'Pembayaran';
+        if (tagihanId.isNotEmpty) {
+          try {
+            final tagihanData = await _supabaseService.getTagihanById(
+              tagihanId,
+            );
+            if (tagihanData != null) {
+              final bulan = tagihanData['bulan'] as int? ?? 0;
+              final tahun = tagihanData['tahun'] as int? ?? 0;
+              if (bulan > 0 && tahun > 0) {
+                final periodeDate = DateTime(tahun, bulan, 1);
+                monthName = DateFormat(
+                  'MMMM yyyy',
+                  'id_ID',
+                ).format(periodeDate);
+              }
+            }
+          } catch (e) {
+            print('Error getting tagihan: $e');
+          }
+        }
+
+        // Get metode pembayaran name
+        String metodeName = 'Transfer Bank';
+        if (metodeId.isNotEmpty) {
+          try {
+            final metodeData = await _supabaseService.getMetodePembayaranById(
+              metodeId,
+            );
+            if (metodeData != null) {
+              metodeName = metodeData['nama']?.toString() ?? 'Transfer Bank';
+            }
+          } catch (e) {
+            print('Error getting metode: $e');
+          }
+        }
+
+        // Parse date
+        String formattedDate = '';
+        try {
+          final date = DateTime.parse(tanggal);
+          formattedDate = DateFormat('dd MMM yyyy', 'id_ID').format(date);
+        } catch (e) {
+          formattedDate = DateFormat(
+            'dd MMM yyyy',
+            'id_ID',
+          ).format(DateTime.now());
+        }
+
+        // Map status
+        String displayStatus = 'Menunggu Verifikasi';
+        if (status == 'lunas' || status == 'verified') {
+          displayStatus = 'Terverifikasi';
+        } else if (status == 'ditolak' || status == 'rejected') {
+          displayStatus = 'Ditolak';
+        }
+
+        history.add({
+          'id': item['id']?.toString() ?? '',
+          'month': monthName,
+          'method': metodeName,
+          'amount': NumberFormat.currency(
+            locale: 'id_ID',
+            symbol: 'Rp ',
+            decimalDigits: 0,
+          ).format(jumlah),
+          'date': formattedDate,
+          'status': displayStatus,
+          'rawStatus': status,
+          'rawAmount': jumlah,
+          'buktiPembayaran': item['bukti_pembayaran']?.toString() ?? '',
+        });
+      }
+
+      // Sort by date (newest first)
+      history.sort((a, b) {
+        try {
+          final dateA = DateFormat('dd MMM yyyy', 'id_ID').parse(a['date']);
+          final dateB = DateFormat('dd MMM yyyy', 'id_ID').parse(b['date']);
+          return dateB.compareTo(dateA);
+        } catch (e) {
+          return 0;
+        }
+      });
+
+      print('Payment history converted: ${history.length} items'); // Debug
+      paymentHistory.assignAll(history);
+    } catch (e) {
+      errorMessage.value = e.toString();
+      print('Error loading payment history: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Calculate total payment based on filter
+  String get totalPayment {
+    final filtered = filteredPaymentHistory;
+    final total = filtered.fold<int>(0, (sum, payment) {
+      return sum + (payment['rawAmount'] as int? ?? 0);
+    });
+    return NumberFormat.currency(
+      locale: 'id_ID',
+      symbol: 'Rp ',
+      decimalDigits: 0,
+    ).format(total);
+  }
+
+  // Get payment count based on filter
+  int get paymentCount => filteredPaymentHistory.length;
+
+  Future<void> refreshData() async {
+    await loadPaymentHistory();
+  }
 }
