@@ -1,10 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/user_history_pembayaran_controller.dart';
+import '../../../../core/controllers/auth_controller.dart';
+import '../../../../routes/app_routes.dart';
 import 'payment_card.dart';
 
 class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
   const PaymentHistoryList({super.key});
+
+  void _showLogoutDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Keluar'),
+        content: const Text('Apakah Anda yakin ingin keluar?'),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
+          TextButton(
+            onPressed: () async {
+              Get.back();
+              final authCtrl = Get.find<AuthController>();
+              await authCtrl.clearUser();
+              Get.offAllNamed(Routes.login);
+            },
+            child: const Text('Keluar', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +110,17 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
                 'Coba Lagi',
                 style: TextStyle(color: Colors.white),
               ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => _showLogoutDialog(),
+              style: OutlinedButton.styleFrom(
+                side: const BorderSide(color: Colors.red),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Keluar', style: TextStyle(color: Colors.red)),
             ),
           ],
         ),

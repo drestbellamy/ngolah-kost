@@ -20,7 +20,81 @@ class UserProfilView extends GetView<UserProfilController> {
         }
 
         if (controller.errorMessage.value.isNotEmpty) {
-          return _buildErrorState();
+          // Tampilkan card dengan data kosong + pesan error di bawah
+          return RefreshIndicator(
+            onRefresh: controller.fetchUserProfile,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  const ProfileHeader(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 24.0,
+                    ),
+                    child: Column(
+                      children: [
+                        const RoomInfoSection(),
+                        const SizedBox(height: 16),
+                        const TenantInfoSection(),
+                        const SizedBox(height: 16),
+                        const ContractInfoSection(),
+                        const SizedBox(height: 24),
+                        // Error message card
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.red.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Column(
+                            children: [
+                              const Icon(
+                                Icons.info_outline,
+                                color: Colors.red,
+                                size: 24,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                controller.errorMessage.value,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ElevatedButton.icon(
+                                onPressed: controller.fetchUserProfile,
+                                icon: const Icon(Icons.refresh, size: 16),
+                                label: const Text('Coba Lagi'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildLogoutButton(),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         }
 
         return RefreshIndicator(
@@ -54,29 +128,6 @@ class UserProfilView extends GetView<UserProfilController> {
         );
       }),
       bottomNavigationBar: const UserBottomNavbar(currentIndex: 4),
-    );
-  }
-
-  Widget _buildErrorState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 64, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(
-            controller.errorMessage.value,
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.red),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: controller.fetchUserProfile,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Coba Lagi'),
-          ),
-        ],
-      ),
     );
   }
 
