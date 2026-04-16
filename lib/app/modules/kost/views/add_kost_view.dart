@@ -114,37 +114,96 @@ class AddKostView extends GetView<KostController> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Location Button
-                      InkWell(
-                        onTap: () {
-                          // TODO: Implement get current location
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 24),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE8F0ED),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFC4D5CE)),
-                          ),
-                          child: Column(
-                            children: const [
-                              Icon(
-                                Icons.map_outlined,
-                                size: 32,
-                                color: Color(0xFF6B8E7F),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Gunakan Lokasi Saat Ini',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF4A5568),
+                      // Location Buttons
+                      Obx(
+                        () => Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: controller.isLoadingLocation.value
+                                    ? null
+                                    : () {
+                                        controller.getCurrentLocation();
+                                      },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 20,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE8F0ED),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0xFFC4D5CE),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      if (controller.isLoadingLocation.value)
+                                        const SizedBox(
+                                          height: 24,
+                                          width: 24,
+                                          child: CircularProgressIndicator(
+                                            color: Color(0xFF6B8E7F),
+                                          ),
+                                        )
+                                      else ...[
+                                        const Icon(
+                                          Icons.my_location,
+                                          size: 28,
+                                          color: Color(0xFF6B8E7F),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          'Lokasi Saat Ini',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFF4A5568),
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () => controller.openMapPicker(),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 20,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE8F0ED),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0xFFC4D5CE),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: const [
+                                      Icon(
+                                        Icons.map_outlined,
+                                        size: 28,
+                                        color: Color(0xFF6B8E7F),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        'Pilih di Peta',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFF4A5568),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 12),
