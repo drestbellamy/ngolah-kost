@@ -13,6 +13,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
       return Scaffold(
         backgroundColor: const Color(0xFFF1F3F2),
         body: SafeArea(
+          top: false,
           child: Column(
             children: [
               _buildHeader(selectedGedung),
@@ -557,11 +558,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                         onPressed: controller.isSavingPeraturan.value
                             ? null
                             : () async {
-                            final isValid =
-                              formKey.currentState?.validate() ?? false;
-                            if (!isValid) {
-                              return;
-                            }
+                                final isValid =
+                                    formKey.currentState?.validate() ?? false;
+                                if (!isValid) {
+                                  return;
+                                }
 
                                 final success = await controller
                                     .tambahKategori();

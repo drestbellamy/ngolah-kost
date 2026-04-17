@@ -43,6 +43,14 @@ class DetailKeuanganKostController extends GetxController {
     errorMessage.value = null;
 
     try {
+      // Sinkronisasi pemasukan dari pembayaran verified (untuk data historis)
+      try {
+        await _supabaseService.sinkronisasiPemasukanFromPembayaran();
+      } catch (syncError) {
+        print('Warning: Sinkronisasi pemasukan gagal: $syncError');
+        // Lanjutkan load data meskipun sinkronisasi gagal
+      }
+
       await Future.wait([
         loadPembayaranData(),
         loadPengeluaranData(),
@@ -51,6 +59,36 @@ class DetailKeuanganKostController extends GetxController {
     } catch (e) {
       errorMessage.value = 'Gagal memuat data: ${e.toString()}';
       print('Error loading keuangan data: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // Method untuk sinkronisasi manual
+  Future<void> sinkronisasiPemasukan() async {
+    try {
+      isLoading.value = true;
+      await _supabaseService.sinkronisasiPemasukanFromPembayaran();
+
+      // Reload data setelah sinkronisasi
+      await loadPembayaranData();
+      await loadChartData();
+
+      Get.snackbar(
+        'Berhasil',
+        'Sinkronisasi pemasukan berhasil',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Gagal',
+        'Sinkronisasi pemasukan gagal: ${e.toString()}',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -87,11 +125,57 @@ class DetailKeuanganKostController extends GetxController {
         kostId.value,
       );
 
-      // Group data by month for last 6 months
+      // Find earliest transaction date
+      DateTime? earliestDate;
+
+      // Check pemasukan dates
+      for (final item in pemasukanData) {
+        final tanggal = _parseDate(item['tanggal']);
+        if (tanggal != null) {
+          if (earliestDate == null || tanggal.isBefore(earliestDate)) {
+            earliestDate = tanggal;
+          }
+        }
+      }
+
+      // Check pengeluaran dates
+      for (final item in pengeluaranData) {
+        final tanggal = _parseDate(item['tanggal']);
+        if (tanggal != null) {
+          if (earliestDate == null || tanggal.isBefore(earliestDate)) {
+            earliestDate = tanggal;
+          }
+        }
+      }
+
+      // Generate months for chart
       final now = DateTime.now();
       final months = <DateTime>[];
-      for (var i = 5; i >= 0; i--) {
-        months.add(DateTime(now.year, now.month - i, 1));
+
+      if (earliestDate != null) {
+        // Start from earliest transaction month, but limit to max 6 months
+        final startMonth = DateTime(earliestDate.year, earliestDate.month, 1);
+        final currentMonth = DateTime(now.year, now.month, 1);
+
+        // Calculate months between start and current
+        var tempMonth = startMonth;
+        final allMonths = <DateTime>[];
+
+        while (tempMonth.isBefore(currentMonth) ||
+            tempMonth.isAtSameMomentAs(currentMonth)) {
+          allMonths.add(tempMonth);
+          tempMonth = DateTime(tempMonth.year, tempMonth.month + 1, 1);
+        }
+
+        // Take last 6 months or all months if less than 6
+        if (allMonths.length > 6) {
+          months.addAll(allMonths.sublist(allMonths.length - 6));
+        } else {
+          months.addAll(allMonths);
+        }
+      } else {
+        // No data found, show current month only
+        months.add(DateTime(now.year, now.month, 1));
       }
 
       final pemasukanByMonth = <double>[];
@@ -127,15 +211,38 @@ class DetailKeuanganKostController extends GetxController {
           return sum;
         });
 
-        pemasukanByMonth.add(pemasukanTotal / 1000000); // Convert to millions
-        pengeluaranByMonth.add(pengeluaranTotal / 1000000);
+        pemasukanByMonth.add(
+          (pemasukanTotal / 1000000).isFinite ? pemasukanTotal / 1000000 : 0.0,
+        ); // Convert to millions
+        pengeluaranByMonth.add(
+          (pengeluaranTotal / 1000000).isFinite
+              ? pengeluaranTotal / 1000000
+              : 0.0,
+        );
         labels.add(_getMonthName(month.month));
       }
 
       pemasukanChartData.value = pemasukanByMonth;
       pengeluaranChartData.value = pengeluaranByMonth;
       chartLabels.value = labels;
+
+      // Validasi data sebelum mengirim ke grafik
+      final validPemasukan = pemasukanByMonth.every((value) => value.isFinite);
+      final validPengeluaran = pengeluaranByMonth.every(
+        (value) => value.isFinite,
+      );
+
+      if (!validPemasukan || !validPengeluaran) {
+        print('⚠️ Warning: Invalid data detected in chart, using fallback');
+        pemasukanChartData.value = List.filled(labels.length, 0.0);
+        pengeluaranChartData.value = List.filled(labels.length, 0.0);
+      }
+
+      print(
+        '📊 Chart data loaded: ${labels.length} months from ${labels.isNotEmpty ? labels.first : 'N/A'} to ${labels.isNotEmpty ? labels.last : 'N/A'}',
+      );
     } catch (e) {
+      print('Error loading chart data: $e');
       pemasukanChartData.clear();
       pengeluaranChartData.clear();
       chartLabels.clear();
@@ -280,15 +387,6 @@ class DetailKeuanganKostController extends GetxController {
       decimalDigits: 0,
     );
     return formatter.format(amount);
-  }
-
-  String _formatAmount(double amount) {
-    if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(amount % 1000000 == 0 ? 0 : 1)} Jt';
-    } else if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(0)} Rb';
-    }
-    return amount.toStringAsFixed(0);
   }
 
   String _getMonthName(int month) {

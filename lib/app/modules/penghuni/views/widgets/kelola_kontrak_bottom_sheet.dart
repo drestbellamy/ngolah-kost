@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../controllers/kelola_kontrak_controller.dart';
 
@@ -256,8 +257,13 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
         TextField(
           controller: controller.tambahanDurasiController,
           keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(2),
+          ],
           decoration: InputDecoration(
-            hintText: 'Masukkan tambahan durasi (bulan)',
+            hintText:
+                'Masukkan tambahan durasi (maks ${KelolaKontrakController.maxTambahanDurasiBulan} bulan)',
             hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
             filled: true,
             fillColor: const Color(0xFFF7FAFC),
@@ -266,6 +272,11 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
           ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Maksimal ${KelolaKontrakController.maxTambahanDurasiBulan} bulan',
+          style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
         ),
         const SizedBox(height: 16),
         const Text(
@@ -277,19 +288,43 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: controller.sistemPembayaranPerpanjangController,
-          decoration: InputDecoration(
-            hintText: 'Contoh: Bulanan (1 bulan)',
-            hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
-            filled: true,
-            fillColor: const Color(0xFFF7FAFC),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
+        Obx(() {
+          controller.previewTick.value;
+          final options = controller.perpanjangSistemPembayaranOptions;
+          final isEnabled = options.isNotEmpty;
+          final note = controller.paidCoverageConstraintNote;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSistemPembayaranPickerField(
+                controller: controller.sistemPembayaranPerpanjangController,
+                hintText: isEnabled
+                    ? 'Pilih sistem pembayaran'
+                    : 'Tambahkan durasi dulu',
+                isEnabled: isEnabled,
+                onTap: isEnabled
+                    ? () => _showSistemPembayaranPicker(
+                        title: 'Pilih Sistem Pembayaran :',
+                        options: options,
+                        onSelected: controller.pilihSistemPembayaranPerpanjang,
+                        controller: controller,
+                      )
+                    : null,
+              ),
+              if (note.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  note,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ],
+          );
+        }),
         const SizedBox(height: 16),
         Container(
           padding: const EdgeInsets.all(16),
@@ -480,19 +515,43 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: controller.sistemPembayaranEditController,
-          decoration: InputDecoration(
-            hintText: 'Contoh: Bulanan (1 bulan)',
-            hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
-            filled: true,
-            fillColor: const Color(0xFFF7FAFC),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-          ),
-        ),
+        Obx(() {
+          controller.previewTick.value;
+          final options = controller.editSistemPembayaranOptions;
+          final isEnabled = options.isNotEmpty;
+          final note = controller.paidCoverageConstraintNote;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSistemPembayaranPickerField(
+                controller: controller.sistemPembayaranEditController,
+                hintText: isEnabled
+                    ? 'Pilih sistem pembayaran'
+                    : 'Isi durasi kontrak dulu',
+                isEnabled: isEnabled,
+                onTap: isEnabled
+                    ? () => _showSistemPembayaranPicker(
+                        title: 'Pilih Sistem Pembayaran :',
+                        options: options,
+                        onSelected: controller.pilihSistemPembayaranEdit,
+                        controller: controller,
+                      )
+                    : null,
+              ),
+              if (note.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  note,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF6B7280),
+                  ),
+                ),
+              ],
+            ],
+          );
+        }),
         const SizedBox(height: 16),
         Obx(() {
           controller.previewTick.value;
@@ -649,6 +708,110 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildSistemPembayaranPickerField({
+    required TextEditingController controller,
+    required String hintText,
+    required bool isEnabled,
+    required VoidCallback? onTap,
+  }) {
+    return TextField(
+      controller: controller,
+      readOnly: true,
+      onTap: onTap,
+      showCursor: false,
+      enableInteractiveSelection: false,
+      style: TextStyle(
+        color: isEnabled ? const Color(0xFF2D3748) : const Color(0xFF9CA3AF),
+      ),
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
+        filled: true,
+        fillColor: isEnabled
+            ? const Color(0xFFF7FAFC)
+            : const Color(0xFFE5E7EB),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        suffixIcon: Icon(
+          Icons.keyboard_arrow_down,
+          color: isEnabled ? const Color(0xFF6B7280) : const Color(0xFFD1D5DB),
+        ),
+      ),
+    );
+  }
+
+  void _showSistemPembayaranPicker({
+    required String title,
+    required List<int> options,
+    required ValueChanged<int> onSelected,
+    required KelolaKontrakController controller,
+  }) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2F2F2F),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ...options.asMap().entries.map((entry) {
+                final index = entry.key;
+                final option = entry.value;
+                return Column(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        onSelected(option);
+                        Get.back();
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFFE5E7EB),
+                            width: 1.2,
+                          ),
+                        ),
+                        child: Text(
+                          controller.formatSistemPembayaranOption(option),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Color(0xFF6B7280),
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (index < options.length - 1) const SizedBox(height: 12),
+                  ],
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

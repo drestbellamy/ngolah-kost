@@ -20,6 +20,7 @@ class PenghuniDetailView extends StatelessWidget {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         body: SafeArea(
+          top: false,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -73,6 +74,7 @@ class PenghuniDetailView extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Header
@@ -131,7 +133,12 @@ class PenghuniDetailView extends StatelessWidget {
 
                   // Content
                   Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.fromLTRB(
+                      24,
+                      MediaQuery.of(context).padding.top + 24,
+                      24,
+                      24,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1020,9 +1027,14 @@ class PenghuniDetailView extends StatelessWidget {
         final startPeriode = (bulan >= 1 && bulan <= 12 && tahun > 0)
             ? DateTime(tahun, bulan, 1)
             : null;
+        final rowSiklus = _resolveTagihanSiklusBulan(
+          row,
+          penghuni,
+          fallbackSiklus: siklusBulan,
+        );
         final periodLabel = startPeriode == null
             ? '-'
-            : _formatPeriodeLabel(startPeriode, siklusBulan);
+            : _formatPeriodeLabel(startPeriode, rowSiklus);
         final dueDate = startPeriode == null
             ? '-'
             : _formatDueDate(startPeriode);
@@ -1239,6 +1251,28 @@ class PenghuniDetailView extends StatelessWidget {
     if (raw.contains('6')) return 6;
     if (raw.contains('3')) return 3;
     return 1;
+  }
+
+  int _resolveTagihanSiklusBulan(
+    Map<String, dynamic> row,
+    PenghuniModel penghuni, {
+    required int fallbackSiklus,
+  }) {
+    final sewaBulanan = penghuni.sewaBulanan;
+    final jumlahTagihan = _toDouble(row['jumlah']);
+
+    if (sewaBulanan <= 0 || jumlahTagihan <= 0) {
+      return fallbackSiklus <= 0 ? 1 : fallbackSiklus;
+    }
+
+    final ratio = jumlahTagihan / sewaBulanan;
+    final rounded = ratio.round();
+    // Accept near-integer ratios to tolerate minor rounding differences.
+    if (rounded > 0 && (ratio - rounded).abs() <= 0.15) {
+      return rounded;
+    }
+
+    return fallbackSiklus <= 0 ? 1 : fallbackSiklus;
   }
 
   ({String label, Color backgroundColor, Color textColor}) _getContractBadge(

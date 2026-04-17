@@ -14,6 +14,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
         children: [
           // Header with gradient
           SafeArea(
+            top: false,
             child: Obx(
               () => CustomHeader(
                 title: 'Kamar ${controller.nomorKamar.value}',

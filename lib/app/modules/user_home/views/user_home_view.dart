@@ -65,6 +65,7 @@ class UserHomeView extends GetView<UserHomeController> {
         return Column(
           children: [
             SafeArea(
+              top: false,
               bottom: false,
               child: CustomHeader(
                 title: 'Hallo, ${controller.userName}!',

@@ -55,6 +55,7 @@ class PenghuniController extends GetxController {
 
           final penghuniRows = await _supabaseService.getPenghuniByKamarId(
             kamarId,
+            onlyActive: true,
           );
 
           for (final row in penghuniRows) {

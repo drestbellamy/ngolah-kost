@@ -46,6 +46,7 @@ class InformasiKamarController extends GetxController {
     try {
       final response = await _supabaseService.getPenghuniByKamarId(
         kamarId.value,
+        onlyActive: true,
       );
       final mapped = response.map((item) {
         final user = item['users'] is Map
