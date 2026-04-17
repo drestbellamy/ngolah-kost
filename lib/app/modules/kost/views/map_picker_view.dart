@@ -27,7 +27,10 @@ class _MapPickerViewState extends State<MapPickerView> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialLatitude != null && widget.initialLongitude != null) {
+    if (widget.initialLatitude != null &&
+        widget.initialLongitude != null &&
+        widget.initialLatitude!.isFinite &&
+        widget.initialLongitude!.isFinite) {
       _centerPosition = LatLng(
         widget.initialLatitude!,
         widget.initialLongitude!,
@@ -62,6 +65,10 @@ class _MapPickerViewState extends State<MapPickerView> {
       );
 
       if (!mounted) return;
+
+      if (!position.latitude.isFinite || !position.longitude.isFinite) {
+        throw Exception('Location is not finite');
+      }
 
       setState(() {
         _centerPosition = LatLng(position.latitude, position.longitude);
