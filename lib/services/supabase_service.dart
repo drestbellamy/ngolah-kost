@@ -353,11 +353,15 @@ class SupabaseService {
     required String namaKost,
     required String alamat,
     required int totalKamar,
+    double? latitude,
+    double? longitude,
   }) async {
     await supabase.from('kost').insert({
       'nama_kost': namaKost,
       'alamat': alamat,
       'total_kamar': totalKamar,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
     });
   }
 
@@ -367,6 +371,8 @@ class SupabaseService {
     required String namaKost,
     required String alamat,
     required int totalKamar,
+    double? latitude,
+    double? longitude,
   }) async {
     await supabase
         .from('kost')
@@ -374,6 +380,8 @@ class SupabaseService {
           'nama_kost': namaKost,
           'alamat': alamat,
           'total_kamar': totalKamar,
+          if (latitude != null) 'latitude': latitude,
+          if (longitude != null) 'longitude': longitude,
         })
         .eq('id', id);
   }
