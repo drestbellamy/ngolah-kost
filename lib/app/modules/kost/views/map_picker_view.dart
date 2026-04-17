@@ -6,7 +6,10 @@ import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 
 class MapPickerView extends StatefulWidget {
-  const MapPickerView({super.key});
+  final double? initialLatitude;
+  final double? initialLongitude;
+
+  const MapPickerView({super.key, this.initialLatitude, this.initialLongitude});
 
   @override
   State<MapPickerView> createState() => _MapPickerViewState();
@@ -24,7 +27,19 @@ class _MapPickerViewState extends State<MapPickerView> {
   @override
   void initState() {
     super.initState();
-    _getCurrentUserLocation();
+    if (widget.initialLatitude != null &&
+        widget.initialLongitude != null &&
+        widget.initialLatitude!.isFinite &&
+        widget.initialLongitude!.isFinite) {
+      _centerPosition = LatLng(
+        widget.initialLatitude!,
+        widget.initialLongitude!,
+      );
+      _isLoading = false;
+      _updateAddress(_centerPosition);
+    } else {
+      _getCurrentUserLocation();
+    }
   }
 
   Future<void> _getCurrentUserLocation() async {
@@ -50,6 +65,10 @@ class _MapPickerViewState extends State<MapPickerView> {
       );
 
       if (!mounted) return;
+
+      if (!position.latitude.isFinite || !position.longitude.isFinite) {
+        throw Exception('Location is not finite');
+      }
 
       setState(() {
         _centerPosition = LatLng(position.latitude, position.longitude);
@@ -195,7 +214,13 @@ class _MapPickerViewState extends State<MapPickerView> {
                                 _currentAddress == 'Mengambil alamat...'
                             ? null
                             : () {
-                                Get.back(result: _currentAddress);
+                                Get.back(
+                                  result: {
+                                    'address': _currentAddress,
+                                    'latitude': _centerPosition.latitude,
+                                    'longitude': _centerPosition.longitude,
+                                  },
+                                );
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF6B8E7F),
