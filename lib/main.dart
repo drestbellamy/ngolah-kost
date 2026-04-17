@@ -25,6 +25,10 @@ void main() async {
   }
 
   runApp(MyApp(initialRoute: authController.initialRoute));
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    authController.startSessionGuard();
+  });
 }
 
 // It's handy to then extract the Supabase client in a variable for later uses
