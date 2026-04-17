@@ -10,11 +10,15 @@ import 'penghuni_controller.dart';
 
 class KelolaKontrakController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();
+  static const int maxTambahanDurasiBulan = 24;
+  static const List<int> _preferredSiklusBulan = [1, 3, 6, 12, 24];
 
   final selectedTab = 0.obs; // 0: Perpanjang, 1: Edit, 2: Akhiri
   final isLoading = false.obs;
   final tambahanDurasi = 0.obs; // Observable untuk durasi tambahan
   final previewTick = 0.obs;
+  final paidCoveredPrefixMonths = 0.obs;
+  bool _hasLoadedPaidCoverageConstraint = false;
 
   // Form controllers untuk Perpanjang
   final tambahanDurasiController = TextEditingController();
@@ -33,15 +37,20 @@ class KelolaKontrakController extends GetxController {
     if (Get.arguments != null && Get.arguments is PenghuniModel) {
       penghuni = Get.arguments as PenghuniModel;
       initializeEditForm();
+      _loadPaidCoverageConstraint();
     }
 
     // Listen to text changes
     tambahanDurasiController.addListener(() {
       tambahanDurasi.value = int.tryParse(tambahanDurasiController.text) ?? 0;
+      _syncPerpanjangSistemPembayaranWithDurasi();
       previewTick.value++;
     });
     tanggalMulaiController.addListener(() => previewTick.value++);
-    durasiKontrakController.addListener(() => previewTick.value++);
+    durasiKontrakController.addListener(() {
+      _syncEditSistemPembayaranWithDurasi();
+      previewTick.value++;
+    });
     sistemPembayaranEditController.addListener(() => previewTick.value++);
     sistemPembayaranPerpanjangController.addListener(() => previewTick.value++);
   }
@@ -50,9 +59,70 @@ class KelolaKontrakController extends GetxController {
     if (penghuni != null) {
       tanggalMulaiController.text = penghuni!.tanggalMasuk;
       durasiKontrakController.text = penghuni!.durasiKontrak.toString();
-      sistemPembayaranEditController.text = penghuni!.sistemPembayaran;
-      sistemPembayaranPerpanjangController.text = penghuni!.sistemPembayaran;
+      final siklusAwal = _parseSiklusBulan(penghuni!.sistemPembayaran);
+      final labelAwal = siklusAwal > 0
+          ? formatSistemPembayaranOption(siklusAwal)
+          : penghuni!.sistemPembayaran;
+      sistemPembayaranEditController.text = labelAwal;
+      sistemPembayaranPerpanjangController.text = labelAwal;
+      _syncPerpanjangSistemPembayaranWithDurasi();
+      _syncEditSistemPembayaranWithDurasi();
     }
+  }
+
+  List<int> get perpanjangSistemPembayaranOptions {
+    final durasiTambahan = tambahanDurasi.value;
+    final base = _buildSistemPembayaranOptions(
+      durasiTambahan,
+      include: selectedSistemPembayaranPerpanjangBulan,
+    );
+    return _filterOptionsByPaidCoverage(base);
+  }
+
+  List<int> get editSistemPembayaranOptions {
+    final durasi = int.tryParse(durasiKontrakController.text.trim()) ?? 0;
+    final base = _buildSistemPembayaranOptions(
+      durasi,
+      include: selectedSistemPembayaranEditBulan,
+    );
+    return _filterOptionsByPaidCoverage(base);
+  }
+
+  int get selectedSistemPembayaranPerpanjangBulan {
+    return _parseSiklusBulan(sistemPembayaranPerpanjangController.text);
+  }
+
+  int get selectedSistemPembayaranEditBulan {
+    return _parseSiklusBulan(sistemPembayaranEditController.text);
+  }
+
+  bool get hasPaidCoverageConstraint {
+    return paidCoveredPrefixMonths.value > 0;
+  }
+
+  String get paidCoverageConstraintNote {
+    final covered = paidCoveredPrefixMonths.value;
+    if (covered <= 0) return '';
+    return 'Beberapa opsi disesuaikan karena $covered bulan awal sudah lunas. Pilih siklus pembayaran yang tetap selaras dengan riwayat lunas.';
+  }
+
+  void pilihSistemPembayaranPerpanjang(int bulan) {
+    sistemPembayaranPerpanjangController.text = formatSistemPembayaranOption(
+      bulan,
+    );
+  }
+
+  void pilihSistemPembayaranEdit(int bulan) {
+    sistemPembayaranEditController.text = formatSistemPembayaranOption(bulan);
+  }
+
+  String formatSistemPembayaranOption(int bulan) {
+    if (bulan <= 1) return '1 Bulan';
+    if (bulan == 3) return '3 Bulan';
+    if (bulan == 6) return '6 Bulan';
+    if (bulan == 12) return '12 Bulan ( 1 Tahun )';
+    if (bulan == 24) return '24 Bulan ( 2 Tahun )';
+    return '$bulan Bulan';
   }
 
   void changeTab(int index) {
@@ -86,11 +156,23 @@ class KelolaKontrakController extends GetxController {
       return;
     }
 
+    await _ensurePaidCoverageConstraintLoaded();
+
     final tambahan = int.tryParse(tambahanDurasiController.text.trim()) ?? 0;
     if (tambahan <= 0) {
       Get.snackbar(
         'Error',
         'Tambahan durasi harus lebih dari 0 bulan',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (tambahan > maxTambahanDurasiBulan) {
+      Get.snackbar(
+        'Error',
+        'Tambahan durasi maksimal $maxTambahanDurasiBulan bulan',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
       );
@@ -129,6 +211,26 @@ class KelolaKontrakController extends GetxController {
     final sistemPembayaranBulan = sistemPembayaranBulanRaw > durasiBaru
         ? durasiBaru
         : sistemPembayaranBulanRaw;
+
+    if (sistemPembayaranBulan <= 0) {
+      Get.snackbar(
+        'Error',
+        'Sistem pembayaran tidak valid',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (!_isSiklusAllowedByPaidCoverage(sistemPembayaranBulan)) {
+      Get.snackbar(
+        'Error',
+        'Sistem pembayaran $sistemPembayaranBulan bulan tidak bisa dipakai karena pembayaran lunas sebelumnya belum selaras',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
 
     try {
       isLoading.value = true;
@@ -241,6 +343,8 @@ class KelolaKontrakController extends GetxController {
       return;
     }
 
+    await _ensurePaidCoverageConstraintLoaded();
+
     final tanggalMasuk = _parseDateFlexible(tanggalMulaiController.text.trim());
     if (tanggalMasuk == null) {
       Get.snackbar(
@@ -279,6 +383,26 @@ class KelolaKontrakController extends GetxController {
     final sistemPembayaranBulan = sistemPembayaranBulanRaw > durasiBaru
         ? durasiBaru
         : sistemPembayaranBulanRaw;
+
+    if (sistemPembayaranBulan <= 0) {
+      Get.snackbar(
+        'Error',
+        'Sistem pembayaran tidak valid',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    if (!_isSiklusAllowedByPaidCoverage(sistemPembayaranBulan)) {
+      Get.snackbar(
+        'Error',
+        'Sistem pembayaran $sistemPembayaranBulan bulan tidak bisa dipakai karena pembayaran lunas sebelumnya belum selaras',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+      );
+      return;
+    }
 
     try {
       isLoading.value = true;
@@ -476,15 +600,225 @@ class KelolaKontrakController extends GetxController {
     final direct = int.tryParse(value);
     if (direct != null && direct > 0) return direct;
 
-    final numberMatch = RegExp(r'\d+').firstMatch(value);
-    if (numberMatch != null) {
-      final parsed = int.tryParse(numberMatch.group(0) ?? '');
-      if (parsed != null && parsed > 0) return parsed;
+    if (value.contains('2 tahunan') || value.contains('2 tahun')) return 24;
+    if (value.contains('tahunan') || value.contains('1 tahun')) return 12;
+
+    final numberMatches = RegExp(r'\d+').allMatches(value);
+    if (numberMatches.isNotEmpty) {
+      var maxNumber = 0;
+      for (final match in numberMatches) {
+        final parsed = int.tryParse(match.group(0) ?? '') ?? 0;
+        if (parsed > maxNumber) {
+          maxNumber = parsed;
+        }
+      }
+      if (maxNumber > 0) return maxNumber;
     }
 
     if (value.contains('bulanan')) return 1;
     if (value.contains('tahunan')) return 12;
     return 0;
+  }
+
+  List<int> _buildSistemPembayaranOptions(int durasi, {int include = 0}) {
+    if (durasi <= 0) {
+      return const [];
+    }
+
+    final options = _preferredSiklusBulan
+        .where((bulan) => bulan <= durasi)
+        .toList();
+
+    // Keep legacy/custom cycle selectable if still within current duration.
+    if (include > 0 && include <= durasi) {
+      if (!options.contains(include)) {
+        options.add(include);
+      }
+    }
+
+    if (options.isEmpty) {
+      options.add(durasi);
+    }
+
+    options.sort();
+    return options;
+  }
+
+  List<int> _filterOptionsByPaidCoverage(List<int> options) {
+    if (options.isEmpty) return const [];
+
+    final covered = paidCoveredPrefixMonths.value;
+    if (covered <= 0) return options;
+
+    final filtered = options.where((siklus) => covered % siklus == 0).toList();
+    if (filtered.isNotEmpty) {
+      return filtered;
+    }
+
+    if (options.contains(1)) {
+      return const [1];
+    }
+
+    return [options.first];
+  }
+
+  bool _isSiklusAllowedByPaidCoverage(int siklusBulan) {
+    final covered = paidCoveredPrefixMonths.value;
+    if (covered <= 0) return true;
+    if (siklusBulan <= 0) return false;
+    return covered % siklusBulan == 0;
+  }
+
+  int _findClosestOption(int selected, List<int> options) {
+    var best = options.first;
+    var bestDistance = (selected - best).abs();
+
+    for (final option in options.skip(1)) {
+      final distance = (selected - option).abs();
+      if (distance < bestDistance) {
+        best = option;
+        bestDistance = distance;
+      }
+    }
+
+    return best;
+  }
+
+  void _syncPerpanjangSistemPembayaranWithDurasi() {
+    final options = perpanjangSistemPembayaranOptions;
+    if (options.isEmpty) {
+      if (sistemPembayaranPerpanjangController.text.isNotEmpty) {
+        sistemPembayaranPerpanjangController.clear();
+      }
+      return;
+    }
+
+    final selected = selectedSistemPembayaranPerpanjangBulan;
+    if (selected > 0 && options.contains(selected)) return;
+
+    final replacement = selected <= 0
+        ? options.first
+        : _findClosestOption(selected, options);
+    final label = formatSistemPembayaranOption(replacement);
+    if (sistemPembayaranPerpanjangController.text != label) {
+      sistemPembayaranPerpanjangController.text = label;
+    }
+  }
+
+  void _syncEditSistemPembayaranWithDurasi() {
+    final options = editSistemPembayaranOptions;
+    if (options.isEmpty) {
+      if (sistemPembayaranEditController.text.isNotEmpty) {
+        sistemPembayaranEditController.clear();
+      }
+      return;
+    }
+
+    final selected = selectedSistemPembayaranEditBulan;
+    if (selected > 0 && options.contains(selected)) return;
+
+    final replacement = selected <= 0
+        ? options.first
+        : _findClosestOption(selected, options);
+    final label = formatSistemPembayaranOption(replacement);
+    if (sistemPembayaranEditController.text != label) {
+      sistemPembayaranEditController.text = label;
+    }
+  }
+
+  Future<void> _loadPaidCoverageConstraint() async {
+    final p = penghuni;
+    if (p == null) return;
+
+    try {
+      final latest = await _getLatestKontrakBase(p);
+      final startDate = latest.tanggalMasuk;
+      final durasi = latest.durasiKontrak;
+      final hargaBulanan = p.sewaBulanan.round();
+
+      if (startDate == null || durasi <= 0 || hargaBulanan <= 0) {
+        paidCoveredPrefixMonths.value = 0;
+        return;
+      }
+
+      final rows = await _supabaseService.getTagihanByPenghuniId(p.id);
+      if (rows.isEmpty) {
+        paidCoveredPrefixMonths.value = 0;
+        return;
+      }
+
+      final contractKeys = <String>{};
+      for (var i = 0; i < durasi; i++) {
+        final period = DateTime(startDate.year, startDate.month + i, 1);
+        contractKeys.add(_monthKey(period.year, period.month));
+      }
+
+      final coveredKeys = <String>{};
+      for (final raw in rows) {
+        final status = (raw['status'] ?? '').toString().toLowerCase().trim();
+        if (status != 'lunas') continue;
+
+        final bulan = _toInt(raw['bulan']);
+        final tahun = _toInt(raw['tahun']);
+        if (bulan < 1 || bulan > 12 || tahun <= 0) continue;
+
+        final coveredMonths = _estimateCoveredMonthsByJumlah(
+          raw['jumlah'],
+          hargaBulanan,
+        );
+
+        for (var i = 0; i < coveredMonths; i++) {
+          final period = DateTime(tahun, bulan + i, 1);
+          final key = _monthKey(period.year, period.month);
+          if (contractKeys.contains(key)) {
+            coveredKeys.add(key);
+          }
+        }
+      }
+
+      var prefixCovered = 0;
+      while (prefixCovered < durasi) {
+        final period = DateTime(
+          startDate.year,
+          startDate.month + prefixCovered,
+          1,
+        );
+        final key = _monthKey(period.year, period.month);
+        if (!coveredKeys.contains(key)) {
+          break;
+        }
+        prefixCovered += 1;
+      }
+
+      paidCoveredPrefixMonths.value = prefixCovered;
+      _syncPerpanjangSistemPembayaranWithDurasi();
+      _syncEditSistemPembayaranWithDurasi();
+      previewTick.value++;
+    } catch (_) {
+      paidCoveredPrefixMonths.value = 0;
+    } finally {
+      _hasLoadedPaidCoverageConstraint = true;
+    }
+  }
+
+  Future<void> _ensurePaidCoverageConstraintLoaded() async {
+    if (_hasLoadedPaidCoverageConstraint) return;
+    await _loadPaidCoverageConstraint();
+  }
+
+  int _estimateCoveredMonthsByJumlah(dynamic jumlah, int hargaBulanan) {
+    if (hargaBulanan <= 0) return 1;
+    final total = _toInt(jumlah);
+    if (total <= 0) return 1;
+
+    final div = total ~/ hargaBulanan;
+    final remainder = total % hargaBulanan;
+    final months = remainder > 0 ? div + 1 : div;
+    return months <= 0 ? 1 : months;
+  }
+
+  String _monthKey(int year, int month) {
+    return '$year-${month.toString().padLeft(2, '0')}';
   }
 
   DateTime? _parseDateFlexible(String raw) {
