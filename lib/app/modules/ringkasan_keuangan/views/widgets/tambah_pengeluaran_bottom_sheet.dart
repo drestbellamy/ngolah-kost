@@ -1,5 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
+// Custom formatter untuk currency
+class CurrencyInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    // Remove all non-digit characters
+    final numericString = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (numericString.isEmpty) {
+      return const TextEditingValue();
+    }
+
+    // Parse and format manually dengan koma sebagai pemisah ribuan
+    final number = int.tryParse(numericString);
+    if (number == null) {
+      return oldValue;
+    }
+
+    // Format manual dengan koma
+    final formatted = _formatWithComma(number);
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+
+  String _formatWithComma(int number) {
+    final str = number.toString();
+    final result = StringBuffer();
+
+    for (int i = 0; i < str.length; i++) {
+      if (i > 0 && (str.length - i) % 3 == 0) {
+        result.write(',');
+      }
+      result.write(str[i]);
+    }
+
+    return result.toString();
+  }
+}
 
 class TambahPengeluaranBottomSheet extends StatefulWidget {
   final Map<String, dynamic>? initialData;
@@ -51,11 +100,27 @@ class _TambahPengeluaranBottomSheetState
 
   String _extractAmount(dynamic jumlah) {
     if (jumlah == null) return '';
-    if (jumlah is int) return jumlah.toString();
-    if (jumlah is double) return jumlah.toInt().toString();
+    if (jumlah is int) return _formatWithComma(jumlah);
+    if (jumlah is double) return _formatWithComma(jumlah.toInt());
     final str = jumlah.toString();
     final numOnly = str.replaceAll(RegExp(r'[^0-9]'), '');
-    return numOnly;
+    if (numOnly.isEmpty) return '';
+    final number = int.tryParse(numOnly) ?? 0;
+    return _formatWithComma(number);
+  }
+
+  String _formatWithComma(int number) {
+    final str = number.toString();
+    final result = StringBuffer();
+
+    for (int i = 0; i < str.length; i++) {
+      if (i > 0 && (str.length - i) % 3 == 0) {
+        result.write(',');
+      }
+      result.write(str[i]);
+    }
+
+    return result.toString();
   }
 
   DateTime _parseDate(dynamic dateValue) {
@@ -108,11 +173,14 @@ class _TambahPengeluaranBottomSheetState
 
   void _submit() {
     if (_validate()) {
+      // Parse amount dengan menghapus koma dan format
+      final cleanAmount = amountController.text.trim().replaceAll(',', '');
+
       Get.back(
         result: {
           'title': titleController.text.trim(),
           'description': descriptionController.text.trim(),
-          'amount': amountController.text.trim(),
+          'amount': cleanAmount, // Kirim angka bersih tanpa koma
           'date': selectedDate,
         },
       );
@@ -283,8 +351,9 @@ class _TambahPengeluaranBottomSheetState
                       TextField(
                         controller: amountController,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [CurrencyInputFormatter()],
                         decoration: InputDecoration(
-                          hintText: 'Contoh: 500000',
+                          hintText: 'Contoh: 500,000',
                           hintStyle: TextStyle(color: Colors.grey[400]),
                           prefixText: 'Rp ',
                           filled: true,

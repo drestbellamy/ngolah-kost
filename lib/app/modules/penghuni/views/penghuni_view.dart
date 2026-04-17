@@ -12,6 +12,7 @@ class PenghuniView extends GetView<PenghuniController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Header
@@ -70,7 +71,12 @@ class PenghuniView extends GetView<PenghuniController> {
 
                   // Content
                   Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.fromLTRB(
+                      24,
+                      MediaQuery.of(context).padding.top + 24,
+                      24,
+                      24,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

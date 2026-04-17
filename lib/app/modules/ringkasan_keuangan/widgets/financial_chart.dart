@@ -68,16 +68,28 @@ class FinancialChart extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              // Chart
+              // Chart dengan shadow
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(right: 8),
-                  child: CustomPaint(
-                    size: const Size(double.infinity, 200),
-                    painter: ChartPainter(
-                      pemasukanData: pemasukanData,
-                      pengeluaranData: pengeluaranData,
-                      maxValue: displayMaxValue,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.02),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: CustomPaint(
+                      size: const Size(double.infinity, 200),
+                      painter: ChartPainter(
+                        pemasukanData: pemasukanData,
+                        pengeluaranData: pengeluaranData,
+                        maxValue: displayMaxValue,
+                      ),
                     ),
                   ),
                 ),
@@ -121,25 +133,49 @@ class ChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Validasi data
+    if (pemasukanData.isEmpty || pengeluaranData.isEmpty) {
+      return; // Tidak menggambar apa-apa jika data kosong
+    }
+
     final paint = Paint()
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
-    final spacing = size.width / (pemasukanData.length - 1);
-    final heightScale = (size.height - 40) / maxValue;
+    // Perbaiki perhitungan spacing untuk menghindari division by zero
+    final dataLength = pemasukanData.length;
+    final spacing = dataLength > 1
+        ? size.width / (dataLength - 1)
+        : size.width / 2;
+    final heightScale = maxValue > 0 ? (size.height - 40) / maxValue : 1.0;
 
-    // Draw grid lines
+    // Draw grid lines (horizontal - lebih jelas)
     final gridPaint = Paint()
-      ..color = Colors.grey.withValues(alpha: 0.2)
-      ..strokeWidth = 1;
+      ..color = Colors.grey.withValues(alpha: 0.3)
+      ..strokeWidth = 0.5;
 
     for (int i = 0; i <= 4; i++) {
       final y = (size.height - 20) * i / 4;
       canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
     }
 
-    // Draw Pemasukan line (green)
+    // Draw vertical grid lines untuk setiap bulan
+    final verticalGridPaint = Paint()
+      ..color = Colors.grey.withValues(alpha: 0.2)
+      ..strokeWidth = 0.5;
+
+    for (int i = 0; i < dataLength; i++) {
+      final x = i * spacing;
+      canvas.drawLine(
+        Offset(x, 0),
+        Offset(x, size.height - 20),
+        verticalGridPaint,
+      );
+    }
+
+    // Draw Pemasukan line (green) dengan garis yang lebih tebal
     paint.color = const Color(0xFF10B981);
+    paint.strokeWidth = 3;
     _drawLine(canvas, pemasukanData, spacing, heightScale, size.height, paint);
     _drawPoints(
       canvas,
@@ -150,8 +186,9 @@ class ChartPainter extends CustomPainter {
       paint,
     );
 
-    // Draw Pengeluaran line (red)
+    // Draw Pengeluaran line (red) dengan garis yang lebih tebal
     paint.color = const Color(0xFFEF4444);
+    paint.strokeWidth = 3;
     _drawLine(
       canvas,
       pengeluaranData,
@@ -178,20 +215,30 @@ class ChartPainter extends CustomPainter {
     double height,
     Paint paint,
   ) {
+    if (data.isEmpty) return;
+
     final path = Path();
+    bool hasValidPoint = false;
 
     for (int i = 0; i < data.length; i++) {
       final x = i * spacing;
-      final y = height - 20 - (data[i] * heightScale);
+      final dataValue = data[i].isFinite ? data[i] : 0.0; // Handle NaN/Infinity
+      final y = height - 20 - (dataValue * heightScale);
 
-      if (i == 0) {
+      // Validasi koordinat
+      if (!x.isFinite || !y.isFinite) continue;
+
+      if (!hasValidPoint) {
         path.moveTo(x, y);
+        hasValidPoint = true;
       } else {
         path.lineTo(x, y);
       }
     }
 
-    canvas.drawPath(path, paint);
+    if (hasValidPoint) {
+      canvas.drawPath(path, paint);
+    }
   }
 
   void _drawPoints(
@@ -202,16 +249,30 @@ class ChartPainter extends CustomPainter {
     double height,
     Paint paint,
   ) {
-    paint.style = PaintingStyle.fill;
+    if (data.isEmpty) return;
+
+    final originalColor = paint.color;
 
     for (int i = 0; i < data.length; i++) {
       final x = i * spacing;
-      final y = height - 20 - (data[i] * heightScale);
+      final dataValue = data[i].isFinite ? data[i] : 0.0; // Handle NaN/Infinity
+      final y = height - 20 - (dataValue * heightScale);
 
-      canvas.drawCircle(Offset(x, y), 4, paint);
+      // Validasi koordinat sebelum menggambar
+      if (x.isFinite && y.isFinite) {
+        // Draw white border circle
+        paint.style = PaintingStyle.fill;
+        paint.color = Colors.white;
+        canvas.drawCircle(Offset(x, y), 6, paint);
+
+        // Draw colored inner circle
+        paint.color = originalColor;
+        canvas.drawCircle(Offset(x, y), 4, paint);
+      }
     }
 
     paint.style = PaintingStyle.stroke;
+    paint.color = originalColor;
   }
 
   @override
