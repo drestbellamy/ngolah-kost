@@ -20,6 +20,8 @@ class UserProfilController extends GetxController {
   final isUploadingPhoto = false.obs;
   final namaKost = ''.obs;
   final alamatKost = ''.obs;
+  final latitudeKost = Rx<double?>(null);
+  final longitudeKost = Rx<double?>(null);
   final username = ''.obs;
 
   // Computed properties
@@ -108,14 +110,24 @@ class UserProfilController extends GetxController {
       if (kostId.isNotEmpty) {
         final kostData = await _supabaseService.supabase
             .from('kost')
-            .select('nama_kost, alamat')
+            .select('nama_kost, alamat, latitude, longitude')
             .eq('id', kostId)
             .maybeSingle();
 
         if (kostData != null) {
           namaKost.value = kostData['nama_kost']?.toString() ?? '';
           alamatKost.value = kostData['alamat']?.toString() ?? '';
-          print('Kost loaded: ${namaKost.value}, ${alamatKost.value}');
+          if (kostData['latitude'] != null) {
+            final lat = double.tryParse(kostData['latitude'].toString());
+            if (lat != null && lat.isFinite) latitudeKost.value = lat;
+          }
+          if (kostData['longitude'] != null) {
+            final lng = double.tryParse(kostData['longitude'].toString());
+            if (lng != null && lng.isFinite) longitudeKost.value = lng;
+          }
+          print(
+            'Kost loaded: ${namaKost.value}, ${alamatKost.value}, lat: ${latitudeKost.value}, lng: ${longitudeKost.value}',
+          );
         }
       }
 
@@ -358,9 +370,11 @@ class UserProfilController extends GetxController {
     }
   }
 
-  // Open map with address
+  // Open map with address or coordinates
   Future<void> openMap() async {
     final address = alamatKost.value;
+    final lat = latitudeKost.value;
+    final lng = longitudeKost.value;
 
     if (address.isEmpty || address == '-') {
       Get.snackbar(
@@ -373,13 +387,21 @@ class UserProfilController extends GetxController {
     }
 
     try {
-      // Encode address for URL
-      final encodedAddress = Uri.encodeComponent(address);
+      Uri url;
 
-      // Create Google Maps URL
-      final url = Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$encodedAddress',
-      );
+      // If we have exact coordinates, use them for the pin
+      if (lat != null && lng != null) {
+        // query=$lat,$lng places a pin exactly there
+        url = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+        );
+      } else {
+        // Fallback to text address search
+        final encodedAddress = Uri.encodeComponent(address);
+        url = Uri.parse(
+          'https://www.google.com/maps/search/?api=1&query=$encodedAddress',
+        );
+      }
 
       // Launch URL
       final launched = await launchUrl(
