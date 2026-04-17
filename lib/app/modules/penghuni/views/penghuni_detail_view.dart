@@ -545,37 +545,87 @@ class PenghuniDetailView extends StatelessWidget {
                             width: double.infinity,
                             child: ElevatedButton.icon(
                               onPressed: () async {
-                                // Hapus controller lama jika ada
-                                if (Get.isRegistered<
-                                  KelolaKontrakController
-                                >()) {
-                                  Get.delete<KelolaKontrakController>();
+                                try {
+                                  // Hapus controller lama jika ada
+                                  if (Get.isRegistered<
+                                    KelolaKontrakController
+                                  >()) {
+                                    Get.delete<KelolaKontrakController>();
+                                  }
+
+                                  final controller = Get.put(
+                                    KelolaKontrakController(),
+                                  );
+                                  controller.penghuni = penghuni;
+                                  controller.initializeEditForm();
+
+                                  final result = await Get.bottomSheet<bool>(
+                                    const KelolaKontrakBottomSheet(),
+                                    isScrollControlled: true,
+                                    isDismissible: true,
+                                    enableDrag: true,
+                                  );
+
+                                  if (result != true) return;
+
+                                  // Show loading indicator while refreshing
+                                  Get.dialog(
+                                    WillPopScope(
+                                      onWillPop: () async => false,
+                                      child: const Center(
+                                        child: Card(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(20),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                CircularProgressIndicator(),
+                                                SizedBox(height: 16),
+                                                Text('Memuat data terbaru...'),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    barrierDismissible: false,
+                                  );
+
+                                  // Wait a bit more to ensure data is synced
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 800),
+                                  );
+
+                                  final refreshed =
+                                      await _loadLatestPenghuniModel(
+                                        penghuni.id,
+                                        fallback: penghuni,
+                                      );
+
+                                  if (Get.isDialogOpen ?? false) {
+                                    Get.back(); // Close loading dialog
+                                  }
+
+                                  // Use callback to update data instead of navigation
+                                  Get.offNamed(
+                                    '/penghuni/detail',
+                                    arguments: refreshed,
+                                    preventDuplicates: false,
+                                  );
+                                } catch (e) {
+                                  // Close any open dialogs
+                                  if (Get.isDialogOpen ?? false) {
+                                    Get.back();
+                                  }
+                                  
+                                  Get.snackbar(
+                                    'Error',
+                                    'Terjadi kesalahan: ${e.toString()}',
+                                    backgroundColor: const Color(0xFFEF4444),
+                                    colorText: Colors.white,
+                                    snackPosition: SnackPosition.TOP,
+                                  );
                                 }
-
-                                final controller = Get.put(
-                                  KelolaKontrakController(),
-                                );
-                                controller.penghuni = penghuni;
-                                controller.initializeEditForm();
-
-                                final result = await Get.bottomSheet<bool>(
-                                  const KelolaKontrakBottomSheet(),
-                                  isScrollControlled: true,
-                                );
-
-                                if (result != true) return;
-
-                                final refreshed =
-                                    await _loadLatestPenghuniModel(
-                                      penghuni.id,
-                                      fallback: penghuni,
-                                    );
-
-                                Get.offNamed(
-                                  '/penghuni/detail',
-                                  arguments: refreshed,
-                                  preventDuplicates: false,
-                                );
                               },
                               icon: const Icon(Icons.refresh, size: 20),
                               label: const Text('Kelola Kontrak'),
