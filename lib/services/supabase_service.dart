@@ -319,7 +319,7 @@ class SupabaseService {
     }
   }
 
-  // CREATE PEMBAYARAN WITH BUKTI (using RPC)
+  // CREATE PEMBAYARAN WITH BUKTI (Direct insert)
   Future<void> createPembayaran({
     required String penghuniId,
     required String tagihanId,
@@ -328,23 +328,110 @@ class SupabaseService {
     required String buktiPembayaranUrl,
   }) async {
     try {
-      // Use RPC function to bypass RLS
-      await supabase.rpc(
-        'insert_pembayaran',
-        params: {
-          'p_penghuni_id': penghuniId,
-          'p_tagihan_id': tagihanId,
-          'p_jumlah': totalJumlah.toInt(),
-          'p_metode_id': metodeId,
-          'p_bukti_pembayaran': buktiPembayaranUrl,
-          'p_status': 'pending',
-          'p_tanggal': DateTime.now().toIso8601String(),
-        },
-      );
+      print('=== createPembayaran START ===');
+      print('Tagihan ID: $tagihanId');
+      print('Penghuni ID: $penghuniId');
+      print('Jumlah: $totalJumlah');
+      print('Metode ID: $metodeId');
+      print('Bukti URL: $buktiPembayaranUrl');
+
+      // Direct insert to pembayaran table
+      final insertResult = await supabase.from('pembayaran').insert({
+        'penghuni_id': penghuniId,
+        'tagihan_id': tagihanId,
+        'jumlah': totalJumlah.toInt(),
+        'metode_id': metodeId,
+        'bukti_pembayaran': buktiPembayaranUrl,
+        'status': 'pending',
+        'tanggal': DateTime.now().toIso8601String(),
+      }).select();
+
+      print('✅ Direct insert pembayaran success');
+      print('Insert result: $insertResult');
+
+      // Update status tagihan menjadi menunggu_verifikasi
+      final updateResult = await supabase
+          .from('tagihan')
+          .update({'status': 'menunggu_verifikasi'})
+          .eq('id', tagihanId)
+          .select();
+
+      print('✅ Status tagihan updated to menunggu_verifikasi');
+      print('Update result: $updateResult');
+
+      // Verify the data
+      final verifyPembayaran = await supabase
+          .from('pembayaran')
+          .select('*')
+          .eq('tagihan_id', tagihanId)
+          .order('created_at', ascending: false)
+          .limit(1);
+      print('🔍 Verify pembayaran: $verifyPembayaran');
+
+      final verifyTagihan = await supabase
+          .from('tagihan')
+          .select('id, status')
+          .eq('id', tagihanId)
+          .single();
+      print('🔍 Verify tagihan: $verifyTagihan');
+
+      print('=== createPembayaran END ===');
+    } on PostgrestException catch (e) {
+      print('❌ PostgrestException: ${e.message}');
+      print('Details: ${e.details}');
+      print('Hint: ${e.hint}');
+      throw Exception(_formatPostgrestError(e));
+    } catch (e) {
+      print('❌ Error createPembayaran: $e');
+      throw Exception('Gagal membuat pembayaran: ${e.toString()}');
+    }
+  }
+
+  // VERIFIKASI PEMBAYARAN (Terima)
+  Future<void> verifikasiPembayaran({
+    required String tagihanId,
+    required String pembayaranId,
+  }) async {
+    try {
+      // Update status tagihan menjadi lunas
+      await supabase
+          .from('tagihan')
+          .update({'status': 'lunas'})
+          .eq('id', tagihanId);
+
+      // Update status pembayaran menjadi verified
+      await supabase
+          .from('pembayaran')
+          .update({'status': 'verified'})
+          .eq('id', pembayaranId);
     } on PostgrestException catch (e) {
       throw Exception(_formatPostgrestError(e));
     } catch (e) {
-      throw Exception('Gagal membuat pembayaran: ${e.toString()}');
+      throw Exception('Gagal memverifikasi pembayaran: ${e.toString()}');
+    }
+  }
+
+  // TOLAK PEMBAYARAN
+  Future<void> tolakPembayaran({
+    required String tagihanId,
+    required String pembayaranId,
+  }) async {
+    try {
+      // Update status tagihan kembali ke belum_dibayar
+      await supabase
+          .from('tagihan')
+          .update({'status': 'belum_dibayar'})
+          .eq('id', tagihanId);
+
+      // Update status pembayaran menjadi rejected
+      await supabase
+          .from('pembayaran')
+          .update({'status': 'rejected'})
+          .eq('id', pembayaranId);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    } catch (e) {
+      throw Exception('Gagal menolak pembayaran: ${e.toString()}');
     }
   }
 
@@ -1035,29 +1122,99 @@ class SupabaseService {
 
   // GET TAGIHAN (enriched with penghuni, kamar, and kost labels)
   Future<List<Map<String, dynamic>>> getTagihanList() async {
+    print('=== getTagihanList START ===');
+
+    // Query tagihan with due dates
     final raw = await supabase
         .from('tagihan')
-        .select('id, penghuni_id, bulan, tahun, jumlah, status, created_at')
+        .select(
+          'id, penghuni_id, bulan, tahun, jumlah, status, created_at, tanggal_jatuh_tempo, batas_pembayaran',
+        )
         .order('tahun', ascending: false)
         .order('bulan', ascending: false)
         .order('created_at', ascending: false);
 
-    if (raw is! List) return [];
+    if (raw is! List) {
+      print('❌ Raw is not a list');
+      return [];
+    }
 
     final rows = raw.map((item) => Map<String, dynamic>.from(item)).toList();
+    print('📊 Total tagihan: ${rows.length}');
+
     if (rows.isEmpty) return rows;
 
     final penghuniLookup = await _buildPenghuniLookup();
+    final now = DateTime.now();
 
-    return rows.map((row) {
+    // Enrich each row with penghuni info and pembayaran data
+    final enrichedRows = <Map<String, dynamic>>[];
+    for (final row in rows) {
+      final tagihanId = row['id']?.toString() ?? '';
       final penghuniId = row['penghuni_id']?.toString() ?? '';
+      final status = row['status']?.toString() ?? '';
       final info = penghuniLookup[penghuniId] ?? const <String, String>{};
 
       row['nama_penghuni'] = info['nama'] ?? 'Penghuni';
       row['nomor_kamar'] = info['nomor_kamar'] ?? '-';
       row['nama_kost'] = info['nama_kost'] ?? '-';
-      return row;
-    }).toList();
+
+      // Calculate late status
+      final tanggalJatuhTempo = row['tanggal_jatuh_tempo'] != null
+          ? DateTime.tryParse(row['tanggal_jatuh_tempo'].toString())
+          : null;
+
+      if (tanggalJatuhTempo != null && status != 'lunas') {
+        final isLate = now.isAfter(tanggalJatuhTempo);
+        row['is_terlambat'] = isLate;
+        if (isLate) {
+          row['hari_terlambat'] = now.difference(tanggalJatuhTempo).inDays;
+        } else {
+          row['hari_terlambat'] = 0;
+        }
+      } else {
+        row['is_terlambat'] = false;
+        row['hari_terlambat'] = 0;
+      }
+
+      print('Tagihan $tagihanId - Status: $status');
+
+      // Get pembayaran data if status is menunggu_verifikasi or lunas
+      if (status == 'menunggu_verifikasi' || status == 'lunas') {
+        print('  → Fetching pembayaran for tagihan $tagihanId');
+        try {
+          final pembayaranRaw = await supabase
+              .from('pembayaran')
+              .select('id, bukti_pembayaran, tanggal, metode_id')
+              .eq('tagihan_id', tagihanId)
+              .order('created_at', ascending: false)
+              .limit(1);
+
+          print('  → Pembayaran query result: $pembayaranRaw');
+
+          if (pembayaranRaw is List && pembayaranRaw.isNotEmpty) {
+            final pembayaran = pembayaranRaw.first;
+            row['pembayaran_id'] = pembayaran['id'];
+            row['bukti_pembayaran_url'] = pembayaran['bukti_pembayaran'];
+            row['tanggal_pembayaran'] = pembayaran['tanggal'];
+            row['metode_pembayaran_id'] = pembayaran['metode_id'];
+            print('  ✅ Pembayaran data found: ${pembayaran['id']}');
+          } else {
+            print('  ⚠️ No pembayaran found for tagihan $tagihanId');
+          }
+        } catch (e) {
+          print('  ❌ Error getting pembayaran for tagihan $tagihanId: $e');
+          // Continue without pembayaran data
+        }
+      }
+
+      enrichedRows.add(row);
+    }
+
+    print(
+      '=== getTagihanList END - Total enriched: ${enrichedRows.length} ===',
+    );
+    return enrichedRows;
   }
 
   // GET TAGIHAN BY PENGHUNI
@@ -1068,7 +1225,9 @@ class SupabaseService {
 
     final raw = await supabase
         .from('tagihan')
-        .select('id, penghuni_id, bulan, tahun, jumlah, status, created_at')
+        .select(
+          'id, penghuni_id, bulan, tahun, jumlah, status, created_at, tanggal_jatuh_tempo, batas_pembayaran',
+        )
         .eq('penghuni_id', penghuniId)
         .order('tahun', ascending: false)
         .order('bulan', ascending: false)

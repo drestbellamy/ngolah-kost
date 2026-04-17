@@ -171,16 +171,22 @@ class UserHomeController extends GetxController {
           if (!hasPendingPayment) {
             final bulan = tagihan['bulan'] as int? ?? 0;
             final tahun = tagihan['tahun'] as int? ?? 0;
-            if (bulan > 0 && tahun > 0) {
-              final dueDateTime = DateTime(
-                tahun,
-                bulan,
-                20,
-              ); // Assume due date is 20th
-              if (nearestDue == null || dueDateTime.isBefore(nearestDue)) {
-                nearestDue = dueDateTime;
-                nearestAmount = tagihan['jumlah'] as int? ?? 0;
-              }
+
+            // Get jatuh tempo from database or fallback to 20th of month
+            DateTime dueDateTime;
+            if (tagihan['tanggal_jatuh_tempo'] != null) {
+              dueDateTime =
+                  DateTime.tryParse(
+                    tagihan['tanggal_jatuh_tempo'].toString(),
+                  ) ??
+                  DateTime(tahun, bulan, 20);
+            } else {
+              dueDateTime = DateTime(tahun, bulan, 20);
+            }
+
+            if (nearestDue == null || dueDateTime.isBefore(nearestDue)) {
+              nearestDue = dueDateTime;
+              nearestAmount = tagihan['jumlah'] as int? ?? 0;
             }
           }
         }

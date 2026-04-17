@@ -10,6 +10,8 @@ class LoginController extends GetxController {
   final passwordController = TextEditingController();
   final isPasswordHidden = true.obs;
   final isLoading = false.obs;
+  final usernameError = Rx<String?>(null);
+  final passwordError = Rx<String?>(null);
   final supabaseService = SupabaseService();
   AuthController get authController {
     if (Get.isRegistered<AuthController>()) {
@@ -33,29 +35,29 @@ class LoginController extends GetxController {
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 
-    if (username.isEmpty || password.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Username dan password tidak boleh kosong',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
-      return;
+    usernameError.value = null;
+    passwordError.value = null;
+
+    bool hasError = false;
+
+    if (username.isEmpty) {
+      usernameError.value = 'Username tidak boleh kosong';
+      hasError = true;
     }
+    if (password.isEmpty) {
+      passwordError.value = 'Password tidak boleh kosong';
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     isLoading.value = true;
     try {
       final user = await supabaseService.login(username, password);
 
       if (user == null) {
-        Get.snackbar(
-          'Login Gagal',
-          'Username atau password salah',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        usernameError.value = 'Username salah';
+        passwordError.value = 'Password salah';
         return;
       }
 
