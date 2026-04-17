@@ -393,6 +393,22 @@ class SupabaseService {
     required String pembayaranId,
   }) async {
     try {
+      // Get data pembayaran dan tagihan untuk insert ke pemasukan
+      final pembayaranData = await supabase
+          .from('pembayaran')
+          .select('''
+            id, 
+            penghuni_id, 
+            jumlah, 
+            tanggal,
+            tagihan:tagihan_id(
+              bulan,
+              tahun
+            )
+          ''')
+          .eq('id', pembayaranId)
+          .single();
+
       // Update status tagihan menjadi lunas
       await supabase
           .from('tagihan')
@@ -404,6 +420,50 @@ class SupabaseService {
           .from('pembayaran')
           .update({'status': 'verified'})
           .eq('id', pembayaranId);
+
+      // Insert ke tabel pemasukan
+      final tagihan = pembayaranData['tagihan'];
+      final bulan = tagihan is Map ? tagihan['bulan'] : null;
+      final tahun = tagihan is Map ? tagihan['tahun'] : null;
+
+      String periodeBulan = '';
+      if (bulan != null && tahun != null) {
+        const namaBulan = [
+          '',
+          'Januari',
+          'Februari',
+          'Maret',
+          'April',
+          'Mei',
+          'Juni',
+          'Juli',
+          'Agustus',
+          'September',
+          'Oktober',
+          'November',
+          'Desember',
+        ];
+        final bulanInt = bulan is int
+            ? bulan
+            : int.tryParse(bulan.toString()) ?? 0;
+        final tahunInt = tahun is int
+            ? tahun
+            : int.tryParse(tahun.toString()) ?? 0;
+
+        if (bulanInt >= 1 && bulanInt <= 12 && tahunInt > 0) {
+          periodeBulan = '${namaBulan[bulanInt]} $tahunInt';
+        }
+      }
+
+      await supabase.from('pemasukan').insert({
+        'penghuni_id': pembayaranData['penghuni_id'],
+        'jumlah': pembayaranData['jumlah'],
+        'tanggal': pembayaranData['tanggal'],
+        'keterangan': 'Pembayaran kost periode $periodeBulan',
+        'pembayaran_id': pembayaranId, // Referensi ke pembayaran
+      });
+
+      print('✅ Pembayaran verified dan data pemasukan berhasil dibuat');
     } on PostgrestException catch (e) {
       throw Exception(_formatPostgrestError(e));
     } catch (e) {
@@ -1344,7 +1404,7 @@ class SupabaseService {
     if (kostId.trim().isEmpty) return [];
 
     try {
-      // Join pemasukan dengan penghuni, kamar, dan kost
+      // Ambil pemasukan dengan join ke penghuni dan kamar
       final raw = await supabase
           .from('pemasukan')
           .select('''
@@ -1352,8 +1412,8 @@ class SupabaseService {
             penghuni_id, 
             jumlah, 
             tanggal, 
-            periode_bulan,
             keterangan,
+            pembayaran_id,
             created_at,
             penghuni:penghuni_id(
               kamar:kamar_id(
@@ -1366,25 +1426,68 @@ class SupabaseService {
       if (raw is! List) return [];
 
       // Filter by kost_id
-      final filtered = raw
-          .where((item) {
-            try {
-              final penghuni = item['penghuni'];
+      final kostFiltered = raw.where((item) {
+        try {
+          final penghuni = item['penghuni'];
+          if (penghuni is Map) {
+            final kamar = penghuni['kamar'];
+            if (kamar is Map) {
+              return kamar['kost_id'] == kostId;
+            }
+          }
+          return false;
+        } catch (_) {
+          return false;
+        }
+      }).toList();
+
+      // Untuk setiap pemasukan, ambil nama penghuni
+      final enrichedData = <Map<String, dynamic>>[];
+
+      for (final item in kostFiltered) {
+        final map = Map<String, dynamic>.from(item);
+        final pembayaranId = item['pembayaran_id']?.toString();
+
+        // Default nama
+        map['nama_penghuni'] = 'Penghuni';
+
+        if (pembayaranId != null && pembayaranId.isNotEmpty) {
+          try {
+            // Ambil nama dari pembayaran
+            final pembayaranData = await supabase
+                .from('pembayaran')
+                .select('''
+                  penghuni:penghuni_id(
+                    users:user_id(
+                      nama
+                    )
+                  )
+                ''')
+                .eq('id', pembayaranId)
+                .maybeSingle();
+
+            if (pembayaranData != null) {
+              final penghuni = pembayaranData['penghuni'];
               if (penghuni is Map) {
-                final kamar = penghuni['kamar'];
-                if (kamar is Map) {
-                  return kamar['kost_id'] == kostId;
+                final users = penghuni['users'];
+                if (users is Map && users['nama'] != null) {
+                  map['nama_penghuni'] =
+                      users['nama']?.toString() ?? 'Penghuni';
                 }
               }
-              return false;
-            } catch (_) {
-              return false;
             }
-          })
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList();
+          } catch (e) {
+            print('Error getting nama for pembayaran $pembayaranId: $e');
+          }
+        }
 
-      return filtered;
+        enrichedData.add(map);
+      }
+
+      print(
+        '📊 Loaded ${enrichedData.length} pemasukan records for kost $kostId',
+      );
+      return enrichedData;
     } catch (e) {
       print('Error getPemasukanByKostId: $e');
       return [];
@@ -2372,6 +2475,152 @@ class SupabaseService {
         'tagihanBelumBayar': 0,
         'menungguVerifikasi': 0,
       };
+    }
+  }
+
+  // SINKRONISASI PEMASUKAN DARI PEMBAYARAN VERIFIED
+  Future<void> sinkronisasiPemasukanFromPembayaran() async {
+    try {
+      print('🔄 Mulai sinkronisasi pemasukan dari pembayaran verified...');
+
+      // Get semua pembayaran yang verified tapi belum ada di pemasukan
+      final pembayaranVerified = await supabase
+          .from('pembayaran')
+          .select('''
+            id, 
+            penghuni_id, 
+            jumlah, 
+            tanggal,
+            tagihan_id,
+            tagihan:tagihan_id(
+              bulan,
+              tahun
+            )
+          ''')
+          .eq('status', 'verified');
+
+      print(
+        '📊 Found ${pembayaranVerified.length} verified pembayaran records',
+      );
+
+      if (pembayaranVerified.isEmpty) {
+        print('✅ Tidak ada pembayaran verified yang perlu disinkronisasi');
+        return;
+      }
+
+      // Get semua pemasukan yang sudah ada berdasarkan pembayaran_id
+      final existingPemasukan = await supabase
+          .from('pemasukan')
+          .select('pembayaran_id')
+          .not('pembayaran_id', 'is', null);
+
+      final existingPembayaranIds = existingPemasukan
+          .map((item) => item['pembayaran_id']?.toString() ?? '')
+          .where((id) => id.isNotEmpty)
+          .toSet();
+
+      print(
+        '📋 Found ${existingPembayaranIds.length} existing pemasukan records',
+      );
+
+      // Filter pembayaran yang belum ada di pemasukan
+      final pembayaranToSync = pembayaranVerified
+          .where(
+            (item) =>
+                !existingPembayaranIds.contains(item['id']?.toString() ?? ''),
+          )
+          .toList();
+
+      if (pembayaranToSync.isEmpty) {
+        print('✅ Semua pembayaran verified sudah ada di pemasukan');
+        return;
+      }
+
+      print(
+        '📝 Akan sinkronisasi ${pembayaranToSync.length} pembayaran ke pemasukan',
+      );
+
+      // Insert ke tabel pemasukan
+      int successCount = 0;
+      for (final pembayaran in pembayaranToSync) {
+        try {
+          final tagihan = pembayaran['tagihan'];
+          final bulan = tagihan is Map ? tagihan['bulan'] : null;
+          final tahun = tagihan is Map ? tagihan['tahun'] : null;
+
+          String periodeBulan = '';
+          if (bulan != null && tahun != null) {
+            const namaBulan = [
+              '',
+              'Januari',
+              'Februari',
+              'Maret',
+              'April',
+              'Mei',
+              'Juni',
+              'Juli',
+              'Agustus',
+              'September',
+              'Oktober',
+              'November',
+              'Desember',
+            ];
+            final bulanInt = bulan is int
+                ? bulan
+                : int.tryParse(bulan.toString()) ?? 0;
+            final tahunInt = tahun is int
+                ? tahun
+                : int.tryParse(tahun.toString()) ?? 0;
+
+            if (bulanInt >= 1 && bulanInt <= 12 && tahunInt > 0) {
+              periodeBulan = '${namaBulan[bulanInt]} $tahunInt';
+            }
+          }
+
+          final insertData = {
+            'penghuni_id': pembayaran['penghuni_id'],
+            'jumlah': pembayaran['jumlah'],
+            'tanggal': pembayaran['tanggal'],
+            'keterangan': 'Pembayaran kost periode $periodeBulan',
+            'pembayaran_id': pembayaran['id'],
+          };
+
+          // Hanya tambahkan periode_bulan jika ada data bulan/tahun yang valid
+          if (bulan != null && tahun != null) {
+            final bulanInt = bulan is int
+                ? bulan
+                : int.tryParse(bulan.toString()) ?? 0;
+            final tahunInt = tahun is int
+                ? tahun
+                : int.tryParse(tahun.toString()) ?? 0;
+
+            if (bulanInt >= 1 && bulanInt <= 12 && tahunInt > 0) {
+              // Jika periode_bulan adalah integer, gunakan bulan saja
+              insertData['periode_bulan'] = bulanInt;
+              // Atau jika periode_bulan adalah date, buat tanggal
+              // insertData['periode_bulan'] = '$tahunInt-${bulanInt.toString().padLeft(2, '0')}-01';
+            }
+          }
+
+          print(
+            '  📝 Inserting pemasukan: ${pembayaran['id']} - $periodeBulan',
+          );
+
+          await supabase.from('pemasukan').insert(insertData);
+          successCount++;
+
+          print('  ✅ Sinkronisasi pembayaran ${pembayaran['id']} berhasil');
+        } catch (e) {
+          print('  ❌ Gagal sinkronisasi pembayaran ${pembayaran['id']}: $e');
+        }
+      }
+
+      print(
+        '🎉 Sinkronisasi pemasukan selesai: $successCount/${pembayaranToSync.length} berhasil',
+      );
+    } catch (e) {
+      print('❌ Error sinkronisasiPemasukanFromPembayaran: $e');
+      throw Exception('Gagal sinkronisasi pemasukan: ${e.toString()}');
     }
   }
 }
