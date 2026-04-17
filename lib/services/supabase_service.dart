@@ -393,6 +393,22 @@ class SupabaseService {
     required String pembayaranId,
   }) async {
     try {
+      // Get data pembayaran dan tagihan untuk insert ke pemasukan
+      final pembayaranData = await supabase
+          .from('pembayaran')
+          .select('''
+            id, 
+            penghuni_id, 
+            jumlah, 
+            tanggal,
+            tagihan:tagihan_id(
+              bulan,
+              tahun
+            )
+          ''')
+          .eq('id', pembayaranId)
+          .single();
+
       // Update status tagihan menjadi lunas
       await supabase
           .from('tagihan')
@@ -404,6 +420,50 @@ class SupabaseService {
           .from('pembayaran')
           .update({'status': 'verified'})
           .eq('id', pembayaranId);
+
+      // Insert ke tabel pemasukan
+      final tagihan = pembayaranData['tagihan'];
+      final bulan = tagihan is Map ? tagihan['bulan'] : null;
+      final tahun = tagihan is Map ? tagihan['tahun'] : null;
+
+      String periodeBulan = '';
+      if (bulan != null && tahun != null) {
+        const namaBulan = [
+          '',
+          'Januari',
+          'Februari',
+          'Maret',
+          'April',
+          'Mei',
+          'Juni',
+          'Juli',
+          'Agustus',
+          'September',
+          'Oktober',
+          'November',
+          'Desember',
+        ];
+        final bulanInt = bulan is int
+            ? bulan
+            : int.tryParse(bulan.toString()) ?? 0;
+        final tahunInt = tahun is int
+            ? tahun
+            : int.tryParse(tahun.toString()) ?? 0;
+
+        if (bulanInt >= 1 && bulanInt <= 12 && tahunInt > 0) {
+          periodeBulan = '${namaBulan[bulanInt]} $tahunInt';
+        }
+      }
+
+      await supabase.from('pemasukan').insert({
+        'penghuni_id': pembayaranData['penghuni_id'],
+        'jumlah': pembayaranData['jumlah'],
+        'tanggal': pembayaranData['tanggal'],
+        'keterangan': 'Pembayaran kost periode $periodeBulan',
+        'pembayaran_id': pembayaranId, // Referensi ke pembayaran
+      });
+
+      print('✅ Pembayaran verified dan data pemasukan berhasil dibuat');
     } on PostgrestException catch (e) {
       throw Exception(_formatPostgrestError(e));
     } catch (e) {
@@ -599,8 +659,9 @@ class SupabaseService {
 
   // GET PENGHUNI BY KAMAR
   Future<List<Map<String, dynamic>>> getPenghuniByKamarId(
-    String kamarId,
-  ) async {
+    String kamarId, {
+    bool onlyActive = false,
+  }) async {
     try {
       final response = await supabase.rpc(
         'get_penghuni_by_kamar_secure',
@@ -608,22 +669,36 @@ class SupabaseService {
       );
 
       if (response is List) {
-        final rows = response
+        var rows = response
             .map((item) => Map<String, dynamic>.from(item))
             .toList();
+        if (onlyActive) {
+          rows = rows.where((row) {
+            final status = (row['status']?.toString() ?? '').toLowerCase();
+            return status == 'aktif';
+          }).toList();
+        }
         return await _attachSistemPembayaranBulan(rows, kamarId);
       }
     } catch (_) {
       // Fallback to direct join query if RPC is not available yet.
     }
 
-    final List<dynamic> fallback = await supabase
+    dynamic fallbackQuery = supabase
         .from('penghuni')
         .select(
           'id, user_id, kamar_id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, created_at, users:user_id(id, nama, no_tlpn, username)',
         )
-        .eq('kamar_id', kamarId)
-        .order('created_at', ascending: false);
+        .eq('kamar_id', kamarId);
+
+    if (onlyActive) {
+      fallbackQuery = fallbackQuery.eq('status', 'aktif');
+    }
+
+    final List<dynamic> fallback = await fallbackQuery.order(
+      'created_at',
+      ascending: false,
+    );
 
     return fallback.map((item) => Map<String, dynamic>.from(item)).toList();
   }
@@ -878,11 +953,20 @@ class SupabaseService {
   }
 
   // GET PENGHUNI COUNT BY KAMAR
-  Future<int> getPenghuniCountByKamarId(String kamarId) async {
-    final response = await supabase
+  Future<int> getPenghuniCountByKamarId(
+    String kamarId, {
+    bool onlyActive = true,
+  }) async {
+    dynamic query = supabase
         .from('penghuni')
         .select('id')
         .eq('kamar_id', kamarId);
+
+    if (onlyActive) {
+      query = query.eq('status', 'aktif');
+    }
+
+    final response = await query;
 
     if (response is List) {
       return response.length;
@@ -957,26 +1041,22 @@ class SupabaseService {
         : (sistemPembayaranBulan > durasiKontrakBulan
               ? durasiKontrakBulan
               : sistemPembayaranBulan);
-    final totalTagihan = (durasiKontrakBulan / siklus).ceil();
-    final jumlahPerTagihan = hargaBulanan * siklus;
 
-    final payload = <Map<String, dynamic>>[];
+    final coveredByLunas = await _loadCoveredMonthlyKeysByLunasTagihan(
+      penghuniId: penghuniId,
+      tanggalMasuk: tanggalMasuk,
+      durasiKontrakBulan: durasiKontrakBulan,
+      hargaBulanan: hargaBulanan,
+    );
 
-    for (var i = 0; i < totalTagihan; i++) {
-      final periode = DateTime(
-        tanggalMasuk.year,
-        tanggalMasuk.month + (i * siklus),
-        1,
-      );
-
-      payload.add({
-        'penghuni_id': penghuniId,
-        'bulan': periode.month,
-        'tahun': periode.year,
-        'jumlah': jumlahPerTagihan,
-        'status': 'belum_dibayar',
-      });
-    }
+    final payload = _buildTagihanPayloadByKontrak(
+      penghuniId: penghuniId,
+      tanggalMasuk: tanggalMasuk,
+      durasiKontrakBulan: durasiKontrakBulan,
+      siklusPembayaranBulan: siklus,
+      hargaBulanan: hargaBulanan,
+      excludedMonthlyKeys: coveredByLunas,
+    );
 
     // Rebuild unpaid schedule from scratch so old periods don't linger in kelola tagihan.
     await supabase
@@ -1007,18 +1087,38 @@ class SupabaseService {
 
     final raw = await supabase
         .from('penghuni')
-        .select('id, kamar_id')
+        .select('id, user_id, kamar_id')
         .eq('id', penghuniId)
         .maybeSingle();
 
     final row = _asStringMap(raw);
 
+    final userId = row?['user_id']?.toString() ?? '';
     final kamarId = row?['kamar_id']?.toString() ?? '';
 
-    await supabase
-        .from('penghuni')
-        .update({'status': 'berakhir', 'tanggal_keluar': today})
-        .eq('id', penghuniId);
+    final penghuniPayload = <String, dynamic>{
+      'status': 'berakhir',
+      'tanggal_keluar': today,
+      'user_id': null,
+    };
+
+    try {
+      await supabase
+          .from('penghuni')
+          .update(penghuniPayload)
+          .eq('id', penghuniId);
+    } on PostgrestException catch (e) {
+      final message = '${e.message} ${e.details}'.toLowerCase();
+      if (message.contains('user_id')) {
+        penghuniPayload.remove('user_id');
+        await supabase
+            .from('penghuni')
+            .update(penghuniPayload)
+            .eq('id', penghuniId);
+      } else {
+        rethrow;
+      }
+    }
 
     final pending = await supabase
         .from('tagihan')
@@ -1044,13 +1144,10 @@ class SupabaseService {
     }
 
     if (kamarId.isNotEmpty) {
-      final activeRows = await supabase
-          .from('penghuni')
-          .select('id')
-          .eq('kamar_id', kamarId)
-          .eq('status', 'aktif');
-
-      final activeCount = activeRows is List ? activeRows.length : 0;
+      final activeCount = await getPenghuniCountByKamarId(
+        kamarId,
+        onlyActive: true,
+      );
 
       final kamarRaw = await supabase
           .from('kamar')
@@ -1071,6 +1168,39 @@ class SupabaseService {
           })
           .eq('id', kamarId);
     }
+
+    if (userId.isNotEmpty) {
+      try {
+        await deleteUserById(userId);
+      } catch (_) {
+        // Fallback: keep data inaccessible if hard delete is blocked by schema.
+        await supabase
+            .from('users')
+            .update({'is_active': false})
+            .eq('id', userId);
+      }
+    }
+  }
+
+  Future<void> deleteUserById(String userId) async {
+    if (userId.trim().isEmpty) {
+      throw Exception('ID user tidak valid');
+    }
+
+    try {
+      try {
+        await supabase.rpc('delete_user_by_id', params: {'p_user_id': userId});
+        return;
+      } catch (rpcError) {
+        print(
+          'RPC delete_user_by_id not available, trying direct delete: $rpcError',
+        );
+      }
+
+      await supabase.from('users').delete().eq('id', userId);
+    } on PostgrestException catch (e) {
+      throw Exception(_formatPostgrestError(e));
+    }
   }
 
   // INSERT TAGIHAN OTOMATIS BERDASARKAN KONTRAK
@@ -1090,25 +1220,13 @@ class SupabaseService {
         : (sistemPembayaranBulan > durasiKontrakBulan
               ? durasiKontrakBulan
               : sistemPembayaranBulan);
-    final totalTagihan = (durasiKontrakBulan / siklus).ceil();
-    final jumlahPerTagihan = hargaBulanan * siklus;
-
-    final payload = <Map<String, dynamic>>[];
-    for (var i = 0; i < totalTagihan; i++) {
-      final periode = DateTime(
-        tanggalMasuk.year,
-        tanggalMasuk.month + (i * siklus),
-        1,
-      );
-
-      payload.add({
-        'penghuni_id': penghuniId,
-        'bulan': periode.month,
-        'tahun': periode.year,
-        'jumlah': jumlahPerTagihan,
-        'status': 'belum_dibayar',
-      });
-    }
+    final payload = _buildTagihanPayloadByKontrak(
+      penghuniId: penghuniId,
+      tanggalMasuk: tanggalMasuk,
+      durasiKontrakBulan: durasiKontrakBulan,
+      siklusPembayaranBulan: siklus,
+      hargaBulanan: hargaBulanan,
+    );
 
     if (payload.isEmpty) return;
     await supabase
@@ -1118,6 +1236,145 @@ class SupabaseService {
           onConflict: 'penghuni_id,bulan,tahun',
           ignoreDuplicates: true,
         );
+  }
+
+  List<Map<String, dynamic>> _buildTagihanPayloadByKontrak({
+    required String penghuniId,
+    required DateTime tanggalMasuk,
+    required int durasiKontrakBulan,
+    required int siklusPembayaranBulan,
+    required int hargaBulanan,
+    Set<String> excludedMonthlyKeys = const <String>{},
+  }) {
+    final payload = <Map<String, dynamic>>[];
+
+    if (penghuniId.trim().isEmpty ||
+        durasiKontrakBulan <= 0 ||
+        siklusPembayaranBulan <= 0 ||
+        hargaBulanan <= 0) {
+      return payload;
+    }
+
+    var monthCursor = 0;
+    while (monthCursor < durasiKontrakBulan) {
+      final periode = DateTime(
+        tanggalMasuk.year,
+        tanggalMasuk.month + monthCursor,
+        1,
+      );
+      final key = _billingMonthKey(periode.year, periode.month);
+
+      if (excludedMonthlyKeys.contains(key)) {
+        monthCursor += 1;
+        continue;
+      }
+
+      var durasiTagihan = 0;
+      var probe = monthCursor;
+      while (probe < durasiKontrakBulan &&
+          durasiTagihan < siklusPembayaranBulan) {
+        final periodeProbe = DateTime(
+          tanggalMasuk.year,
+          tanggalMasuk.month + probe,
+          1,
+        );
+        final probeKey = _billingMonthKey(
+          periodeProbe.year,
+          periodeProbe.month,
+        );
+        if (excludedMonthlyKeys.contains(probeKey)) {
+          break;
+        }
+        durasiTagihan += 1;
+        probe += 1;
+      }
+
+      if (durasiTagihan <= 0) {
+        monthCursor += 1;
+        continue;
+      }
+
+      payload.add({
+        'penghuni_id': penghuniId,
+        'bulan': periode.month,
+        'tahun': periode.year,
+        'jumlah': hargaBulanan * durasiTagihan,
+        'status': 'belum_dibayar',
+      });
+
+      monthCursor += durasiTagihan;
+    }
+
+    return payload;
+  }
+
+  Future<Set<String>> _loadCoveredMonthlyKeysByLunasTagihan({
+    required String penghuniId,
+    required DateTime tanggalMasuk,
+    required int durasiKontrakBulan,
+    required int hargaBulanan,
+  }) async {
+    final covered = <String>{};
+    if (penghuniId.trim().isEmpty ||
+        durasiKontrakBulan <= 0 ||
+        hargaBulanan <= 0) {
+      return covered;
+    }
+
+    final contractKeys = <String>{};
+    for (var i = 0; i < durasiKontrakBulan; i++) {
+      final period = DateTime(tanggalMasuk.year, tanggalMasuk.month + i, 1);
+      contractKeys.add(_billingMonthKey(period.year, period.month));
+    }
+
+    try {
+      final raw = await supabase
+          .from('tagihan')
+          .select('bulan, tahun, jumlah')
+          .eq('penghuni_id', penghuniId)
+          .eq('status', 'lunas');
+
+      for (final item in raw) {
+        final row = Map<String, dynamic>.from(item as Map);
+        final bulan = _toInt(row['bulan']);
+        final tahun = _toInt(row['tahun']);
+        if (bulan < 1 || bulan > 12 || tahun <= 0) {
+          continue;
+        }
+
+        final monthsCovered = _estimateMonthsCoveredByAmount(
+          row['jumlah'],
+          hargaBulanan,
+        );
+
+        for (var i = 0; i < monthsCovered; i++) {
+          final period = DateTime(tahun, bulan + i, 1);
+          final key = _billingMonthKey(period.year, period.month);
+          if (contractKeys.contains(key)) {
+            covered.add(key);
+          }
+        }
+      }
+    } catch (_) {
+      return covered;
+    }
+
+    return covered;
+  }
+
+  int _estimateMonthsCoveredByAmount(dynamic jumlah, int hargaBulanan) {
+    if (hargaBulanan <= 0) return 1;
+    final total = _toInt(jumlah);
+    if (total <= 0) return 1;
+
+    final div = total ~/ hargaBulanan;
+    final remainder = total % hargaBulanan;
+    final months = remainder > 0 ? div + 1 : div;
+    return months <= 0 ? 1 : months;
+  }
+
+  String _billingMonthKey(int year, int month) {
+    return '$year-${month.toString().padLeft(2, '0')}';
   }
 
   // GET TAGIHAN (enriched with penghuni, kamar, and kost labels)
@@ -1352,7 +1609,7 @@ class SupabaseService {
     if (kostId.trim().isEmpty) return [];
 
     try {
-      // Join pemasukan dengan penghuni, kamar, dan kost
+      // Ambil pemasukan dengan join ke penghuni dan kamar
       final raw = await supabase
           .from('pemasukan')
           .select('''
@@ -1360,8 +1617,8 @@ class SupabaseService {
             penghuni_id, 
             jumlah, 
             tanggal, 
-            periode_bulan,
             keterangan,
+            pembayaran_id,
             created_at,
             penghuni:penghuni_id(
               kamar:kamar_id(
@@ -1374,25 +1631,68 @@ class SupabaseService {
       if (raw is! List) return [];
 
       // Filter by kost_id
-      final filtered = raw
-          .where((item) {
-            try {
-              final penghuni = item['penghuni'];
+      final kostFiltered = raw.where((item) {
+        try {
+          final penghuni = item['penghuni'];
+          if (penghuni is Map) {
+            final kamar = penghuni['kamar'];
+            if (kamar is Map) {
+              return kamar['kost_id'] == kostId;
+            }
+          }
+          return false;
+        } catch (_) {
+          return false;
+        }
+      }).toList();
+
+      // Untuk setiap pemasukan, ambil nama penghuni
+      final enrichedData = <Map<String, dynamic>>[];
+
+      for (final item in kostFiltered) {
+        final map = Map<String, dynamic>.from(item);
+        final pembayaranId = item['pembayaran_id']?.toString();
+
+        // Default nama
+        map['nama_penghuni'] = 'Penghuni';
+
+        if (pembayaranId != null && pembayaranId.isNotEmpty) {
+          try {
+            // Ambil nama dari pembayaran
+            final pembayaranData = await supabase
+                .from('pembayaran')
+                .select('''
+                  penghuni:penghuni_id(
+                    users:user_id(
+                      nama
+                    )
+                  )
+                ''')
+                .eq('id', pembayaranId)
+                .maybeSingle();
+
+            if (pembayaranData != null) {
+              final penghuni = pembayaranData['penghuni'];
               if (penghuni is Map) {
-                final kamar = penghuni['kamar'];
-                if (kamar is Map) {
-                  return kamar['kost_id'] == kostId;
+                final users = penghuni['users'];
+                if (users is Map && users['nama'] != null) {
+                  map['nama_penghuni'] =
+                      users['nama']?.toString() ?? 'Penghuni';
                 }
               }
-              return false;
-            } catch (_) {
-              return false;
             }
-          })
-          .map((item) => Map<String, dynamic>.from(item))
-          .toList();
+          } catch (e) {
+            print('Error getting nama for pembayaran $pembayaranId: $e');
+          }
+        }
 
-      return filtered;
+        enrichedData.add(map);
+      }
+
+      print(
+        '📊 Loaded ${enrichedData.length} pemasukan records for kost $kostId',
+      );
+      return enrichedData;
     } catch (e) {
       print('Error getPemasukanByKostId: $e');
       return [];
@@ -2380,6 +2680,152 @@ class SupabaseService {
         'tagihanBelumBayar': 0,
         'menungguVerifikasi': 0,
       };
+    }
+  }
+
+  // SINKRONISASI PEMASUKAN DARI PEMBAYARAN VERIFIED
+  Future<void> sinkronisasiPemasukanFromPembayaran() async {
+    try {
+      print('🔄 Mulai sinkronisasi pemasukan dari pembayaran verified...');
+
+      // Get semua pembayaran yang verified tapi belum ada di pemasukan
+      final pembayaranVerified = await supabase
+          .from('pembayaran')
+          .select('''
+            id, 
+            penghuni_id, 
+            jumlah, 
+            tanggal,
+            tagihan_id,
+            tagihan:tagihan_id(
+              bulan,
+              tahun
+            )
+          ''')
+          .eq('status', 'verified');
+
+      print(
+        '📊 Found ${pembayaranVerified.length} verified pembayaran records',
+      );
+
+      if (pembayaranVerified.isEmpty) {
+        print('✅ Tidak ada pembayaran verified yang perlu disinkronisasi');
+        return;
+      }
+
+      // Get semua pemasukan yang sudah ada berdasarkan pembayaran_id
+      final existingPemasukan = await supabase
+          .from('pemasukan')
+          .select('pembayaran_id')
+          .not('pembayaran_id', 'is', null);
+
+      final existingPembayaranIds = existingPemasukan
+          .map((item) => item['pembayaran_id']?.toString() ?? '')
+          .where((id) => id.isNotEmpty)
+          .toSet();
+
+      print(
+        '📋 Found ${existingPembayaranIds.length} existing pemasukan records',
+      );
+
+      // Filter pembayaran yang belum ada di pemasukan
+      final pembayaranToSync = pembayaranVerified
+          .where(
+            (item) =>
+                !existingPembayaranIds.contains(item['id']?.toString() ?? ''),
+          )
+          .toList();
+
+      if (pembayaranToSync.isEmpty) {
+        print('✅ Semua pembayaran verified sudah ada di pemasukan');
+        return;
+      }
+
+      print(
+        '📝 Akan sinkronisasi ${pembayaranToSync.length} pembayaran ke pemasukan',
+      );
+
+      // Insert ke tabel pemasukan
+      int successCount = 0;
+      for (final pembayaran in pembayaranToSync) {
+        try {
+          final tagihan = pembayaran['tagihan'];
+          final bulan = tagihan is Map ? tagihan['bulan'] : null;
+          final tahun = tagihan is Map ? tagihan['tahun'] : null;
+
+          String periodeBulan = '';
+          if (bulan != null && tahun != null) {
+            const namaBulan = [
+              '',
+              'Januari',
+              'Februari',
+              'Maret',
+              'April',
+              'Mei',
+              'Juni',
+              'Juli',
+              'Agustus',
+              'September',
+              'Oktober',
+              'November',
+              'Desember',
+            ];
+            final bulanInt = bulan is int
+                ? bulan
+                : int.tryParse(bulan.toString()) ?? 0;
+            final tahunInt = tahun is int
+                ? tahun
+                : int.tryParse(tahun.toString()) ?? 0;
+
+            if (bulanInt >= 1 && bulanInt <= 12 && tahunInt > 0) {
+              periodeBulan = '${namaBulan[bulanInt]} $tahunInt';
+            }
+          }
+
+          final insertData = {
+            'penghuni_id': pembayaran['penghuni_id'],
+            'jumlah': pembayaran['jumlah'],
+            'tanggal': pembayaran['tanggal'],
+            'keterangan': 'Pembayaran kost periode $periodeBulan',
+            'pembayaran_id': pembayaran['id'],
+          };
+
+          // Hanya tambahkan periode_bulan jika ada data bulan/tahun yang valid
+          if (bulan != null && tahun != null) {
+            final bulanInt = bulan is int
+                ? bulan
+                : int.tryParse(bulan.toString()) ?? 0;
+            final tahunInt = tahun is int
+                ? tahun
+                : int.tryParse(tahun.toString()) ?? 0;
+
+            if (bulanInt >= 1 && bulanInt <= 12 && tahunInt > 0) {
+              // Jika periode_bulan adalah integer, gunakan bulan saja
+              insertData['periode_bulan'] = bulanInt;
+              // Atau jika periode_bulan adalah date, buat tanggal
+              // insertData['periode_bulan'] = '$tahunInt-${bulanInt.toString().padLeft(2, '0')}-01';
+            }
+          }
+
+          print(
+            '  📝 Inserting pemasukan: ${pembayaran['id']} - $periodeBulan',
+          );
+
+          await supabase.from('pemasukan').insert(insertData);
+          successCount++;
+
+          print('  ✅ Sinkronisasi pembayaran ${pembayaran['id']} berhasil');
+        } catch (e) {
+          print('  ❌ Gagal sinkronisasi pembayaran ${pembayaran['id']}: $e');
+        }
+      }
+
+      print(
+        '🎉 Sinkronisasi pemasukan selesai: $successCount/${pembayaranToSync.length} berhasil',
+      );
+    } catch (e) {
+      print('❌ Error sinkronisasiPemasukanFromPembayaran: $e');
+      throw Exception('Gagal sinkronisasi pemasukan: ${e.toString()}');
     }
   }
 }
