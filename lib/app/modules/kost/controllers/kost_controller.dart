@@ -70,14 +70,14 @@ class KostController extends GetxController {
         longitude: longitude.value,
       );
 
-      await fetchKostData();
-      Get.back();
+      Get.back(); // Kembali langsung ke halaman unit kost
       Get.snackbar(
         'Berhasil',
         'Data kost berhasil diperbarui',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
+      await fetchKostData(); // Update data di background
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -225,14 +225,14 @@ class KostController extends GetxController {
         longitude: longitude.value,
       );
 
-      await fetchKostData();
-      Get.back();
+      Get.back(); // Kembali langsung ke halaman unit kost
       Get.snackbar(
         'Berhasil',
         'Kost baru berhasil ditambahkan',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
+      await fetchKostData(); // Update list kost
     } catch (e) {
       Get.snackbar(
         'Error',
