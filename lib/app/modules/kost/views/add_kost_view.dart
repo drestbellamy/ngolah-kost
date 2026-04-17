@@ -11,6 +11,7 @@ class AddKostView extends GetView<KostController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Custom Header

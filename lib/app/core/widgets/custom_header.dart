@@ -94,7 +94,12 @@ class CustomHeader extends StatelessWidget {
 
           // Content
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
+            padding: EdgeInsets.fromLTRB(
+              24, 
+              MediaQuery.of(context).padding.top + 24, 
+              24, 
+              30
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

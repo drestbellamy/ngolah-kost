@@ -12,7 +12,6 @@ class LandingView extends GetView<LandingController> {
   static const String _landingPage1BackgroundAsset =
       'assets/images/landing_page1/gedung.png';
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -366,7 +365,7 @@ class LandingView extends GetView<LandingController> {
         Transform.translate(
           offset: const Offset(
             0,
-            -26,// Menambah nilai minus agar lebih dekat
+            -26, // Menambah nilai minus agar lebih dekat
           ), // Mengurangi jarak antara animasi dan teks
           child: Column(
             children: [
