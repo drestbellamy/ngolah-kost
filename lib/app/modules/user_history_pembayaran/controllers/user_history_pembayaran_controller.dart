@@ -59,6 +59,7 @@ class UserHistoryPembayaranController extends GetxController {
 
       final penghuniId = penghuniData['id']?.toString() ?? '';
       final nomorKamar = penghuniData['nomor_kamar']?.toString() ?? '';
+      final hargaBulanan = _toInt(penghuniData['harga']);
 
       print('Penghuni ID: $penghuniId, Nomor Kamar: $nomorKamar'); // Debug
 
@@ -93,10 +94,12 @@ class UserHistoryPembayaranController extends GetxController {
               final tahun = tagihanData['tahun'] as int? ?? 0;
               if (bulan > 0 && tahun > 0) {
                 final periodeDate = DateTime(tahun, bulan, 1);
-                monthName = DateFormat(
-                  'MMMM yyyy',
-                  'id_ID',
-                ).format(periodeDate);
+                final jumlahTagihan = _toInt(tagihanData['jumlah']);
+                final coveredMonths = _estimateCoveredMonthsByAmount(
+                  jumlahTagihan,
+                  hargaBulanan,
+                );
+                monthName = _formatPeriodeLabel(periodeDate, coveredMonths);
               }
             }
           } catch (e) {
@@ -195,5 +198,36 @@ class UserHistoryPembayaranController extends GetxController {
 
   Future<void> refreshData() async {
     await loadPaymentHistory();
+  }
+
+  int _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is double) return value.round();
+
+    final raw = value?.toString() ?? '';
+    if (raw.isEmpty) return 0;
+
+    final digitsOnly = raw.replaceAll(RegExp(r'[^0-9-]'), '');
+    return int.tryParse(digitsOnly) ?? 0;
+  }
+
+  int _estimateCoveredMonthsByAmount(int jumlahTagihan, int hargaBulanan) {
+    if (hargaBulanan <= 0 || jumlahTagihan <= 0) return 1;
+
+    final div = jumlahTagihan ~/ hargaBulanan;
+    final remainder = jumlahTagihan % hargaBulanan;
+    final covered = remainder > 0 ? div + 1 : div;
+    return covered <= 0 ? 1 : covered;
+  }
+
+  String _formatPeriodeLabel(DateTime start, int coveredMonths) {
+    if (coveredMonths <= 1) {
+      return DateFormat('MMMM yyyy', 'id_ID').format(start);
+    }
+
+    final end = DateTime(start.year, start.month + coveredMonths - 1, 1);
+    final startLabel = DateFormat('MMM', 'id_ID').format(start);
+    final endLabel = DateFormat('MMM yyyy', 'id_ID').format(end);
+    return '$startLabel - $endLabel';
   }
 }

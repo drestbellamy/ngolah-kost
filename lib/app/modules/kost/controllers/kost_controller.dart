@@ -18,6 +18,9 @@ class KostController extends GetxController {
   final RxBool isLoadingLocation = false.obs;
   String? editKostId;
 
+  Rx<double?> latitude = Rx<double?>(null);
+  Rx<double?> longitude = Rx<double?>(null);
+
   @override
   void onInit() {
     super.onInit();
@@ -36,6 +39,8 @@ class KostController extends GetxController {
     nameController.text = kost.name;
     addressController.text = kost.address;
     roomCountController.text = kost.roomCount.toString();
+    latitude.value = kost.latitude;
+    longitude.value = kost.longitude;
 
     Get.toNamed(Routes.editKost);
   }
@@ -61,16 +66,18 @@ class KostController extends GetxController {
         namaKost: nameController.text,
         alamat: addressController.text,
         totalKamar: int.tryParse(roomCountController.text) ?? 0,
+        latitude: latitude.value,
+        longitude: longitude.value,
       );
 
-      await fetchKostData();
-      Get.back();
+      Get.back(); // Kembali langsung ke halaman unit kost
       Get.snackbar(
         'Berhasil',
         'Data kost berhasil diperbarui',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
+      await fetchKostData(); // Update data di background
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -191,6 +198,8 @@ class KostController extends GetxController {
     nameController.clear();
     addressController.clear();
     roomCountController.clear();
+    latitude.value = null;
+    longitude.value = null;
     Get.toNamed(Routes.addKost);
   }
 
@@ -212,16 +221,18 @@ class KostController extends GetxController {
         namaKost: nameController.text,
         alamat: addressController.text,
         totalKamar: int.tryParse(roomCountController.text) ?? 0,
+        latitude: latitude.value,
+        longitude: longitude.value,
       );
 
-      await fetchKostData();
-      Get.back();
+      Get.back(); // Kembali langsung ke halaman unit kost
       Get.snackbar(
         'Berhasil',
         'Kost baru berhasil ditambahkan',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
+      await fetchKostData(); // Update list kost
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -289,11 +300,14 @@ class KostController extends GetxController {
         position.longitude,
       );
 
+      latitude.value = position.latitude;
+      longitude.value = position.longitude;
+
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
         String address =
             '${place.street}, ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.country} ${place.postalCode}';
-        
+
         if (addressController.text != address) {
           addressController.text = address;
           Get.snackbar(
@@ -317,10 +331,19 @@ class KostController extends GetxController {
   }
 
   Future<void> openMapPicker() async {
-    final result = await Get.to(() => const MapPickerView());
-    if (result != null && result is String && result.isNotEmpty) {
-      if (addressController.text != result) {
-        addressController.text = result;
+    final result = await Get.to(
+      () => MapPickerView(
+        initialLatitude: latitude.value,
+        initialLongitude: longitude.value,
+      ),
+    );
+    if (result != null && result is Map<String, dynamic>) {
+      final newAddress = result['address'] as String;
+      latitude.value = result['latitude'] as double;
+      longitude.value = result['longitude'] as double;
+
+      if (addressController.text != newAddress) {
+        addressController.text = newAddress;
         Get.snackbar(
           'Berhasil',
           'Titik lokasi berhasil dipilih',
