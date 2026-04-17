@@ -16,6 +16,7 @@ class UserInfoView extends GetView<UserInfoController> {
       body: Column(
         children: [
           SafeArea(
+            top: false,
             bottom: false,
             child: CustomHeader(
               title: 'Informasi Kost',

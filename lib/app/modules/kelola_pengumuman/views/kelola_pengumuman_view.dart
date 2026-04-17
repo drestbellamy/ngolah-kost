@@ -13,6 +13,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
       return Scaffold(
         backgroundColor: const Color(0xFFF1F3F2),
         body: SafeArea(
+          top: false,
           child: Column(
             children: [
               _buildHeader(selectedGedung),

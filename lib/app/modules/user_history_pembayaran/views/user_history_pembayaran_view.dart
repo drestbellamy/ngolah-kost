@@ -18,6 +18,7 @@ class UserHistoryPembayaranView
       body: Column(
         children: [
           SafeArea(
+            top: false,
             child: CustomHeader(
               title: 'Riwayat Pembayaran',
               subtitle: 'Lihat Semua Transaksi',

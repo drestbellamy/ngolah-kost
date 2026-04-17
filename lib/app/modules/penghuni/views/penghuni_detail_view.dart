@@ -20,6 +20,7 @@ class PenghuniDetailView extends StatelessWidget {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         body: SafeArea(
+          top: false,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -73,6 +74,7 @@ class PenghuniDetailView extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Header
@@ -131,7 +133,12 @@ class PenghuniDetailView extends StatelessWidget {
 
                   // Content
                   Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.fromLTRB(
+                      24,
+                      MediaQuery.of(context).padding.top + 24,
+                      24,
+                      24,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/detail_keuangan_kost_controller.dart';
 import '../widgets/financial_chart.dart';
 import 'widgets/tambah_pengeluaran_bottom_sheet.dart';
@@ -12,67 +13,17 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Header
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Get.back(),
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Obx(
-                        () => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              controller.kostName.value,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              controller.kostAddress.value,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: Color(0xFFA8D5BA),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            Obx(
+              () => CustomHeader(
+                title: controller.kostName.value,
+                subtitle: controller.kostAddress.value.isNotEmpty
+                    ? controller.kostAddress.value
+                    : 'Detail keuangan kost',
+                showBackButton: true,
               ),
             ),
 

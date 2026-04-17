@@ -18,6 +18,7 @@ class UserTagihanView extends GetView<UserTagihanController> {
         children: [
           // Header melengkung persis gambar
           SafeArea(
+            top: false,
             bottom: false,
             child: CustomHeader(
               title: 'Tagihan',

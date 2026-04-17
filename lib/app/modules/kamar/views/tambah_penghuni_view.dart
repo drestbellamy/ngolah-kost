@@ -18,6 +18,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
         children: [
           // Header with gradient
           SafeArea(
+            top: false,
             child: Obx(
               () => CustomHeader(
                 title: 'Tambah Penghuni',
