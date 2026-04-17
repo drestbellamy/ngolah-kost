@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../data/models/tagihan_user_model.dart';
@@ -328,7 +329,135 @@ class UserTagihanController extends GetxController {
     return types.toList();
   }
 
-  // Upload bukti pembayaran
+  // Submit cash payment without image upload
+  Future<void> submitCashPayment() async {
+    try {
+      // Validasi
+      if (tagihanTerpilih.isEmpty) {
+        Get.snackbar(
+          'Peringatan',
+          'Pilih tagihan yang akan dibayar terlebih dahulu',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      if (metodePembayaran.value.isEmpty) {
+        Get.snackbar(
+          'Peringatan',
+          'Pilih metode pembayaran terlebih dahulu',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      // Get selected payment method
+      final selectedMethods = getMethodsByType(metodePembayaran.value);
+      if (selectedMethods.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'Metode pembayaran tidak ditemukan',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      // Show confirmation dialog
+      final confirmed = await Get.dialog<bool>(
+        AlertDialog(
+          title: const Text('Konfirmasi Pembayaran Tunai'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Anda akan mengkonfirmasi pembayaran tunai untuk:'),
+              const SizedBox(height: 12),
+              ...tagihanTerpilih.map(
+                (tagihan) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text('• ${tagihan.periodePenagihan}'),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Total: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(totalBayarTerpilih)}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Pembayaran akan dikirim ke admin untuk verifikasi.',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(result: false),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: () => Get.back(result: true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6B8E7A),
+              ),
+              child: const Text(
+                'Konfirmasi',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      if (confirmed != true) return;
+
+      isUploadingBukti.value = true;
+
+      // Create pembayaran record for each tagihan without bukti_pembayaran_url
+      for (final tagihan in tagihanTerpilih) {
+        print('=== Creating cash payment ===');
+        print('Penghuni ID: ${penghuniId.value}');
+        print('Tagihan ID: ${tagihan.id}');
+        print('Jumlah: ${tagihan.totalBayar}');
+        print('Metode ID: ${selectedMethods.first.id}');
+        print('Payment Type: Cash (no image required)');
+
+        await _supabaseService.createPembayaran(
+          penghuniId: penghuniId.value,
+          tagihanId: tagihan.id,
+          totalJumlah: tagihan.totalBayar,
+          metodeId: selectedMethods.first.id,
+          buktiPembayaranUrl: null, // No image for cash payments
+        );
+
+        print('✅ Cash payment created successfully');
+      }
+
+      Get.snackbar(
+        'Berhasil',
+        'Pembayaran tunai berhasil dikonfirmasi. Menunggu verifikasi admin.',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 3),
+      );
+
+      // Clear selection
+      tagihanTerpilih.clear();
+      metodePembayaran.value = '';
+
+      // Refresh data
+      await refreshData();
+    } catch (e) {
+      print('Error submit cash payment: $e');
+      Get.snackbar(
+        'Error',
+        'Gagal mengkonfirmasi pembayaran tunai: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isUploadingBukti.value = false;
+    }
+  }
+
   Future<void> uploadBuktiPembayaran() async {
     try {
       // Validasi

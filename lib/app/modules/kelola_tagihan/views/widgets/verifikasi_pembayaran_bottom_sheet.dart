@@ -103,9 +103,11 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
-                            'Bukti Transfer',
-                            style: TextStyle(
+                          Text(
+                            tagihan.buktiPembayaranUrl != null
+                                ? 'Bukti Transfer'
+                                : 'Pembayaran Tunai',
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF2D3748),
@@ -116,7 +118,7 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
-                      // Transfer Receipt Image
+                      // Transfer Receipt Image or Cash Payment Info
                       Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
@@ -135,8 +137,9 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                                   fit: BoxFit.contain,
                                   loadingBuilder:
                                       (context, child, loadingProgress) {
-                                        if (loadingProgress == null)
+                                        if (loadingProgress == null) {
                                           return child;
+                                        }
                                         return Container(
                                           height: 400,
                                           padding: const EdgeInsets.all(40),
@@ -182,21 +185,40 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                                   },
                                 )
                               : Container(
-                                  height: 400,
+                                  height: 200,
                                   padding: const EdgeInsets.all(40),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.receipt_long,
-                                        size: 80,
-                                        color: Colors.grey.shade400,
+                                      Container(
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                            0xFF10B981,
+                                          ).withValues(alpha: 0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.money,
+                                          size: 48,
+                                          color: Color(0xFF10B981),
+                                        ),
                                       ),
                                       const SizedBox(height: 16),
-                                      Text(
-                                        'Bukti pembayaran tidak tersedia',
+                                      const Text(
+                                        'Pembayaran Tunai',
                                         style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF2D3748),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Penghuni telah mengkonfirmasi pembayaran tunai.\nTidak ada bukti transfer yang diperlukan.',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 14,
                                           color: Colors.grey.shade600,
                                         ),
                                       ),

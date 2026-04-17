@@ -325,7 +325,7 @@ class SupabaseService {
     required String tagihanId,
     required double totalJumlah,
     required String metodeId,
-    required String buktiPembayaranUrl,
+    String? buktiPembayaranUrl, // Made optional for cash payments
   }) async {
     try {
       print('=== createPembayaran START ===');
@@ -333,18 +333,28 @@ class SupabaseService {
       print('Penghuni ID: $penghuniId');
       print('Jumlah: $totalJumlah');
       print('Metode ID: $metodeId');
-      print('Bukti URL: $buktiPembayaranUrl');
+      print('Bukti URL: ${buktiPembayaranUrl ?? 'null (cash payment)'}');
 
-      // Direct insert to pembayaran table
-      final insertResult = await supabase.from('pembayaran').insert({
+      // Prepare insert data
+      final insertData = {
         'penghuni_id': penghuniId,
         'tagihan_id': tagihanId,
         'jumlah': totalJumlah.toInt(),
         'metode_id': metodeId,
-        'bukti_pembayaran': buktiPembayaranUrl,
         'status': 'pending',
         'tanggal': DateTime.now().toIso8601String(),
-      }).select();
+      };
+
+      // Only add bukti_pembayaran if it's not null (for non-cash payments)
+      if (buktiPembayaranUrl != null) {
+        insertData['bukti_pembayaran'] = buktiPembayaranUrl;
+      }
+
+      // Direct insert to pembayaran table
+      final insertResult = await supabase
+          .from('pembayaran')
+          .insert(insertData)
+          .select();
 
       print('✅ Direct insert pembayaran success');
       print('Insert result: $insertResult');
