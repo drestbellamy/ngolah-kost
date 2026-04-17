@@ -13,6 +13,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Header

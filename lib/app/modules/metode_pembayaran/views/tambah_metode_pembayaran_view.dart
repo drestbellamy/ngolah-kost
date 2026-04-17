@@ -11,12 +11,18 @@ class TambahMetodePembayaranView
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Header
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                MediaQuery.of(context).padding.top + 20,
+                20,
+                20,
+              ),
               decoration: BoxDecoration(
                 color: const Color(0xFF6B8E7A),
                 borderRadius: const BorderRadius.only(

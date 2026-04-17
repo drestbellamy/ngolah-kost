@@ -11,6 +11,7 @@ class KamarView extends GetView<KamarController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
+        top: false,
         bottom: false,
         child: Column(
           children: [

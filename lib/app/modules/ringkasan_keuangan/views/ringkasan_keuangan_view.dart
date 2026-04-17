@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/custom_header.dart';
 import '../controllers/ringkasan_keuangan_controller.dart';
 
 class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
@@ -10,74 +11,14 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9F8),
       body: SafeArea(
+        top: false,
         child: Column(
           children: [
             // Header
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF6B8E7A), Color(0xFF4F6F5D)],
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => Get.back(),
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            color: Colors.white,
-                          ),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        const SizedBox(width: 12),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Kelola Keuangan',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Pilih rumah kost untuk melihat detail',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFFA8D5BA),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            CustomHeader(
+              title: 'Kelola Keuangan',
+              subtitle: 'Pilih kost untuk melihat detail',
+              showBackButton: true,
             ),
 
             // Scrollable Content
