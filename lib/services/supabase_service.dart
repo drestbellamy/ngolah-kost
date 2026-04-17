@@ -1402,7 +1402,11 @@ class SupabaseService {
     if (rows.isEmpty) return rows;
 
     final penghuniLookup = await _buildPenghuniLookup();
+    final penghuniStatusLookup = await _buildPenghuniStatusLookup();
     final now = DateTime.now();
+
+    print('📊 Penghuni lookup size: ${penghuniLookup.length}');
+    print('📊 Penghuni status lookup size: ${penghuniStatusLookup.length}');
 
     // Enrich each row with penghuni info and pembayaran data
     final enrichedRows = <Map<String, dynamic>>[];
@@ -1411,6 +1415,53 @@ class SupabaseService {
       final penghuniId = row['penghuni_id']?.toString() ?? '';
       final status = row['status']?.toString() ?? '';
       final info = penghuniLookup[penghuniId] ?? const <String, String>{};
+      final penghuniStatus = penghuniStatusLookup[penghuniId];
+
+      print('Processing bill $tagihanId for penghuni $penghuniId');
+
+      // If penghuni info is not found in lookup, it means the contract has ended
+      // (since _buildPenghuniLookup now only includes active tenants)
+      if (info.isEmpty) {
+        print('Skipping bill $tagihanId - penghuni not found in active lookup');
+        continue;
+      }
+
+      // Skip bills for ended contracts that are already paid
+      if (penghuniStatus != null &&
+          (penghuniStatus['status'] == 'berakhir' ||
+              penghuniStatus['status'] == 'tidak_aktif') &&
+          status == 'lunas') {
+        print(
+          'Skipping paid bill for ended contract: $tagihanId (status: ${penghuniStatus['status']})',
+        );
+        continue;
+      }
+
+      // Skip bills for ended contracts that ended more than 3 months ago (unless unpaid)
+      if (penghuniStatus != null &&
+          (penghuniStatus['status'] == 'berakhir' ||
+              penghuniStatus['status'] == 'tidak_aktif') &&
+          penghuniStatus['tanggal_keluar'] != null) {
+        final tanggalKeluar = DateTime.tryParse(
+          penghuniStatus['tanggal_keluar']!,
+        );
+        if (tanggalKeluar != null) {
+          final monthsSinceEnd = now.difference(tanggalKeluar).inDays / 30;
+          if (monthsSinceEnd > 3 && status == 'belum_dibayar') {
+            print(
+              'Skipping old unpaid bill for ended contract: $tagihanId (ended ${monthsSinceEnd.toStringAsFixed(1)} months ago)',
+            );
+            continue;
+          }
+        }
+      }
+
+      // Debug logging for bills that are kept
+      if (penghuniStatus != null) {
+        print(
+          'Keeping bill $tagihanId: penghuni_status=${penghuniStatus['status']}, bill_status=$status, tanggal_keluar=${penghuniStatus['tanggal_keluar']}',
+        );
+      }
 
       row['nama_penghuni'] = info['nama'] ?? 'Penghuni';
       row['nomor_kamar'] = info['nomor_kamar'] ?? '-';
@@ -2278,7 +2329,10 @@ class SupabaseService {
         final kamarId = kamar['id']?.toString() ?? '';
         if (kamarId.isEmpty) continue;
 
-        final penghuniRows = await getPenghuniByKamarId(kamarId);
+        final penghuniRows = await getPenghuniByKamarId(
+          kamarId,
+          onlyActive: true,
+        );
         for (final row in penghuniRows) {
           final penghuniId = row['id']?.toString() ?? '';
           if (penghuniId.isEmpty) continue;
@@ -2294,6 +2348,32 @@ class SupabaseService {
           };
         }
       }
+    }
+
+    return lookup;
+  }
+
+  Future<Map<String, Map<String, String?>>> _buildPenghuniStatusLookup() async {
+    final lookup = <String, Map<String, String?>>{};
+
+    try {
+      final penghuniData = await supabase
+          .from('penghuni')
+          .select('id, status, tanggal_keluar');
+
+      if (penghuniData is List) {
+        for (final row in penghuniData) {
+          final penghuniId = row['id']?.toString() ?? '';
+          if (penghuniId.isNotEmpty) {
+            lookup[penghuniId] = {
+              'status': row['status']?.toString(),
+              'tanggal_keluar': row['tanggal_keluar']?.toString(),
+            };
+          }
+        }
+      }
+    } catch (e) {
+      print('Error building penghuni status lookup: $e');
     }
 
     return lookup;
