@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../controllers/kost_controller.dart';
@@ -63,7 +64,10 @@ class EditKostView extends GetView<KostController> {
                       const SizedBox(height: 12),
                       TextField(
                         controller: controller.nameController,
+                        maxLength: 75,
                         decoration: InputDecoration(
+                          counterText: '',
+                          helperText: 'Maksimal 75 karakter',
                           hintText: 'Misal: Peaceful Haven Kost',
                           hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
                           filled: true,
@@ -261,7 +265,10 @@ class EditKostView extends GetView<KostController> {
                       TextField(
                         controller: controller.addressController,
                         maxLines: 3,
+                        maxLength: 250,
                         decoration: InputDecoration(
+                          counterText: '',
+                          helperText: 'Maksimal 250 karakter',
                           hintText: 'Atau ketik alamat lengkap secara\nmanual',
                           hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
                           filled: true,
@@ -314,7 +321,11 @@ class EditKostView extends GetView<KostController> {
                       TextField(
                         controller: controller.roomCountController,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        maxLength: 3,
                         decoration: InputDecoration(
+                          counterText: '',
+                          helperText: 'Masukan berupa angka, maks. 3 digit',
                           hintText: 'Misal: 10',
                           hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
                           filled: true,
