@@ -3,6 +3,34 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../controllers/kelola_kontrak_controller.dart';
 
+// Custom input formatter to limit max value
+class _MaxValueTextInputFormatter extends TextInputFormatter {
+  final int maxValue;
+
+  _MaxValueTextInputFormatter(this.maxValue);
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    final intValue = int.tryParse(newValue.text);
+    if (intValue == null) {
+      return oldValue;
+    }
+
+    if (intValue > maxValue) {
+      return oldValue;
+    }
+
+    return newValue;
+  }
+}
+
 class KelolaKontrakBottomSheet extends StatelessWidget {
   const KelolaKontrakBottomSheet({super.key});
 
@@ -260,7 +288,18 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(2),
+            _MaxValueTextInputFormatter(KelolaKontrakController.maxTambahanDurasiBulan),
           ],
+          onChanged: (value) {
+            final intValue = int.tryParse(value) ?? 0;
+            if (intValue > KelolaKontrakController.maxTambahanDurasiBulan) {
+              controller.tambahanDurasiController.text = 
+                KelolaKontrakController.maxTambahanDurasiBulan.toString();
+              controller.tambahanDurasiController.selection = TextSelection.fromPosition(
+                TextPosition(offset: controller.tambahanDurasiController.text.length),
+              );
+            }
+          },
           decoration: InputDecoration(
             hintText:
                 'Masukkan tambahan durasi (maks ${KelolaKontrakController.maxTambahanDurasiBulan} bulan)',
@@ -271,6 +310,11 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
+            errorText: controller.tambahanDurasiController.text.isNotEmpty &&
+                    (int.tryParse(controller.tambahanDurasiController.text) ?? 0) >
+                        KelolaKontrakController.maxTambahanDurasiBulan
+                ? 'Maksimal ${KelolaKontrakController.maxTambahanDurasiBulan} bulan'
+                : null,
           ),
         ),
         const SizedBox(height: 6),
@@ -314,11 +358,63 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               ),
               if (note.isNotEmpty) ...[
                 const SizedBox(height: 6),
-                Text(
-                  note,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF6B7280),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDEEBFF),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF0052CC)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Color(0xFF0052CC),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          note,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF0052CC),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              if (controller.showAutoChangeNotification.value) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF3CD),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFF59E0B)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.auto_fix_high,
+                        size: 16,
+                        color: Color(0xFFF59E0B),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          controller.autoChangeMessage,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF92400E),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -423,7 +519,14 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
                 () => ElevatedButton.icon(
                   onPressed: controller.isLoading.value
                       ? null
-                      : controller.perpanjangKontrak,
+                      : () {
+                          try {
+                            HapticFeedback.lightImpact();
+                          } catch (_) {
+                            // Ignore haptic errors
+                          }
+                          controller.perpanjangKontrak();
+                        },
                   icon: controller.isLoading.value
                       ? const SizedBox(
                           width: 20,
@@ -470,14 +573,21 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
         const SizedBox(height: 8),
         TextField(
           controller: controller.tanggalMulaiController,
+          readOnly: true,
+          onTap: () => controller.pickStartDate(),
           decoration: InputDecoration(
-            hintText: 'Pilih tanggal',
+            hintText: 'Pilih tanggal mulai sewa',
             hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
             filled: true,
             fillColor: const Color(0xFFF7FAFC),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
+            ),
+            suffixIcon: const Icon(
+              Icons.calendar_today,
+              color: Color(0xFF6B7280),
+              size: 20,
             ),
           ),
         ),
@@ -494,8 +604,23 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
         TextField(
           controller: controller.durasiKontrakController,
           keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(3),
+            _MaxValueTextInputFormatter(KelolaKontrakController.maxDurasiKontrakBulan),
+          ],
+          onChanged: (value) {
+            final intValue = int.tryParse(value) ?? 0;
+            if (intValue > KelolaKontrakController.maxDurasiKontrakBulan) {
+              controller.durasiKontrakController.text = 
+                KelolaKontrakController.maxDurasiKontrakBulan.toString();
+              controller.durasiKontrakController.selection = TextSelection.fromPosition(
+                TextPosition(offset: controller.durasiKontrakController.text.length),
+              );
+            }
+          },
           decoration: InputDecoration(
-            hintText: 'Masukkan durasi (bulan)',
+            hintText: 'Masukkan durasi kontrak (maks ${KelolaKontrakController.maxDurasiKontrakBulan} bulan / 12 tahun)',
             hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
             filled: true,
             fillColor: const Color(0xFFF7FAFC),
@@ -504,6 +629,11 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
           ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Maksimal ${KelolaKontrakController.maxDurasiKontrakBulan} bulan (12 tahun)',
+          style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
         ),
         const SizedBox(height: 16),
         const Text(
@@ -541,11 +671,63 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               ),
               if (note.isNotEmpty) ...[
                 const SizedBox(height: 6),
-                Text(
-                  note,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF6B7280),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDEEBFF),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFF0052CC)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Color(0xFF0052CC),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          note,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF0052CC),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              if (controller.showAutoChangeNotification.value) ...[
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF3CD),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: const Color(0xFFF59E0B)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.auto_fix_high,
+                        size: 16,
+                        color: Color(0xFFF59E0B),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          controller.autoChangeMessage,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF92400E),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -679,7 +861,14 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
                 () => ElevatedButton.icon(
                   onPressed: controller.isLoading.value
                       ? null
-                      : controller.editKontrak,
+                      : () {
+                          try {
+                            HapticFeedback.lightImpact();
+                          } catch (_) {
+                            // Ignore haptic errors
+                          }
+                          controller.editKontrak();
+                        },
                   icon: controller.isLoading.value
                       ? const SizedBox(
                           width: 20,
@@ -894,7 +1083,14 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
                 () => ElevatedButton.icon(
                   onPressed: controller.isLoading.value
                       ? null
-                      : controller.akhiriKontrak,
+                      : () {
+                          try {
+                            HapticFeedback.lightImpact();
+                          } catch (_) {
+                            // Ignore haptic errors
+                          }
+                          controller.akhiriKontrak();
+                        },
                   icon: controller.isLoading.value
                       ? const SizedBox(
                           width: 20,
