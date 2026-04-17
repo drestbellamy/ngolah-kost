@@ -71,11 +71,17 @@ class RingkasanKeuanganController extends GetxController {
   }
 
   String formatCurrency(double amount) {
-    if (amount >= 1000000) {
-      return 'Rp ${(amount / 1000000).toStringAsFixed(1)} Jt';
-    } else if (amount >= 1000) {
-      return 'Rp ${(amount / 1000).toStringAsFixed(0)} Rb';
+    final absAmount = amount.abs();
+    String formatted;
+
+    if (absAmount >= 1000000) {
+      formatted = 'Rp ${(absAmount / 1000000).toStringAsFixed(1)} Jt';
+    } else if (absAmount >= 1000) {
+      formatted = 'Rp ${(absAmount / 1000).toStringAsFixed(0)} Rb';
+    } else {
+      formatted = 'Rp ${absAmount.toStringAsFixed(0)}';
     }
-    return 'Rp ${amount.toStringAsFixed(0)}';
+
+    return amount < 0 ? '-$formatted' : formatted;
   }
 }

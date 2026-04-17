@@ -45,12 +45,18 @@ class RingkasanKeuanganWidgetController extends GetxController {
   }
 
   String formatCurrency(double amount) {
-    if (amount >= 1000000) {
-      return 'Rp ${(amount / 1000000).toStringAsFixed(1)} Jt';
-    } else if (amount >= 1000) {
-      return 'Rp ${(amount / 1000).toStringAsFixed(0)} Rb';
+    final absAmount = amount.abs();
+    String formatted;
+
+    if (absAmount >= 1000000) {
+      formatted = 'Rp ${(absAmount / 1000000).toStringAsFixed(1)} Jt';
+    } else if (absAmount >= 1000) {
+      formatted = 'Rp ${(absAmount / 1000).toStringAsFixed(0)} Rb';
+    } else {
+      formatted = 'Rp ${absAmount.toStringAsFixed(0)}';
     }
-    return 'Rp ${amount.toStringAsFixed(0)}';
+
+    return amount < 0 ? '-$formatted' : formatted;
   }
 }
 
@@ -141,10 +147,16 @@ class RingkasanKeuanganWidget extends StatelessWidget {
 
               // Laba Bersih
               _buildFinancialItem(
-                'Laba Bersih',
-                controller.formatCurrency(controller.totalLabaBersih.value),
-                const Color(0xFF6B8E7A),
-                Icons.attach_money,
+                controller.totalLabaBersih.value >= 0
+                    ? 'Laba Bersih'
+                    : 'Rugi Bersih',
+                '${controller.totalLabaBersih.value >= 0 ? '+' : ''}${controller.formatCurrency(controller.totalLabaBersih.value)}',
+                controller.totalLabaBersih.value >= 0
+                    ? const Color(0xFF8B5CF6)
+                    : const Color(0xFFEF4444),
+                controller.totalLabaBersih.value >= 0
+                    ? Icons.savings
+                    : Icons.warning,
               ),
             ],
           );

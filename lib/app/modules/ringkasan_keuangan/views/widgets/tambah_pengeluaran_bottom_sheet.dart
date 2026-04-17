@@ -1,5 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+// Custom formatter untuk currency
+class CurrencyInputFormatter extends TextInputFormatter {
+  final NumberFormat _formatter = NumberFormat('#,###', 'id_ID');
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue;
+    }
+
+    // Remove all non-digit characters
+    final numericString = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (numericString.isEmpty) {
+      return const TextEditingValue();
+    }
+
+    // Parse and format
+    final number = int.tryParse(numericString);
+    if (number == null) {
+      return oldValue;
+    }
+
+    final formatted = _formatter.format(number);
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+}
 
 class TambahPengeluaranBottomSheet extends StatefulWidget {
   final Map<String, dynamic>? initialData;
@@ -21,6 +58,9 @@ class _TambahPengeluaranBottomSheetState
   String? titleError;
   String? descriptionError;
   String? amountError;
+
+  // Currency formatter
+  final NumberFormat _currencyFormatter = NumberFormat('#,###', 'id_ID');
 
   @override
   void initState() {
@@ -51,11 +91,13 @@ class _TambahPengeluaranBottomSheetState
 
   String _extractAmount(dynamic jumlah) {
     if (jumlah == null) return '';
-    if (jumlah is int) return jumlah.toString();
-    if (jumlah is double) return jumlah.toInt().toString();
+    if (jumlah is int) return _currencyFormatter.format(jumlah);
+    if (jumlah is double) return _currencyFormatter.format(jumlah.toInt());
     final str = jumlah.toString();
     final numOnly = str.replaceAll(RegExp(r'[^0-9]'), '');
-    return numOnly;
+    if (numOnly.isEmpty) return '';
+    final number = int.tryParse(numOnly) ?? 0;
+    return _currencyFormatter.format(number);
   }
 
   DateTime _parseDate(dynamic dateValue) {
@@ -283,8 +325,9 @@ class _TambahPengeluaranBottomSheetState
                       TextField(
                         controller: amountController,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [CurrencyInputFormatter()],
                         decoration: InputDecoration(
-                          hintText: 'Contoh: 500000',
+                          hintText: 'Contoh: 500,000',
                           hintStyle: TextStyle(color: Colors.grey[400]),
                           prefixText: 'Rp ',
                           filled: true,
