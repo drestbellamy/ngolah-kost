@@ -24,6 +24,28 @@ class KostView extends GetView<KostController> {
               showBackButton: false,
             ),
 
+            // Map View Button
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => Get.toNamed(Routes.kostMap),
+                  icon: const Icon(Icons.map, size: 20),
+                  label: const Text('Lihat Peta Lokasi Kost'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6B8E7F),
+                    foregroundColor: Colors.white,
+                    elevation: 2,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
             // List Kost
             Expanded(
               child: FutureBuilder<List<KostModel>>(
@@ -91,7 +113,7 @@ class KostView extends GetView<KostController> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),

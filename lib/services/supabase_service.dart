@@ -2918,4 +2918,161 @@ class SupabaseService {
       throw Exception('Gagal sinkronisasi pemasukan: ${e.toString()}');
     }
   }
+
+  // MAP VIEW METHODS - Room Status Calculation
+
+  /// Get kost list with room availability status for map view
+  Future<List<Map<String, dynamic>>> getKostListWithStatus() async {
+    try {
+      // Get all kost with their room counts
+      final kostList = await supabase
+          .from('kost')
+          .select(
+            'id, nama_kost, alamat, total_kamar, latitude, longitude, created_at',
+          )
+          .order('created_at', ascending: false);
+
+      final List<Map<String, dynamic>> kostWithStatus = [];
+
+      for (final kost in kostList) {
+        final kostId = kost['id']?.toString() ?? '';
+        if (kostId.isEmpty) continue;
+
+        // Get room availability for this kost
+        final roomStatus = await _getKostRoomAvailability(kostId);
+
+        // Add status information to kost data
+        final kostWithStatusData = Map<String, dynamic>.from(kost);
+        kostWithStatusData['available_rooms'] = roomStatus['available_rooms'];
+        kostWithStatusData['occupied_rooms'] = roomStatus['occupied_rooms'];
+
+        kostWithStatus.add(kostWithStatusData);
+      }
+
+      return kostWithStatus;
+    } catch (e) {
+      print('❌ Error getKostListWithStatus: $e');
+      throw Exception('Gagal memuat data kost dengan status: ${e.toString()}');
+    }
+  }
+
+  /// Get room availability status for a specific kost
+  Future<Map<String, int>> _getKostRoomAvailability(String kostId) async {
+    try {
+      // Get all rooms for this kost
+      final rooms = await supabase
+          .from('kamar')
+          .select('id, status')
+          .eq('kost_id', kostId);
+
+      int availableRooms = 0;
+      int occupiedRooms = 0;
+
+      for (final room in rooms) {
+        final status = room['status']?.toString().toLowerCase();
+
+        // Count based on room status
+        // If status is null or empty, consider it available
+        if (status == null ||
+            status.isEmpty ||
+            status == 'kosong' ||
+            status == 'available') {
+          availableRooms++;
+        } else if (status == 'terisi' ||
+            status == 'occupied' ||
+            status == 'penuh') {
+          occupiedRooms++;
+        } else {
+          // For any other status, check if there are active penghuni
+          final roomId = room['id']?.toString() ?? '';
+          if (roomId.isNotEmpty) {
+            final activePenghuni = await supabase
+                .from('penghuni')
+                .select('id')
+                .eq('kamar_id', roomId)
+                .eq('status', 'aktif');
+
+            if (activePenghuni.isNotEmpty) {
+              occupiedRooms++;
+            } else {
+              availableRooms++;
+            }
+          } else {
+            availableRooms++; // Default to available if unclear
+          }
+        }
+      }
+
+      return {
+        'available_rooms': availableRooms,
+        'occupied_rooms': occupiedRooms,
+      };
+    } catch (e) {
+      print('❌ Error _getKostRoomAvailability for kost $kostId: $e');
+      // Return safe defaults on error
+      return {'available_rooms': 0, 'occupied_rooms': 0};
+    }
+  }
+
+  /// Get room availability for multiple kost (optimized for map view)
+  Future<Map<String, Map<String, int>>> getMultipleKostRoomAvailability(
+    List<String> kostIds,
+  ) async {
+    try {
+      final Map<String, Map<String, int>> result = {};
+
+      // Get all rooms for all kost in one query
+      final rooms = await supabase
+          .from('kamar')
+          .select('id, kost_id, status')
+          .inFilter('kost_id', kostIds);
+
+      // Group rooms by kost_id
+      final Map<String, List<Map<String, dynamic>>> roomsByKost = {};
+      for (final room in rooms) {
+        final kostId = room['kost_id']?.toString() ?? '';
+        if (kostId.isNotEmpty) {
+          roomsByKost[kostId] ??= [];
+          roomsByKost[kostId]!.add(room);
+        }
+      }
+
+      // Calculate availability for each kost
+      for (final kostId in kostIds) {
+        final kostRooms = roomsByKost[kostId] ?? [];
+        int availableRooms = 0;
+        int occupiedRooms = 0;
+
+        for (final room in kostRooms) {
+          final status = room['status']?.toString().toLowerCase();
+
+          // If status is null or empty, consider it available
+          if (status == null ||
+              status.isEmpty ||
+              status == 'kosong' ||
+              status == 'available') {
+            availableRooms++;
+          } else if (status == 'terisi' ||
+              status == 'occupied' ||
+              status == 'penuh') {
+            occupiedRooms++;
+          } else {
+            // For unclear status, assume available (for performance)
+            availableRooms++;
+          }
+        }
+
+        result[kostId] = {
+          'available_rooms': availableRooms,
+          'occupied_rooms': occupiedRooms,
+        };
+      }
+
+      return result;
+    } catch (e) {
+      print('❌ Error getMultipleKostRoomAvailability: $e');
+      // Return empty result on error
+      return {};
+    }
+  }
 }
