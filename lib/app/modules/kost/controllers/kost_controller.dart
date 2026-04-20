@@ -46,6 +46,9 @@ class KostController extends GetxController {
   }
 
   Future<void> updateKost() async {
+    // Tutup keyboard sebelum proses
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     if (editKostId == null) return;
 
     if (nameController.text.isEmpty ||
@@ -207,6 +210,9 @@ class KostController extends GetxController {
   }
 
   Future<void> saveNewKost() async {
+    // Tutup keyboard sebelum proses
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     if (nameController.text.isEmpty ||
         addressController.text.isEmpty ||
         roomCountController.text.isEmpty) {

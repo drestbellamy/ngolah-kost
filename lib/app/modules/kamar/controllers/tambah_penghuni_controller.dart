@@ -111,6 +111,9 @@ class TambahPenghuniController extends GetxController {
   }
 
   void handleNext() async {
+    // Tutup keyboard sebelum validasi dan submit
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     if (currentStep.value == 1) {
       if (_validateStep1()) {
         currentStep.value = 2;

@@ -32,6 +32,9 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
+    // Tutup keyboard sebelum proses login
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 

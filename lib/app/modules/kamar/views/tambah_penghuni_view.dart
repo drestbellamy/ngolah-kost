@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/widgets/keyboard_dismissible.dart';
 import '../controllers/tambah_penghuni_controller.dart';
 
 class TambahPenghuniView extends GetView<TambahPenghuniController> {
@@ -11,10 +12,11 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
-      resizeToAvoidBottomInset: false,
-      body: Column(
+    return KeyboardDismissible(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF7F9F8),
+        resizeToAvoidBottomInset: true,
+        body: Column(
         children: [
           // Header with gradient
           SafeArea(
@@ -116,31 +118,24 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
 
           // Form content (scrollable)
           Expanded(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              behavior: HitTestBehavior.translucent,
-              child: SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: EdgeInsets.fromLTRB(
-                  24,
-                  0,
-                  24,
-                  24 +
-                      (MediaQuery.of(context).viewInsets.bottom > 0
-                          ? MediaQuery.of(context).viewInsets.bottom + 16
-                          : 0),
-                ),
-                child: Column(
-                  children: [
-                    // Form content based on step
-                    Obx(
-                      () => controller.currentStep.value == 1
-                          ? _buildStep1()
-                          : _buildStep2(),
-                    ),
-                  ],
-                ),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: EdgeInsets.fromLTRB(
+                24,
+                0,
+                24,
+                24 + MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                children: [
+                  // Form content based on step
+                  Obx(
+                    () => controller.currentStep.value == 1
+                        ? _buildStep1()
+                        : _buildStep2(),
+                  ),
+                ],
               ),
             ),
           ),
@@ -237,6 +232,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                   ),
           ),
         ],
+      ),
       ),
     );
   }

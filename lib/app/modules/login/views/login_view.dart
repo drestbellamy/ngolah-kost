@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import '../controllers/login_controller.dart';
+import '../../../core/widgets/keyboard_dismissible.dart';
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
 
     const double logoVerticalOffset = -55;
     const double logoBottomPadding = 0;
@@ -30,10 +30,11 @@ class LoginView extends GetView<LoginController> {
     const double fieldHorizPadding = 12;
     const double usernamePasswordFieldGap = 18;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      body: LayoutBuilder(
+    return KeyboardDismissible(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        resizeToAvoidBottomInset: true,
+        body: LayoutBuilder(
         builder: (context, constraints) {
           final imageHeight = constraints.maxHeight * imageHeightRatio;
 
@@ -188,6 +189,8 @@ class LoginView extends GetView<LoginController> {
                   // White card content
                   Expanded(
                     child: SingleChildScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
                       padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -328,6 +331,7 @@ class LoginView extends GetView<LoginController> {
             ],
           );
         },
+      ),
       ),
     );
   }

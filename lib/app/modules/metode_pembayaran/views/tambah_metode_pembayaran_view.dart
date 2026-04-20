@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/widgets/keyboard_dismissible.dart';
 import '../controllers/tambah_metode_pembayaran_controller.dart';
 
 class TambahMetodePembayaranView
@@ -8,9 +9,11 @@ class TambahMetodePembayaranView
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
-      body: SafeArea(
+    return KeyboardDismissible(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF7F9F8),
+        resizeToAvoidBottomInset: true,
+        body: SafeArea(
         top: false,
         child: Column(
           children: [
@@ -86,6 +89,8 @@ class TambahMetodePembayaranView
             // Content
             Expanded(
               child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -662,9 +667,9 @@ class TambahMetodePembayaranView
               ),
             ),
           ],
+          ),
         ),
-      ),
-      bottomNavigationBar: Container(
+        bottomNavigationBar: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -703,6 +708,7 @@ class TambahMetodePembayaranView
             ),
           ),
         ),
+      ),
       ),
     );
   }
