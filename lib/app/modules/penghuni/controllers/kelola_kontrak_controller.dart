@@ -38,8 +38,10 @@ class KelolaKontrakController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null && Get.arguments is PenghuniModel) {
+    if (penghuni == null && Get.arguments != null && Get.arguments is PenghuniModel) {
       penghuni = Get.arguments as PenghuniModel;
+    }
+    if (penghuni != null) {
       initializeEditForm();
       _loadPaidCoverageConstraint();
     }
@@ -84,6 +86,16 @@ class KelolaKontrakController extends GetxController {
       _syncPerpanjangSistemPembayaranWithDurasi();
       _syncEditSistemPembayaranWithDurasi();
     }
+  }
+
+  // Method untuk set penghuni dari luar dan re-initialize form
+  void setPenghuniAndInitialize(PenghuniModel penghuniModel) {
+    penghuni = penghuniModel;
+    initializeEditForm();
+    if (!_hasLoadedPaidCoverageConstraint) {
+      _loadPaidCoverageConstraint();
+    }
+    update(); // Trigger rebuild untuk GetBuilder
   }
 
   List<int> get perpanjangSistemPembayaranOptions {
@@ -216,13 +228,20 @@ class KelolaKontrakController extends GetxController {
 
   // Fungsi Perpanjang Kontrak
   Future<void> perpanjangKontrak() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    
     try {
       HapticFeedback.mediumImpact();
     } catch (_) {
       // Ignore haptic feedback errors
     }
+    
+    // Dismiss keyboard after a small delay to avoid build errors
+    Future.microtask(() {
+      try {
+        FocusManager.instance.primaryFocus?.unfocus();
+      } catch (_) {
+        // Ignore if focus manager is not available
+      }
+    });
     
     if (tambahanDurasiController.text.isEmpty) {
       Get.snackbar(
@@ -446,13 +465,20 @@ class KelolaKontrakController extends GetxController {
 
   // Fungsi Edit Kontrak
   Future<void> editKontrak() async {
-    FocusManager.instance.primaryFocus?.unfocus();
-    
     try {
       HapticFeedback.mediumImpact();
     } catch (_) {
       // Ignore haptic feedback errors
     }
+    
+    // Dismiss keyboard after a small delay to avoid build errors
+    Future.microtask(() {
+      try {
+        FocusManager.instance.primaryFocus?.unfocus();
+      } catch (_) {
+        // Ignore if focus manager is not available
+      }
+    });
     
     if (tanggalMulaiController.text.isEmpty ||
         durasiKontrakController.text.isEmpty ||
