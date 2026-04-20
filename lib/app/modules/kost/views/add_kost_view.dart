@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/widgets/keyboard_dismissible.dart';
 import '../controllers/kost_controller.dart';
 
 class AddKostView extends GetView<KostController> {
@@ -9,9 +10,11 @@ class AddKostView extends GetView<KostController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
-      body: SafeArea(
+    return KeyboardDismissible(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: const Color(0xFFF7F9F8),
+        body: SafeArea(
         top: false,
         child: Column(
           children: [
@@ -25,6 +28,7 @@ class AddKostView extends GetView<KostController> {
             // Form Content
             Expanded(
               child: SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.all(24),
                 child: Container(
                   padding: const EdgeInsets.all(24),
@@ -387,6 +391,7 @@ class AddKostView extends GetView<KostController> {
           ],
         ),
       ),
+    ),
     );
   }
 }

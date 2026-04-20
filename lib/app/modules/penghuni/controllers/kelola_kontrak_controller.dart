@@ -216,6 +216,8 @@ class KelolaKontrakController extends GetxController {
 
   // Fungsi Perpanjang Kontrak
   Future<void> perpanjangKontrak() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     try {
       HapticFeedback.mediumImpact();
     } catch (_) {
@@ -444,6 +446,8 @@ class KelolaKontrakController extends GetxController {
 
   // Fungsi Edit Kontrak
   Future<void> editKontrak() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     try {
       HapticFeedback.mediumImpact();
     } catch (_) {

@@ -53,6 +53,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
   }
 
   void _submit() {
+    // Tutup keyboard sebelum submit
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     final nomorKamar = nomorKamarController.text.trim();
     final kapasitasText = kapasitasController.text.trim();
     final hargaText = hargaController.text.trim();
