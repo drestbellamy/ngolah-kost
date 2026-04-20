@@ -6,17 +6,28 @@ import '../controllers/kelola_kontrak_controller.dart';
 import '../controllers/penghuni_controller.dart';
 import 'widgets/kelola_kontrak_bottom_sheet.dart';
 
-class PenghuniDetailView extends StatelessWidget {
+class PenghuniDetailView extends StatefulWidget {
   const PenghuniDetailView({super.key});
 
+  @override
+  State<PenghuniDetailView> createState() => _PenghuniDetailViewState();
+}
+
+class _PenghuniDetailViewState extends State<PenghuniDetailView> {
   static final SupabaseService _supabaseService = SupabaseService();
+  PenghuniModel? _penghuni;
+
+  @override
+  void initState() {
+    super.initState();
+    // Simpan arguments di initState agar tidak hilang saat rebuild
+    _penghuni = Get.arguments as PenghuniModel?;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final PenghuniModel? penghuniArg = Get.arguments as PenghuniModel?;
-
     // Handle null case
-    if (penghuniArg == null) {
+    if (_penghuni == null) {
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         body: SafeArea(
@@ -67,7 +78,8 @@ class PenghuniDetailView extends StatelessWidget {
       );
     }
 
-    final PenghuniModel penghuni = penghuniArg;
+    // Gunakan variabel lokal non-nullable untuk memudahkan akses
+    final penghuni = _penghuni!;
     final billingFuture = _loadBillingHistory(penghuni);
     final contractBadge = _getContractBadge(penghuni);
 
@@ -560,11 +572,31 @@ class PenghuniDetailView extends StatelessWidget {
                                     Get.delete<KelolaKontrakController>();
                                   }
 
+                                  // Buat controller baru
                                   final controller = Get.put(
                                     KelolaKontrakController(),
                                   );
-                                  controller.penghuni = penghuni;
-                                  controller.initializeEditForm();
+                                  
+                                  // Set penghuni dan initialize form menggunakan method khusus
+                                  controller.setPenghuniAndInitialize(penghuni);
+
+                                  // Tunggu sebentar untuk memastikan controller sudah siap
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 100),
+                                  );
+
+                                  // Pastikan controller masih terdaftar dan penghuni tidak null
+                                  if (!Get.isRegistered<KelolaKontrakController>() ||
+                                      controller.penghuni == null) {
+                                    Get.snackbar(
+                                      'Error',
+                                      'Gagal memuat data kontrak. Silakan coba lagi.',
+                                      backgroundColor: const Color(0xFFEF4444),
+                                      colorText: Colors.white,
+                                      snackPosition: SnackPosition.TOP,
+                                    );
+                                    return;
+                                  }
 
                                   final result = await Get.bottomSheet<bool>(
                                     const KelolaKontrakBottomSheet(),
