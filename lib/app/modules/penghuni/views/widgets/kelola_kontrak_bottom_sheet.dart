@@ -36,25 +36,37 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<KelolaKontrakController>();
+    return GetBuilder<KelolaKontrakController>(
+      builder: (controller) {
+        // Check if penghuni is null
+        if (controller.penghuni == null) {
+          // Tutup bottom sheet dan tampilkan error
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (Get.isBottomSheetOpen ?? false) {
+              Get.back();
+            }
+            Get.snackbar(
+              'Error',
+              'Data penghuni tidak ditemukan. Silakan coba lagi.',
+              backgroundColor: const Color(0xFFEF4444),
+              colorText: Colors.white,
+              snackPosition: SnackPosition.TOP,
+            );
+          });
+          
+          // Return widget sementara
+          return const SizedBox.shrink();
+        }
 
-    // Check if penghuni is null
-    if (controller.penghuni == null) {
-      return Container(
-        height: 200,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: const Center(
-          child: Text('Error: Data penghuni tidak ditemukan'),
-        ),
-      );
-    }
+        return _buildBottomSheetContent(controller, context);
+      },
+    );
+  }
 
+  Widget _buildBottomSheetContent(
+    KelolaKontrakController controller,
+    BuildContext context,
+  ) {
     return DraggableScrollableSheet(
       initialChildSize: 0.6,
       minChildSize: 0.3,
