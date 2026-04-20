@@ -9,6 +9,8 @@ import '../modules/kost/bindings/kost_binding.dart';
 import '../modules/kost/views/kost_view.dart';
 import '../modules/kost/views/add_kost_view.dart';
 import '../modules/kost/views/edit_kost_view.dart';
+import '../modules/kost_map/bindings/kost_map_binding.dart';
+import '../modules/kost_map/views/kost_map_view.dart';
 import '../modules/kamar/bindings/kamar_binding.dart';
 import '../modules/kamar/views/kamar_view.dart';
 import '../modules/penghuni/bindings/penghuni_binding.dart';
@@ -74,6 +76,12 @@ class AppPages {
       name: Routes.kost,
       page: () => const KostView(),
       binding: KostBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.kostMap,
+      page: () => const KostMapView(),
+      binding: KostMapBinding(),
       middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
     ),
     GetPage(
