@@ -743,6 +743,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                           onPressed: controller.isSavingPengumuman.value
                               ? null
                               : () async {
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                   final judul = judulController.text.trim();
                                   final deskripsi = deskripsiController.text
                                       .trim();
@@ -930,6 +931,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                           onPressed: controller.isSavingPengumuman.value
                               ? null
                               : () async {
+                                  FocusManager.instance.primaryFocus?.unfocus();
                                   final judul = judulController.text.trim();
                                   final deskripsi = deskripsiController.text
                                       .trim();

@@ -46,6 +46,9 @@ class KostController extends GetxController {
   }
 
   Future<void> updateKost() async {
+    // Tutup keyboard sebelum proses
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     if (editKostId == null) return;
 
     if (nameController.text.isEmpty ||
@@ -70,14 +73,17 @@ class KostController extends GetxController {
         longitude: longitude.value,
       );
 
-      Get.back(); // Kembali langsung ke halaman unit kost
+      if (Get.isSnackbarOpen) Get.closeAllSnackbars();
+      Get.until((route) => route.isFirst || route.settings.name == Routes.kost);
+      
       Get.snackbar(
         'Berhasil',
         'Data kost berhasil diperbarui',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
-      await fetchKostData(); // Update data di background
+      
+      fetchKostData(); // Update secara background tanpa await agar cepat
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -204,6 +210,9 @@ class KostController extends GetxController {
   }
 
   Future<void> saveNewKost() async {
+    // Tutup keyboard sebelum proses
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     if (nameController.text.isEmpty ||
         addressController.text.isEmpty ||
         roomCountController.text.isEmpty) {
@@ -225,14 +234,17 @@ class KostController extends GetxController {
         longitude: longitude.value,
       );
 
-      Get.back(); // Kembali langsung ke halaman unit kost
+      if (Get.isSnackbarOpen) Get.closeAllSnackbars();
+      Get.until((route) => route.isFirst || route.settings.name == Routes.kost);
+      
       Get.snackbar(
         'Berhasil',
         'Kost baru berhasil ditambahkan',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
-      await fetchKostData(); // Update list kost
+      
+      fetchKostData(); // Update secara background
     } catch (e) {
       Get.snackbar(
         'Error',

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/widgets/keyboard_dismissible.dart';
 import '../controllers/kost_controller.dart';
 
 class AddKostView extends GetView<KostController> {
@@ -8,9 +10,11 @@ class AddKostView extends GetView<KostController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
-      body: SafeArea(
+    return KeyboardDismissible(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        backgroundColor: const Color(0xFFF7F9F8),
+        body: SafeArea(
         top: false,
         child: Column(
           children: [
@@ -24,6 +28,7 @@ class AddKostView extends GetView<KostController> {
             // Form Content
             Expanded(
               child: SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.all(24),
                 child: Container(
                   padding: const EdgeInsets.all(24),
@@ -63,7 +68,10 @@ class AddKostView extends GetView<KostController> {
                       const SizedBox(height: 12),
                       TextField(
                         controller: controller.nameController,
+                        maxLength: 75,
                         decoration: InputDecoration(
+                          counterText: '',
+                          helperText: 'Maksimal 75 karakter',
                           hintText: 'Misal: Green Valley Kost',
                           hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
                           filled: true,
@@ -261,7 +269,10 @@ class AddKostView extends GetView<KostController> {
                       TextField(
                         controller: controller.addressController,
                         maxLines: 3,
+                        maxLength: 250,
                         decoration: InputDecoration(
+                          counterText: '',
+                          helperText: 'Maksimal 250 karakter',
                           hintText: 'Atau ketik alamat lengkap secara\nmanual',
                           hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
                           filled: true,
@@ -314,7 +325,11 @@ class AddKostView extends GetView<KostController> {
                       TextField(
                         controller: controller.roomCountController,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        maxLength: 3,
                         decoration: InputDecoration(
+                          counterText: '',
+                          helperText: 'Masukan berupa angka, maks. 3 digit',
                           hintText: 'Misal: 10',
                           hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
                           filled: true,
@@ -376,6 +391,7 @@ class AddKostView extends GetView<KostController> {
           ],
         ),
       ),
+    ),
     );
   }
 }

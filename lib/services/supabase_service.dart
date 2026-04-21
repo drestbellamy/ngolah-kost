@@ -325,7 +325,7 @@ class SupabaseService {
     required String tagihanId,
     required double totalJumlah,
     required String metodeId,
-    required String buktiPembayaranUrl,
+    String? buktiPembayaranUrl, // Made optional for cash payments
   }) async {
     try {
       print('=== createPembayaran START ===');
@@ -333,18 +333,28 @@ class SupabaseService {
       print('Penghuni ID: $penghuniId');
       print('Jumlah: $totalJumlah');
       print('Metode ID: $metodeId');
-      print('Bukti URL: $buktiPembayaranUrl');
+      print('Bukti URL: ${buktiPembayaranUrl ?? 'null (cash payment)'}');
 
-      // Direct insert to pembayaran table
-      final insertResult = await supabase.from('pembayaran').insert({
+      // Prepare insert data
+      final insertData = {
         'penghuni_id': penghuniId,
         'tagihan_id': tagihanId,
         'jumlah': totalJumlah.toInt(),
         'metode_id': metodeId,
-        'bukti_pembayaran': buktiPembayaranUrl,
         'status': 'pending',
         'tanggal': DateTime.now().toIso8601String(),
-      }).select();
+      };
+
+      // Only add bukti_pembayaran if it's not null (for non-cash payments)
+      if (buktiPembayaranUrl != null) {
+        insertData['bukti_pembayaran'] = buktiPembayaranUrl;
+      }
+
+      // Direct insert to pembayaran table
+      final insertResult = await supabase
+          .from('pembayaran')
+          .insert(insertData)
+          .select();
 
       print('✅ Direct insert pembayaran success');
       print('Insert result: $insertResult');
@@ -1402,7 +1412,11 @@ class SupabaseService {
     if (rows.isEmpty) return rows;
 
     final penghuniLookup = await _buildPenghuniLookup();
+    final penghuniStatusLookup = await _buildPenghuniStatusLookup();
     final now = DateTime.now();
+
+    print('📊 Penghuni lookup size: ${penghuniLookup.length}');
+    print('📊 Penghuni status lookup size: ${penghuniStatusLookup.length}');
 
     // Enrich each row with penghuni info and pembayaran data
     final enrichedRows = <Map<String, dynamic>>[];
@@ -1411,6 +1425,53 @@ class SupabaseService {
       final penghuniId = row['penghuni_id']?.toString() ?? '';
       final status = row['status']?.toString() ?? '';
       final info = penghuniLookup[penghuniId] ?? const <String, String>{};
+      final penghuniStatus = penghuniStatusLookup[penghuniId];
+
+      print('Processing bill $tagihanId for penghuni $penghuniId');
+
+      // If penghuni info is not found in lookup, it means the contract has ended
+      // (since _buildPenghuniLookup now only includes active tenants)
+      if (info.isEmpty) {
+        print('Skipping bill $tagihanId - penghuni not found in active lookup');
+        continue;
+      }
+
+      // Skip bills for ended contracts that are already paid
+      if (penghuniStatus != null &&
+          (penghuniStatus['status'] == 'berakhir' ||
+              penghuniStatus['status'] == 'tidak_aktif') &&
+          status == 'lunas') {
+        print(
+          'Skipping paid bill for ended contract: $tagihanId (status: ${penghuniStatus['status']})',
+        );
+        continue;
+      }
+
+      // Skip bills for ended contracts that ended more than 3 months ago (unless unpaid)
+      if (penghuniStatus != null &&
+          (penghuniStatus['status'] == 'berakhir' ||
+              penghuniStatus['status'] == 'tidak_aktif') &&
+          penghuniStatus['tanggal_keluar'] != null) {
+        final tanggalKeluar = DateTime.tryParse(
+          penghuniStatus['tanggal_keluar']!,
+        );
+        if (tanggalKeluar != null) {
+          final monthsSinceEnd = now.difference(tanggalKeluar).inDays / 30;
+          if (monthsSinceEnd > 3 && status == 'belum_dibayar') {
+            print(
+              'Skipping old unpaid bill for ended contract: $tagihanId (ended ${monthsSinceEnd.toStringAsFixed(1)} months ago)',
+            );
+            continue;
+          }
+        }
+      }
+
+      // Debug logging for bills that are kept
+      if (penghuniStatus != null) {
+        print(
+          'Keeping bill $tagihanId: penghuni_status=${penghuniStatus['status']}, bill_status=$status, tanggal_keluar=${penghuniStatus['tanggal_keluar']}',
+        );
+      }
 
       row['nama_penghuni'] = info['nama'] ?? 'Penghuni';
       row['nomor_kamar'] = info['nomor_kamar'] ?? '-';
@@ -2278,7 +2339,10 @@ class SupabaseService {
         final kamarId = kamar['id']?.toString() ?? '';
         if (kamarId.isEmpty) continue;
 
-        final penghuniRows = await getPenghuniByKamarId(kamarId);
+        final penghuniRows = await getPenghuniByKamarId(
+          kamarId,
+          onlyActive: true,
+        );
         for (final row in penghuniRows) {
           final penghuniId = row['id']?.toString() ?? '';
           if (penghuniId.isEmpty) continue;
@@ -2294,6 +2358,32 @@ class SupabaseService {
           };
         }
       }
+    }
+
+    return lookup;
+  }
+
+  Future<Map<String, Map<String, String?>>> _buildPenghuniStatusLookup() async {
+    final lookup = <String, Map<String, String?>>{};
+
+    try {
+      final penghuniData = await supabase
+          .from('penghuni')
+          .select('id, status, tanggal_keluar');
+
+      if (penghuniData is List) {
+        for (final row in penghuniData) {
+          final penghuniId = row['id']?.toString() ?? '';
+          if (penghuniId.isNotEmpty) {
+            lookup[penghuniId] = {
+              'status': row['status']?.toString(),
+              'tanggal_keluar': row['tanggal_keluar']?.toString(),
+            };
+          }
+        }
+      }
+    } catch (e) {
+      print('Error building penghuni status lookup: $e');
     }
 
     return lookup;
@@ -2826,6 +2916,163 @@ class SupabaseService {
     } catch (e) {
       print('❌ Error sinkronisasiPemasukanFromPembayaran: $e');
       throw Exception('Gagal sinkronisasi pemasukan: ${e.toString()}');
+    }
+  }
+
+  // MAP VIEW METHODS - Room Status Calculation
+
+  /// Get kost list with room availability status for map view
+  Future<List<Map<String, dynamic>>> getKostListWithStatus() async {
+    try {
+      // Get all kost with their room counts
+      final kostList = await supabase
+          .from('kost')
+          .select(
+            'id, nama_kost, alamat, total_kamar, latitude, longitude, created_at',
+          )
+          .order('created_at', ascending: false);
+
+      final List<Map<String, dynamic>> kostWithStatus = [];
+
+      for (final kost in kostList) {
+        final kostId = kost['id']?.toString() ?? '';
+        if (kostId.isEmpty) continue;
+
+        // Get room availability for this kost
+        final roomStatus = await _getKostRoomAvailability(kostId);
+
+        // Add status information to kost data
+        final kostWithStatusData = Map<String, dynamic>.from(kost);
+        kostWithStatusData['available_rooms'] = roomStatus['available_rooms'];
+        kostWithStatusData['occupied_rooms'] = roomStatus['occupied_rooms'];
+
+        kostWithStatus.add(kostWithStatusData);
+      }
+
+      return kostWithStatus;
+    } catch (e) {
+      print('❌ Error getKostListWithStatus: $e');
+      throw Exception('Gagal memuat data kost dengan status: ${e.toString()}');
+    }
+  }
+
+  /// Get room availability status for a specific kost
+  Future<Map<String, int>> _getKostRoomAvailability(String kostId) async {
+    try {
+      // Get all rooms for this kost
+      final rooms = await supabase
+          .from('kamar')
+          .select('id, status')
+          .eq('kost_id', kostId);
+
+      int availableRooms = 0;
+      int occupiedRooms = 0;
+
+      for (final room in rooms) {
+        final status = room['status']?.toString().toLowerCase();
+
+        // Count based on room status
+        // If status is null or empty, consider it available
+        if (status == null ||
+            status.isEmpty ||
+            status == 'kosong' ||
+            status == 'available') {
+          availableRooms++;
+        } else if (status == 'terisi' ||
+            status == 'occupied' ||
+            status == 'penuh') {
+          occupiedRooms++;
+        } else {
+          // For any other status, check if there are active penghuni
+          final roomId = room['id']?.toString() ?? '';
+          if (roomId.isNotEmpty) {
+            final activePenghuni = await supabase
+                .from('penghuni')
+                .select('id')
+                .eq('kamar_id', roomId)
+                .eq('status', 'aktif');
+
+            if (activePenghuni.isNotEmpty) {
+              occupiedRooms++;
+            } else {
+              availableRooms++;
+            }
+          } else {
+            availableRooms++; // Default to available if unclear
+          }
+        }
+      }
+
+      return {
+        'available_rooms': availableRooms,
+        'occupied_rooms': occupiedRooms,
+      };
+    } catch (e) {
+      print('❌ Error _getKostRoomAvailability for kost $kostId: $e');
+      // Return safe defaults on error
+      return {'available_rooms': 0, 'occupied_rooms': 0};
+    }
+  }
+
+  /// Get room availability for multiple kost (optimized for map view)
+  Future<Map<String, Map<String, int>>> getMultipleKostRoomAvailability(
+    List<String> kostIds,
+  ) async {
+    try {
+      final Map<String, Map<String, int>> result = {};
+
+      // Get all rooms for all kost in one query
+      final rooms = await supabase
+          .from('kamar')
+          .select('id, kost_id, status')
+          .inFilter('kost_id', kostIds);
+
+      // Group rooms by kost_id
+      final Map<String, List<Map<String, dynamic>>> roomsByKost = {};
+      for (final room in rooms) {
+        final kostId = room['kost_id']?.toString() ?? '';
+        if (kostId.isNotEmpty) {
+          roomsByKost[kostId] ??= [];
+          roomsByKost[kostId]!.add(room);
+        }
+      }
+
+      // Calculate availability for each kost
+      for (final kostId in kostIds) {
+        final kostRooms = roomsByKost[kostId] ?? [];
+        int availableRooms = 0;
+        int occupiedRooms = 0;
+
+        for (final room in kostRooms) {
+          final status = room['status']?.toString().toLowerCase();
+
+          // If status is null or empty, consider it available
+          if (status == null ||
+              status.isEmpty ||
+              status == 'kosong' ||
+              status == 'available') {
+            availableRooms++;
+          } else if (status == 'terisi' ||
+              status == 'occupied' ||
+              status == 'penuh') {
+            occupiedRooms++;
+          } else {
+            // For unclear status, assume available (for performance)
+            availableRooms++;
+          }
+        }
+
+        result[kostId] = {
+          'available_rooms': availableRooms,
+          'occupied_rooms': occupiedRooms,
+        };
+      }
+
+      return result;
+    } catch (e) {
+      print('❌ Error getMultipleKostRoomAvailability: $e');
+      // Return empty result on error
+      return {};
     }
   }
 }

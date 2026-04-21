@@ -125,8 +125,9 @@ class DetailKeuanganKostController extends GetxController {
         kostId.value,
       );
 
-      // Find earliest transaction date
+      // Find earliest and latest transaction dates
       DateTime? earliestDate;
+      DateTime? latestDate;
 
       // Check pemasukan dates
       for (final item in pemasukanData) {
@@ -134,6 +135,9 @@ class DetailKeuanganKostController extends GetxController {
         if (tanggal != null) {
           if (earliestDate == null || tanggal.isBefore(earliestDate)) {
             earliestDate = tanggal;
+          }
+          if (latestDate == null || tanggal.isAfter(latestDate)) {
+            latestDate = tanggal;
           }
         }
       }
@@ -145,6 +149,9 @@ class DetailKeuanganKostController extends GetxController {
           if (earliestDate == null || tanggal.isBefore(earliestDate)) {
             earliestDate = tanggal;
           }
+          if (latestDate == null || tanggal.isAfter(latestDate)) {
+            latestDate = tanggal;
+          }
         }
       }
 
@@ -152,17 +159,26 @@ class DetailKeuanganKostController extends GetxController {
       final now = DateTime.now();
       final months = <DateTime>[];
 
-      if (earliestDate != null) {
-        // Start from earliest transaction month, but limit to max 6 months
+      if (earliestDate != null && latestDate != null) {
+        // Start from earliest transaction month
         final startMonth = DateTime(earliestDate.year, earliestDate.month, 1);
+        // End at the latest between current month and latest transaction month
         final currentMonth = DateTime(now.year, now.month, 1);
+        final latestTransactionMonth = DateTime(
+          latestDate.year,
+          latestDate.month,
+          1,
+        );
+        final endMonth = latestTransactionMonth.isAfter(currentMonth)
+            ? latestTransactionMonth
+            : currentMonth;
 
-        // Calculate months between start and current
+        // Calculate months between start and end
         var tempMonth = startMonth;
         final allMonths = <DateTime>[];
 
-        while (tempMonth.isBefore(currentMonth) ||
-            tempMonth.isAtSameMomentAs(currentMonth)) {
+        while (tempMonth.isBefore(endMonth) ||
+            tempMonth.isAtSameMomentAs(endMonth)) {
           allMonths.add(tempMonth);
           tempMonth = DateTime(tempMonth.year, tempMonth.month + 1, 1);
         }
@@ -259,9 +275,17 @@ class DetailKeuanganKostController extends GetxController {
     }
   }
 
+  // Helper method untuk parsing amount yang robust
+  double _parseAmount(dynamic amountData) {
+    final amountString = amountData?.toString() ?? '0';
+    final cleanAmountString = amountString.replaceAll(RegExp(r'[^0-9]'), '');
+    return double.tryParse(cleanAmountString) ?? 0;
+  }
+
   void addPengeluaran(Map<String, dynamic> data) async {
     try {
-      final amount = double.tryParse(data['amount']) ?? 0;
+      final amount = _parseAmount(data['amount']);
+
       final date = data['date'] as DateTime;
       final title = data['title'] as String;
       final description = data['description'] as String;
@@ -301,7 +325,8 @@ class DetailKeuanganKostController extends GetxController {
 
   void editPengeluaran(int index, Map<String, dynamic> data) async {
     try {
-      final amount = double.tryParse(data['amount']) ?? 0;
+      final amount = _parseAmount(data['amount']);
+
       final date = data['date'] as DateTime;
       final title = data['title'] as String;
       final description = data['description'] as String;

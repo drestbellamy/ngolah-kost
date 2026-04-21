@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/profil_controller.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
+import '../../../core/widgets/keyboard_dismissible.dart';
 
 class ProfilView extends GetView<ProfilController> {
   const ProfilView({super.key});
@@ -15,15 +16,18 @@ class ProfilView extends GetView<ProfilController> {
       controller.loadUserProfile();
     });
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await controller.loadUserProfile();
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
+    return KeyboardDismissible(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF7F9F8),
+        resizeToAvoidBottomInset: true,
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await controller.loadUserProfile();
+          },
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
             children: [
               _buildHeader(),
               const SizedBox(height: 20),
@@ -77,9 +81,10 @@ class ProfilView extends GetView<ProfilController> {
               ),
             ],
           ),
+          ),
         ),
+        bottomNavigationBar: const AdminBottomNavbar(currentIndex: 3),
       ),
-      bottomNavigationBar: const AdminBottomNavbar(currentIndex: 3),
     );
   }
 

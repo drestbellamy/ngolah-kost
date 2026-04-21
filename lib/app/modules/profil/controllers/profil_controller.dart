@@ -264,6 +264,9 @@ class ProfilController extends GetxController {
   }
 
   void saveChanges() {
+    // Tutup keyboard sebelum proses
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     // Validasi input
     if (isUsernameExpanded.value) {
       final newUsername = usernameController.text.trim();

@@ -558,6 +558,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                         onPressed: controller.isSavingPeraturan.value
                             ? null
                             : () async {
+                                FocusManager.instance.primaryFocus?.unfocus();
                                 final isValid =
                                     formKey.currentState?.validate() ?? false;
                                 if (!isValid) {
@@ -718,6 +719,7 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                         onPressed: controller.isSavingPeraturan.value
                             ? null
                             : () async {
+                                FocusManager.instance.primaryFocus?.unfocus();
                                 final isValid =
                                     formKey.currentState?.validate() ?? false;
                                 if (!isValid) {

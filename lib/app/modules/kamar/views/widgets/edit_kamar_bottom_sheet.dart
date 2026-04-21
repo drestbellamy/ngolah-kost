@@ -71,6 +71,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
   }
 
   void _submit() {
+    // Tutup keyboard sebelum submit
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     final nomorKamar = nomorKamarController.text.trim();
     final kapasitasText = kapasitasController.text.trim();
     final hargaText = hargaController.text.trim();

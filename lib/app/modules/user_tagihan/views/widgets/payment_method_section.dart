@@ -122,8 +122,15 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                 return ElevatedButton(
                   onPressed: isEnabled
                       ? () {
-                          // Show upload bottom sheet
-                          showUploadBottomSheet();
+                          // Check if payment method is cash (tunai)
+                          if (controller.metodePembayaran.value.toLowerCase() ==
+                              'tunai') {
+                            // For cash payments, submit directly without image upload
+                            controller.submitCashPayment();
+                          } else {
+                            // For other payment methods, show upload bottom sheet
+                            showUploadBottomSheet();
+                          }
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
@@ -145,9 +152,12 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text(
-                          'Kirim Bukti Pembayaran',
-                          style: TextStyle(
+                      : Text(
+                          controller.metodePembayaran.value.toLowerCase() ==
+                                  'tunai'
+                              ? 'Konfirmasi Pembayaran Tunai'
+                              : 'Kirim Bukti Pembayaran',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

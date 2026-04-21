@@ -485,6 +485,9 @@ class TambahMetodePembayaranController extends GetxController {
   }
 
   Future<void> simpan() async {
+    // Tutup keyboard sebelum proses simpan
+    FocusManager.instance.primaryFocus?.unfocus();
+    
     if (!canSave || isSaving.value || isUploadingQris.value) return;
 
     final selectedKostIds = selectedKostList

@@ -11,6 +11,7 @@ import 'penghuni_controller.dart';
 class KelolaKontrakController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();
   static const int maxTambahanDurasiBulan = 24;
+  static const int maxDurasiKontrakBulan = 144; // 12 tahun
   static const List<int> _preferredSiklusBulan = [1, 3, 6, 12, 24];
 
   final selectedTab = 0.obs; // 0: Perpanjang, 1: Edit, 2: Akhiri
@@ -19,6 +20,9 @@ class KelolaKontrakController extends GetxController {
   final previewTick = 0.obs;
   final paidCoveredPrefixMonths = 0.obs;
   bool _hasLoadedPaidCoverageConstraint = false;
+  final showAutoChangeNotification = false.obs;
+  String autoChangeMessage = '';
+  DateTime? selectedStartDate;
 
   // Form controllers untuk Perpanjang
   final tambahanDurasiController = TextEditingController();
@@ -34,8 +38,10 @@ class KelolaKontrakController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (Get.arguments != null && Get.arguments is PenghuniModel) {
+    if (penghuni == null && Get.arguments != null && Get.arguments is PenghuniModel) {
       penghuni = Get.arguments as PenghuniModel;
+    }
+    if (penghuni != null) {
       initializeEditForm();
       _loadPaidCoverageConstraint();
     }
@@ -48,6 +54,13 @@ class KelolaKontrakController extends GetxController {
     });
     tanggalMulaiController.addListener(() => previewTick.value++);
     durasiKontrakController.addListener(() {
+      final durasi = int.tryParse(durasiKontrakController.text) ?? 0;
+      if (durasi > maxDurasiKontrakBulan) {
+        durasiKontrakController.text = maxDurasiKontrakBulan.toString();
+        durasiKontrakController.selection = TextSelection.fromPosition(
+          TextPosition(offset: durasiKontrakController.text.length),
+        );
+      }
       _syncEditSistemPembayaranWithDurasi();
       previewTick.value++;
     });
@@ -57,7 +70,12 @@ class KelolaKontrakController extends GetxController {
 
   void initializeEditForm() {
     if (penghuni != null) {
-      tanggalMulaiController.text = penghuni!.tanggalMasuk;
+      final parsedDate = _parseDateFlexible(penghuni!.tanggalMasuk);
+      selectedStartDate = parsedDate;
+      tanggalMulaiController.text = parsedDate != null 
+          ? _formatDateId(parsedDate)
+          : penghuni!.tanggalMasuk;
+      
       durasiKontrakController.text = penghuni!.durasiKontrak.toString();
       final siklusAwal = _parseSiklusBulan(penghuni!.sistemPembayaran);
       final labelAwal = siklusAwal > 0
@@ -68,6 +86,16 @@ class KelolaKontrakController extends GetxController {
       _syncPerpanjangSistemPembayaranWithDurasi();
       _syncEditSistemPembayaranWithDurasi();
     }
+  }
+
+  // Method untuk set penghuni dari luar dan re-initialize form
+  void setPenghuniAndInitialize(PenghuniModel penghuniModel) {
+    penghuni = penghuniModel;
+    initializeEditForm();
+    if (!_hasLoadedPaidCoverageConstraint) {
+      _loadPaidCoverageConstraint();
+    }
+    update(); // Trigger rebuild untuk GetBuilder
   }
 
   List<int> get perpanjangSistemPembayaranOptions {
@@ -103,17 +131,77 @@ class KelolaKontrakController extends GetxController {
   String get paidCoverageConstraintNote {
     final covered = paidCoveredPrefixMonths.value;
     if (covered <= 0) return '';
-    return 'Beberapa opsi disesuaikan karena $covered bulan awal sudah lunas. Pilih siklus pembayaran yang tetap selaras dengan riwayat lunas.';
+    return 'ℹ️ $covered bulan pertama sudah dibayar lunas. Sistem pembayaran yang tersedia disesuaikan agar tetap selaras dengan pembayaran sebelumnya (contoh: jika 6 bulan sudah lunas, pilih kelipatan 6 seperti 6 atau 12 bulan).';
   }
 
   void pilihSistemPembayaranPerpanjang(int bulan) {
     sistemPembayaranPerpanjangController.text = formatSistemPembayaranOption(
       bulan,
     );
+    showAutoChangeNotification.value = false;
   }
 
   void pilihSistemPembayaranEdit(int bulan) {
     sistemPembayaranEditController.text = formatSistemPembayaranOption(bulan);
+    showAutoChangeNotification.value = false;
+  }
+
+  // Date picker untuk tanggal mulai sewa
+  Future<void> pickStartDate() async {
+    final now = DateTime.now();
+    final initialDate = selectedStartDate ?? now;
+    
+    final picked = await Get.dialog<DateTime>(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Pilih Tanggal Mulai Sewa',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 300,
+                child: CalendarDatePicker(
+                  initialDate: initialDate,
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime(2030),
+                  onDateChanged: (date) {
+                    Get.back(result: date);
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Get.back(),
+                    child: const Text('Batal'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (picked != null) {
+      selectedStartDate = picked;
+      tanggalMulaiController.text = _formatDateId(picked);
+      previewTick.value++;
+    }
   }
 
   String formatSistemPembayaranOption(int bulan) {
@@ -128,19 +216,41 @@ class KelolaKontrakController extends GetxController {
   void changeTab(int index) {
     if (selectedTab.value != index) {
       // Tambahkan haptic feedback yang lebih halus
-      HapticFeedback.lightImpact();
+      try {
+        HapticFeedback.lightImpact();
+      } catch (_) {
+        // Ignore haptic feedback errors
+      }
       selectedTab.value = index;
+      showAutoChangeNotification.value = false;
     }
   }
 
   // Fungsi Perpanjang Kontrak
   Future<void> perpanjangKontrak() async {
+    try {
+      HapticFeedback.mediumImpact();
+    } catch (_) {
+      // Ignore haptic feedback errors
+    }
+    
+    // Dismiss keyboard after a small delay to avoid build errors
+    Future.microtask(() {
+      try {
+        FocusManager.instance.primaryFocus?.unfocus();
+      } catch (_) {
+        // Ignore if focus manager is not available
+      }
+    });
+    
     if (tambahanDurasiController.text.isEmpty) {
       Get.snackbar(
-        'Error',
-        'Tambahan durasi harus diisi',
+        'Validasi Gagal',
+        'Silakan isi tambahan durasi kontrak terlebih dahulu',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -149,9 +259,11 @@ class KelolaKontrakController extends GetxController {
     if (p == null) {
       Get.snackbar(
         'Error',
-        'Data penghuni tidak ditemukan',
+        'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -161,20 +273,24 @@ class KelolaKontrakController extends GetxController {
     final tambahan = int.tryParse(tambahanDurasiController.text.trim()) ?? 0;
     if (tambahan <= 0) {
       Get.snackbar(
-        'Error',
+        'Validasi Gagal',
         'Tambahan durasi harus lebih dari 0 bulan',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
 
     if (tambahan > maxTambahanDurasiBulan) {
       Get.snackbar(
-        'Error',
-        'Tambahan durasi maksimal $maxTambahanDurasiBulan bulan',
+        'Validasi Gagal',
+        'Tambahan durasi maksimal $maxTambahanDurasiBulan bulan. Anda memasukkan $tambahan bulan.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -183,10 +299,13 @@ class KelolaKontrakController extends GetxController {
     final tanggalMasuk = latestKontrak.tanggalMasuk;
     if (tanggalMasuk == null) {
       Get.snackbar(
-        'Error',
-        'Tanggal mulai kontrak tidak valid',
+        'Error Data',
+        'Tanggal mulai kontrak tidak valid. Silakan periksa data kontrak di menu Edit.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 4),
       );
       return;
     }
@@ -200,10 +319,12 @@ class KelolaKontrakController extends GetxController {
 
     if (sistemPembayaranBulanRaw <= 0) {
       Get.snackbar(
-        'Error',
-        'Format sistem pembayaran tidak valid',
+        'Validasi Gagal',
+        'Format sistem pembayaran tidak valid. Silakan pilih sistem pembayaran dari daftar yang tersedia.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -214,26 +335,33 @@ class KelolaKontrakController extends GetxController {
 
     if (sistemPembayaranBulan <= 0) {
       Get.snackbar(
-        'Error',
-        'Sistem pembayaran tidak valid',
+        'Validasi Gagal',
+        'Sistem pembayaran tidak valid. Silakan pilih ulang sistem pembayaran.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
 
     if (!_isSiklusAllowedByPaidCoverage(sistemPembayaranBulan)) {
+      final covered = paidCoveredPrefixMonths.value;
       Get.snackbar(
-        'Error',
-        'Sistem pembayaran $sistemPembayaranBulan bulan tidak bisa dipakai karena pembayaran lunas sebelumnya belum selaras',
+        'Sistem Pembayaran Tidak Sesuai',
+        'Sistem pembayaran $sistemPembayaranBulan bulan tidak dapat digunakan karena $covered bulan pertama sudah lunas. Pilih sistem pembayaran yang merupakan kelipatan dari $covered bulan.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.info_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 5),
       );
       return;
     }
 
     try {
       isLoading.value = true;
+      
       await _supabaseService.updatePenghuniKontrak(
         penghuniId: p.id,
         tanggalMasuk: tanggalMasuk,
@@ -250,21 +378,38 @@ class KelolaKontrakController extends GetxController {
         hargaBulanan: p.sewaBulanan.round(),
       );
 
+      // Wait for data to be fully synced
+      await Future.delayed(const Duration(milliseconds: 500));
       await _refreshRelatedData();
 
-      Get.back(result: true);
+      try {
+        HapticFeedback.heavyImpact();
+      } catch (_) {
+        // Ignore haptic feedback errors on unsupported devices
+      }
+      
+      if (Get.isBottomSheetOpen ?? false) {
+        Get.back(result: true);
+      }
+      
       Get.snackbar(
-        'Berhasil',
-        'Kontrak berhasil diperpanjang',
+        'Berhasil! 🎉',
+        'Kontrak berhasil diperpanjang $tambahan bulan. Data tagihan telah diperbarui.',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
+        icon: const Icon(Icons.check_circle, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
       );
-    } catch (_) {
+    } catch (e) {
       Get.snackbar(
-        'Error',
-        'Gagal memperpanjang kontrak',
+        'Gagal Memperpanjang Kontrak',
+        'Terjadi kesalahan saat memperpanjang kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 5),
       );
     } finally {
       isLoading.value = false;
@@ -320,14 +465,31 @@ class KelolaKontrakController extends GetxController {
 
   // Fungsi Edit Kontrak
   Future<void> editKontrak() async {
+    try {
+      HapticFeedback.mediumImpact();
+    } catch (_) {
+      // Ignore haptic feedback errors
+    }
+    
+    // Dismiss keyboard after a small delay to avoid build errors
+    Future.microtask(() {
+      try {
+        FocusManager.instance.primaryFocus?.unfocus();
+      } catch (_) {
+        // Ignore if focus manager is not available
+      }
+    });
+    
     if (tanggalMulaiController.text.isEmpty ||
         durasiKontrakController.text.isEmpty ||
         sistemPembayaranEditController.text.isEmpty) {
       Get.snackbar(
-        'Error',
-        'Semua field harus diisi',
+        'Validasi Gagal',
+        'Semua field harus diisi. Silakan lengkapi Tanggal Mulai, Durasi Kontrak, dan Sistem Pembayaran.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -336,22 +498,27 @@ class KelolaKontrakController extends GetxController {
     if (p == null) {
       Get.snackbar(
         'Error',
-        'Data penghuni tidak ditemukan',
+        'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
 
     await _ensurePaidCoverageConstraintLoaded();
 
-    final tanggalMasuk = _parseDateFlexible(tanggalMulaiController.text.trim());
+    final tanggalMasuk = selectedStartDate ?? _parseDateFlexible(tanggalMulaiController.text.trim());
     if (tanggalMasuk == null) {
       Get.snackbar(
-        'Error',
-        'Tanggal mulai tidak valid',
+        'Tanggal Tidak Valid',
+        'Format tanggal mulai tidak valid. Silakan pilih tanggal dari date picker.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.calendar_today, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 4),
       );
       return;
     }
@@ -359,10 +526,25 @@ class KelolaKontrakController extends GetxController {
     final durasiBaru = int.tryParse(durasiKontrakController.text.trim()) ?? 0;
     if (durasiBaru <= 0) {
       Get.snackbar(
-        'Error',
+        'Validasi Gagal',
         'Durasi kontrak harus lebih dari 0 bulan',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+      );
+      return;
+    }
+
+    if (durasiBaru > maxDurasiKontrakBulan) {
+      Get.snackbar(
+        'Validasi Gagal',
+        'Durasi kontrak maksimal $maxDurasiKontrakBulan bulan (12 tahun). Anda memasukkan $durasiBaru bulan.',
+        backgroundColor: const Color(0xFFEF4444),
+        colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 4),
       );
       return;
     }
@@ -372,10 +554,12 @@ class KelolaKontrakController extends GetxController {
     );
     if (sistemPembayaranBulanRaw <= 0) {
       Get.snackbar(
-        'Error',
-        'Format sistem pembayaran tidak valid',
+        'Validasi Gagal',
+        'Format sistem pembayaran tidak valid. Silakan pilih sistem pembayaran dari daftar yang tersedia.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
@@ -386,26 +570,33 @@ class KelolaKontrakController extends GetxController {
 
     if (sistemPembayaranBulan <= 0) {
       Get.snackbar(
-        'Error',
-        'Sistem pembayaran tidak valid',
+        'Validasi Gagal',
+        'Sistem pembayaran tidak valid. Silakan pilih ulang sistem pembayaran.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
       );
       return;
     }
 
     if (!_isSiklusAllowedByPaidCoverage(sistemPembayaranBulan)) {
+      final covered = paidCoveredPrefixMonths.value;
       Get.snackbar(
-        'Error',
-        'Sistem pembayaran $sistemPembayaranBulan bulan tidak bisa dipakai karena pembayaran lunas sebelumnya belum selaras',
+        'Sistem Pembayaran Tidak Sesuai',
+        'Sistem pembayaran $sistemPembayaranBulan bulan tidak dapat digunakan karena $covered bulan pertama sudah lunas. Pilih sistem pembayaran yang merupakan kelipatan dari $covered bulan.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.info_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 5),
       );
       return;
     }
 
     try {
       isLoading.value = true;
+      
       await _supabaseService.updatePenghuniKontrak(
         penghuniId: p.id,
         tanggalMasuk: tanggalMasuk,
@@ -422,33 +613,50 @@ class KelolaKontrakController extends GetxController {
         hargaBulanan: p.sewaBulanan.round(),
       );
 
+      // Wait for data to be fully synced
+      await Future.delayed(const Duration(milliseconds: 500));
       await _refreshRelatedData();
 
-      Get.back(result: true);
+      try {
+        HapticFeedback.heavyImpact();
+      } catch (_) {
+        // Ignore haptic feedback errors on unsupported devices
+      }
+      
+      if (Get.isBottomSheetOpen ?? false) {
+        Get.back(result: true);
+      }
+      
       Get.snackbar(
-        'Berhasil',
-        'Kontrak berhasil diperbarui',
+        'Berhasil! 🎉',
+        'Kontrak berhasil diperbarui. Data tagihan telah disesuaikan.',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
+        icon: const Icon(Icons.check_circle, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 3),
       );
-    } catch (_) {
+    } catch (e) {
       Get.snackbar(
-        'Error',
-        'Gagal memperbarui kontrak',
+        'Gagal Memperbarui Kontrak',
+        'Terjadi kesalahan saat memperbarui kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
         backgroundColor: const Color(0xFFEF4444),
         colorText: Colors.white,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 5),
       );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Fungsi Akhiri Kontrak
+  // Fungsi Akhiri Kontrak dengan Undo Mechanism
   void akhiriKontrak() {
     Get.defaultDialog(
-      title: 'Konfirmasi',
+      title: 'Konfirmasi Akhiri Kontrak',
       middleText:
-          'Penghuni akan kehilangan akses ke kamar\nData kontrak akan diarsipkan\nAkun penghuni akan dinonaktifkan',
+          '⚠️ Tindakan ini akan:\n\n• Menghapus akses penghuni ke kamar\n• Mengarsipkan data kontrak\n• Menonaktifkan akun penghuni\n\nAnda akan memiliki waktu 10 detik untuk membatalkan setelah konfirmasi.',
       textConfirm: 'Akhiri Kontrak',
       textCancel: 'Batal',
       confirmTextColor: Colors.white,
@@ -457,36 +665,105 @@ class KelolaKontrakController extends GetxController {
       onConfirm: () async {
         final p = penghuni;
         if (p == null) {
-          Get.back();
+          if (Get.isDialogOpen ?? false) Get.back();
           Get.snackbar(
             'Error',
-            'Data penghuni tidak ditemukan',
+            'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
             backgroundColor: const Color(0xFFEF4444),
             colorText: Colors.white,
+            icon: const Icon(Icons.error_outline, color: Colors.white),
+            snackPosition: SnackPosition.TOP,
           );
           return;
         }
 
+        if (Get.isDialogOpen ?? false) Get.back(); // Close dialog safely
+        
+        try {
+          HapticFeedback.mediumImpact();
+        } catch (_) {
+          // Ignore haptic feedback errors
+        }
+        
+        // Show undo snackbar
+        bool cancelled = false;
+        Get.snackbar(
+          'Memproses...',
+          'Kontrak akan diakhiri dalam 10 detik. Tekan BATAL untuk membatalkan.',
+          backgroundColor: const Color(0xFFF59E0B),
+          colorText: Colors.white,
+          icon: const Icon(Icons.timer, color: Colors.white),
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 10),
+          mainButton: TextButton(
+            onPressed: () {
+              cancelled = true;
+              try {
+                if (Get.isSnackbarOpen) Get.closeAllSnackbars();
+              } catch (_) {
+                // Ignore if snackbar already closed
+              }
+              Get.snackbar(
+                'Dibatalkan',
+                'Proses akhiri kontrak telah dibatalkan',
+                backgroundColor: const Color(0xFF6B7280),
+                colorText: Colors.white,
+                icon: const Icon(Icons.cancel, color: Colors.white),
+                snackPosition: SnackPosition.TOP,
+              );
+            },
+            child: const Text(
+              'BATAL',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        );
+
+        // Wait for 10 seconds
+        await Future.delayed(const Duration(seconds: 10));
+
+        if (cancelled) return;
+
         try {
           isLoading.value = true;
-          Get.back(); // Close dialog
 
           await _supabaseService.akhiriKontrakPenghuni(penghuniId: p.id);
+          
+          // Wait for data to be fully synced
+          await Future.delayed(const Duration(milliseconds: 500));
           await _refreshRelatedData();
 
-          Get.back(result: true); // Close bottom sheet
+          try {
+            HapticFeedback.heavyImpact();
+          } catch (_) {
+            // Ignore haptic feedback errors
+          }
+          
+          if (Get.isBottomSheetOpen ?? false) {
+            Get.back(result: true); // Close bottom sheet
+          }
+          
           Get.snackbar(
-            'Berhasil',
-            'Kontrak berhasil diakhiri',
+            'Kontrak Diakhiri',
+            'Kontrak ${p.nama} telah diakhiri. Akun penghuni telah dinonaktifkan.',
             backgroundColor: const Color(0xFFEF4444),
             colorText: Colors.white,
+            icon: const Icon(Icons.check_circle, color: Colors.white),
+            snackPosition: SnackPosition.TOP,
+            duration: const Duration(seconds: 4),
           );
-        } catch (_) {
+        } catch (e) {
           Get.snackbar(
-            'Error',
-            'Gagal mengakhiri kontrak',
+            'Gagal Mengakhiri Kontrak',
+            'Terjadi kesalahan saat mengakhiri kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
             backgroundColor: const Color(0xFFEF4444),
             colorText: Colors.white,
+            icon: const Icon(Icons.error_outline, color: Colors.white),
+            snackPosition: SnackPosition.TOP,
+            duration: const Duration(seconds: 5),
           );
         } finally {
           isLoading.value = false;
@@ -549,7 +826,7 @@ class KelolaKontrakController extends GetxController {
   }
 
   String get editEndDateLabel {
-    final startDate = _parseDateFlexible(tanggalMulaiController.text);
+    final startDate = selectedStartDate ?? _parseDateFlexible(tanggalMulaiController.text);
     final duration = int.tryParse(durasiKontrakController.text.trim()) ?? 0;
     if (startDate == null || duration <= 0) return '-';
 
@@ -690,15 +967,26 @@ class KelolaKontrakController extends GetxController {
       if (sistemPembayaranPerpanjangController.text.isNotEmpty) {
         sistemPembayaranPerpanjangController.clear();
       }
+      showAutoChangeNotification.value = false;
       return;
     }
 
     final selected = selectedSistemPembayaranPerpanjangBulan;
-    if (selected > 0 && options.contains(selected)) return;
+    if (selected > 0 && options.contains(selected)) {
+      showAutoChangeNotification.value = false;
+      return;
+    }
 
     final replacement = selected <= 0
         ? options.first
         : _findClosestOption(selected, options);
+    
+    // Show notification if auto-changed (only if user had a previous selection)
+    if (selected > 0 && replacement != selected && sistemPembayaranPerpanjangController.text.isNotEmpty) {
+      autoChangeMessage = 'Sistem pembayaran otomatis disesuaikan dari ${formatSistemPembayaranOption(selected)} ke ${formatSistemPembayaranOption(replacement)} karena perubahan durasi kontrak.';
+      showAutoChangeNotification.value = true;
+    }
+    
     final label = formatSistemPembayaranOption(replacement);
     if (sistemPembayaranPerpanjangController.text != label) {
       sistemPembayaranPerpanjangController.text = label;
@@ -711,15 +999,26 @@ class KelolaKontrakController extends GetxController {
       if (sistemPembayaranEditController.text.isNotEmpty) {
         sistemPembayaranEditController.clear();
       }
+      showAutoChangeNotification.value = false;
       return;
     }
 
     final selected = selectedSistemPembayaranEditBulan;
-    if (selected > 0 && options.contains(selected)) return;
+    if (selected > 0 && options.contains(selected)) {
+      showAutoChangeNotification.value = false;
+      return;
+    }
 
     final replacement = selected <= 0
         ? options.first
         : _findClosestOption(selected, options);
+    
+    // Show notification if auto-changed (only if user had a previous selection)
+    if (selected > 0 && replacement != selected && sistemPembayaranEditController.text.isNotEmpty) {
+      autoChangeMessage = 'Sistem pembayaran otomatis disesuaikan dari ${formatSistemPembayaranOption(selected)} ke ${formatSistemPembayaranOption(replacement)} karena perubahan durasi kontrak.';
+      showAutoChangeNotification.value = true;
+    }
+    
     final label = formatSistemPembayaranOption(replacement);
     if (sistemPembayaranEditController.text != label) {
       sistemPembayaranEditController.text = label;
@@ -825,18 +1124,55 @@ class KelolaKontrakController extends GetxController {
     final input = raw.trim();
     if (input.isEmpty || input == '-') return null;
 
+    // Try ISO format first
     final iso = DateTime.tryParse(input);
-    if (iso != null) return iso;
+    if (iso != null) {
+      // Validate date is reasonable
+      if (iso.year < 1900 || iso.year > 2100) return null;
+      if (iso.month < 1 || iso.month > 12) return null;
+      if (iso.day < 1 || iso.day > 31) return null;
+      
+      // Check for invalid dates like Feb 31
+      try {
+        final validated = DateTime(iso.year, iso.month, iso.day);
+        if (validated.month != iso.month) return null; // Date rolled over
+        return validated;
+      } catch (_) {
+        return null;
+      }
+    }
 
-    const patterns = ['d MMM yyyy', 'd MMMM yyyy', 'dd/MM/yyyy'];
+    // Try various date formats
+    const patterns = ['d MMM yyyy', 'd MMMM yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd'];
     for (final pattern in patterns) {
       try {
-        return DateFormat(pattern, 'id_ID').parseStrict(input);
+        final parsed = DateFormat(pattern, 'id_ID').parseStrict(input);
+        // Validate parsed date
+        if (parsed.year < 1900 || parsed.year > 2100) continue;
+        if (parsed.month < 1 || parsed.month > 12) continue;
+        if (parsed.day < 1 || parsed.day > 31) continue;
+        
+        // Verify date didn't roll over
+        final validated = DateTime(parsed.year, parsed.month, parsed.day);
+        if (validated.month == parsed.month && validated.day == parsed.day) {
+          return validated;
+        }
       } catch (_) {
         // Try next pattern
       }
+      
       try {
-        return DateFormat(pattern).parseStrict(input);
+        final parsed = DateFormat(pattern).parseStrict(input);
+        // Validate parsed date
+        if (parsed.year < 1900 || parsed.year > 2100) continue;
+        if (parsed.month < 1 || parsed.month > 12) continue;
+        if (parsed.day < 1 || parsed.day > 31) continue;
+        
+        // Verify date didn't roll over
+        final validated = DateTime(parsed.year, parsed.month, parsed.day);
+        if (validated.month == parsed.month && validated.day == parsed.day) {
+          return validated;
+        }
       } catch (_) {
         // Try next pattern
       }
