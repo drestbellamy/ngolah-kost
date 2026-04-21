@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../../services/supabase_service.dart';
+import '../../../../core/values/values.dart';
 
 class RingkasanKeuanganWidgetController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();
@@ -88,13 +89,9 @@ class RingkasanKeuanganWidget extends StatelessWidget {
             return const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Ringkasan Keuangan',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2F2F2F),
-                  ),
+                  style: AppTextStyles.header20,
                 ),
                 SizedBox(height: 20),
                 Center(
@@ -113,11 +110,7 @@ class RingkasanKeuanganWidget extends StatelessWidget {
                 children: [
                   const Text(
                     'Ringkasan Keuangan',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2F2F2F),
-                    ),
+                    style: AppTextStyles.header20,
                   ),
                   Icon(Icons.chevron_right, size: 28, color: Colors.grey[400]),
                 ],
@@ -187,20 +180,15 @@ class RingkasanKeuanganWidget extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.subtitle14.colored(Colors.grey[600]!),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
+            style: AppTextStyles.header20.copyWith(
+              fontSize: 26,
               color: Colors.grey[900],
             ),
           ),

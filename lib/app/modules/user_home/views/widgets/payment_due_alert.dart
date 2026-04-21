@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/user_home_controller.dart';
+import '../../../../core/values/values.dart';
 
 class PaymentDueAlert extends StatelessWidget {
   final UserHomeController controller;
@@ -88,25 +89,18 @@ class PaymentDueAlert extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Tidak Ada Tagihan',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF6B7280),
-                        ),
+                        style: AppTextStyles.header16.colored(AppColors.textGray),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         'Semua tagihan sudah lunas',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF9CA3AF),
-                        ),
+                        style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
                       ),
                     ],
                   ),
@@ -143,31 +137,20 @@ class PaymentDueAlert extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
+                  style: AppTextStyles.header16.colored(textColor),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 12,
-                color: textColor.withValues(alpha: 0.8),
-              ),
+              style: AppTextStyles.body12.colored(textColor.withValues(alpha: 0.8)),
             ),
             const SizedBox(height: 8),
             if (status != 'pending') ...[
               Text(
                 _formatCurrency(controller.dueAmount.value),
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
               ),
               const SizedBox(height: 8),
               Row(
@@ -176,14 +159,14 @@ class PaymentDueAlert extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     'Jatuh tempo: ${controller.dueDate.value}',
-                    style: TextStyle(fontSize: 12, color: textColor),
+                    style: AppTextStyles.body12.colored(textColor),
                   ),
                 ],
               ),
             ] else ...[
               const Text(
                 'Bukti pembayaran Anda sedang diverifikasi oleh admin',
-                style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                style: AppTextStyles.body12,
               ),
             ],
             const SizedBox(height: 12),
@@ -214,10 +197,7 @@ class PaymentDueAlert extends StatelessWidget {
                       : status == 'overdue'
                       ? 'Bayar Sekarang!'
                       : 'Bayar Tagihan',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: AppTextStyles.subtitle14.colored(Colors.white),
                 ),
               ),
             ),

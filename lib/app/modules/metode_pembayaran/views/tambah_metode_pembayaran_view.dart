@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
 import '../controllers/tambah_metode_pembayaran_controller.dart';
+import '../../../core/values/values.dart';
+import '../../../core/widgets/custom_header.dart';
 
 class TambahMetodePembayaranView
     extends GetView<TambahMetodePembayaranController> {
@@ -18,71 +20,13 @@ class TambahMetodePembayaranView
         child: Column(
           children: [
             // Header
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.fromLTRB(
-                20,
-                MediaQuery.of(context).padding.top + 20,
-                20,
-                20,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFF6B8E7A),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Get.back(),
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Obx(
-                              () => Text(
-                                controller.isEditMode.value
-                                    ? 'Edit Metode\nPembayaran'
-                                    : 'Tambah Metode\nPembayaran',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  height: 1.2,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              'Pilih kost dan atur metode pembayaran',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFFA8D5BA),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+            Obx(
+              () => CustomHeader(
+                title: controller.isEditMode.value
+                    ? 'Edit Metode\nPembayaran'
+                    : 'Tambah Metode\nPembayaran',
+                showBackButton: true,
+                subtitle: 'Pilih kost dan atur metode pembayaran',
               ),
             ),
 
@@ -112,21 +56,14 @@ class TambahMetodePembayaranView
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             '1. Pilih Kost',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D3748),
-                            ),
+                            style: AppTextStyles.header18.colored(const Color(0xFF2D3748)),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
+                          Text(
                             'Metode pembayaran akan berlaku untuk kost yang dipilih',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF9CA3AF),
-                            ),
+                            style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
                           ),
                           const SizedBox(height: 16),
 
@@ -157,12 +94,12 @@ class TambahMetodePembayaranView
                                           ),
                                         ),
                                         const SizedBox(width: 10),
-                                        const Expanded(
+                                        Expanded(
                                           child: Text(
                                             'Pilih kost terlebih dahulu sebelum upload QRIS',
-                                            style: TextStyle(
+                                            style: AppTextStyles.labelMedium.copyWith(
                                               fontSize: 13,
-                                              color: Color(0xFF1E40AF),
+                                              color: const Color(0xFF1E40AF),
                                             ),
                                           ),
                                         ),
@@ -227,10 +164,9 @@ class TambahMetodePembayaranView
                                     const SizedBox(width: 8),
                                     Text(
                                       'Kost Terpilih (${controller.selectedKostList.length})',
-                                      style: const TextStyle(
-                                        fontSize: 14,
+                                      style: AppTextStyles.body14.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: Color(0xFF2D3748),
+                                        color: const Color(0xFF2D3748),
                                       ),
                                     ),
                                   ],
@@ -278,26 +214,19 @@ class TambahMetodePembayaranView
                                             children: [
                                               Text(
                                                 kost['nama'],
-                                                style: const TextStyle(
-                                                  fontSize: 14,
+                                                style: AppTextStyles.body14.copyWith(
                                                   fontWeight: FontWeight.w600,
-                                                  color: Color(0xFF2D3748),
+                                                  color: const Color(0xFF2D3748),
                                                 ),
                                               ),
                                               const SizedBox(height: 2),
                                               Text(
                                                 kost['alamat'],
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color: Color(0xFF9CA3AF),
-                                                ),
+                                                style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
                                               ),
                                               Text(
                                                 '${kost['jumlahKamar']} kamar tersedia',
-                                                style: const TextStyle(
-                                                  fontSize: 11,
-                                                  color: Color(0xFF9CA3AF),
-                                                ),
+                                                style: AppTextStyles.labelSmall.colored(const Color(0xFF9CA3AF)),
                                               ),
                                             ],
                                           ),
@@ -343,23 +272,18 @@ class TambahMetodePembayaranView
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             '2. Atur Metode Pembayaran',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D3748),
-                            ),
+                            style: AppTextStyles.header18.colored(const Color(0xFF2D3748)),
                           ),
                           const SizedBox(height: 16),
 
                           // Tipe Metode Pembayaran
-                          const Text(
+                          Text(
                             'Tipe Metode Pembayaran',
-                            style: TextStyle(
-                              fontSize: 14,
+                            style: AppTextStyles.body14.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF2D3748),
+                              color: const Color(0xFF2D3748),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -455,26 +379,22 @@ class TambahMetodePembayaranView
                                       ),
                                     ),
                                     const SizedBox(width: 12),
-                                    const Expanded(
+                                    Expanded(
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             'Pembayaran cash berlaku untuk kost terpilih',
-                                            style: TextStyle(
-                                              fontSize: 14,
+                                            style: AppTextStyles.body14.copyWith(
                                               fontWeight: FontWeight.w600,
-                                              color: Color(0xFF1E40AF),
+                                              color: const Color(0xFF1E40AF),
                                             ),
                                           ),
-                                          SizedBox(height: 4),
+                                          const SizedBox(height: 4),
                                           Text(
                                             'Penghuni dapat membayar langsung kepada pemilik kost dengan metode tunai.',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: Color(0xFF3B82F6),
-                                            ),
+                                            style: AppTextStyles.body12.colored(const Color(0xFF3B82F6)),
                                           ),
                                         ],
                                       ),
@@ -494,12 +414,11 @@ class TambahMetodePembayaranView
                                     isRequired: true,
                                   ),
                                   const SizedBox(height: 16),
-                                  const Text(
+                                  Text(
                                     'Upload Gambar QRIS',
-                                    style: TextStyle(
-                                      fontSize: 14,
+                                    style: AppTextStyles.body14.copyWith(
                                       fontWeight: FontWeight.w600,
-                                      color: Color(0xFF2D3748),
+                                      color: const Color(0xFF2D3748),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -517,11 +436,11 @@ class TambahMetodePembayaranView
                                             color: const Color(0xFFE5E7EB),
                                           ),
                                         ),
-                                        child: const Column(
+                                        child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            SizedBox(
+                                            const SizedBox(
                                               width: 24,
                                               height: 24,
                                               child: CircularProgressIndicator(
@@ -529,12 +448,12 @@ class TambahMetodePembayaranView
                                                 color: Color(0xFF6B8E7A),
                                               ),
                                             ),
-                                            SizedBox(height: 10),
+                                            const SizedBox(height: 10),
                                             Text(
                                               'Mengupload gambar QRIS...',
-                                              style: TextStyle(
+                                              style: AppTextStyles.labelMedium.copyWith(
                                                 fontSize: 13,
-                                                color: Color(0xFF6B7280),
+                                                color: const Color(0xFF6B7280),
                                               ),
                                             ),
                                           ],
@@ -561,22 +480,19 @@ class TambahMetodePembayaranView
                                               style: BorderStyle.solid,
                                             ),
                                           ),
-                                          child: const Column(
+                                          child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              Icon(
+                                              const Icon(
                                                 Icons.cloud_upload_outlined,
                                                 size: 32,
                                                 color: Color(0xFF9CA3AF),
                                               ),
-                                              SizedBox(height: 8),
+                                              const SizedBox(height: 8),
                                               Text(
                                                 'Tap untuk upload gambar QRIS',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  color: Color(0xFF6B7280),
-                                                ),
+                                                style: AppTextStyles.body14.colored(const Color(0xFF6B7280)),
                                               ),
                                             ],
                                           ),
@@ -700,8 +616,7 @@ class TambahMetodePembayaranView
                 controller.selectedKostList.isEmpty
                     ? 'Simpan'
                     : 'Simpan untuk ${controller.selectedKostList.length} Kost',
-                style: const TextStyle(
-                  fontSize: 16,
+                style: AppTextStyles.buttonLarge.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -763,8 +678,7 @@ class TambahMetodePembayaranView
             Text(
               label,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
+              style: AppTextStyles.body12.copyWith(
                 fontWeight: FontWeight.w600,
                 color: isSelected
                     ? const Color(0xFF6B8E7A)
@@ -791,19 +705,17 @@ class TambahMetodePembayaranView
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
+              style: AppTextStyles.body14.copyWith(
                 fontWeight: FontWeight.w600,
-                color: Color(0xFF2D3748),
+                color: const Color(0xFF2D3748),
               ),
             ),
             if (isRequired)
-              const Text(
+              Text(
                 ' *',
-                style: TextStyle(
-                  fontSize: 14,
+                style: AppTextStyles.body14.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFFEF4444),
+                  color: const Color(0xFFEF4444),
                 ),
               ),
           ],
@@ -814,7 +726,7 @@ class TambahMetodePembayaranView
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(fontSize: 14, color: Color(0xFF9CA3AF)),
+            hintStyle: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
             filled: true,
             fillColor: const Color(0xFFF7FAFC),
             border: OutlineInputBorder(

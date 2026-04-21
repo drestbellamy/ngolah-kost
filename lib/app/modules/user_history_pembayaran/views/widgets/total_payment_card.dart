@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/user_history_pembayaran_controller.dart';
 
 class TotalPaymentCard extends GetView<UserHistoryPembayaranController> {
@@ -23,26 +24,22 @@ class TotalPaymentCard extends GetView<UserHistoryPembayaranController> {
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Total Pembayaran',
-            style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+            style: AppTextStyles.body14.colored(AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           Obx(
             () => Text(
               controller.totalPayment,
-              style: const TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF6B8E7A),
-              ),
+              style: AppTextStyles.header20.copyWith(fontSize: 32).colored(const Color(0xFF6B8E7A)),
             ),
           ),
           const SizedBox(height: 8),
           Obx(
             () => Text(
               '${controller.paymentCount} pembayaran selesai',
-              style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+              style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
             ),
           ),
         ],

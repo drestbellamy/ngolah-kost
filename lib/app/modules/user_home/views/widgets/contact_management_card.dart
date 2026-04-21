@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/user_home_controller.dart';
 
 class ContactManagementCard extends StatelessWidget {
@@ -12,13 +13,9 @@ class ContactManagementCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Kontak Pengelola',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2F2F2F),
-          ),
+          style: AppTextStyles.header18.colored(AppColors.textPrimary),
         ),
         const SizedBox(height: 12),
         Container(
@@ -34,13 +31,9 @@ class ContactManagementCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Kost Management',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                style: AppTextStyles.header16.colored(Colors.white),
               ),
               const SizedBox(height: 16),
               Obx(
@@ -62,11 +55,7 @@ class ContactManagementCard extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           controller.phoneNumber.value,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: AppTextStyles.subtitle14.weighted(FontWeight.w500).colored(Colors.white),
                         ),
                       ],
                     ),
@@ -93,11 +82,7 @@ class ContactManagementCard extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           controller.email.value,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: AppTextStyles.subtitle14.weighted(FontWeight.w500).colored(Colors.white),
                         ),
                       ],
                     ),

@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../controllers/profil_controller.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
+import '../../../core/values/values.dart';
 
 class ProfilView extends GetView<ProfilController> {
   const ProfilView({super.key});
@@ -50,10 +51,9 @@ class ProfilView extends GetView<ProfilController> {
                             child: ElevatedButton.icon(
                               onPressed: controller.saveChanges,
                               icon: const Icon(Icons.save_outlined, size: 20),
-                              label: const Text(
+                              label: Text(
                                 'Simpan Perubahan',
-                                style: TextStyle(
-                                  fontSize: 14,
+                                style: AppTextStyles.body14.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -137,24 +137,19 @@ class ProfilView extends GetView<ProfilController> {
               children: [
                 Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Profil Admin',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: AppTextStyles.headlineSmall
+                                .weighted(FontWeight.w700)
+                                .colored(Colors.white),
                           ),
                           Text(
                             'Kelola akun Anda',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
+                            style: AppTextStyles.subtitle14.colored(AppColors.primaryLight),
                           ),
                         ],
                       ),
@@ -197,10 +192,9 @@ class ProfilView extends GetView<ProfilController> {
                               ),
                             ),
                             const SizedBox(height: 24),
-                            const Text(
+                            Text(
                               'Foto Profil',
-                              style: TextStyle(
-                                fontSize: 16,
+                              style: AppTextStyles.subtitle16.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -262,7 +256,7 @@ class ProfilView extends GetView<ProfilController> {
                                 ),
                                 child: Text(
                                   'Batal',
-                                  style: TextStyle(
+                                  style: AppTextStyles.body14.copyWith(
                                     color: Colors.grey[600],
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -349,15 +343,13 @@ class ProfilView extends GetView<ProfilController> {
                 const SizedBox(height: 12),
                 Text(
                   controller.authController.currentUser?.username ?? 'admin',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.headlineSmall
+                                .weighted(FontWeight.w700)
+                                .colored(Colors.white),
                 ),
-                const Text(
+                Text(
                   'Administrator',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  style: AppTextStyles.body14.colored(Colors.white70),
                 ),
               ],
             ),
@@ -390,12 +382,12 @@ class ProfilView extends GetView<ProfilController> {
               onTap: controller.toggleUsername,
               leading: const Icon(
                 CupertinoIcons.person,
-                color: Color(0xFF5E8675),
+                color: AppColors.primary,
                 size: 24,
               ),
-              title: const Text(
+              title: Text(
                 'Username',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: AppTextStyles.subtitle16,
               ),
               trailing: Icon(
                 isExpanded
@@ -414,9 +406,9 @@ class ProfilView extends GetView<ProfilController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Username Baru',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: AppTextStyles.body12.colored(Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     TextFormField(
@@ -451,9 +443,9 @@ class ProfilView extends GetView<ProfilController> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Konfirmasi Password',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: AppTextStyles.body12.colored(Colors.grey),
                     ),
                     const SizedBox(height: 8),
                     Obx(
@@ -510,7 +502,7 @@ class ProfilView extends GetView<ProfilController> {
                       padding: EdgeInsets.only(top: 4),
                       child: Text(
                         'Masukkan password Anda untuk konfirmasi perubahan',
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                        style: AppTextStyles.body10,
                       ),
                     ),
                   ],
@@ -545,12 +537,12 @@ class ProfilView extends GetView<ProfilController> {
               onTap: controller.togglePassword,
               leading: const Icon(
                 CupertinoIcons.lock,
-                color: Color(0xFF5E8675),
+                color: AppColors.primary,
                 size: 24,
               ),
-              title: const Text(
+              title: Text(
                 'Ubah Password',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: AppTextStyles.subtitle16,
               ),
               trailing: Icon(
                 isExpanded
@@ -607,7 +599,7 @@ class ProfilView extends GetView<ProfilController> {
     String? helpText,
   }) {
     return [
-      Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+      Text(label, style: AppTextStyles.body12.colored(Colors.grey)),
       const SizedBox(height: 8),
       Obx(
         () => TextFormField(
@@ -651,7 +643,7 @@ class ProfilView extends GetView<ProfilController> {
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             helpText,
-            style: const TextStyle(fontSize: 10, color: Colors.grey),
+            style: AppTextStyles.body10.colored(Colors.grey),
           ),
         ),
     ];
@@ -663,9 +655,9 @@ class ProfilView extends GetView<ProfilController> {
       child: OutlinedButton.icon(
         onPressed: controller.logout,
         icon: const Icon(Icons.logout, size: 20),
-        label: const Text(
+        label: Text(
           'Keluar',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+          style: AppTextStyles.body14.copyWith(fontWeight: FontWeight.bold),
         ),
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.red,
@@ -714,8 +706,7 @@ class ProfilView extends GetView<ProfilController> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: AppTextStyles.body14.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -723,7 +714,7 @@ class ProfilView extends GetView<ProfilController> {
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: AppTextStyles.body12.colored(Colors.grey[600]!),
                     ),
                   ],
                 ),

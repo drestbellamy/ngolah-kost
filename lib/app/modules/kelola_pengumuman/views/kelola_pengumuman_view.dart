@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 import '../controllers/kelola_pengumuman_controller.dart';
 
 class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
@@ -56,7 +57,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
           child: Text(
             controller.errorMessage.value ?? 'Belum ada data kost.',
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+            style: AppTextStyles.body14.colored(AppColors.textGray),
           ),
         ),
       );
@@ -247,18 +248,14 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
               onPressed: controller.isSavingPengumuman.value
                   ? null
                   : _showAddPengumumanDialog,
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.add, color: Colors.white, size: 22),
-                  SizedBox(width: 8),
+                  const Icon(Icons.add, color: Colors.white, size: 22),
+                  const SizedBox(width: 8),
                   Text(
                     'Tambah Pengumuman',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: AppTextStyles.subtitle16.colored(Colors.white),
                   ),
                 ],
               ),
@@ -303,11 +300,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
       child: Text(
         message,
         textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: Color(0xFFB91C1C),
-          fontSize: 14,
-          height: 1.4,
-        ),
+        style: AppTextStyles.body14.colored(const Color(0xFFB91C1C)).copyWith(height: 1.4),
       ),
     );
   }
@@ -445,10 +438,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                     const SizedBox(width: 5),
                     Text(
                       item.date,
-                      style: const TextStyle(
-                        color: Color(0xFF6C7383),
-                        fontSize: 13,
-                      ),
+                      style: AppTextStyles.body12.colored(const Color(0xFF6C7383)),
                     ),
                   ],
                 ),
@@ -475,12 +465,9 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Detail Pengumuman',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.header18.colored(AppColors.textPrimary),
                     ),
                     GestureDetector(
                       onTap: () => Get.back(),
@@ -513,10 +500,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                   ),
                   child: Text(
                     item.title,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF374151),
-                    ),
+                    style: AppTextStyles.body14.colored(const Color(0xFF374151)),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -538,11 +522,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                   ),
                   child: Text(
                     item.description,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF4B5563),
-                      height: 1.45,
-                    ),
+                    style: AppTextStyles.body14.colored(const Color(0xFF4B5563)).copyWith(height: 1.45),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -576,10 +556,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                     const SizedBox(width: 6),
                     Text(
                       item.date,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF6C7383),
-                      ),
+                      style: AppTextStyles.body12.colored(const Color(0xFF6C7383)),
                     ),
                   ],
                 ),
@@ -597,9 +574,9 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Tutup',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                      style: AppTextStyles.subtitle14.colored(Colors.white),
                     ),
                   ),
                 ),
@@ -631,12 +608,9 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Tambah Pengumuman',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTextStyles.header18.colored(AppColors.textPrimary),
                     ),
                     GestureDetector(
                       onTap: () => Get.back(),
@@ -784,7 +758,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                             controller.isSavingPengumuman.value
                                 ? 'Menyimpan...'
                                 : 'Tambah',
-                            style: const TextStyle(fontWeight: FontWeight.w600),
+                            style: AppTextStyles.subtitle14.colored(Colors.white),
                           ),
                         ),
                       ),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../data/models/tagihan_user_model.dart';
 import '../../controllers/user_tagihan_controller.dart';
+import '../../../../core/values/values.dart';
 
 class TagihanCard extends GetView<UserTagihanController> {
   final TagihanUserModel tagihan;
@@ -66,20 +67,13 @@ class TagihanCard extends GetView<UserTagihanController> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Tagihan Bulanan',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F2937),
-                            ),
+                            style: AppTextStyles.header16.colored(AppColors.textPrimary),
                           ),
                           Text(
                             tagihan.nomorKamar,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF6B7280),
-                            ),
+                            style: AppTextStyles.body12.colored(AppColors.textGray),
                           ),
                         ],
                       ),
@@ -99,11 +93,7 @@ class TagihanCard extends GetView<UserTagihanController> {
                         hasPendingPayment
                             ? 'Menunggu Verifikasi'
                             : tagihan.status,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: Color(0xFFD97706),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: AppTextStyles.body10.weighted(FontWeight.w700).colored(const Color(0xFFD97706)),
                       ),
                     ),
                   ],
@@ -112,17 +102,13 @@ class TagihanCard extends GetView<UserTagihanController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Periode Penagihan',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                      style: AppTextStyles.body12.colored(AppColors.textGray),
                     ),
                     Text(
                       tagihan.periodePenagihan,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2937),
-                      ),
+                      style: AppTextStyles.subtitle12.colored(AppColors.textPrimary),
                     ),
                   ],
                 ),
@@ -131,19 +117,16 @@ class TagihanCard extends GetView<UserTagihanController> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
-                      children: const [
-                        Icon(
+                      children: [
+                        const Icon(
                           Icons.calendar_today_outlined,
                           size: 14,
-                          color: Color(0xFF6B7280),
+                          color: AppColors.textGray,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           'Tanggal Jatuh Tempo',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF6B7280),
-                          ),
+                          style: AppTextStyles.body12.colored(AppColors.textGray),
                         ),
                       ],
                     ),
@@ -152,11 +135,7 @@ class TagihanCard extends GetView<UserTagihanController> {
                         'dd MMMM yyyy',
                         'id_ID',
                       ).format(tagihan.jatuhTempo),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFEF4444), // Merah
-                      ),
+                      style: AppTextStyles.subtitle12.colored(AppColors.errorLight),
                     ),
                   ],
                 ),
@@ -201,13 +180,9 @@ class TagihanCard extends GetView<UserTagihanController> {
                               : null,
                         ),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'Jumlah Total',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
-                          ),
+                          style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                         ),
                       ],
                     ),
@@ -217,11 +192,7 @@ class TagihanCard extends GetView<UserTagihanController> {
                         symbol: 'Rp ',
                         decimalDigits: 0,
                       ).format(tagihan.totalBayar),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF6B8E7A),
-                      ),
+                      style: AppTextStyles.header20.colored(AppColors.primary),
                     ),
                   ],
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
+import '../../../core/values/values.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/user_home_controller.dart';
 import 'widgets/room_info_card.dart';
@@ -24,7 +25,7 @@ class UserHomeView extends GetView<UserHomeController> {
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red),
+              style: AppTextStyles.body14.colored(Colors.red),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -41,7 +42,7 @@ class UserHomeView extends GetView<UserHomeController> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Keluar', style: TextStyle(color: Colors.red)),
+              child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red)),
             ),
           ],
         ),

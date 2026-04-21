@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 import '../../../../data/models/kost_with_status_model.dart';
 import '../../../../data/enums/room_availability_status.dart';
 
@@ -58,12 +59,7 @@ class KostDetailBottomSheet extends StatelessWidget {
                         children: [
                           Text(
                             kost.name,
-                            style: const TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F2937),
-                              height: 1.3,
-                            ),
+                            style: AppTextStyles.titleLarge.colored(const Color(0xFF1F2937)),
                           ),
                           const SizedBox(height: 8),
                           // Status Badge
@@ -94,7 +90,7 @@ class KostDetailBottomSheet extends StatelessWidget {
                                 const SizedBox(width: 6),
                                 Text(
                                   _getStatusIndonesia(kost.availabilityStatus),
-                                  style: TextStyle(
+                                  style: AppTextStyles.labelMedium.copyWith(
                                     fontSize: 13,
                                     color: Color(
                                       kost.availabilityStatus.badgeTextColor,
@@ -130,9 +126,8 @@ class KostDetailBottomSheet extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               kost.formattedDistance,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF6B8E7F),
+                              style: AppTextStyles.body14.copyWith(
+                                color: const Color(0xFF6B8E7F),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
@@ -170,11 +165,7 @@ class KostDetailBottomSheet extends StatelessWidget {
                       Expanded(
                         child: Text(
                           kost.address,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF4B5563),
-                            height: 1.4,
-                          ),
+                          style: AppTextStyles.body14.colored(const Color(0xFF4B5563)),
                         ),
                       ),
                     ],
@@ -235,17 +226,14 @@ class KostDetailBottomSheet extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.directions, size: 20),
-                            SizedBox(width: 8),
+                            const Icon(Icons.directions, size: 20),
+                            const SizedBox(width: 8),
                             Text(
                               'Rute',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: AppTextStyles.buttonMedium.copyWith(fontSize: 15),
                             ),
                           ],
                         ),
@@ -268,17 +256,14 @@ class KostDetailBottomSheet extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.info_outline, size: 20),
-                            SizedBox(width: 8),
+                            const Icon(Icons.info_outline, size: 20),
+                            const SizedBox(width: 8),
                             Text(
                               'Lihat Detail Kost',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: AppTextStyles.buttonMedium.copyWith(fontSize: 15),
                             ),
                           ],
                         ),
@@ -316,20 +301,12 @@ class KostDetailBottomSheet extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 18,
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
+            style: AppTextStyles.header18.colored(color),
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              fontSize: 11,
-              color: Color(0xFF6B7280),
-              fontWeight: FontWeight.w500,
-            ),
+            style: AppTextStyles.labelSmall.colored(const Color(0xFF6B7280)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -348,14 +325,5 @@ class KostDetailBottomSheet extends StatelessWidget {
     }
   }
 
-  IconData _getStatusIcon(RoomAvailabilityStatus availabilityStatus) {
-    switch (availabilityStatus) {
-      case RoomAvailabilityStatus.allAvailable:
-        return Icons.check_circle;
-      case RoomAvailabilityStatus.partiallyOccupied:
-        return Icons.schedule;
-      case RoomAvailabilityStatus.allOccupied:
-        return Icons.cancel;
-    }
-  }
+
 }

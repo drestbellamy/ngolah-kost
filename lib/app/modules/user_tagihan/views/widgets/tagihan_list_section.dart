@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../controllers/user_tagihan_controller.dart';
 import '../../../../core/controllers/auth_controller.dart';
 import '../../../../routes/app_routes.dart';
+import '../../../../core/values/values.dart';
 import 'tagihan_card.dart';
 
 class TagihanListSection extends GetView<UserTagihanController> {
@@ -58,22 +59,15 @@ class TagihanListSection extends GetView<UserTagihanController> {
                       color: Color(0xFFEF4444),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Terjadi Kesalahan',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2937),
-                      ),
+                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       controller.errorMessage.value,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF6B7280),
-                      ),
+                      style: AppTextStyles.body14.colored(AppColors.textGray),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -123,19 +117,15 @@ class TagihanListSection extends GetView<UserTagihanController> {
                       color: Color(0xFF10B981),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Semua Tagihan Lunas',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2937),
-                      ),
+                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       'Tidak ada tagihan yang perlu dibayar saat ini.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                      style: AppTextStyles.body14.colored(AppColors.textGray),
                     ),
                   ],
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/user_tagihan_controller.dart';
+import '../../../../core/values/values.dart';
 
 class TagihanTotalCard extends GetView<UserTagihanController> {
   const TagihanTotalCard({super.key});
@@ -27,13 +28,9 @@ class TagihanTotalCard extends GetView<UserTagihanController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Total yang dibayar',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4B5563),
-              ),
+              style: AppTextStyles.subtitle16.colored(AppColors.textGray),
             ),
             const SizedBox(height: 8),
             Obx(
@@ -43,11 +40,7 @@ class TagihanTotalCard extends GetView<UserTagihanController> {
                   symbol: 'Rp ',
                   decimalDigits: 0,
                 ).format(controller.totalBayarTerpilih),
-                style: const TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF6B8E7A),
-                ),
+                style: AppTextStyles.displaySmall.colored(AppColors.primary),
               ),
             ),
           ],

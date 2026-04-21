@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 import '../controllers/kamar_controller.dart';
 
 class KamarView extends GetView<KamarController> {
@@ -32,10 +33,7 @@ class KamarView extends GetView<KamarController> {
                     Expanded(
                       child: Text(
                         controller.alamatKost.value,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFFA8D5BA),
-                        ),
+                        style: AppTextStyles.body14.colored(const Color(0xFFA8D5BA)),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -184,14 +182,10 @@ class KamarView extends GetView<KamarController> {
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: const Color(0xFFE5E7EB)),
               ),
-              child: const Text(
+              child: Text(
                 'Belum ada data kamar. Silakan tekan tombol + untuk menambahkan kamar baru.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF6B7280),
-                  height: 1.5,
-                ),
+                style: AppTextStyles.body14.colored(AppColors.textGray),
               ),
             ),
           ),
@@ -306,11 +300,9 @@ class KamarView extends GetView<KamarController> {
         child: Text(
           title,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF6B7280),
-          ),
+          style: AppTextStyles.subtitle12.weighted(
+            isSelected ? FontWeight.w700 : FontWeight.w600
+          ).colored(isSelected ? Colors.white : AppColors.textGray),
         ),
       ),
     );
@@ -431,11 +423,7 @@ class KamarView extends GetView<KamarController> {
                                 Flexible(
                                   child: Text(
                                     'Kamar ${kamar['nomor']}',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2F2F2F),
-                                    ),
+                                    style: AppTextStyles.header16.colored(AppColors.textPrimary),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -474,10 +462,7 @@ class KamarView extends GetView<KamarController> {
                         children: [
                           Text(
                             'Penghuni: $rasioPenghuni',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              color: Color(0xFF6B7280),
-                            ),
+                            style: AppTextStyles.body12.colored(AppColors.textGray),
                           ),
                           const SizedBox(width: 4),
                           const Icon(
@@ -490,11 +475,7 @@ class KamarView extends GetView<KamarController> {
                       const SizedBox(height: 10),
                       Text(
                         kamar['harga'],
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF6B8E7A),
-                        ),
+                        style: AppTextStyles.subtitle14.colored(AppColors.primary),
                       ),
                     ],
                   ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import '../controllers/landing_controller.dart';
+import '../../../core/values/values.dart';
 
 class Landing3View extends GetView<LandingController> {
   const Landing3View({super.key});
@@ -44,7 +45,7 @@ class Landing3View extends GetView<LandingController> {
                     child: const Text('Image not found'),
                   ),
                 ),
-                Container(color: Colors.black.withOpacity(0.05)),
+                Container(color: Colors.black.withValues(alpha: 0.05)),
               ],
             ),
           ),
@@ -64,15 +65,14 @@ class Landing3View extends GetView<LandingController> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Lewati',
-                    style: TextStyle(
+                    style: AppTextStyles.body14.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -106,22 +106,17 @@ class Landing3View extends GetView<LandingController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Pantau Pembayaran',
-                  style: TextStyle(
-                    fontSize: 32,
+                  style: AppTextStyles.headlineLarge.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF5F8571), // Dark green
+                    color: const Color(0xFF5F8571),
                   ),
                 ),
                 const SizedBox(height: 16),
                 RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF6C8F7B), // Light grayish green
-                      height: 1.5,
-                    ),
+                  text: TextSpan(
+                    style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)),
                     children: [
                       TextSpan(
                         text:
@@ -187,14 +182,12 @@ class Landing3View extends GetView<LandingController> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Mulai Sekarang',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                          style: AppTextStyles.buttonLarge.copyWith(
                             color: Colors.white,
                           ),
                         ),
@@ -228,12 +221,12 @@ class Landing3View extends GetView<LandingController> {
                 color: logoBackground,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.25),
+                  color: Colors.white.withValues(alpha: 0.25),
                   width: 1.2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.50),
+                    color: Colors.black.withValues(alpha: 0.50),
                     blurRadius: 6,
                     offset: const Offset(0, 4),
                   ),
@@ -250,7 +243,7 @@ class Landing3View extends GetView<LandingController> {
                   fit: BoxFit.cover,
                   frameRate: FrameRate.composition,
                   options: LottieOptions(enableMergePaths: true),
-                  errorBuilder: (_, __, ___) => const Icon(
+                  errorBuilder: (_, __, _) => const Icon(
                     Icons.home_rounded,
                     size: 58,
                     color: Color(0xFF6B8E7A),
@@ -269,15 +262,13 @@ class Landing3View extends GetView<LandingController> {
             children: [
               Text(
                 'Ngolah Kost',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
+                style: AppTextStyles.headlineLarge.copyWith(
                   color: titleColor,
                   letterSpacing: 0.4,
                   height: 0.1,
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.50),
+                      color: Colors.black.withValues(alpha: 0.50),
                       offset: const Offset(0, 2),
                       blurRadius: 6,
                     ),
@@ -290,11 +281,7 @@ class Landing3View extends GetView<LandingController> {
                 child: Text(
                   subtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: subtitleColor,
-                    height: 1.45,
-                  ),
+                  style: AppTextStyles.body16.colored(subtitleColor),
                 ),
               ),
             ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 import '../../../../data/models/pengumuman_model.dart';
 
 class PengumumanCard extends StatelessWidget {
@@ -45,11 +46,7 @@ class PengumumanCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   pengumuman.judul,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
-                  ),
+                  style: AppTextStyles.header16.colored(const Color(0xFF1F2937)),
                 ),
               ),
             ],
@@ -57,11 +54,7 @@ class PengumumanCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             pengumuman.isi,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF4B5563),
-              height: 1.5,
-            ),
+            style: AppTextStyles.body14.colored(const Color(0xFF4B5563)).copyWith(height: 1.5),
           ),
           const SizedBox(height: 16),
           Row(
@@ -74,7 +67,7 @@ class PengumumanCard extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 pengumuman.tanggal,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
               ),
             ],
           ),
