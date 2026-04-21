@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../controllers/user_home_controller.dart';
+import '../../../../core/values/values.dart';
 
 class RoomInfoCard extends StatelessWidget {
   final UserHomeController controller;
@@ -42,18 +43,11 @@ class RoomInfoCard extends StatelessWidget {
                   children: [
                     Text(
                       controller.kostName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2F2F2F),
-                      ),
+                      style: AppTextStyles.header16.colored(AppColors.textPrimary),
                     ),
                     Text(
                       'Kamar ${controller.roomNumber}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF6B7280),
-                      ),
+                      style: AppTextStyles.body14.colored(AppColors.textGray),
                     ),
                   ],
                 ),
@@ -81,11 +75,7 @@ class RoomInfoCard extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   controller.tenantStatus,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF10B981),
-                  ),
+                  style: AppTextStyles.subtitle12.colored(AppColors.success),
                 ),
               ],
             ),
@@ -97,18 +87,14 @@ class RoomInfoCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Tanggal Masuk',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                      style: AppTextStyles.body12.colored(AppColors.textGray),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       controller.nextPaymentDate,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2F2F2F),
-                      ),
+                      style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                     ),
                   ],
                 ),
@@ -117,18 +103,14 @@ class RoomInfoCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text(
+                    Text(
                       'Sewa Bulanan',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                      style: AppTextStyles.body12.colored(AppColors.textGray),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       controller.nextPaymentAmount,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF2F2F2F),
-                      ),
+                      style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                     ),
                   ],
                 ),

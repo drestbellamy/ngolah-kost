@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/user_profil_controller.dart';
 
 class ContractInfoSection extends GetView<UserProfilController> {

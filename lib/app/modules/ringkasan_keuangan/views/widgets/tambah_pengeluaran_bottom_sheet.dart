@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 
 // Custom formatter untuk currency
 class CurrencyInputFormatter extends TextInputFormatter {

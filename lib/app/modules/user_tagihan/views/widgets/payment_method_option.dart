@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 
 class PaymentMethodOption extends StatelessWidget {
   final String title;
@@ -53,11 +54,7 @@ class PaymentMethodOption extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
-                  ),
+                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/user_history_pembayaran_controller.dart';
 
 class FilterTabs extends GetView<UserHistoryPembayaranController> {
@@ -65,11 +66,9 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isSelected ? Colors.white : const Color(0xFF6B7280),
-          ),
+          style: isSelected 
+              ? AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(Colors.white)
+              : AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(AppColors.textSecondary),
         ),
       ),
     );

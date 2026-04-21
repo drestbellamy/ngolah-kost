@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 
 class SearchBarWidget extends StatelessWidget {
   final TextEditingController controller;
@@ -33,7 +34,7 @@ class SearchBarWidget extends StatelessWidget {
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText: hintText,
-          hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+          hintStyle: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
           prefixIcon: const Icon(
             Icons.search,
             color: Color(0xFF6B7280),
@@ -68,7 +69,7 @@ class SearchBarWidget extends StatelessWidget {
             vertical: 12,
           ),
         ),
-        style: const TextStyle(fontSize: 14, color: Color(0xFF1F2937)),
+        style: AppTextStyles.body14.colored(const Color(0xFF1F2937)),
       ),
     );
   }

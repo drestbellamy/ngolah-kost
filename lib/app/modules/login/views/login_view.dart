@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import '../controllers/login_controller.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
+import '../../../core/values/values.dart';
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
@@ -160,9 +161,7 @@ class LoginView extends GetView<LoginController> {
                                   offset: Offset(0, textLogoGap),
                                   child: Text(
                                     'Ngolah Kost',
-                                    style: TextStyle(
-                                      fontSize: 32,
-                                      fontWeight: FontWeight.w700,
+                                    style: AppTextStyles.headlineLarge.copyWith(
                                       color: Colors.white,
                                       letterSpacing: 0.4,
                                       height: 0.1,
@@ -196,23 +195,16 @@ class LoginView extends GetView<LoginController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Greeting
-                          const Text(
+                          Text(
                             'Selamat Datang',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF4A7A5A),
-                              height: 1,
-                            ),
+                            style: AppTextStyles.headlineSmall
+                                .weighted(FontWeight.w800)
+                                .colored (const Color(0xFF4A7A5A)),
                           ),
                           const SizedBox(height: 6),
-                          const Text(
+                          Text(
                             'Silakan masuk ke akun Anda untuk melanjutkan',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF9E9E9E),
-                              height: 1.4,
-                            ),
+                            style: AppTextStyles.body14.colored(const Color(0xFF9E9E9E)),
                           ),
                           const SizedBox(height: 30),
 
@@ -293,21 +285,19 @@ class LoginView extends GetView<LoginController> {
                                           color: Colors.white,
                                         ),
                                       )
-                                    : const Row(
+                                    : Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             'Masuk',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
+                                            style: AppTextStyles.buttonLarge.copyWith(
                                               color: Colors.white,
                                               letterSpacing: 0.4,
                                             ),
                                           ),
-                                          SizedBox(width: 8),
-                                          Icon(
+                                          const SizedBox(width: 8),
+                                          const Icon(
                                             Icons.arrow_forward_rounded,
                                             color: Colors.white,
                                             size: 20,
@@ -359,13 +349,12 @@ class LoginView extends GetView<LoginController> {
     return TextField(
       controller: textController,
       obscureText: obscureText,
-      style: TextStyle(fontSize: 15, color: textColor),
+      style: AppTextStyles.body14.copyWith(fontSize: 15, color: textColor),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: TextStyle(color: hintColor, fontSize: 15),
+        hintStyle: AppTextStyles.body14.copyWith(color: hintColor, fontSize: 15),
         errorText: errorText,
-        errorStyle: const TextStyle(
-          fontSize: 12,
+        errorStyle: AppTextStyles.body12.copyWith(
           color: Colors.red,
           fontWeight: FontWeight.w500,
         ),

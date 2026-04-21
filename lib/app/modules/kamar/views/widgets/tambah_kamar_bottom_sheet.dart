@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/values/values.dart';
 
 class TambahKamarBottomSheet extends StatefulWidget {
   const TambahKamarBottomSheet({super.key});
@@ -104,13 +105,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Tambah Kamar Baru',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2F2F2F),
-                    ),
+                    style: AppTextStyles.header18.colored(AppColors.textPrimary),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
@@ -125,13 +122,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
               const SizedBox(height: 24),
 
               // Nomor Kamar
-              const Text(
+              Text(
                 'Nomor Kamar',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -152,10 +145,7 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
                 },
                 decoration: InputDecoration(
                   hintText: 'misalnya, A-101, 201, R-01',
-                  hintStyle: const TextStyle(
-                    color: Color(0xFFD1D5DB),
-                    fontSize: 14,
-                  ),
+                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -191,13 +181,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
               const SizedBox(height: 16),
 
               // Kapasitas Penghuni
-              const Text(
+              Text(
                 'Kapasitas Penghuni',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -224,10 +210,7 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Masukkan jumlah kapasitas penghuni',
-                  hintStyle: const TextStyle(
-                    color: Color(0xFFD1D5DB),
-                    fontSize: 14,
-                  ),
+                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -262,13 +245,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
               const SizedBox(height: 16),
 
               // Harga per Bulan
-              const Text(
+              Text(
                 'Harga per Bulan (IDR)',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
               ),
               const SizedBox(height: 8),
               TextField(
@@ -281,16 +260,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
                 ],
                 decoration: InputDecoration(
                   hintText: 'Masukkan harga bulanan',
-                  hintStyle: const TextStyle(
-                    color: Color(0xFFD1D5DB),
-                    fontSize: 14,
-                  ),
+                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
                   prefixText: 'Rp ',
-                  prefixStyle: const TextStyle(
-                    color: Color(0xFF6B7280),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  prefixStyle: AppTextStyles.subtitle14.colored(AppColors.textGray),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -342,12 +314,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Batal',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.subtitle14.colored(const Color(0xFF6B7280)),
                       ),
                     ),
                   ),
@@ -364,12 +333,9 @@ class _TambahKamarBottomSheetState extends State<TambahKamarBottomSheet> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Tambah',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.subtitle14.colored(Colors.white),
                       ),
                     ),
                   ),

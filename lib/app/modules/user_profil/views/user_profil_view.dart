@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/user_profil_controller.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
+import '../../../core/values/values.dart';
 import 'widgets/contract_info_section.dart';
 import 'widgets/profile_header.dart';
 import 'widgets/room_info_section.dart';
@@ -46,10 +47,10 @@ class UserProfilView extends GetView<UserProfilController> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.1),
+                            color: Colors.red.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.red.withOpacity(0.3),
+                              color: Colors.red.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Column(
@@ -145,16 +146,12 @@ class UserProfilView extends GetView<UserProfilController> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.logout, color: Colors.red, size: 20),
-            SizedBox(width: 8),
+          children: [
+            const Icon(Icons.logout, color: Colors.red, size: 20),
+            const SizedBox(width: 8),
             Text(
               'Keluar',
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyles.subtitle14.colored(Colors.red),
             ),
           ],
         ),

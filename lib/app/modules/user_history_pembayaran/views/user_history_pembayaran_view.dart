@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
+import '../../../core/values/values.dart';
 import '../controllers/user_history_pembayaran_controller.dart';
 import 'widgets/filter_tabs.dart';
 import 'widgets/payment_history_list.dart';
@@ -36,17 +37,13 @@ class UserHistoryPembayaranView
             child: FilterTabs(),
           ),
           const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Riwayat Transaksi',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.header18.colored(AppColors.textPrimary),
               ),
             ),
           ),

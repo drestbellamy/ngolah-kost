@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../controllers/penghuni_controller.dart';
 import '../models/penghuni_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
+import '../../../core/values/values.dart';
+
 
 class PenghuniView extends GetView<PenghuniController> {
   const PenghuniView({super.key});
@@ -86,22 +88,17 @@ class PenghuniView extends GetView<PenghuniController> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'Kelola Penghuni',
-                                  style: TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
+                                  style: AppTextStyles.headlineSmall
+                                      .weighted(FontWeight.w700)
+                                      .colored(Colors.white),
                                 ),
                                 const SizedBox(height: 4),
                                 Obx(
                                   () => Text(
                                     '${controller.penghuniList.length} penghuni',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFFA8D5BA),
-                                    ),
+                                    style: AppTextStyles.subtitle14.colored (AppColors.primaryLight),
                                   ),
                                 ),
                               ],
@@ -115,10 +112,7 @@ class PenghuniView extends GetView<PenghuniController> {
                           onChanged: controller.searchPenghuni,
                           decoration: InputDecoration(
                             hintText: 'Cari penghuni, kamar, atau kost...',
-                            hintStyle: const TextStyle(
-                              color: Color(0xFF9CA3AF),
-                              fontSize: 14,
-                            ),
+                            hintStyle: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
                             prefixIcon: const Icon(
                               Icons.search,
                               color: Color(0xFF9CA3AF),
@@ -200,10 +194,7 @@ class PenghuniView extends GetView<PenghuniController> {
                       child: Text(
                         controller.errorMessage.value!,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFFB91C1C),
-                          fontSize: 14,
-                        ),
+                        style: AppTextStyles.body14.colored(const Color(0xFFB91C1C)),
                       ),
                     ),
                   );
@@ -216,11 +207,7 @@ class PenghuniView extends GetView<PenghuniController> {
                       child: Text(
                         controller.emptyStateText,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF6B7280),
-                          fontSize: 14,
-                          height: 1.4,
-                        ),
+                        style: AppTextStyles.body14.colored(const Color(0xFF6B7280)),
                       ),
                     ),
                   );
@@ -308,8 +295,7 @@ class PenghuniView extends GetView<PenghuniController> {
                 ),
                 child: Text(
                   count.toString(),
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: AppTextStyles.body12.copyWith(
                     fontWeight: FontWeight.w600,
                     color: isSelected ? Colors.white : const Color(0xFF6B7280),
                   ),
@@ -350,10 +336,9 @@ class PenghuniView extends GetView<PenghuniController> {
                 const SizedBox(width: 4),
                 Text(
                   isAsc ? 'Asc' : 'Desc',
-                  style: const TextStyle(
-                    fontSize: 11,
+                  style: AppTextStyles.labelSmall.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: Color(0xFF6B7280),
+                    color: const Color(0xFF6B7280),
                   ),
                 ),
               ],
@@ -378,7 +363,7 @@ class PenghuniView extends GetView<PenghuniController> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -409,11 +394,7 @@ class PenghuniView extends GetView<PenghuniController> {
                     children: [
                       Text(
                         penghuni.nama,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D3748),
-                        ),
+                        style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -429,10 +410,7 @@ class PenghuniView extends GetView<PenghuniController> {
                           Expanded(
                             child: Text(
                               penghuni.namaKost,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF718096),
-                              ),
+                              style: AppTextStyles.body12.colored(const Color(0xFF718096)),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -450,10 +428,7 @@ class PenghuniView extends GetView<PenghuniController> {
                           const SizedBox(width: 4),
                           Text(
                             penghuni.noTelepon,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF718096),
-                            ),
+                            style: AppTextStyles.body12.colored(const Color(0xFF718096)),
                           ),
                         ],
                       ),
@@ -469,7 +444,7 @@ class PenghuniView extends GetView<PenghuniController> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF10B981).withOpacity(0.14),
+                        color: const Color(0xFF10B981).withValues(alpha: 0.14),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -483,10 +458,9 @@ class PenghuniView extends GetView<PenghuniController> {
                           const SizedBox(width: 4),
                           Text(
                             occupancyLabel,
-                            style: const TextStyle(
-                              fontSize: 11,
+                            style: AppTextStyles.labelSmall.copyWith(
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF10B981),
+                              color: const Color(0xFF10B981),
                             ),
                           ),
                         ],
@@ -504,8 +478,7 @@ class PenghuniView extends GetView<PenghuniController> {
                       ),
                       child: Text(
                         roomLabel,
-                        style: const TextStyle(
-                          fontSize: 12,
+                        style: AppTextStyles.body12.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
                         ),
@@ -524,17 +497,16 @@ class PenghuniView extends GetView<PenghuniController> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Sewa Bulanan',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                      style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Rp ${penghuni.sewaBulanan.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: AppTextStyles.body14.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF2D3748),
+                        color: const Color(0xFF2D3748),
                       ),
                     ),
                   ],
@@ -542,17 +514,16 @@ class PenghuniView extends GetView<PenghuniController> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text(
+                    Text(
                       'Tanggal Masuk',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+                      style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       penghuni.tanggalMasuk,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: AppTextStyles.body14.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF2D3748),
+                        color: const Color(0xFF2D3748),
                       ),
                     ),
                   ],

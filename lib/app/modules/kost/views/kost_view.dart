@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/text_styles.dart';
+import '../../../core/values/app_colors.dart';
 import '../controllers/kost_controller.dart';
 import '../models/kost_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
@@ -32,7 +34,10 @@ class KostView extends GetView<KostController> {
                 child: ElevatedButton.icon(
                   onPressed: () => Get.toNamed(Routes.kostMap),
                   icon: const Icon(Icons.map, size: 20),
-                  label: const Text('Lihat Peta Lokasi Kost'),
+                  label: Text(
+                    'Lihat Peta Lokasi Kost',
+                    style: AppTextStyles.buttonMedium,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6B8E7F),
                     foregroundColor: Colors.white,
@@ -60,7 +65,7 @@ class KostView extends GetView<KostController> {
                       child: Text(
                         'Gagal memuat data kost: ${snapshot.error}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Color(0xFFE53E3E)),
+                        style: AppTextStyles.bodyMedium.colored(AppColors.error),
                       ),
                     );
                   }
@@ -70,7 +75,9 @@ class KostView extends GetView<KostController> {
                       child: Text(
                         'Belum ada data kost',
                         style: TextStyle(
+                          fontFamily: 'SF Pro',
                           fontSize: 14,
+                          fontWeight: FontWeight.w400, // Regular
                           color: Color(0xFF718096),
                         ),
                       ),
@@ -147,11 +154,7 @@ class KostView extends GetView<KostController> {
                         kost.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D3748),
-                        ),
+                        style: AppTextStyles.header16.colored(AppColors.textSecondary),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -159,16 +162,13 @@ class KostView extends GetView<KostController> {
                           const Icon(
                             Icons.location_on,
                             size: 14,
-                            color: Color(0xFF718096),
+                            color: AppColors.textTertiary,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               kost.address,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF718096),
-                              ),
+                              style: AppTextStyles.body12.colored(AppColors.textTertiary),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -191,11 +191,7 @@ class KostView extends GetView<KostController> {
               ),
               child: Text(
                 '${kost.roomCount} Rooms',
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF4CAF50),
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.body12.colored(AppColors.successLight),
               ),
             ),
             const SizedBox(height: 12),
@@ -206,7 +202,7 @@ class KostView extends GetView<KostController> {
                   child: ElevatedButton.icon(
                     onPressed: () => controller.editKost(kost.id),
                     icon: const Icon(Icons.edit, size: 18),
-                    label: const Text('Edit'),
+                    label: Text('Edit', style: AppTextStyles.buttonMedium),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6B8E7F),
                       foregroundColor: Colors.white,
@@ -223,7 +219,7 @@ class KostView extends GetView<KostController> {
                   child: OutlinedButton.icon(
                     onPressed: () => controller.deleteKost(kost.id),
                     icon: const Icon(Icons.delete_outline, size: 18),
-                    label: const Text('Delete'),
+                    label: Text('Delete', style: AppTextStyles.buttonMedium),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFFE53E3E),
                       side: const BorderSide(color: Color(0xFFE53E3E)),

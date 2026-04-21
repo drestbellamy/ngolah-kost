@@ -48,6 +48,30 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6B8E7A)),
         useMaterial3: true,
+        textTheme: const TextTheme(
+          // Headers - Helvetica Neue
+          displayLarge: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 57, fontWeight: FontWeight.w400),
+          displayMedium: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 45, fontWeight: FontWeight.w400),
+          displaySmall: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 36, fontWeight: FontWeight.w400),
+          headlineLarge: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 32, fontWeight: FontWeight.w400),
+          headlineMedium: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 28, fontWeight: FontWeight.w400),
+          headlineSmall: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 24, fontWeight: FontWeight.w400),
+          
+          // Sub Judul - Helvetica Neue
+          titleLarge: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 22, fontWeight: FontWeight.w500),
+          titleMedium: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 16, fontWeight: FontWeight.w500),
+          titleSmall: TextStyle(fontFamily: 'Helvetica Neue', fontSize: 14, fontWeight: FontWeight.w500),
+          
+          // Deskripsi - SF Pro
+          bodyLarge: TextStyle(fontFamily: 'SF Pro', fontSize: 16, fontWeight: FontWeight.w400),
+          bodyMedium: TextStyle(fontFamily: 'SF Pro', fontSize: 14, fontWeight: FontWeight.w400),
+          bodySmall: TextStyle(fontFamily: 'SF Pro', fontSize: 12, fontWeight: FontWeight.w400),
+          
+          // Label - SF Pro
+          labelLarge: TextStyle(fontFamily: 'SF Pro', fontSize: 14, fontWeight: FontWeight.w500),
+          labelMedium: TextStyle(fontFamily: 'SF Pro', fontSize: 12, fontWeight: FontWeight.w500),
+          labelSmall: TextStyle(fontFamily: 'SF Pro', fontSize: 11, fontWeight: FontWeight.w500),
+        ),
       ),
       getPages: AppPages.routes,
     );

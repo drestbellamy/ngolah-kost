@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 import '../controllers/detail_keuangan_kost_controller.dart';
 import '../widgets/financial_chart.dart';
 import 'widgets/tambah_pengeluaran_bottom_sheet.dart';
@@ -59,13 +60,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Grafik Keuangan Bulanan',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2F2F2F),
-                                ),
+                                style: AppTextStyles.header16.colored(AppColors.textPrimary),
                               ),
                               const SizedBox(height: 20),
                               // Chart
@@ -153,13 +150,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                         ),
                                       ),
                                       const SizedBox(width: 12),
-                                      const Text(
+                                      Text(
                                         'Pemasukan dari Penghuni',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF2F2F2F),
-                                        ),
+                                        style: AppTextStyles.header16.colored(AppColors.textPrimary),
                                       ),
                                     ],
                                   ),
@@ -186,15 +179,12 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                               const SizedBox(height: 16),
                               Obx(() {
                                 if (controller.pemasukanList.isEmpty) {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(16),
+                                  return Padding(
+                                    padding: const EdgeInsets.all(16),
                                     child: Center(
                                       child: Text(
                                         'Belum ada data pemasukan',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xFF9CA3AF),
-                                        ),
+                                        style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
                                       ),
                                     ),
                                   );
@@ -234,20 +224,13 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                             children: [
                                               Text(
                                                 namaPenghuni,
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w600,
-                                                  color: Color(0xFF2F2F2F),
-                                                ),
+                                                style: AppTextStyles.subtitle14.copyWith(fontSize: 15).weighted(FontWeight.w600).colored(AppColors.textPrimary),
                                               ),
                                               const SizedBox(height: 2),
                                               if (keterangan.isNotEmpty)
                                                 Text(
                                                   keterangan,
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: Colors.grey[600],
-                                                  ),
+                                                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
                                                   maxLines: 2,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -257,21 +240,14 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                                 controller.formatDate(
                                                   item['tanggal'],
                                                 ),
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey[500],
-                                                ),
+                                                style: AppTextStyles.body12.colored(AppColors.textSecondary),
                                               ),
                                             ],
                                           ),
                                         ),
                                         Text(
                                           '+${controller.formatCurrency(amount)}',
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFF10B981),
-                                          ),
+                                          style: AppTextStyles.subtitle14.copyWith(fontSize: 15).weighted(FontWeight.bold).colored(const Color(0xFF10B981)),
                                         ),
                                       ],
                                     );
@@ -328,13 +304,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                         ),
                                       ),
                                       const SizedBox(width: 12),
-                                      const Text(
+                                      Text(
                                         'Daftar Pengeluaran',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF2F2F2F),
-                                        ),
+                                        style: AppTextStyles.header16.colored(AppColors.textPrimary),
                                       ),
                                     ],
                                   ),
@@ -369,15 +341,12 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                               const SizedBox(height: 16),
                               Obx(() {
                                 if (controller.pengeluaranList.isEmpty) {
-                                  return const Padding(
-                                    padding: EdgeInsets.all(16),
+                                  return Padding(
+                                    padding: const EdgeInsets.all(16),
                                     child: Center(
                                       child: Text(
                                         'Belum ada data pengeluaran',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xFF9CA3AF),
-                                        ),
+                                        style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
                                       ),
                                     ),
                                   );
@@ -426,21 +395,14 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                             const SizedBox(width: 12),
                                             Text(
                                               '-${controller.formatCurrency(amount)}',
-                                              style: const TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xFFEF4444),
-                                              ),
+                                              style: AppTextStyles.subtitle14.copyWith(fontSize: 15).weighted(FontWeight.bold).colored(const Color(0xFFEF4444)),
                                             ),
                                           ],
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           item['deskripsi']?.toString() ?? '-',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: Colors.grey[600],
-                                          ),
+                                          style: AppTextStyles.body14.colored(AppColors.textSecondary),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -461,10 +423,7 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                                   controller.formatDate(
                                                     item['tanggal'],
                                                   ),
-                                                  style: TextStyle(
-                                                    fontSize: 12,
-                                                    color: Colors.grey[500],
-                                                  ),
+                                                  style: AppTextStyles.body12.colored(AppColors.textSecondary),
                                                 ),
                                               ],
                                             ),
@@ -515,26 +474,13 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                                                 16,
                                                               ),
                                                         ),
-                                                        title: const Text(
+                                                        title: Text(
                                                           'Hapus Pengeluaran',
-                                                          style: TextStyle(
-                                                            fontSize: 18,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Color(
-                                                              0xFF2F2F2F,
-                                                            ),
-                                                          ),
+                                                          style: AppTextStyles.header18.colored(AppColors.textPrimary),
                                                         ),
                                                         content: Text(
                                                           'Apakah Anda yakin ingin menghapus "${item['nama']?.toString() ?? 'pengeluaran ini'}"?',
-                                                          style:
-                                                              const TextStyle(
-                                                                fontSize: 14,
-                                                                color: Color(
-                                                                  0xFF6B7280,
-                                                                ),
-                                                              ),
+                                                          style: AppTextStyles.body14.colored(AppColors.textSecondary),
                                                         ),
                                                         actions: [
                                                           TextButton(
@@ -616,7 +562,7 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 8),
-        Text(label, style: TextStyle(fontSize: 13, color: Colors.grey[700])),
+        Text(label, style: AppTextStyles.body14.colored(AppColors.textSecondary)),
       ],
     );
   }

@@ -6,6 +6,7 @@ import 'widgets/menu_item.dart';
 import 'widgets/ringkasan_keuangan_widget.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -86,21 +87,12 @@ class HomeView extends GetView<HomeController> {
                                         children: [
                                           Text(
                                             '${controller.menungguVerifikasi.value} Pembayaran\nPerlu Verifikasi',
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              height: 1.3,
-                                            ),
+                                            style: AppTextStyles.header18.colored(Colors.white),
                                           ),
                                           const SizedBox(height: 4),
-                                          const Text(
+                                          Text(
                                             'Klik untuk memeriksa bukti transfer',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                              color: Color(0xFFFFEDD4),
-                                            ),
+                                            style: AppTextStyles.body14.colored(AppColors.alertOrangeLight),
                                           ),
                                         ],
                                       ),
@@ -226,15 +218,11 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 24),
 
                       // Settings Section
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Text(
                           'Pengaturan & Lainnya',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2F2F2F),
-                          ),
+                          style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
                         ),
                       ),
 

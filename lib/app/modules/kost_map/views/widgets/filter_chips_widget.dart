@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 import '../../../../data/models/map_state_model.dart';
 
 class FilterChipsWidget extends StatelessWidget {
@@ -83,13 +84,9 @@ class FilterChipsWidget extends StatelessWidget {
                           color: Color(0xFF6B7280),
                         ),
                         const SizedBox(width: 4),
-                        const Text(
+                        Text(
                           'Hapus',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF6B7280),
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: AppTextStyles.body12.weighted(FontWeight.w500).colored(AppColors.textGray),
                         ),
                       ],
                     ),
@@ -152,10 +149,8 @@ class FilterChipsWidget extends StatelessWidget {
 
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isSelected ? Colors.white : const Color(0xFF374151),
-                    fontWeight: FontWeight.w500,
+                  style: AppTextStyles.body12.weighted(FontWeight.w500).colored(
+                    isSelected ? Colors.white : const Color(0xFF374151),
                   ),
                 ),
               ],

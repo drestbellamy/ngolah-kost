@@ -5,6 +5,7 @@ import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:latlong2/latlong.dart';
 import '../controllers/kost_map_controller.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 import '../../../data/models/map_state_model.dart';
 import '../../../data/models/kost_with_status_model.dart';
 import '../../../data/enums/room_availability_status.dart';
@@ -149,31 +150,19 @@ class KostMapView extends GetView<KostMapController> {
                       const SizedBox(height: 20),
                       const Text(
                         'Tidak Ada Data Kost',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1F2937),
-                        ),
+                        style: AppTextStyles.header20,
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'Belum ada kost dengan koordinat lokasi yang valid.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Color(0xFF6B7280),
-                          height: 1.5,
-                        ),
+                        style: AppTextStyles.body14.copyWith(fontSize: 15).colored(const Color(0xFF6B7280)),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Tambahkan latitude & longitude pada data kost Anda.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF9CA3AF),
-                          height: 1.5,
-                        ),
+                        style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
                       ),
                       const SizedBox(height: 24),
                       // Buttons
@@ -252,10 +241,7 @@ class KostMapView extends GetView<KostMapController> {
                     Expanded(
                       child: Text(
                         controller.errorMessage!,
-                        style: const TextStyle(
-                          color: Color(0xFFEF4444),
-                          fontSize: 14,
-                        ),
+                        style: AppTextStyles.body14.colored(const Color(0xFFEF4444)),
                       ),
                     ),
                     IconButton(
@@ -368,10 +354,9 @@ class KostMapView extends GetView<KostMapController> {
                 child: Center(
                   child: Text(
                     markers.length.toString(),
-                    style: const TextStyle(
+                    style: AppTextStyles.body12.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
                     ),
                   ),
                 ),
@@ -460,7 +445,7 @@ class KostMapView extends GetView<KostMapController> {
                       controller.mapState.hasActiveFilters
                           ? 'No kost found matching your filters'
                           : 'No kost data available',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      style: AppTextStyles.body16.colored(Colors.grey[600]!),
                     ),
                     if (controller.mapState.hasActiveFilters) ...[
                       const SizedBox(height: 8),
@@ -521,7 +506,7 @@ class KostMapView extends GetView<KostMapController> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -547,11 +532,7 @@ class KostMapView extends GetView<KostMapController> {
               Expanded(
                 child: Text(
                   kost.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF2D3748),
-                  ),
+                  style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)),
                 ),
               ),
 
@@ -568,9 +549,8 @@ class KostMapView extends GetView<KostMapController> {
                   ),
                   child: Text(
                     kost.formattedDistance,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Color(0xFF6B8E7F),
+                    style: AppTextStyles.body12.copyWith(
+                      color: const Color(0xFF6B8E7F),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -588,10 +568,7 @@ class KostMapView extends GetView<KostMapController> {
               Expanded(
                 child: Text(
                   kost.address,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF718096),
-                  ),
+                  style: AppTextStyles.body12.colored(const Color(0xFF718096)),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -624,7 +601,7 @@ class KostMapView extends GetView<KostMapController> {
 
               Text(
                 '${kost.availableRooms}/${kost.roomCount} tersedia',
-                style: const TextStyle(fontSize: 12, color: Color(0xFF718096)),
+                style: AppTextStyles.body12.colored(const Color(0xFF718096)),
               ),
             ],
           ),

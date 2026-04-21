@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/user_home_controller.dart';
+import '../../../../core/values/values.dart';
 
 class PaymentSummaryCard extends StatelessWidget {
   final UserHomeController controller;
@@ -12,13 +13,9 @@ class PaymentSummaryCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Ringkasan Pembayaran',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2F2F2F),
-          ),
+          style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
         ),
         const SizedBox(height: 12),
         Obx(
@@ -88,21 +85,17 @@ class PaymentSummaryCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             title,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            style: AppTextStyles.body12.colored(AppColors.textGray),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2F2F2F),
-            ),
+            style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: TextStyle(fontSize: 10, color: iconColor),
+            style: AppTextStyles.body10.colored(iconColor),
             textAlign: TextAlign.center,
           ),
         ],
