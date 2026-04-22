@@ -1,0 +1,8 @@
+# Local Gradle Properties (Optional)
+# Copy this file to gradle.properties.local if you experience Kotlin daemon issues
+# This file should NOT be committed (add to .gitignore)
+
+# Kotlin daemon configuration (for stability issues)
+kotlin.daemon.jvmargs=-Xmx2G -XX:MaxMetaspaceSize=512m
+kotlin.incremental=false
+kotlin.compiler.execution.strategy=in-process
