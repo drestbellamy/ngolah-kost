@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
+import '../../../core/values/values.dart';
 import '../controllers/kost_controller.dart';
 
 class EditKostView extends GetView<KostController> {
@@ -55,13 +56,9 @@ class EditKostView extends GetView<KostController> {
                             color: Color(0xFF6B8E7F),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             'Nama Kost',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF2D3748),
-                            ),
+                            style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                           ),
                         ],
                       ),
@@ -111,13 +108,9 @@ class EditKostView extends GetView<KostController> {
                             color: Color(0xFF6B8E7F),
                           ),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             'Alamat Lengkap',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF2D3748),
-                            ),
+                            style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                           ),
                         ],
                       ),
@@ -313,14 +306,10 @@ class EditKostView extends GetView<KostController> {
                       const SizedBox(height: 24),
 
                       // Jumlah Kamar
-                      const Text(
-                        'Jumlah Kamar',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D3748),
-                        ),
-                      ),
+                          Text(
+                            'Jumlah Kamar',
+                            style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
+                          ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: controller.roomCountController,

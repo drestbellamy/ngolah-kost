@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/kelola_tagihan_controller.dart';
 import '../../models/tagihan_model.dart';
 
@@ -51,21 +52,14 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Verifikasi Pembayaran',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D3748),
-                            ),
+                            style: AppTextStyles.header20.colored(const Color(0xFF2D3748)),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             '${tagihan.namaPenghuni} • ${tagihan.nomorKamar}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFF6B7280),
-                            ),
+                            style: AppTextStyles.header16.colored(AppColors.textGray),
                           ),
                         ],
                       ),
@@ -107,11 +101,7 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                             tagihan.buktiPembayaranUrl != null
                                 ? 'Bukti Transfer'
                                 : 'Pembayaran Tunai',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF2D3748),
-                            ),
+                            style: AppTextStyles.header16.colored(const Color(0xFF2D3748)),
                           ),
                         ],
                       ),
@@ -205,13 +195,9 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                                         ),
                                       ),
                                       const SizedBox(height: 16),
-                                      const Text(
+                                      Text(
                                         'Pembayaran Tunai',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(0xFF2D3748),
-                                        ),
+                                        style: AppTextStyles.header18.colored(const Color(0xFF2D3748)),
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
@@ -245,22 +231,14 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Jumlah Tagihan',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF6B7280),
-                              ),
+                              style: AppTextStyles.header16.colored(AppColors.textGray),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Rp ${tagihan.jumlahTagihan.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xFFF2A65A),
-                              ),
+                              style: AppTextStyles.header20.weighted(FontWeight.w900).colored(AppColors.primary).copyWith(fontSize: 28),
                             ),
                           ],
                         ),
@@ -281,21 +259,14 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Batas Bayar',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF9CA3AF),
-                                    ),
+                                    style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     tagihan.batasPembayaran,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2D3748),
-                                    ),
+                                    style: AppTextStyles.header16.colored(const Color(0xFF2D3748)),
                                   ),
                                 ],
                               ),
@@ -312,21 +283,14 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Jatuh Tempo',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF9CA3AF),
-                                    ),
+                                    style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     tagihan.tanggalJatuhTempo,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2D3748),
-                                    ),
+                                    style: AppTextStyles.header16.colored(const Color(0xFF2D3748)),
                                   ),
                                 ],
                               ),
@@ -348,21 +312,14 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Lokasi Kost',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF9CA3AF),
-                              ),
+                              style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               tagihan.namaKost,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2D3748),
-                              ),
+                              style: AppTextStyles.header16.colored(const Color(0xFF2D3748)),
                             ),
                           ],
                         ),
@@ -393,7 +350,7 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => controller.tolakPembayaran(tagihan),
                         icon: const Icon(Icons.close, size: 20),
-                        label: const Text('Tolak'),
+                        label: Text('Tolak', style: AppTextStyles.subtitle14.colored(Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFEF4444),
                           foregroundColor: Colors.white,
@@ -411,7 +368,7 @@ class VerifikasiPembayaranBottomSheet extends StatelessWidget {
                         onPressed: () =>
                             controller.verifikasiPembayaran(tagihan),
                         icon: const Icon(Icons.check_circle, size: 20),
-                        label: const Text('Terima'),
+                        label: Text('Terima', style: AppTextStyles.subtitle14.colored(Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           foregroundColor: Colors.white,

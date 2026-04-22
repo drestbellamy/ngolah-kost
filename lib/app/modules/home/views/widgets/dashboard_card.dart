@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 
 class DashboardCard extends StatelessWidget {
   final IconData icon;
@@ -56,10 +57,9 @@ class DashboardCard extends StatelessWidget {
               const Spacer(),
               Text(
                 value,
-                style: const TextStyle(
+                style: AppTextStyles.displaySmall.copyWith(
                   fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2F2F2F),
+                  color: AppColors.textPrimary,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -69,12 +69,7 @@ class DashboardCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF6B7280),
-                  height: 1.2,
-                ),
+                style: AppTextStyles.body12.colored(AppColors.textGray),
               ),
             ],
           ),

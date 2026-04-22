@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../controllers/notification_controller.dart';
+import '../values/values.dart';
 
 class UserBottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -149,12 +150,10 @@ class UserBottomNavbar extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                color: isActive
-                    ? const Color(0xFF6B8E7A)
-                    : const Color(0xFF6C727F),
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
+              style: AppTextStyles.labelMedium.weighted(
+                isActive ? FontWeight.w600 : FontWeight.w400
+              ).colored(
+                isActive ? AppColors.primary : const Color(0xFF6C727F)
               ),
             ),
           ],

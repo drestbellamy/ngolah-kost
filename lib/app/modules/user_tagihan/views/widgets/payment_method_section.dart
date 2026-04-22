@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/user_tagihan_controller.dart';
+import '../../../../core/values/values.dart';
 import 'payment_method_option.dart';
 import 'transfer_bank_info.dart';
 import 'qris_info.dart';
@@ -18,13 +19,9 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Metode Pembayaran',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4B5563),
-              ),
+              style: AppTextStyles.subtitle16.colored(AppColors.textGray),
             ),
             const SizedBox(height: 16),
 
@@ -49,29 +46,22 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                     border: Border.all(color: const Color(0xFFFBBF24)),
                   ),
                   child: Column(
-                    children: const [
-                      Icon(
+                    children: [
+                      const Icon(
                         Icons.warning_amber_outlined,
                         color: Color(0xFFD97706),
                         size: 24,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Metode Pembayaran Belum Tersedia',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFD97706),
-                        ),
+                        style: AppTextStyles.subtitle14.colored(const Color(0xFFD97706)),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         'Silakan hubungi pengelola kost untuk informasi pembayaran.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFFD97706),
-                        ),
+                        style: AppTextStyles.body12.colored(const Color(0xFFD97706)),
                       ),
                     ],
                   ),
@@ -157,11 +147,7 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                                   'tunai'
                               ? 'Konfirmasi Pembayaran Tunai'
                               : 'Kirim Bukti Pembayaran',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppTextStyles.subtitle16.colored(Colors.white),
                         ),
                 );
               }),

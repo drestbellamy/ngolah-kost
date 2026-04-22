@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 import '../../../../data/models/peraturan_model.dart';
 
 class PeraturanCard extends StatelessWidget {
@@ -44,11 +45,7 @@ class PeraturanCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   peraturan.judul,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
-                  ),
+                  style: AppTextStyles.header16.colored(const Color(0xFF1F2937)),
                 ),
               ),
             ],
@@ -56,11 +53,7 @@ class PeraturanCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             peraturan.isi,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Color(0xFF4B5563),
-              height: 1.5,
-            ),
+            style: AppTextStyles.body14.colored(const Color(0xFF4B5563)).copyWith(height: 1.5),
           ),
         ],
       ),

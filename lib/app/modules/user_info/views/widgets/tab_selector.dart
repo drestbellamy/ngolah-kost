@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/user_info_controller.dart';
 
 class TabSelector extends GetView<UserInfoController> {
@@ -72,9 +73,8 @@ class TabSelector extends GetView<UserInfoController> {
             const SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : const Color(0xFF6B8E7A),
-                fontWeight: FontWeight.w600,
+              style: AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(
+                isSelected ? Colors.white : const Color(0xFF6B8E7A),
               ),
             ),
           ],

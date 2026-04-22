@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
+import '../../../core/values/values.dart';
 
 class MapPickerView extends StatefulWidget {
   final double? initialLatitude;
@@ -120,9 +121,9 @@ class _MapPickerViewState extends State<MapPickerView> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF6B8E7F),
-        title: const Text(
+        title: Text(
           'Pilih Lokasi Kost',
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          style: AppTextStyles.header18.colored(Colors.white),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -195,10 +196,7 @@ class _MapPickerViewState extends State<MapPickerView> {
                         Expanded(
                           child: Text(
                             _currentAddress,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF2D3748),
-                            ),
+                            style: AppTextStyles.body14.colored(const Color(0xFF2D3748)),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -229,13 +227,9 @@ class _MapPickerViewState extends State<MapPickerView> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Pilih Titik Lokasi Ini',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppTextStyles.header16.colored(Colors.white),
                         ),
                       ),
                     ),

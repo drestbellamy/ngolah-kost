@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 import '../controllers/kelola_tagihan_controller.dart';
 import '../models/tagihan_model.dart';
 import 'widgets/verifikasi_pembayaran_bottom_sheet.dart';
@@ -23,10 +24,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
               subtitleWidget: Obx(
                 () => Text(
                   '${controller.getTotalTagihan()} tagihan',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFFA8D5BA),
-                  ),
+                  style: AppTextStyles.body14.colored(const Color(0xFFA8D5BA)),
                 ),
               ),
             ),
@@ -58,10 +56,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                           onChanged: controller.searchTagihan,
                           decoration: InputDecoration(
                             hintText: 'Cari penghuni, kamar, atau kost...',
-                            hintStyle: const TextStyle(
-                              color: Color(0xFFA0AEC0),
-                              fontSize: 14,
-                            ),
+                            hintStyle: AppTextStyles.body14.colored(const Color(0xFFA0AEC0)),
                             prefixIcon: const Icon(
                               Icons.search,
                               color: Color(0xFF9CA3AF),
@@ -139,25 +134,19 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                               child: Text(
                                 controller.errorMessage.value!,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFFB91C1C),
-                                ),
+                                style: AppTextStyles.body14.colored(const Color(0xFFB91C1C)),
                               ),
                             ),
                           );
                         }
 
                         if (controller.filteredTagihanList.isEmpty) {
-                          return const Padding(
-                            padding: EdgeInsets.only(top: 40),
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 40),
                             child: Center(
                               child: Text(
                                 'Belum ada data tagihan.',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF6B7280),
-                                ),
+                                style: AppTextStyles.body14.colored(AppColors.textGray),
                               ),
                             ),
                           );
@@ -299,9 +288,9 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
+                  Text(
                     'Pilih periode bulan yang ingin ditampilkan',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                    style: AppTextStyles.body12.colored(AppColors.textGray),
                   ),
                   const SizedBox(height: 10),
                   ConstrainedBox(
@@ -397,11 +386,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
               Expanded(
                 child: Text(
                   tagihan.namaPenghuni,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3748),
-                  ),
+                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -417,11 +402,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                 ),
                 child: Text(
                   statusText,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: statusColor,
-                  ),
+                  style: AppTextStyles.subtitle12.colored(statusColor),
                 ),
               ),
             ],
@@ -434,10 +415,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
               Expanded(
                 child: Text(
                   tagihan.namaKost,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF6B7280),
-                  ),
+                  style: AppTextStyles.body12.colored(AppColors.textGray),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -458,10 +436,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                     const SizedBox(width: 6),
                     Text(
                       tagihan.nomorKamar,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF2D3748),
-                      ),
+                      style: AppTextStyles.body14.colored(const Color(0xFF2D3748)),
                     ),
                   ],
                 ),
@@ -476,10 +451,7 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
                   const SizedBox(width: 6),
                   Text(
                     tagihan.tanggalJatuhTempo,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF2D3748),
-                    ),
+                    style: AppTextStyles.body14.colored(const Color(0xFF2D3748)),
                   ),
                 ],
               ),
@@ -491,17 +463,13 @@ class KelolaTagihanView extends GetView<KelolaTagihanController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Jumlah Tagihan',
-                style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                style: AppTextStyles.body12.colored(AppColors.textGray),
               ),
               Text(
                 'Rp ${tagihan.jumlahTagihan.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFF2A65A),
-                ),
+                style: AppTextStyles.header16.colored(AppColors.primary),
               ),
             ],
           ),

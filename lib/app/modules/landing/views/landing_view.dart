@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import '../controllers/landing_controller.dart';
 import 'landing2_view.dart';
 import 'landing3_view.dart';
+import '../../../core/values/values.dart';
 
 class LandingView extends GetView<LandingController> {
   const LandingView({super.key});
@@ -101,7 +102,7 @@ class LandingView extends GetView<LandingController> {
                   fit: BoxFit.cover,
                   alignment: Alignment.topCenter,
                 ),
-                Container(color: Colors.black.withOpacity(0.05)),
+                Container(color: Colors.black.withValues(alpha: 0.05)),
               ],
             ),
           ),
@@ -121,15 +122,14 @@ class LandingView extends GetView<LandingController> {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Lewati',
-                    style: TextStyle(
+                    style: AppTextStyles.body14.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
-                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -164,22 +164,17 @@ class LandingView extends GetView<LandingController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Kelola Kost Mudah',
-                  style: TextStyle(
-                    fontSize: 32,
+                  style: AppTextStyles.headlineLarge.copyWith(
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF5F8571), // Dark green
+                    color: const Color(0xFF5F8571),
                   ),
                 ),
                 const SizedBox(height: 16),
                 RichText(
-                  text: const TextSpan(
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFF6C8F7B), // Light grayish green
-                      height: 1.5,
-                    ),
+                  text: TextSpan(
+                    style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)),
                     children: [
                       TextSpan(
                         text:
@@ -256,19 +251,17 @@ class LandingView extends GetView<LandingController> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Selanjutnya',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
+                          style: AppTextStyles.buttonLarge.copyWith(
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 8),
-                        Icon(
+                        const SizedBox(width: 8),
+                        const Icon(
                           Icons.arrow_forward,
                           color: Colors.white,
                           size: 20,
@@ -300,10 +293,10 @@ class LandingView extends GetView<LandingController> {
             decoration: BoxDecoration(
               color: isActive
                   ? Colors.white
-                  : const Color(0xFF6E947F).withOpacity(0.72),
+                  : const Color(0xFF6E947F).withValues(alpha: 0.72),
               borderRadius: BorderRadius.circular(99),
               border: isActive
-                  ? Border.all(color: const Color(0xFF6E947F).withOpacity(0.28))
+                  ? Border.all(color: const Color(0xFF6E947F).withValues(alpha: 0.28))
                   : null,
             ),
           );
@@ -330,12 +323,12 @@ class LandingView extends GetView<LandingController> {
                 color: logoBackground,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.25),
+                  color: Colors.white.withValues(alpha: 0.25),
                   width: 1.2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.50),
+                    color: Colors.black.withValues(alpha: 0.50),
                     blurRadius: 6,
                     offset: const Offset(0, 4),
                   ),
@@ -352,7 +345,7 @@ class LandingView extends GetView<LandingController> {
                   fit: BoxFit.cover,
                   frameRate: FrameRate.composition,
                   options: LottieOptions(enableMergePaths: true),
-                  errorBuilder: (_, __, ___) => const Icon(
+                  errorBuilder: (_, __, _) => const Icon(
                     Icons.home_rounded,
                     size: 58,
                     color: Color(0xFF6B8E7A),
@@ -371,15 +364,13 @@ class LandingView extends GetView<LandingController> {
             children: [
               Text(
                 'Ngolah Kost',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
+                style: AppTextStyles.headlineLarge.copyWith(
                   color: titleColor,
                   letterSpacing: 0.4,
                   height: 0.1,
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.50),
+                      color: Colors.black.withValues(alpha: 0.50),
                       offset: const Offset(0, 2),
                       blurRadius: 6,
                     ),
@@ -392,11 +383,7 @@ class LandingView extends GetView<LandingController> {
                 child: Text(
                   subtitle,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: subtitleColor,
-                    height: 1.45,
-                  ),
+                  style: AppTextStyles.body16.colored(subtitleColor),
                 ),
               ),
             ],
@@ -421,7 +408,7 @@ class LandingView extends GetView<LandingController> {
                 height: controller.showContent.value ? 160 : 200,
                 decoration: BoxDecoration(
                   color: controller.showContent.value
-                      ? const Color(0xFF4F6F5F).withOpacity(0.08)
+                      ? const Color(0xFF4F6F5F).withValues(alpha: 0.08)
                       : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
@@ -435,7 +422,7 @@ class LandingView extends GetView<LandingController> {
                 height: controller.showContent.value ? 112 : 140,
                 decoration: BoxDecoration(
                   color: controller.showContent.value
-                      ? const Color(0xFF4F6F5F).withOpacity(0.12)
+                      ? const Color(0xFF4F6F5F).withValues(alpha: 0.12)
                       : Colors.transparent,
                   shape: BoxShape.circle,
                 ),
@@ -468,12 +455,12 @@ class LandingView extends GetView<LandingController> {
                             color: const Color(0xFF4F6F5F),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.25),
+                              color: Colors.white.withValues(alpha: 0.25),
                               width: 1.2,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -492,7 +479,7 @@ class LandingView extends GetView<LandingController> {
                           fit: BoxFit.cover,
                           frameRate: FrameRate.composition,
                           options: LottieOptions(enableMergePaths: true),
-                          errorBuilder: (_, __, ___) => Icon(
+                          errorBuilder: (_, __, _) => Icon(
                             Icons.home_rounded,
                             size: isShown ? 58 : 76,
                             color: const Color(0xFF6B8E7A),
@@ -512,12 +499,10 @@ class LandingView extends GetView<LandingController> {
         // Title
         Obx(
           () => controller.showContent.value
-              ? const Text(
+              ? Text(
                   'Ngolah Kost',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF4F6F5F),
+                  style: AppTextStyles.headlineMedium.copyWith(
+                    color: const Color(0xFF4F6F5F),
                     letterSpacing: 0.5,
                   ),
                 )

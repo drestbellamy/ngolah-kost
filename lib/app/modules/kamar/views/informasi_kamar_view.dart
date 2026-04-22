@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 import '../controllers/informasi_kamar_controller.dart';
 
 class InformasiKamarView extends GetView<InformasiKamarController> {
@@ -30,10 +31,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                     const SizedBox(width: 4),
                     Text(
                       controller.namaKost.value,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFFA8D5BA),
-                      ),
+                      style: AppTextStyles.body14.colored(const Color(0xFFA8D5BA)),
                     ),
                   ],
                 ),
@@ -107,25 +105,17 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                             const SizedBox(height: 20),
 
                             // Title
-                            const Text(
+                            Text(
                               'Belum Ada Penghuni',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF2F2F2F),
-                              ),
+                              style: AppTextStyles.header18.colored(AppColors.textPrimary),
                             ),
                             const SizedBox(height: 8),
 
                             // Description
-                            const Text(
+                            Text(
                               'Kamar ini masih kosong dan tersedia untuk\npenghuni baru',
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF6B7280),
-                                height: 1.5,
-                              ),
+                              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(height: 1.5),
                             ),
                             const SizedBox(height: 24),
 
@@ -138,7 +128,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                                   Icons.person_add_outlined,
                                   size: 20,
                                 ),
-                                label: const Text('Tambah Penghuni'),
+                                label: Text('Tambah Penghuni', style: AppTextStyles.subtitle14.colored(Colors.white)),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: const Color(0xFF6B8E7A),
                                   foregroundColor: Colors.white,
@@ -269,20 +259,14 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Nomor Kamar',
-                                      style: TextStyle(
-                                        color: Color(0xFF6B7280),
-                                        fontSize: 12,
-                                      ),
+                                      style: AppTextStyles.body12.colored(AppColors.textGray),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       controller.nomorKamar.value,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
+                                      style: AppTextStyles.header16.colored(AppColors.textPrimary),
                                     ),
                                   ],
                                 ),
@@ -322,21 +306,14 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Harga per Bulan',
-                                      style: TextStyle(
-                                        color: Color(0xFF6B7280),
-                                        fontSize: 12,
-                                      ),
+                                      style: AppTextStyles.body12.colored(AppColors.textGray),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       controller.hargaPerBulan.value,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: Color(0xFFF2A65A),
-                                      ),
+                                      style: AppTextStyles.header16.colored(AppColors.primary),
                                     ),
                                   ],
                                 ),
@@ -383,20 +360,13 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Daftar Penghuni',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2F2F2F),
-                                    ),
+                                    style: AppTextStyles.header18.colored(AppColors.textPrimary),
                                   ),
                                   Text(
                                     '${controller.terisi.value} penghuni aktif',
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Color(0xFF6B7280),
-                                    ),
+                                    style: AppTextStyles.body14.colored(AppColors.textGray),
                                   ),
                                 ],
                               ),
@@ -428,6 +398,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                               ),
                               label: Text(
                                 'Tambah Penghuni (${controller.kapasitas.value - controller.terisi.value} slot tersisa)',
+                                style: AppTextStyles.subtitle14.colored(Colors.white),
                               ),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF6B8E7A),
@@ -549,7 +520,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
           const SizedBox(height: 4),
           Text(
             subtitle,
-            style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            style: AppTextStyles.body12.colored(AppColors.textGray),
           ),
         ],
       ),
@@ -593,20 +564,14 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                       children: [
                         Text(
                           penghuni['nama'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                          style: AppTextStyles.header16.colored(AppColors.textPrimary),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 2),
                         Text(
                           penghuni['telepon'],
-                          style: const TextStyle(
-                            color: Color(0xFF6B7280),
-                            fontSize: 14,
-                          ),
+                          style: AppTextStyles.body14.colored(AppColors.textGray),
                         ),
                       ],
                     ),
@@ -629,28 +594,22 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Username',
-                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+                      style: AppTextStyles.body12.colored(AppColors.textGray),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       penghuni['username'],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
+                      style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Status Kontrak',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
+                          style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -675,11 +634,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                               const SizedBox(width: 4),
                               Text(
                                 penghuni['statusKontrak'],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
+                                style: AppTextStyles.subtitle12.colored(Colors.white),
                               ),
                             ],
                           ),
@@ -693,36 +648,24 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Durasi Kontrak',
-                                style: TextStyle(
-                                  color: Color(0xFF6B7280),
-                                  fontSize: 12,
-                                ),
+                                style: AppTextStyles.body12.colored(AppColors.textGray),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 penghuni['durasiKontrak'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
+                                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                               ),
                               const SizedBox(height: 12),
-                              const Text(
+                              Text(
                                 'Tanggal Mulai',
-                                style: TextStyle(
-                                  color: Color(0xFF6B7280),
-                                  fontSize: 12,
-                                ),
+                                style: AppTextStyles.body12.colored(AppColors.textGray),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 penghuni['tanggalMulai'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
+                                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                               ),
                             ],
                           ),
@@ -731,36 +674,24 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Siklus Bayar',
-                                style: TextStyle(
-                                  color: Color(0xFF6B7280),
-                                  fontSize: 12,
-                                ),
+                                style: AppTextStyles.body12.colored(AppColors.textGray),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 penghuni['siklusBayar'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
+                                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                               ),
                               const SizedBox(height: 12),
-                              const Text(
+                              Text(
                                 'Tanggal Berakhir',
-                                style: TextStyle(
-                                  color: Color(0xFF6B7280),
-                                  fontSize: 12,
-                                ),
+                                style: AppTextStyles.body12.colored(AppColors.textGray),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 penghuni['tanggalBerakhir'],
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
+                                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                               ),
                             ],
                           ),
@@ -770,9 +701,9 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                     const SizedBox(height: 16),
                     const Divider(color: Color(0xFFE5E7EB)),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'Harga Sewa',
-                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+                      style: AppTextStyles.body12.colored(AppColors.textGray),
                     ),
                     const SizedBox(height: 4),
                     Row(
@@ -780,15 +711,11 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                       children: [
                         Text(
                           penghuni['hargaSewa'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Color(0xFF6B8E7A),
-                          ),
+                          style: AppTextStyles.header18.colored(const Color(0xFF6B8E7A)),
                         ),
-                        const Text(
+                        Text(
                           '/bulan',
-                          style: TextStyle(color: Color(0xFF6B7280)),
+                          style: AppTextStyles.body14.colored(AppColors.textGray),
                         ),
                       ],
                     ),
@@ -827,11 +754,7 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
             children: [
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.header16.colored(AppColors.textPrimary),
               ),
               if (badge != null) badge,
             ],
@@ -868,16 +791,12 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
             children: [
               Text(
                 label,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                style: AppTextStyles.body12.colored(AppColors.textGray),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
               ),
             ],
           ),

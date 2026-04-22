@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/metode_pembayaran_controller.dart';
 import '../models/metode_pembayaran_model.dart';
+import '../../../core/values/values.dart';
+import '../../../core/widgets/custom_header.dart';
 
 class MetodePembayaranView extends GetView<MetodePembayaranController> {
   const MetodePembayaranView({super.key});
@@ -15,68 +17,14 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
         child: Column(
           children: [
             // Header
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.fromLTRB(
-                20,
-                MediaQuery.of(context).padding.top + 20,
-                20,
-                20,
-              ),
-              decoration: BoxDecoration(
-                color: const Color(0xFF6B8E7A),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
+            Obx(
+              () => CustomHeader(
+                title: 'Metode Pembayaran',
+                showBackButton: true,
+                subtitleWidget: Text(
+                  '${controller.totalAktif} metode aktif dari ${controller.totalMetode}',
+                  style: AppTextStyles.body14.colored(AppColors.primaryLight),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        onPressed: () => Get.back(),
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Metode Pembayaran',
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Obx(
-                              () => Text(
-                                '${controller.totalAktif} metode aktif dari ${controller.totalMetode}',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFFA8D5BA),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ),
             ),
 
@@ -91,13 +39,9 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Filter by Boarding House
-                        const Text(
+                        Text(
                           'Filter berdasarkan kost',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF2D3748),
-                          ),
+                          style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)),
                         ),
                         const SizedBox(height: 12),
                         Obx(() {
@@ -250,20 +194,19 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                                       color: const Color(0xFFE5E7EB),
                                     ),
                                   ),
-                                  child: const Column(
+                                  child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.account_balance_wallet_outlined,
                                         size: 30,
                                         color: Color(0xFF9CA3AF),
                                       ),
-                                      SizedBox(height: 10),
+                                      const SizedBox(height: 10),
                                       Text(
                                         'Belum ada metode pembayaran',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Color(0xFF6B7280),
+                                        style: AppTextStyles.body14.copyWith(
+                                          color: const Color(0xFF6B7280),
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -325,7 +268,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
         child: Center(
           child: Text(
             label,
-            style: TextStyle(
+            style: AppTextStyles.labelMedium.copyWith(
               fontSize: 13,
               fontWeight: FontWeight.w600,
               color: isSelected ? Colors.white : const Color(0xFF6B7280),
@@ -338,33 +281,30 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
 
   Widget _buildRekeningInfo(MetodePembayaranModel metode) {
     if (metode.jenis == 'qris') {
-      return const Text(
+      return Text(
         'QR Code Pembayaran',
-        style: TextStyle(
-          fontSize: 14,
+        style: AppTextStyles.body14.copyWith(
           fontWeight: FontWeight.w500,
-          color: Color(0xFF6B7280),
+          color: const Color(0xFF6B7280),
         ),
       );
     }
 
     if (metode.jenis == 'cash') {
-      return const Text(
+      return Text(
         'Pembayaran Tunai',
-        style: TextStyle(
-          fontSize: 14,
+        style: AppTextStyles.body14.copyWith(
           fontWeight: FontWeight.w500,
-          color: Color(0xFF6B7280),
+          color: const Color(0xFF6B7280),
         ),
       );
     }
 
     return Text(
       metode.nomorRekening,
-      style: const TextStyle(
-        fontSize: 14,
+      style: AppTextStyles.body14.copyWith(
         fontWeight: FontWeight.bold,
-        color: Color(0xFF2D3748),
+        color: const Color(0xFF2D3748),
       ),
     );
   }
@@ -432,8 +372,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                   ),
                   child: Text(
                     metode.isActive ? 'Aktif' : 'Off',
-                    style: TextStyle(
-                      fontSize: 10,
+                    style: AppTextStyles.body10.copyWith(
                       fontWeight: FontWeight.w600,
                       color: metode.isActive
                           ? const Color(0xFF10B981)
@@ -449,11 +388,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
             // Nama Bank
             Text(
               metode.jenis == 'cash' ? 'Tunai' : metode.nama,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3748),
-              ),
+              style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)),
             ),
 
             const SizedBox(height: 4),
@@ -461,7 +396,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
             // Nama Kost
             Text(
               metode.namaKost,
-              style: const TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
+              style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

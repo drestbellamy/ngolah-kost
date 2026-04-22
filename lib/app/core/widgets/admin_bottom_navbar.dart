@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
+import '../values/values.dart';
 
 /// Shared bottom navigation bar for all admin pages.
 /// Pass [currentIndex] to highlight the active tab:
@@ -40,7 +41,7 @@ class AdminBottomNavbar extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.25),
+            color: Colors.black.withValues(alpha: 0.25),
             blurRadius: 50,
             offset: const Offset(0, 25),
           ),
@@ -90,7 +91,7 @@ class AdminBottomNavbar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF6B8E7A).withOpacity(0.1)
+              ? AppColors.primary.withValues(alpha: 0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
@@ -100,19 +101,15 @@ class AdminBottomNavbar extends StatelessWidget {
             Icon(
               icon,
               size: 20,
-              color: isSelected
-                  ? const Color(0xFF6B8E7A)
-                  : const Color(0xFF6B7280),
+              color: isSelected ? AppColors.primary : AppColors.textGray,
             ),
             const SizedBox(height: 4),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: isSelected
-                    ? const Color(0xFF6B8E7A)
-                    : const Color(0xFF6B7280),
+              style: AppTextStyles.labelMedium.weighted(
+                isSelected ? FontWeight.w600 : FontWeight.w500
+              ).colored(
+                isSelected ? AppColors.primary : AppColors.textGray
               ),
             ),
           ],

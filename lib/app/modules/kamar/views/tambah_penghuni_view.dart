@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
+import '../../../core/values/values.dart';
 import '../controllers/tambah_penghuni_controller.dart';
 
 class TambahPenghuniView extends GetView<TambahPenghuniController> {
@@ -208,10 +209,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                               controller.currentStep.value == 1
                                   ? 'Lanjut'
                                   : 'Tambahkan',
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: AppTextStyles.subtitle14.colored(Colors.white),
                             ),
                     ),
                   ),
@@ -334,9 +332,9 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           ),
           const SizedBox(height: 8),
 
-          const Text(
+          Text(
             'Password akan digunakan untuk login penghuni',
-            style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            style: AppTextStyles.body12.colored(AppColors.textGray),
           ),
         ],
       ),
@@ -379,11 +377,10 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                     controller.tanggalMasuk.value.isEmpty
                         ? 'Pilih tanggal'
                         : controller.tanggalMasuk.value,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: controller.tanggalMasuk.value.isEmpty
+                    style: AppTextStyles.body14.colored(
+                      controller.tanggalMasuk.value.isEmpty
                           ? const Color(0xFF9CA3AF)
-                          : const Color(0xFF2F2F2F),
+                          : AppColors.textPrimary,
                     ),
                   ),
                   const Icon(
@@ -429,11 +426,10 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                     controller.durasiKontrak.value.isEmpty
                         ? 'Pilih durasi'
                         : controller.durasiKontrak.value,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: controller.durasiKontrak.value.isEmpty
+                    style: AppTextStyles.body14.colored(
+                      controller.durasiKontrak.value.isEmpty
                           ? const Color(0xFF9CA3AF)
-                          : const Color(0xFF2F2F2F),
+                          : AppColors.textPrimary,
                     ),
                   ),
                   const Icon(
@@ -483,11 +479,10 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                     controller.sistemPembayaran.value.isEmpty
                         ? 'Pilih sistem pembayaran'
                         : controller.sistemPembayaran.value,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: controller.sistemPembayaran.value.isEmpty
+                    style: AppTextStyles.body14.colored(
+                      controller.sistemPembayaran.value.isEmpty
                           ? const Color(0xFF9CA3AF)
-                          : const Color(0xFF2F2F2F),
+                          : AppColors.textPrimary,
                     ),
                   ),
                   Icon(
@@ -511,9 +506,9 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
             ),
           const SizedBox(height: 8),
 
-          const Text(
+          Text(
             'Frekuensi pembayaran sewa oleh penghuni',
-            style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+            style: AppTextStyles.body12.colored(AppColors.textGray),
           ),
           const SizedBox(height: 16),
 
@@ -548,11 +543,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                         const SizedBox(width: 12),
                         Text(
                           controller.tanggalBerakhir.value,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF2F2F2F),
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
                         ),
                       ],
                     ),
@@ -635,11 +626,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF2F2F2F),
-          ),
+          style: AppTextStyles.header16.colored(AppColors.textPrimary),
         ),
       ],
     );
@@ -649,11 +636,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
     return RichText(
       text: TextSpan(
         text: label,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF2F2F2F),
-        ),
+        style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
         children: [
           if (isRequired)
             const TextSpan(
@@ -696,7 +679,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           inputFormatters: inputFormatters,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+            hintStyle: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
             filled: true,
             fillColor: const Color(0xFFF3F4F6),
             border: OutlineInputBorder(
@@ -749,19 +732,15 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
       children: [
         Text(
           label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-            color: const Color(0xFF6B7280),
-          ),
+          style: isBold 
+              ? AppTextStyles.subtitle14.colored(AppColors.textGray)
+              : AppTextStyles.body14.colored(AppColors.textGray),
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: valueColor ?? const Color(0xFF2F2F2F),
-          ),
+          style: isBold
+              ? AppTextStyles.subtitle14.weighted(FontWeight.w700).colored(valueColor ?? AppColors.textPrimary)
+              : AppTextStyles.subtitle14.colored(valueColor ?? AppColors.textPrimary),
         ),
       ],
     );
@@ -803,13 +782,9 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Pilih Durasi Kontrak :',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.header18.colored(AppColors.textPrimary),
               ),
               const SizedBox(height: 20),
               ...controller.durasiOptions.asMap().entries.map((entry) {
@@ -869,13 +844,9 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Pilih Sistem Pembayaran :',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2F2F2F),
-                ),
+                style: AppTextStyles.header18.colored(AppColors.textPrimary),
               ),
               const SizedBox(height: 20),
               ...controller.sistemPembayaranOptions.asMap().entries.map((

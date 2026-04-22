@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/values/values.dart';
 import '../controllers/ringkasan_keuangan_controller.dart';
 
 class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
@@ -28,18 +29,15 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                 color: const Color(0xFF6B8E7A),
                 child: Obx(() {
                   if (controller.isLoading.value) {
-                    return const Center(
+                    return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircularProgressIndicator(color: Color(0xFF6B8E7A)),
-                          SizedBox(height: 16),
+                          const CircularProgressIndicator(color: Color(0xFF6B8E7A)),
+                          const SizedBox(height: 16),
                           Text(
                             'Memuat data keuangan...',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF6B7280),
-                            ),
+                            style: AppTextStyles.body14.colored(AppColors.textSecondary),
                           ),
                         ],
                       ),
@@ -66,10 +64,7 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                                 Text(
                                   controller.errorMessage.value!,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFF6B7280),
-                                  ),
+                                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
                                 ),
                                 const SizedBox(height: 24),
                                 ElevatedButton.icon(
@@ -113,22 +108,15 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                                   color: Color(0xFF9CA3AF),
                                 ),
                                 const SizedBox(height: 16),
-                                const Text(
+                                Text(
                                   'Belum ada data kost',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF2F2F2F),
-                                  ),
+                                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
+                                Text(
                                   'Tambahkan kost terlebih dahulu untuk melihat ringkasan keuangan',
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFF6B7280),
-                                  ),
+                                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
                                 ),
                               ],
                             ),
@@ -168,11 +156,7 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                                 children: [
                                   const Text(
                                     'Total Semua Kost',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF2F2F2F),
-                                    ),
+                                    style: AppTextStyles.subtitle16,
                                   ),
                                   const SizedBox(height: 16),
                                   _buildFinancialItem(
@@ -214,15 +198,11 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                         const SizedBox(height: 24),
 
                         // Section Title
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Text(
                             'Pilih Rumah Kost',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2F2F2F),
-                            ),
+                            style: AppTextStyles.header16.colored(AppColors.textPrimary),
                           ),
                         ),
 
@@ -292,11 +272,7 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                                               children: [
                                                 Text(
                                                   kost.kostName,
-                                                  style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Color(0xFF2F2F2F),
-                                                  ),
+                                                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -304,10 +280,7 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                                                 const SizedBox(height: 4),
                                                 Text(
                                                   kost.kostAddress,
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: Colors.grey[500],
-                                                  ),
+                                                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
                                                   maxLines: 1,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -401,22 +374,14 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.subtitle14.colored(AppColors.textSecondary).weighted(FontWeight.w500),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[900],
-            ),
+            style: AppTextStyles.header20.copyWith(fontSize: 28).colored(AppColors.textPrimary),
           ),
         ],
       ),
@@ -430,11 +395,7 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
         const SizedBox(width: 4),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
+          style: AppTextStyles.body12.weighted(FontWeight.w600).colored(color),
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../values/values.dart';
 
 class CustomHeader extends StatelessWidget {
   final String title;
@@ -131,11 +132,9 @@ class CustomHeader extends StatelessWidget {
                             title,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
+                            style: AppTextStyles.headlineSmall
+                                .weighted(FontWeight.w700)
+                                .colored(Colors.white),
                           ),
                           const SizedBox(height: 4),
                           if (subtitleWidget != null)
@@ -143,10 +142,7 @@ class CustomHeader extends StatelessWidget {
                           else if (subtitle != null)
                             Text(
                               subtitle!,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFFA8D5BA),
-                              ),
+                              style: AppTextStyles.subtitle14.colored(AppColors.primaryLight),
                             ),
                         ],
                       ),

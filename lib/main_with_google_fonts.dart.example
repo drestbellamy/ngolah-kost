@@ -1,0 +1,84 @@
+// ALTERNATIF: Menggunakan Google Fonts
+// Jika Anda ingin menggunakan Google Fonts sebagai pengganti Helvetica dan SF Pro:
+// 1. Tambahkan di pubspec.yaml dependencies: google_fonts: ^6.1.0
+// 2. Jalankan: flutter pub get
+// 3. Ganti isi lib/main.dart dengan kode di bawah ini
+
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'app/routes/app_pages.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'app/core/controllers/auth_controller.dart';
+import 'app/core/controllers/notification_controller.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID');
+
+  await Supabase.initialize(
+    url: 'https://dajiymvbdpmeijvrqdus.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhaml5bXZiZHBtZWlqdnJxZHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MjcxNDIsImV4cCI6MjA5MTEwMzE0Mn0.C8pvRZ4U3yi-lIr-S45tUGYOoX2zgplK93ip8qMwNt0',
+  );
+
+  final authController = Get.put(AuthController(), permanent: true);
+  await authController.loadSession();
+
+  if (authController.currentUser != null) {
+    Get.put(NotificationController(), permanent: true);
+  }
+
+  runApp(MyApp(initialRoute: authController.initialRoute));
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    authController.startSessionGuard();
+  });
+}
+
+final supabase = Supabase.instance.client;
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key, required this.initialRoute});
+
+  final String initialRoute;
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      title: 'Ngolah Kost',
+      debugShowCheckedModeBanner: false,
+      initialRoute: initialRoute,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6B8E7A)),
+        useMaterial3: true,
+        textTheme: TextTheme(
+          // Headers - Roboto (mirip Helvetica)
+          displayLarge: GoogleFonts.roboto(fontSize: 57, fontWeight: FontWeight.w400),
+          displayMedium: GoogleFonts.roboto(fontSize: 45, fontWeight: FontWeight.w400),
+          displaySmall: GoogleFonts.roboto(fontSize: 36, fontWeight: FontWeight.w400),
+          headlineLarge: GoogleFonts.roboto(fontSize: 32, fontWeight: FontWeight.w400),
+          headlineMedium: GoogleFonts.roboto(fontSize: 28, fontWeight: FontWeight.w400),
+          headlineSmall: GoogleFonts.roboto(fontSize: 24, fontWeight: FontWeight.w400),
+          
+          // Sub Judul - Roboto
+          titleLarge: GoogleFonts.roboto(fontSize: 22, fontWeight: FontWeight.w500),
+          titleMedium: GoogleFonts.roboto(fontSize: 16, fontWeight: FontWeight.w500),
+          titleSmall: GoogleFonts.roboto(fontSize: 14, fontWeight: FontWeight.w500),
+          
+          // Deskripsi - Inter (mirip SF Pro)
+          bodyLarge: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w400),
+          bodyMedium: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w400),
+          bodySmall: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w400),
+          
+          // Label - Inter
+          labelLarge: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w500),
+          labelMedium: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500),
+          labelSmall: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500),
+        ),
+      ),
+      getPages: AppPages.routes,
+    );
+  }
+}

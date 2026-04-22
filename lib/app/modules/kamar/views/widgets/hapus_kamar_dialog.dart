@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 
 class HapusKamarDialog extends StatelessWidget {
   final Map<String, dynamic> kamar;
@@ -20,7 +21,7 @@ class HapusKamarDialog extends StatelessWidget {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: const Color(0xFFEF4444).withOpacity(0.1),
+                color: const Color(0xFFEF4444).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -32,13 +33,9 @@ class HapusKamarDialog extends StatelessWidget {
             const SizedBox(height: 20),
 
             // Title
-            const Text(
+            Text(
               'Hapus Kamar?',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF2F2F2F),
-              ),
+              style: AppTextStyles.header20.colored(AppColors.textPrimary),
             ),
             const SizedBox(height: 12),
 
@@ -46,11 +43,7 @@ class HapusKamarDialog extends StatelessWidget {
             Text(
               'Apakah Anda yakin ingin menghapus Kamar ${kamar['nomor']}? Tindakan ini tidak dapat dibatalkan.',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xFF6B7280),
-                height: 1.5,
-              ),
+              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(height: 1.5),
             ),
             const SizedBox(height: 24),
 
@@ -71,12 +64,9 @@ class HapusKamarDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Batal',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.header16.colored(const Color(0xFF6B7280)),
                     ),
                   ),
                 ),
@@ -93,12 +83,9 @@ class HapusKamarDialog extends StatelessWidget {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
+                    child: Text(
                       'Hapus',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.header16.colored(Colors.white),
                     ),
                   ),
                 ),

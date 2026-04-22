@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/user_info_controller.dart';
 import '../../../../core/controllers/auth_controller.dart';
 import '../../../../routes/app_routes.dart';
@@ -15,7 +16,7 @@ class InfoContentSection extends GetView<UserInfoController> {
         title: const Text('Keluar'),
         content: const Text('Apakah Anda yakin ingin keluar?'),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
+          TextButton(onPressed: () => Get.back(), child: Text('Batal', style: AppTextStyles.subtitle14)),
           TextButton(
             onPressed: () async {
               Get.back();
@@ -23,7 +24,7 @@ class InfoContentSection extends GetView<UserInfoController> {
               await authCtrl.clearUser();
               Get.offAllNamed(Routes.login);
             },
-            child: const Text('Keluar', style: TextStyle(color: Colors.red)),
+            child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red)),
           ),
         ],
       ),
@@ -66,7 +67,7 @@ class InfoContentSection extends GetView<UserInfoController> {
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.red, fontSize: 14),
+              style: AppTextStyles.body14.colored(Colors.red),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -95,12 +96,12 @@ class InfoContentSection extends GetView<UserInfoController> {
 
   Widget _buildPengumumanList() {
     if (controller.pengumumanList.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(48.0),
+      return Padding(
+        padding: const EdgeInsets.all(48.0),
         child: Center(
           child: Text(
             'Belum ada pengumuman',
-            style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
           ),
         ),
       );
@@ -120,12 +121,12 @@ class InfoContentSection extends GetView<UserInfoController> {
 
   Widget _buildPeraturanList() {
     if (controller.peraturanList.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(48.0),
+      return Padding(
+        padding: const EdgeInsets.all(48.0),
         child: Center(
           child: Text(
             'Belum ada peraturan',
-            style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14),
+            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
           ),
         ),
       );

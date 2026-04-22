@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../controllers/user_history_pembayaran_controller.dart';
 import '../../../../core/controllers/auth_controller.dart';
 import '../../../../routes/app_routes.dart';
@@ -14,7 +15,7 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
         title: const Text('Keluar'),
         content: const Text('Apakah Anda yakin ingin keluar?'),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
+          TextButton(onPressed: () => Get.back(), child: Text('Batal', style: AppTextStyles.subtitle14)),
           TextButton(
             onPressed: () async {
               Get.back();
@@ -22,7 +23,7 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
               await authCtrl.clearUser();
               Get.offAllNamed(Routes.login);
             },
-            child: const Text('Keluar', style: TextStyle(color: Colors.red)),
+            child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red)),
           ),
         ],
       ),
@@ -83,19 +84,15 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
           children: [
             const Icon(Icons.error_outline, size: 48, color: Color(0xFFEF4444)),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Terjadi Kesalahan',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1F2937),
-              ),
+              style: AppTextStyles.header18.colored(const Color(0xFF1F2937)),
             ),
             const SizedBox(height: 8),
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+              style: AppTextStyles.body14.colored(AppColors.textSecondary),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -108,7 +105,7 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
               ),
               child: const Text(
                 'Coba Lagi',
-                style: TextStyle(color: Colors.white),
+                style: AppTextStyles.subtitle14,
               ),
             ),
             const SizedBox(height: 12),
@@ -120,7 +117,7 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Keluar', style: TextStyle(color: Colors.red)),
+              child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red)),
             ),
           ],
         ),
@@ -141,14 +138,14 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
           const SizedBox(height: 16),
           Text(
             title,
-            style: const TextStyle(fontSize: 16, color: Color(0xFF6B7280)),
+            style: AppTextStyles.header16.colored(AppColors.textSecondary),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 8),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14, color: Color(0xFF9CA3AF)),
+              style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
             ),
           ],
         ],

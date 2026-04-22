@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/values/values.dart';
 
 class PaymentCard extends StatelessWidget {
   final Map<String, dynamic> payment;
@@ -69,11 +70,7 @@ class PaymentCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         payment['month'],
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2F2F2F),
-                        ),
+                        style: AppTextStyles.header16.colored(AppColors.textPrimary),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -89,11 +86,7 @@ class PaymentCard extends StatelessWidget {
                       ),
                       child: Text(
                         payment['status'],
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: statusColor,
-                        ),
+                        style: AppTextStyles.body12.weighted(FontWeight.w600).colored(statusColor),
                       ),
                     ),
                   ],
@@ -101,10 +94,7 @@ class PaymentCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   payment['method'],
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFF6B7280),
-                  ),
+                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
                 ),
                 const SizedBox(height: 12),
                 Row(
@@ -112,11 +102,7 @@ class PaymentCard extends StatelessWidget {
                   children: [
                     Text(
                       payment['amount'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2F2F2F),
-                      ),
+                      style: AppTextStyles.header16.colored(AppColors.textPrimary),
                     ),
                     Row(
                       children: [
@@ -128,10 +114,7 @@ class PaymentCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           payment['date'],
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF9CA3AF),
-                          ),
+                          style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
                         ),
                       ],
                     ),

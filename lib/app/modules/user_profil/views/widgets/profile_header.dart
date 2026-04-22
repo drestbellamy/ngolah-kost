@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/values/values.dart';
 import '../../../../routes/app_routes.dart';
 import '../../controllers/user_profil_controller.dart';
 
@@ -13,7 +14,7 @@ class ProfileHeader extends GetView<UserProfilController> {
       children: [
         Container(
           width: double.infinity,
-          height: 250,
+          height: 280,
           decoration: const BoxDecoration(
             color: Color(0xFF6B8E7A),
             borderRadius: BorderRadius.only(
@@ -64,21 +65,16 @@ class ProfileHeader extends GetView<UserProfilController> {
                         const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
                               'Profil User',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: AppTextStyles.headlineSmall
+                                .weighted(FontWeight.w700)
+                                .colored(Colors.white),
                             ),
                             Text(
                               'Kelola akun Anda',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
+                             style: AppTextStyles.subtitle14.colored(AppColors.primaryLight),
                             ),
                           ],
                         ),
@@ -91,7 +87,7 @@ class ProfileHeader extends GetView<UserProfilController> {
           ),
         ),
         Positioned(
-          bottom: 24,
+          bottom: 20,
           child: Column(
             children: [
               Obx(() {
@@ -165,16 +161,14 @@ class ProfileHeader extends GetView<UserProfilController> {
               Obx(
                 () => Text(
                   controller.userName,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.headlineSmall
+                                .weighted(FontWeight.w700)
+                                .colored(Colors.white),
                 ),
               ),
-              const Text(
+              Text(
                 'User - Ngolah Kost',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style: AppTextStyles.body14.colored(Colors.white70),
               ),
             ],
           ),
@@ -213,9 +207,9 @@ class ProfileHeader extends GetView<UserProfilController> {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'Foto Profil',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                style: AppTextStyles.header16.colored(AppColors.textPrimary),
               ),
               const SizedBox(height: 24),
               _buildPhotoOptionCard(
@@ -255,12 +249,9 @@ class ProfileHeader extends GetView<UserProfilController> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Batal',
-                    style: TextStyle(
-                      color: Color(0xFF6B7280),
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: AppTextStyles.subtitle14.weighted(FontWeight.bold).colored(const Color(0xFF6B7280)),
                   ),
                 ),
               ),
@@ -302,14 +293,11 @@ class ProfileHeader extends GetView<UserProfilController> {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: AppTextStyles.subtitle14.weighted(FontWeight.bold).colored(AppColors.textPrimary),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: AppTextStyles.body12.colored(AppColors.textSecondary),
                 ),
               ],
             ),
