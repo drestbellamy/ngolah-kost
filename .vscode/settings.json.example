@@ -1,0 +1,15 @@
+{
+    // Example VS Code settings for this Flutter project
+    // Copy this file to settings.json and adjust based on your preferences
+    
+    // If you experience Java/Gradle errors in VS Code, uncomment this:
+    // "java.enabled": false,
+    
+    // Hide Eclipse/Buildship files from explorer:
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    }
+}
