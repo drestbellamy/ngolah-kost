@@ -3,12 +3,22 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/auth_repository.dart';
+import '../../../../repositories/storage_repository.dart';
+import '../../../../repositories/repository_factory.dart';
 
 class ProfilController extends GetxController {
   final authController = Get.find<AuthController>();
-  final supabaseService = SupabaseService();
+  final AuthRepository _authRepo;
+  final StorageRepository _storageRepo;
   final imagePicker = ImagePicker();
+
+  ProfilController({
+    AuthRepository? authRepository,
+    StorageRepository? storageRepository,
+  }) : _authRepo = authRepository ?? RepositoryFactory.instance.authRepository,
+       _storageRepo =
+           storageRepository ?? RepositoryFactory.instance.storageRepository;
 
   // Observables for expanded states
   final isUsernameExpanded = false.obs;
@@ -53,7 +63,7 @@ class ProfilController extends GetxController {
 
     try {
       print('Loading profile for user: ${user.id}');
-      final userData = await supabaseService.getUserById(user.id);
+      final userData = await _authRepo.getUserById(user.id);
       if (userData != null) {
         final fotoProfil = userData['foto_profil']?.toString();
         fotoProfilUrl.value = fotoProfil;
@@ -135,7 +145,7 @@ class ProfilController extends GetxController {
       print('User username: ${user.username}');
 
       // Upload to storage
-      final photoUrl = await supabaseService.uploadFotoProfilAdmin(
+      final photoUrl = await _storageRepo.uploadFotoProfilAdmin(
         imageBytes: bytes,
         fileExt: fileExt,
         userId: user.id,
@@ -146,14 +156,14 @@ class ProfilController extends GetxController {
       // Update database
       try {
         print('Attempting to update database...');
-        await supabaseService.updateFotoProfilUser(
+        await _authRepo.updateFotoProfilUser(
           userId: user.id,
           fotoProfilUrl: photoUrl,
         );
         print('✅ Database updated successfully!');
 
         // Verify update
-        final userData = await supabaseService.getUserById(user.id);
+        final userData = await _authRepo.getUserById(user.id);
         print('Verification - foto_profil in DB: ${userData?['foto_profil']}');
       } catch (dbError) {
         print('❌ Database update error: $dbError');
@@ -228,7 +238,7 @@ class ProfilController extends GetxController {
       isUploadingPhoto.value = true;
 
       // Update database to set foto_profil to null
-      await supabaseService.updateFotoProfilUser(
+      await _authRepo.updateFotoProfilUser(
         userId: user.id,
         fotoProfilUrl: null,
       );
@@ -266,7 +276,7 @@ class ProfilController extends GetxController {
   void saveChanges() {
     // Tutup keyboard sebelum proses
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     // Validasi input
     if (isUsernameExpanded.value) {
       final newUsername = usernameController.text.trim();
@@ -381,13 +391,13 @@ class ProfilController extends GetxController {
         final confirmPassword = confirmPasswordForUsernameController.text;
 
         // Verify password first
-        await supabaseService.verifyPassword(
+        await _authRepo.verifyPassword(
           userId: user.id,
           password: confirmPassword,
         );
 
         // Then update username
-        await supabaseService.updateUsername(
+        await _authRepo.updateUsername(
           userId: user.id,
           newUsername: newUsername,
         );
@@ -397,7 +407,7 @@ class ProfilController extends GetxController {
         final oldPassword = oldPasswordController.text;
         final newPassword = newPasswordController.text;
 
-        await supabaseService.updatePassword(
+        await _authRepo.updatePassword(
           userId: user.id,
           oldPassword: oldPassword,
           newPassword: newPassword,

@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kamar_repository.dart';
+import '../../../../repositories/penghuni_repository.dart';
 import '../../kost/models/kost_model.dart';
 import '../views/widgets/tambah_kamar_bottom_sheet.dart';
 import '../views/widgets/edit_kamar_bottom_sheet.dart';
 import '../views/widgets/hapus_kamar_dialog.dart';
 
 class KamarController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KamarRepository _kamarRepo;
+  final PenghuniRepository _penghuniRepo;
+
+  KamarController({
+    KamarRepository? kamarRepository,
+    PenghuniRepository? penghuniRepository,
+  }) : _kamarRepo =
+           kamarRepository ?? RepositoryFactory.instance.kamarRepository,
+       _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository;
   final NumberFormat _idrFormatter = NumberFormat.decimalPattern('id_ID');
   final selectedTab = 0.obs;
   final isSortAsc = true.obs;
@@ -44,7 +55,7 @@ class KamarController extends GetxController {
 
     isLoading.value = true;
     try {
-      final response = await _supabaseService.getKamarByKostId(_kostId!);
+      final response = await _kamarRepo.getKamarByKostId(_kostId!);
       final mapped = response.map((item) {
         final status = _normalizeStatus(item['status']?.toString());
         final kapasitas = _toInt(item['kapasitas'], fallback: 1);
@@ -85,7 +96,7 @@ class KamarController extends GetxController {
       if (kamarId.isEmpty) return;
 
       final kapasitas = _toInt(room['kapasitas'], fallback: 1);
-      final count = await _supabaseService.getPenghuniCountByKamarId(kamarId);
+      final count = await _penghuniRepo.getPenghuniCountByKamarId(kamarId);
 
       final normalizedCount = count > kapasitas ? kapasitas : count;
       final status = _statusByOccupancy(normalizedCount, kapasitas);
@@ -213,7 +224,7 @@ class KamarController extends GetxController {
       if (_kostId == null) return;
 
       try {
-        await _supabaseService.createKamar(
+        await _kamarRepo.createKamar(
           kostId: _kostId!,
           noKamar: result['nomor'],
           harga: _hargaToInt(result['harga'].toString()),
@@ -249,7 +260,7 @@ class KamarController extends GetxController {
       if (kamarId == null || kamarId.isEmpty) return;
 
       try {
-        await _supabaseService.updateKamar(
+        await _kamarRepo.updateKamar(
           id: kamarId,
           noKamar: result['nomor'],
           harga: _hargaToInt(result['harga'].toString()),
@@ -285,7 +296,7 @@ class KamarController extends GetxController {
       if (kamarId == null || kamarId.isEmpty) return;
 
       try {
-        await _supabaseService.deleteKamar(kamarId);
+        await _kamarRepo.deleteKamar(kamarId);
         await fetchKamarData();
 
         Get.snackbar(

@@ -70,8 +70,34 @@ class KostWithStatus extends KostModel {
         ? double.tryParse(map['distance_from_admin'].toString())
         : null;
 
-    return KostWithStatus.fromKostModel(
-      kost: kost,
+    // Parse availability status from string
+    RoomAvailabilityStatus status;
+    final statusString = map['availability_status']?.toString() ?? 'available';
+
+    switch (statusString) {
+      case 'full':
+        status = RoomAvailabilityStatus.allOccupied;
+        break;
+      case 'limited':
+        status = RoomAvailabilityStatus.partiallyOccupied;
+        break;
+      case 'unavailable':
+        status = RoomAvailabilityStatus.allOccupied;
+        break;
+      case 'available':
+      default:
+        status = RoomAvailabilityStatus.allAvailable;
+        break;
+    }
+
+    return KostWithStatus(
+      id: kost.id,
+      name: kost.name,
+      address: kost.address,
+      roomCount: kost.roomCount,
+      latitude: kost.latitude,
+      longitude: kost.longitude,
+      availabilityStatus: status,
       availableRooms: availableRooms,
       occupiedRooms: occupiedRooms,
       distanceFromAdmin: distanceFromAdmin,
@@ -137,6 +163,6 @@ class KostWithStatus extends KostModel {
 
   @override
   String toString() {
-    return 'KostWithStatus{id: $id, name: $name, status: ${availabilityStatus.name}, available: $availableRooms, occupied: $occupiedRooms, distance: ${formattedDistance}}';
+    return 'KostWithStatus{id: $id, name: $name, status: ${availabilityStatus.name}, available: $availableRooms, occupied: $occupiedRooms, distance: $formattedDistance}';
   }
 }

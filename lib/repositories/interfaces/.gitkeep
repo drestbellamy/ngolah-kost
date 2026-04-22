@@ -1,0 +1,3 @@
+# This directory contains repository interfaces
+# Interfaces enable mocking and testing by defining contracts
+# for all repository implementations

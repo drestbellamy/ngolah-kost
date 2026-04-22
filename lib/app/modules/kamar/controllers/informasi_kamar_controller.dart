@@ -1,9 +1,14 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/penghuni_repository.dart';
 
 class InformasiKamarController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final PenghuniRepository _penghuniRepo;
+
+  InformasiKamarController({PenghuniRepository? penghuniRepository})
+    : _penghuniRepo =
+          penghuniRepository ?? RepositoryFactory.instance.penghuniRepository;
 
   // Data kamar
   final kamarId = ''.obs;
@@ -44,7 +49,7 @@ class InformasiKamarController extends GetxController {
     if (kamarId.value.isEmpty) return;
 
     try {
-      final response = await _supabaseService.getPenghuniByKamarId(
+      final response = await _penghuniRepo.getPenghuniByKamarId(
         kamarId.value,
         onlyActive: true,
       );

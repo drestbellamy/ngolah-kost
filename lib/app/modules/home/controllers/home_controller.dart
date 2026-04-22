@@ -1,10 +1,15 @@
 import 'package:get/get.dart';
 import '../../kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../../kelola_pengumuman/views/kelola_pengumuman_view.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/dashboard_repository.dart';
 
 class HomeController extends GetxController {
-  final _supabaseService = SupabaseService();
+  final DashboardRepository _dashboardRepo;
+
+  HomeController({DashboardRepository? dashboardRepository})
+    : _dashboardRepo =
+          dashboardRepository ?? RepositoryFactory.instance.dashboardRepository;
 
   // Dashboard data
   final totalKost = 0.obs;
@@ -24,7 +29,7 @@ class HomeController extends GetxController {
   Future<void> loadDashboardData() async {
     try {
       isLoading.value = true;
-      final stats = await _supabaseService.getDashboardStatistics();
+      final stats = await _dashboardRepo.getAdminDashboardStats();
 
       totalKost.value = stats['totalKost'] ?? 0;
       totalKamar.value = stats['totalKamar'] ?? 0;

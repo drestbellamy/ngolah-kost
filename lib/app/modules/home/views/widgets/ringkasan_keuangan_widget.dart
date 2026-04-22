@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../services/supabase_service.dart';
-import '../../../../core/values/values.dart';
+import '../../../../../repositories/repository_factory.dart';
+import '../../../../../repositories/kost_repository.dart';
+import '../../../../../repositories/keuangan_repository.dart';
+import '../../../../../app/core/values/text_styles.dart';
 
 class RingkasanKeuanganWidgetController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+  final KeuanganRepository _keuanganRepo;
+
+  RingkasanKeuanganWidgetController({
+    KostRepository? kostRepository,
+    KeuanganRepository? keuanganRepository,
+  }) : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository,
+       _keuanganRepo =
+           keuanganRepository ?? RepositoryFactory.instance.keuanganRepository;
 
   final totalPemasukan = 0.0.obs;
   final totalPengeluaran = 0.0.obs;
@@ -21,13 +31,13 @@ class RingkasanKeuanganWidgetController extends GetxController {
     isLoading.value = true;
 
     try {
-      final kosts = await _supabaseService.getKostList();
+      final kosts = await _kostRepo.getKostList();
       double pemasukan = 0.0;
       double pengeluaran = 0.0;
 
       for (final kost in kosts) {
-        final ringkasan = await _supabaseService.getRingkasanKeuanganByKostId(
-          kost.id,
+        final ringkasan = await _keuanganRepo.getFinancialSummary(
+          kostId: kost.id,
         );
         pemasukan += ringkasan['pemasukan'] ?? 0.0;
         pengeluaran += ringkasan['pengeluaran'] ?? 0.0;
@@ -89,10 +99,7 @@ class RingkasanKeuanganWidget extends StatelessWidget {
             return const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Ringkasan Keuangan',
-                  style: AppTextStyles.header20,
-                ),
+                const Text('Ringkasan Keuangan', style: AppTextStyles.header20),
                 SizedBox(height: 20),
                 Center(
                   child: CircularProgressIndicator(color: Color(0xFF6B8E7A)),

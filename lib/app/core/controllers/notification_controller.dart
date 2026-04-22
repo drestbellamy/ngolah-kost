@@ -1,10 +1,16 @@
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
+import '../../../repositories/penghuni_repository.dart';
+import '../../../repositories/repository_factory.dart';
 import '../../../services/supabase_service.dart';
 
 class NotificationController extends GetxController {
-  final _supabaseService = SupabaseService();
+  final PenghuniRepository _penghuniRepo;
   final _authController = Get.find<AuthController>();
+
+  NotificationController({PenghuniRepository? penghuniRepository})
+    : _penghuniRepo =
+          penghuniRepository ?? RepositoryFactory.instance.penghuniRepository;
 
   final hasTagihanNotification = false.obs;
   final hasInfoNotification = false.obs;
@@ -27,7 +33,8 @@ class NotificationController extends GetxController {
     if (userId == null) return;
 
     try {
-      final data = await _supabaseService.supabase
+      // TODO: Move to repository when notification repository is created
+      final data = await SupabaseService().supabase
           .from('user_notification_status')
           .select('last_seen_tagihan, last_seen_info')
           .eq('user_id', userId)
@@ -54,14 +61,15 @@ class NotificationController extends GetxController {
 
     try {
       // Get penghuni data to get kost_id
-      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      final penghuniData = await _penghuniRepo.getPenghuniByUserId(userId);
       if (penghuniData == null) return;
 
       final penghuniId = penghuniData['id']?.toString();
       if (penghuniId == null) return;
 
+      // TODO: Move to TagihanRepository when method is available
       // Check if there are any unpaid tagihan
-      final tagihan = await _supabaseService.supabase
+      final tagihan = await SupabaseService().supabase
           .from('tagihan')
           .select('id')
           .eq('penghuni_id', penghuniId)
@@ -97,7 +105,7 @@ class NotificationController extends GetxController {
 
     try {
       // Get penghuni data to get kost_id
-      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      final penghuniData = await _penghuniRepo.getPenghuniByUserId(userId);
       if (penghuniData == null) {
         print('❌ Penghuni data not found');
         return;
@@ -111,8 +119,9 @@ class NotificationController extends GetxController {
         return;
       }
 
+      // TODO: Move to PengumumanRepository and PeraturanRepository when methods are available
       // Check for new pengumuman (uses 'tanggal' column)
-      final pengumumanList = await _supabaseService.supabase
+      final pengumumanList = await SupabaseService().supabase
           .from('pengumuman')
           .select('id, tanggal')
           .eq('kost_id', kostId)
@@ -132,7 +141,7 @@ class NotificationController extends GetxController {
       }
 
       // Check for new peraturan (uses 'created_at' column)
-      final peraturanList = await _supabaseService.supabase
+      final peraturanList = await SupabaseService().supabase
           .from('peraturan')
           .select('id, created_at')
           .eq('kost_id', kostId)
@@ -164,13 +173,14 @@ class NotificationController extends GetxController {
 
     try {
       // Get latest tagihan ID
-      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      final penghuniData = await _penghuniRepo.getPenghuniByUserId(userId);
       if (penghuniData == null) return;
 
       final penghuniId = penghuniData['id']?.toString();
       if (penghuniId == null) return;
 
-      final tagihan = await _supabaseService.supabase
+      // TODO: Move to TagihanRepository when method is available
+      final tagihan = await SupabaseService().supabase
           .from('tagihan')
           .select('id')
           .eq('penghuni_id', penghuniId)
@@ -184,9 +194,10 @@ class NotificationController extends GetxController {
         lastSeenTagihanId.value = tagihanId;
         hasTagihanNotification.value = false;
 
-        await _supabaseService.supabase.from('user_notification_status').upsert(
-          {'user_id': userId, 'last_seen_tagihan': tagihanId},
-        );
+        // TODO: Move to notification repository when created
+        await SupabaseService().supabase
+            .from('user_notification_status')
+            .upsert({'user_id': userId, 'last_seen_tagihan': tagihanId});
       }
     } catch (e) {
       print('Error marking tagihan as seen: $e');
@@ -199,13 +210,14 @@ class NotificationController extends GetxController {
 
     try {
       // Get latest pengumuman and peraturan IDs
-      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      final penghuniData = await _penghuniRepo.getPenghuniByUserId(userId);
       if (penghuniData == null) return;
 
       final kostId = penghuniData['kost_id']?.toString();
       if (kostId == null) return;
 
-      final pengumumanList = await _supabaseService.supabase
+      // TODO: Move to PengumumanRepository and PeraturanRepository when methods are available
+      final pengumumanList = await SupabaseService().supabase
           .from('pengumuman')
           .select('id, tanggal')
           .eq('kost_id', kostId)
@@ -217,7 +229,7 @@ class NotificationController extends GetxController {
         lastSeenPengumumanId.value = latestId;
       }
 
-      final peraturanList = await _supabaseService.supabase
+      final peraturanList = await SupabaseService().supabase
           .from('peraturan')
           .select('id, created_at')
           .eq('kost_id', kostId)
@@ -231,8 +243,9 @@ class NotificationController extends GetxController {
 
       hasInfoNotification.value = false;
 
+      // TODO: Move to notification repository when created
       // Store the latest pengumuman ID as last_seen_info
-      await _supabaseService.supabase.from('user_notification_status').upsert({
+      await SupabaseService().supabase.from('user_notification_status').upsert({
         'user_id': userId,
         'last_seen_info':
             lastSeenPengumumanId.value ?? lastSeenPeraturanId.value,

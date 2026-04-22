@@ -5,13 +5,44 @@ import '../../../data/models/tagihan_user_model.dart';
 import '../../../data/models/metode_pembayaran_model.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/controllers/notification_controller.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/tagihan_repository.dart';
+import '../../../../repositories/pembayaran_repository.dart';
+import '../../../../repositories/metode_pembayaran_repository.dart';
+import '../../../../repositories/storage_repository.dart';
 import 'package:intl/intl.dart';
 
 class UserTagihanController extends GetxController {
-  final _supabaseService = SupabaseService();
+  // Repository dependencies with dependency injection support
+  final PenghuniRepository _penghuniRepo;
+  final TagihanRepository _tagihanRepo;
+  final PembayaranRepository _pembayaranRepo;
+  final MetodePembayaranRepository _metodePembayaranRepo;
+  final StorageRepository _storageRepo;
+
   final authController = Get.find<AuthController>();
   final _imagePicker = ImagePicker();
+
+  // Constructor with optional repository injection for testing
+  UserTagihanController({
+    PenghuniRepository? penghuniRepository,
+    TagihanRepository? tagihanRepository,
+    PembayaranRepository? pembayaranRepository,
+    MetodePembayaranRepository? metodePembayaranRepository,
+    StorageRepository? storageRepository,
+  }) : _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _tagihanRepo =
+           tagihanRepository ?? RepositoryFactory.instance.tagihanRepository,
+       _pembayaranRepo =
+           pembayaranRepository ??
+           RepositoryFactory.instance.pembayaranRepository,
+       _metodePembayaranRepo =
+           metodePembayaranRepository ??
+           RepositoryFactory.instance.metodePembayaranRepository,
+       _storageRepo =
+           storageRepository ?? RepositoryFactory.instance.storageRepository;
 
   final RxList<TagihanUserModel> semuaTagihan = <TagihanUserModel>[].obs;
   final RxList<TagihanUserModel> tagihanTerpilih = <TagihanUserModel>[].obs;
@@ -67,7 +98,7 @@ class UserTagihanController extends GetxController {
       print('Loading tagihan for userId: $userId'); // Debug
 
       // Get penghuni data first
-      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      final penghuniData = await _penghuniRepo.getPenghuniByUserId(userId);
       if (penghuniData == null) {
         throw Exception('Data penghuni tidak ditemukan');
       }
@@ -89,7 +120,7 @@ class UserTagihanController extends GetxController {
       userKostId.value = kostId;
 
       // Get tagihan data
-      final tagihanList = await _supabaseService.getTagihanByPenghuniId(
+      final tagihanList = await _tagihanRepo.getTagihanByPenghuniId(
         penghuniIdValue,
       );
       print('Tagihan data fetched: ${tagihanList.length} items'); // Debug
@@ -162,7 +193,7 @@ class UserTagihanController extends GetxController {
       if (penghuniId.value.isEmpty) return;
 
       // Get all pembayaran with pending status
-      final pembayaranList = await _supabaseService.getPembayaranByPenghuniId(
+      final pembayaranList = await _pembayaranRepo.getPembayaranByPenghuniId(
         penghuniId.value,
       );
 
@@ -229,8 +260,8 @@ class UserTagihanController extends GetxController {
       print('✅ User Kost ID: ${userKostId.value}'); // Debug
 
       // Get metode pembayaran data
-      final metodePembayaranData = await _supabaseService
-          .getMetodePembayaranList();
+      final metodePembayaranData = await _metodePembayaranRepo
+          .getMetodePembayaranList(kostId: userKostId.value);
       print(
         '📦 Total metode pembayaran from DB: ${metodePembayaranData.length}',
       ); // Debug
@@ -422,7 +453,7 @@ class UserTagihanController extends GetxController {
         print('Metode ID: ${selectedMethods.first.id}');
         print('Payment Type: Cash (no image required)');
 
-        await _supabaseService.createPembayaran(
+        await _pembayaranRepo.createPembayaran(
           penghuniId: penghuniId.value,
           tagihanId: tagihan.id,
           totalJumlah: tagihan.totalBayar,
@@ -507,7 +538,7 @@ class UserTagihanController extends GetxController {
       final fileExt = image.path.split('.').last;
 
       // Upload to storage
-      final buktiUrl = await _supabaseService.uploadBuktiPembayaran(
+      final buktiUrl = await _storageRepo.uploadBuktiPembayaran(
         imageBytes: imageBytes,
         fileExt: fileExt,
         penghuniId: penghuniId.value,
@@ -522,7 +553,7 @@ class UserTagihanController extends GetxController {
         print('Metode ID: ${selectedMethods.first.id}');
         print('Bukti URL: $buktiUrl');
 
-        await _supabaseService.createPembayaran(
+        await _pembayaranRepo.createPembayaran(
           penghuniId: penghuniId.value,
           tagihanId: tagihan.id,
           totalJumlah: tagihan.totalBayar,
@@ -598,7 +629,7 @@ class UserTagihanController extends GetxController {
       final fileExt = image.path.split('.').last;
 
       // Upload to storage
-      final buktiUrl = await _supabaseService.uploadBuktiPembayaran(
+      final buktiUrl = await _storageRepo.uploadBuktiPembayaran(
         imageBytes: imageBytes,
         fileExt: fileExt,
         penghuniId: penghuniId.value,
@@ -606,7 +637,7 @@ class UserTagihanController extends GetxController {
 
       // Create pembayaran record for each tagihan
       for (final tagihan in tagihanTerpilih) {
-        await _supabaseService.createPembayaran(
+        await _pembayaranRepo.createPembayaran(
           penghuniId: penghuniId.value,
           tagihanId: tagihan.id,
           totalJumlah: tagihan.totalBayar,

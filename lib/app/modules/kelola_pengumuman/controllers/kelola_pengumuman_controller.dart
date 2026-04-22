@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kost_repository.dart';
+import '../../../../repositories/pengumuman_repository.dart';
 
 class GedungKostModel {
   final String id;
@@ -48,7 +50,16 @@ class PengumumanModel {
 }
 
 class KelolaPengumumanController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+  final PengumumanRepository _pengumumanRepo;
+
+  KelolaPengumumanController({
+    KostRepository? kostRepository,
+    PengumumanRepository? pengumumanRepository,
+  }) : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository,
+       _pengumumanRepo =
+           pengumumanRepository ??
+           RepositoryFactory.instance.pengumumanRepository;
 
   final gedungKostList = <GedungKostModel>[].obs;
 
@@ -89,7 +100,7 @@ class KelolaPengumumanController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final kosts = await _supabaseService.getKostList();
+      final kosts = await _kostRepo.getKostList();
       final mapped = kosts
           .map(
             (kost) => GedungKostModel(
@@ -133,7 +144,7 @@ class KelolaPengumumanController extends GetxController {
 
     final pairs = await Future.wait(
       gedungList.map((gedung) async {
-        final count = await _supabaseService.getPengumumanCountByKostId(
+        final count = await _pengumumanRepo.getPengumumanCountByKostId(
           gedung.id,
         );
         return MapEntry(gedung.id, count);
@@ -168,7 +179,7 @@ class KelolaPengumumanController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final rows = await _supabaseService.getPengumumanByKostId(gedung.id);
+      final rows = await _pengumumanRepo.getPengumumanList(kostId: gedung.id);
       final mapped = rows
           .map((row) {
             final title = (row['judul'] ?? row['title'] ?? '')
@@ -235,10 +246,10 @@ class KelolaPengumumanController extends GetxController {
 
     try {
       isSavingPengumuman.value = true;
-      await _supabaseService.createPengumuman(
+      await _pengumumanRepo.createPengumuman(
         kostId: selected.id,
-        title: judul,
-        description: deskripsi,
+        judul: judul,
+        isi: deskripsi,
       );
       await _loadPengumumanByGedung(selected);
       return true;
@@ -273,10 +284,10 @@ class KelolaPengumumanController extends GetxController {
 
     try {
       isSavingPengumuman.value = true;
-      await _supabaseService.updatePengumuman(
+      await _pengumumanRepo.updatePengumuman(
         id: id,
-        title: judul,
-        description: deskripsi,
+        judul: judul,
+        isi: deskripsi,
       );
       await _loadPengumumanByGedung(selected);
       return true;
@@ -300,7 +311,7 @@ class KelolaPengumumanController extends GetxController {
 
     try {
       isSavingPengumuman.value = true;
-      await _supabaseService.deletePengumuman(id);
+      await _pengumumanRepo.deletePengumuman(id);
       await _loadPengumumanByGedung(selected);
       return true;
     } catch (e) {

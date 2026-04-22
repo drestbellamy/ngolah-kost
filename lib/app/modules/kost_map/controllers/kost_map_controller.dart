@@ -12,6 +12,7 @@ import '../../kost/models/kost_model.dart';
 import '../../../routes/app_routes.dart';
 
 class KostMapController extends GetxController {
+  // TODO: Replace with KostRepository when getKostListWithStatus is added
   final SupabaseService _supabaseService = SupabaseService();
 
   // Reactive state

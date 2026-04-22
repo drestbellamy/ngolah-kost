@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../repositories/repository_factory.dart';
 import '../modules/landing/bindings/landing_binding.dart';
 import '../modules/landing/views/landing_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -137,7 +138,11 @@ class AppPages {
       page: () => const TambahMetodePembayaranView(),
       binding: BindingsBuilder(() {
         Get.lazyPut<TambahMetodePembayaranController>(
-          () => TambahMetodePembayaranController(),
+          () => TambahMetodePembayaranController(
+            kostRepository: RepositoryFactory.instance.kostRepository,
+            metodePembayaranRepository:
+                RepositoryFactory.instance.metodePembayaranRepository,
+          ),
         );
       }),
       middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
@@ -147,7 +152,11 @@ class AppPages {
       page: () => const TambahMetodePembayaranView(),
       binding: BindingsBuilder(() {
         Get.lazyPut<TambahMetodePembayaranController>(
-          () => TambahMetodePembayaranController(),
+          () => TambahMetodePembayaranController(
+            kostRepository: RepositoryFactory.instance.kostRepository,
+            metodePembayaranRepository:
+                RepositoryFactory.instance.metodePembayaranRepository,
+          ),
         );
       }),
       middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],

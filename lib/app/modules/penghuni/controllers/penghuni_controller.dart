@@ -1,11 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kost_repository.dart';
+import '../../../../repositories/kamar_repository.dart';
+import '../../../../repositories/penghuni_repository.dart';
 import '../models/penghuni_model.dart';
 
 class PenghuniController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+  final KamarRepository _kamarRepo;
+  final PenghuniRepository _penghuniRepo;
+
+  PenghuniController({
+    KostRepository? kostRepository,
+    KamarRepository? kamarRepository,
+    PenghuniRepository? penghuniRepository,
+  }) : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository,
+       _kamarRepo =
+           kamarRepository ?? RepositoryFactory.instance.kamarRepository,
+       _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository;
   final RxList<PenghuniModel> penghuniList = <PenghuniModel>[].obs;
   final RxList<PenghuniModel> filteredPenghuniList = <PenghuniModel>[].obs;
   final RxList<String> allKostNames = <String>[].obs;
@@ -28,7 +43,7 @@ class PenghuniController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final kosts = await _supabaseService.getKostList();
+      final kosts = await _kostRepo.getKostList();
       final names =
           kosts
               .map((k) => k.name.trim())
@@ -47,13 +62,13 @@ class PenghuniController extends GetxController {
       final merged = <PenghuniModel>[];
 
       for (final kost in kosts) {
-        final kamarList = await _supabaseService.getKamarByKostId(kost.id);
+        final kamarList = await _kamarRepo.getKamarByKostId(kost.id);
 
         for (final kamar in kamarList) {
           final kamarId = kamar['id']?.toString() ?? '';
           if (kamarId.isEmpty) continue;
 
-          final penghuniRows = await _supabaseService.getPenghuniByKamarId(
+          final penghuniRows = await _penghuniRepo.getPenghuniByKamarId(
             kamarId,
             onlyActive: true,
           );

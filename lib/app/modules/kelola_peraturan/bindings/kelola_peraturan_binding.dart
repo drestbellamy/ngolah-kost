@@ -1,9 +1,15 @@
 import 'package:get/get.dart';
+import '../../../../repositories/repository_factory.dart';
 import '../controllers/kelola_peraturan_controller.dart';
 
 class KelolaPeraturanBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<KelolaPeraturanController>(() => KelolaPeraturanController());
+    Get.lazyPut<KelolaPeraturanController>(
+      () => KelolaPeraturanController(
+        kostRepository: RepositoryFactory.instance.kostRepository,
+        peraturanRepository: RepositoryFactory.instance.peraturanRepository,
+      ),
+    );
   }
 }

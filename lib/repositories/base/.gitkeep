@@ -1,0 +1,6 @@
+# This directory contains base infrastructure for repositories
+# - BaseRepository: Abstract base class for all repositories
+# - LoggerService: Centralized logging service
+# - ErrorHandler: Consistent error handling utilities
+# - HelperUtilities: Shared utility functions
+# - Constants: Centralized constants

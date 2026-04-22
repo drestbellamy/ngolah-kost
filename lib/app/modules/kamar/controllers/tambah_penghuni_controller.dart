@@ -2,10 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/auth_repository.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/tagihan_repository.dart';
+import '../../../../repositories/kamar_repository.dart';
 
 class TambahPenghuniController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final AuthRepository _authRepo;
+  final PenghuniRepository _penghuniRepo;
+  final TagihanRepository _tagihanRepo;
+  final KamarRepository _kamarRepo;
+
+  TambahPenghuniController({
+    AuthRepository? authRepository,
+    PenghuniRepository? penghuniRepository,
+    TagihanRepository? tagihanRepository,
+    KamarRepository? kamarRepository,
+  }) : _authRepo = authRepository ?? RepositoryFactory.instance.authRepository,
+       _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _tagihanRepo =
+           tagihanRepository ?? RepositoryFactory.instance.tagihanRepository,
+       _kamarRepo =
+           kamarRepository ?? RepositoryFactory.instance.kamarRepository;
 
   // Step management
   final currentStep = 1.obs;
@@ -113,7 +133,7 @@ class TambahPenghuniController extends GetxController {
   void handleNext() async {
     // Tutup keyboard sebelum validasi dan submit
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     if (currentStep.value == 1) {
       if (_validateStep1()) {
         currentStep.value = 2;
@@ -216,7 +236,7 @@ class TambahPenghuniController extends GetxController {
 
       while (retryCount < 5) {
         try {
-          userId = await _supabaseService.createPenghuniUserSecure(
+          userId = await _authRepo.createPenghuniUserSecure(
             nama: nama,
             noTlpn: telepon,
             username: username,
@@ -242,7 +262,7 @@ class TambahPenghuniController extends GetxController {
 
       usernameController.text = username;
 
-      final penghuniId = await _supabaseService.createPenghuni(
+      final penghuniId = await _penghuniRepo.createPenghuni(
         userId: userId,
         kamarId: kamarId.value,
         durasiKontrak: durasiKontrakBulan.value,
@@ -256,7 +276,7 @@ class TambahPenghuniController extends GetxController {
         throw Exception('Gagal menyimpan data penghuni');
       }
 
-      await _supabaseService.createTagihanOtomatis(
+      await _tagihanRepo.createTagihanOtomatis(
         penghuniId: penghuniId,
         tanggalMasuk: tanggalMasukDate.value!,
         durasiKontrakBulan: durasiKontrakBulan.value,
@@ -264,7 +284,7 @@ class TambahPenghuniController extends GetxController {
         hargaBulanan: hargaBulanan.value,
       );
 
-      await _supabaseService.updateKamarStatus(
+      await _kamarRepo.updateKamarStatus(
         id: kamarId.value,
         status: 'ditempati',
       );
@@ -398,7 +418,7 @@ class TambahPenghuniController extends GetxController {
   Future<int> _getNextOccupantNumber() async {
     if (kamarId.value.isEmpty) return 1;
     try {
-      final count = await _supabaseService.getPenghuniCountByKamarId(
+      final count = await _penghuniRepo.getPenghuniCountByKamarId(
         kamarId.value,
       );
       return count + 1;

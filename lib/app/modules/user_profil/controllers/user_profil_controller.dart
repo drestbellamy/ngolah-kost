@@ -2,16 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
 import '../../../data/models/user_profile_model.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/auth_repository.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/storage_repository.dart';
 
 class UserProfilController extends GetxController {
-  final _supabaseService = SupabaseService();
+  // Repository dependencies with dependency injection support
+  final AuthRepository _authRepo;
+  final PenghuniRepository _penghuniRepo;
+  final StorageRepository _storageRepo;
   final _authController = Get.find<AuthController>();
   final imagePicker = ImagePicker();
+
+  // Constructor with optional repository injection for testing
+  UserProfilController({
+    AuthRepository? authRepository,
+    PenghuniRepository? penghuniRepository,
+    StorageRepository? storageRepository,
+  }) : _authRepo = authRepository ?? RepositoryFactory.instance.authRepository,
+       _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _storageRepo =
+           storageRepository ?? RepositoryFactory.instance.storageRepository;
 
   final Rxn<UserProfileModel> userProfile = Rxn<UserProfileModel>();
   final isLoading = true.obs;
@@ -64,7 +82,7 @@ class UserProfilController extends GetxController {
       print('Fetching profile for user_id: $userId'); // Debug log
 
       // Fetch user data untuk foto profil dan username
-      final userData = await _supabaseService.getUserById(userId);
+      final userData = await _authRepo.getUserById(userId);
       if (userData != null) {
         fotoProfilUrl.value = userData['foto_profil']?.toString();
         username.value = userData['username']?.toString() ?? '';
@@ -73,7 +91,7 @@ class UserProfilController extends GetxController {
       }
 
       // Fetch data penghuni berdasarkan user_id
-      final data = await _supabaseService.getPenghuniByUserId(userId);
+      final data = await _penghuniRepo.getPenghuniByUserId(userId);
 
       print('Fetched data: $data'); // Debug log
 
@@ -108,7 +126,8 @@ class UserProfilController extends GetxController {
       // Get nama kost dan alamat
       final kostId = data['kost_id']?.toString() ?? '';
       if (kostId.isNotEmpty) {
-        final kostData = await _supabaseService.supabase
+        // Direct query since KostRepository doesn't have getKostById yet
+        final kostData = await Supabase.instance.client
             .from('kost')
             .select('nama_kost, alamat, latitude, longitude')
             .eq('id', kostId)
@@ -263,7 +282,7 @@ class UserProfilController extends GetxController {
       print('User ID: $userId');
 
       // Upload to storage
-      final photoUrl = await _supabaseService.uploadFotoProfilAdmin(
+      final photoUrl = await _storageRepo.uploadFotoProfilAdmin(
         imageBytes: bytes,
         fileExt: fileExt,
         userId: userId,
@@ -272,7 +291,7 @@ class UserProfilController extends GetxController {
       print('Photo uploaded to storage: $photoUrl');
 
       // Update database
-      await _supabaseService.updateFotoProfilUser(
+      await _authRepo.updateFotoProfilUser(
         userId: userId,
         fotoProfilUrl: photoUrl,
       );
@@ -345,10 +364,7 @@ class UserProfilController extends GetxController {
       isUploadingPhoto.value = true;
 
       // Update database to set foto_profil to null
-      await _supabaseService.updateFotoProfilUser(
-        userId: userId,
-        fotoProfilUrl: null,
-      );
+      await _authRepo.updateFotoProfilUser(userId: userId, fotoProfilUrl: null);
 
       fotoProfilUrl.value = null;
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kost_repository.dart';
+import '../../../../repositories/peraturan_repository.dart';
 
 class GedungKostModel {
   final String id;
@@ -37,7 +39,16 @@ class PeraturanModel {
 }
 
 class KelolaPeraturanController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+  final PeraturanRepository _peraturanRepo;
+
+  KelolaPeraturanController({
+    KostRepository? kostRepository,
+    PeraturanRepository? peraturanRepository,
+  }) : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository,
+       _peraturanRepo =
+           peraturanRepository ??
+           RepositoryFactory.instance.peraturanRepository;
 
   final gedungKostList = <GedungKostModel>[].obs;
   final selectedGedung = Rxn<GedungKostModel>();
@@ -73,7 +84,7 @@ class KelolaPeraturanController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final kosts = await _supabaseService.getKostList();
+      final kosts = await _kostRepo.getKostList();
       final mapped = kosts
           .map(
             (kost) => GedungKostModel(
@@ -117,9 +128,7 @@ class KelolaPeraturanController extends GetxController {
 
     final pairs = await Future.wait(
       gedungList.map((gedung) async {
-        final count = await _supabaseService.getPeraturanCountByKostId(
-          gedung.id,
-        );
+        final count = await _peraturanRepo.getPeraturanCountByKostId(gedung.id);
         return MapEntry(gedung.id, count);
       }),
     );
@@ -157,7 +166,7 @@ class KelolaPeraturanController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final rows = await _supabaseService.getPeraturanByKostId(gedung.id);
+      final rows = await _peraturanRepo.getPeraturanList(kostId: gedung.id);
       final mapped = rows
           .map((row) {
             final nama = (row['judul'] ?? row['title'] ?? '').toString().trim();
@@ -275,10 +284,10 @@ class KelolaPeraturanController extends GetxController {
 
     try {
       isSavingPeraturan.value = true;
-      await _supabaseService.createPeraturan(
+      await _peraturanRepo.createPeraturan(
         kostId: gedung.id,
-        title: judul,
-        description: isi,
+        judul: judul,
+        isi: isi,
       );
       await _loadPeraturanByGedung(gedung);
       resetForm();
@@ -310,11 +319,7 @@ class KelolaPeraturanController extends GetxController {
 
     try {
       isSavingPeraturan.value = true;
-      await _supabaseService.updatePeraturan(
-        id: id,
-        title: judul,
-        description: isi,
-      );
+      await _peraturanRepo.updatePeraturan(id: id, judul: judul, isi: isi);
       await _loadPeraturanByGedung(gedung);
       resetForm();
       return true;
@@ -338,7 +343,7 @@ class KelolaPeraturanController extends GetxController {
 
     try {
       isSavingPeraturan.value = true;
-      await _supabaseService.deletePeraturan(id);
+      await _peraturanRepo.deletePeraturan(id);
       await _loadPeraturanByGedung(gedung);
       return true;
     } catch (e) {

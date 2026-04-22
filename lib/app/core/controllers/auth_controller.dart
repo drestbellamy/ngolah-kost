@@ -5,7 +5,8 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../modules/login/models/login_user_model.dart';
 import '../../routes/app_routes.dart';
-import '../../../services/supabase_service.dart';
+import '../../../repositories/auth_repository.dart';
+import '../../../repositories/repository_factory.dart';
 
 class AuthController extends GetxController {
   static const _keyId = 'auth_user_id';
@@ -14,9 +15,12 @@ class AuthController extends GetxController {
   static const _keyIsActive = 'auth_is_active';
 
   final Rxn<LoginUserModel> _currentUser = Rxn<LoginUserModel>();
-  final SupabaseService _supabaseService = SupabaseService();
+  final AuthRepository _authRepo;
   Timer? _sessionGuardTimer;
   bool _isSessionValidationRunning = false;
+
+  AuthController({AuthRepository? authRepository})
+    : _authRepo = authRepository ?? RepositoryFactory.instance.authRepository;
 
   LoginUserModel? get currentUser => _currentUser.value;
   bool get isLoggedIn => _currentUser.value != null;
@@ -94,7 +98,7 @@ class AuthController extends GetxController {
 
     _isSessionValidationRunning = true;
     try {
-      final latest = await _supabaseService.getUserById(user.id);
+      final latest = await _authRepo.getUserById(user.id);
       final isStillActive = latest?['is_active'] == true;
 
       if (latest == null || !isStillActive) {

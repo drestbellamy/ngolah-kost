@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kost_repository.dart';
 import '../models/kost_model.dart';
 import '../views/map_picker_view.dart';
 
 import '../../../routes/app_routes.dart';
 
 class KostController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+
+  KostController({KostRepository? kostRepository})
+    : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository;
   final RxList<KostModel> kostList = <KostModel>[].obs;
   late final Future<List<KostModel>> kostFuture;
   final nameController = TextEditingController();
@@ -28,7 +32,7 @@ class KostController extends GetxController {
   }
 
   Future<List<KostModel>> fetchKostData() async {
-    final data = await _supabaseService.getKostList();
+    final data = await _kostRepo.getKostList();
     kostList.assignAll(data);
     return data;
   }
@@ -48,7 +52,7 @@ class KostController extends GetxController {
   Future<void> updateKost() async {
     // Tutup keyboard sebelum proses
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     if (editKostId == null) return;
 
     if (nameController.text.isEmpty ||
@@ -64,7 +68,7 @@ class KostController extends GetxController {
     }
 
     try {
-      await _supabaseService.updateKost(
+      await _kostRepo.updateKost(
         id: editKostId!,
         namaKost: nameController.text,
         alamat: addressController.text,
@@ -75,14 +79,14 @@ class KostController extends GetxController {
 
       if (Get.isSnackbarOpen) Get.closeAllSnackbars();
       Get.until((route) => route.isFirst || route.settings.name == Routes.kost);
-      
+
       Get.snackbar(
         'Berhasil',
         'Data kost berhasil diperbarui',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
-      
+
       fetchKostData(); // Update secara background tanpa await agar cepat
     } catch (e) {
       Get.snackbar(
@@ -181,7 +185,7 @@ class KostController extends GetxController {
 
   Future<void> _confirmDelete(String id) async {
     try {
-      await _supabaseService.deleteKost(id);
+      await _kostRepo.deleteKost(id);
       await fetchKostData();
       Get.back();
       Get.snackbar(
@@ -212,7 +216,7 @@ class KostController extends GetxController {
   Future<void> saveNewKost() async {
     // Tutup keyboard sebelum proses
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     if (nameController.text.isEmpty ||
         addressController.text.isEmpty ||
         roomCountController.text.isEmpty) {
@@ -226,7 +230,7 @@ class KostController extends GetxController {
     }
 
     try {
-      await _supabaseService.createKost(
+      await _kostRepo.createKost(
         namaKost: nameController.text,
         alamat: addressController.text,
         totalKamar: int.tryParse(roomCountController.text) ?? 0,
@@ -236,14 +240,14 @@ class KostController extends GetxController {
 
       if (Get.isSnackbarOpen) Get.closeAllSnackbars();
       Get.until((route) => route.isFirst || route.settings.name == Routes.kost);
-      
+
       Get.snackbar(
         'Berhasil',
         'Kost baru berhasil ditambahkan',
         backgroundColor: const Color(0xFF10B981),
         colorText: Colors.white,
       );
-      
+
       fetchKostData(); // Update secara background
     } catch (e) {
       Get.snackbar(

@@ -5,11 +5,33 @@ import '../../../core/controllers/auth_controller.dart';
 import '../../../core/controllers/notification_controller.dart';
 import '../../../routes/app_routes.dart';
 import '../../../data/models/user_profile_model.dart';
+import '../../../../repositories/auth_repository.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/tagihan_repository.dart';
+import '../../../../repositories/pembayaran_repository.dart';
+import '../../../../repositories/repository_factory.dart';
 import '../../../../services/supabase_service.dart';
 
 class UserHomeController extends GetxController {
-  final _supabaseService = SupabaseService();
+  final AuthRepository _authRepo;
+  final PenghuniRepository _penghuniRepo;
+  final TagihanRepository _tagihanRepo;
+  final PembayaranRepository _pembayaranRepo;
   final authController = Get.find<AuthController>();
+
+  UserHomeController({
+    AuthRepository? authRepository,
+    PenghuniRepository? penghuniRepository,
+    TagihanRepository? tagihanRepository,
+    PembayaranRepository? pembayaranRepository,
+  }) : _authRepo = authRepository ?? RepositoryFactory.instance.authRepository,
+       _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _tagihanRepo =
+           tagihanRepository ?? RepositoryFactory.instance.tagihanRepository,
+       _pembayaranRepo =
+           pembayaranRepository ??
+           RepositoryFactory.instance.pembayaranRepository;
 
   final Rxn<UserProfileModel> userProfile = Rxn<UserProfileModel>();
   final isLoading = true.obs;
@@ -89,20 +111,21 @@ class UserHomeController extends GetxController {
       }
 
       // Fetch user data untuk foto profil
-      final userData = await _supabaseService.getUserById(userId);
+      final userData = await _authRepo.getUserById(userId);
       if (userData != null) {
         fotoProfilUrl.value = userData['foto_profil']?.toString();
       }
 
       // Fetch user profile
-      final profileData = await _supabaseService.getPenghuniByUserId(userId);
+      final profileData = await _penghuniRepo.getPenghuniByUserId(userId);
       if (profileData != null) {
         userProfile.value = UserProfileModel.fromMap(profileData);
 
         // Fetch kost name
         final kostId = profileData['kost_id']?.toString();
         if (kostId != null && kostId.isNotEmpty) {
-          final kostData = await _supabaseService.supabase
+          // TODO: Replace with KostRepository.getKostById when available
+          final kostData = await SupabaseService().supabase
               .from('kost')
               .select('nama_kost')
               .eq('id', kostId)
@@ -128,12 +151,10 @@ class UserHomeController extends GetxController {
     if (penghuniId.isEmpty) return;
 
     try {
-      final tagihanList = await _supabaseService.getTagihanByPenghuniId(
-        penghuniId,
-      );
+      final tagihanList = await _tagihanRepo.getTagihanByPenghuniId(penghuniId);
 
       // Get pembayaran data to check for pending payments
-      final pembayaranList = await _supabaseService.getPembayaranByPenghuniId(
+      final pembayaranList = await _pembayaranRepo.getPembayaranByPenghuniId(
         penghuniId,
       );
 
