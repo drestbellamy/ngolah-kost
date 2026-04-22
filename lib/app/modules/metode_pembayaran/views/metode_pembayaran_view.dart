@@ -38,46 +38,48 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Filter by Boarding House
+                        // Filter by Boarding House - Bottom Sheet Button
                         Text(
                           'Filter berdasarkan kost',
-                          style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)),
+                          style: AppTextStyles.subtitle16.colored(
+                            const Color(0xFF2D3748),
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Obx(() {
-                          final options = controller.kostFilterOptions.isEmpty
-                              ? const <String>['Semua Kost']
-                              : controller.kostFilterOptions;
-
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: const Color(0xFFE5E7EB),
+                          return GestureDetector(
+                            onTap: () => _showKostFilterBottomSheet(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
                               ),
-                            ),
-                            child: DropdownButton<String>(
-                              value: controller.selectedKost.value,
-                              isExpanded: true,
-                              underline: const SizedBox(),
-                              icon: const Icon(Icons.keyboard_arrow_down),
-                              dropdownColor: Colors.white,
-                              items: options.map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  controller.setKostFilter(value);
-                                }
-                              },
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFFE5E7EB),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      controller.selectedKost.value,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Color(0xFF374151),
+                                      ),
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: Color(0xFF9CA3AF),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         }),
@@ -109,7 +111,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                           );
                         }),
 
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
                         // Filter Chips
                         Obx(
@@ -279,13 +281,193 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
     );
   }
 
-  Widget _buildRekeningInfo(MetodePembayaranModel metode) {
+  Widget _buildMetodeCard(MetodePembayaranModel metode) {
+    final isActive = metode.isActive;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: isActive ? Colors.white : const Color(0xFFF9FAFB),
+          border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 6,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            // Top Border Bar (Active Indicator)
+            Container(
+              width: double.infinity,
+              height: 4,
+              color: isActive ? const Color(0xFF10B981) : Colors.transparent,
+            ),
+            // Card Content
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Icon and Status
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: metode.jenis == 'bank'
+                                ? const Color(0xFFDCEEFF)
+                                : metode.jenis == 'cash'
+                                ? const Color(0xFFD1FAE5)
+                                : const Color(0xFFFEF3C7), // QRIS color
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            metode.jenis == 'bank'
+                                ? Icons.credit_card
+                                : metode.jenis == 'cash'
+                                ? Icons.money
+                                : Icons.qr_code, // QRIS icon
+                            color: metode.jenis == 'bank'
+                                ? const Color(0xFF3B82F6)
+                                : metode.jenis == 'cash'
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFF59E0B), // QRIS color
+                            size: 24,
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: metode.isActive
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFE5E7EB),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                metode.isActive
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                size: 14,
+                                color: metode.isActive
+                                    ? Colors.white
+                                    : const Color(0xFF9CA3AF),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                metode.isActive ? 'Aktif' : 'Non-aktif',
+                                style: AppTextStyles.body10.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: metode.isActive
+                                      ? Colors.white
+                                      : const Color(0xFF6B7280),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Nama Bank
+                    Text(
+                      metode.jenis == 'cash' ? 'Tunai' : metode.nama,
+                      style: AppTextStyles.subtitle16.copyWith(
+                        color: isActive
+                            ? const Color(0xFF2D3748)
+                            : const Color(0xFF6B7280),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    // Nama Kost
+                    Text(
+                      metode.namaKost,
+                      style: AppTextStyles.body12.colored(
+                        isActive
+                            ? const Color(0xFF9CA3AF)
+                            : const Color(0xFFD1D5DB),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    _buildRekeningInfo(metode, isActive),
+
+                    const Spacer(),
+
+                    // Action Buttons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildActionButton(
+                          icon: metode.isActive
+                              ? Icons.toggle_on
+                              : Icons.toggle_off,
+                          backgroundColor: isActive
+                              ? const Color(0xFFFFF3E0)
+                              : const Color(0xFFF3F4F6),
+                          iconColor: isActive
+                              ? const Color(0xFFF59E0B)
+                              : const Color(0xFF9CA3AF),
+                          onTap: () => controller.toggleStatus(metode.id),
+                        ),
+                        _buildActionButton(
+                          icon: Icons.edit_outlined,
+                          backgroundColor: isActive
+                              ? const Color(0xFFDCEEFF)
+                              : const Color(0xFFF3F4F6),
+                          iconColor: isActive
+                              ? const Color(0xFF3B82F6)
+                              : const Color(0xFF9CA3AF),
+                          onTap: () => controller.editMetode(metode.id),
+                        ),
+                        _buildActionButton(
+                          icon: Icons.delete_outline,
+                          backgroundColor: isActive
+                              ? const Color(0xFFFFE5E5)
+                              : const Color(0xFFF3F4F6),
+                          iconColor: isActive
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFF9CA3AF),
+                          onTap: () => controller.deleteMetode(metode.id),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRekeningInfo(MetodePembayaranModel metode, bool isActive) {
     if (metode.jenis == 'qris') {
       return Text(
         'QR Code Pembayaran',
         style: AppTextStyles.body14.copyWith(
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF6B7280),
+          color: isActive ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
         ),
       );
     }
@@ -295,7 +477,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
         'Pembayaran Tunai',
         style: AppTextStyles.body14.copyWith(
           fontWeight: FontWeight.w500,
-          color: const Color(0xFF6B7280),
+          color: isActive ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
         ),
       );
     }
@@ -304,135 +486,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
       metode.nomorRekening,
       style: AppTextStyles.body14.copyWith(
         fontWeight: FontWeight.bold,
-        color: const Color(0xFF2D3748),
-      ),
-    );
-  }
-
-  Widget _buildMetodeCard(MetodePembayaranModel metode) {
-    final isActive = metode.isActive;
-    final opacity = isActive ? 1.0 : 0.4;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Opacity(
-        opacity: opacity,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Icon and Status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: metode.jenis == 'bank'
-                        ? const Color(0xFFDCEEFF)
-                        : metode.jenis == 'cash'
-                        ? const Color(0xFFD1FAE5)
-                        : const Color(0xFFFEF3C7), // QRIS color
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    metode.jenis == 'bank'
-                        ? Icons.credit_card
-                        : metode.jenis == 'cash'
-                        ? Icons.money
-                        : Icons.qr_code, // QRIS icon
-                    color: metode.jenis == 'bank'
-                        ? const Color(0xFF3B82F6)
-                        : metode.jenis == 'cash'
-                        ? const Color(0xFF10B981)
-                        : const Color(0xFFF59E0B), // QRIS color
-                    size: 24,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: metode.isActive
-                        ? const Color(0xFFD1FAE5)
-                        : const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    metode.isActive ? 'Aktif' : 'Off',
-                    style: AppTextStyles.body10.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: metode.isActive
-                          ? const Color(0xFF10B981)
-                          : const Color(0xFF9CA3AF),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            // Nama Bank
-            Text(
-              metode.jenis == 'cash' ? 'Tunai' : metode.nama,
-              style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)),
-            ),
-
-            const SizedBox(height: 4),
-
-            // Nama Kost
-            Text(
-              metode.namaKost,
-              style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-
-            const SizedBox(height: 8),
-
-            _buildRekeningInfo(metode),
-
-            const Spacer(),
-
-            // Action Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildActionButton(
-                  icon: metode.isActive ? Icons.toggle_on : Icons.toggle_off,
-                  backgroundColor: const Color(0xFFFFF3E0),
-                  iconColor: const Color(0xFFF59E0B),
-                  onTap: () => controller.toggleStatus(metode.id),
-                ),
-                _buildActionButton(
-                  icon: Icons.edit_outlined,
-                  backgroundColor: const Color(0xFFDCEEFF),
-                  iconColor: const Color(0xFF3B82F6),
-                  onTap: () => controller.editMetode(metode.id),
-                ),
-                _buildActionButton(
-                  icon: Icons.delete_outline,
-                  backgroundColor: const Color(0xFFFFE5E5),
-                  iconColor: const Color(0xFFEF4444),
-                  onTap: () => controller.deleteMetode(metode.id),
-                ),
-              ],
-            ),
-          ],
-        ),
+        color: isActive ? const Color(0xFF2D3748) : const Color(0xFF9CA3AF),
       ),
     );
   }
@@ -453,6 +507,116 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
           shape: BoxShape.circle,
         ),
         child: Icon(icon, size: 20, color: iconColor),
+      ),
+    );
+  }
+
+  void _showKostFilterBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E7EB),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            // Header
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Pilih Kost',
+                    style: AppTextStyles.subtitle16.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF1F2937),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: const Icon(
+                      Icons.close,
+                      color: Color(0xFF9CA3AF),
+                      size: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Options List
+            Obx(() {
+              final options = controller.kostFilterOptions.isEmpty
+                  ? const <String>['Semua Kost']
+                  : controller.kostFilterOptions;
+
+              return Container(
+                constraints: const BoxConstraints(maxHeight: 400),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: options.length,
+                  itemBuilder: (context, index) {
+                    final option = options[index];
+                    final isSelected = controller.selectedKost.value == option;
+
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 4,
+                      ),
+                      title: Text(
+                        option,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                          color: isSelected
+                              ? const Color(0xFF6B8E7A)
+                              : const Color(0xFF374151),
+                        ),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(
+                              Icons.check_circle,
+                              color: Color(0xFF6B8E7A),
+                              size: 20,
+                            )
+                          : null,
+                      onTap: () {
+                        controller.setKostFilter(option);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              );
+            }),
+
+            // Bottom padding for safe area
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
