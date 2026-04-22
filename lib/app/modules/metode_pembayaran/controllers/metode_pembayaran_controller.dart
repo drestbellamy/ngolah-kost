@@ -171,6 +171,144 @@ class MetodePembayaranController extends GetxController {
 
     final current = metodePembayaranList[index];
     final targetStatus = !current.isActive;
+    final statusText = targetStatus ? 'mengaktifkan' : 'menonaktifkan';
+    final statusLabel = targetStatus ? 'Aktifkan' : 'Nonaktifkan';
+
+    // Show confirmation dialog
+    final confirmed = await Get.dialog<bool>(
+      Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 400, maxHeight: 500),
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header with title and close button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '$statusLabel Metode Pembayaran',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1F2937),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () => Get.back(result: false),
+                        child: const Icon(
+                          Icons.close,
+                          color: Color(0xFF9CA3AF),
+                          size: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Icon
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: targetStatus
+                          ? const Color(0xFFD1FAE5)
+                          : const Color(0xFFFEF3C7),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      targetStatus ? Icons.toggle_on : Icons.toggle_off,
+                      size: 32,
+                      color: targetStatus
+                          ? const Color(0xFF10B981)
+                          : const Color(0xFFF59E0B),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Description
+                  Text(
+                    'Apakah Anda yakin ingin $statusText metode pembayaran ${current.nama} untuk ${current.namaKost}?',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF6B7280),
+                    ),
+                    textAlign: TextAlign.center,
+                    softWrap: true,
+                  ),
+                  const SizedBox(height: 32),
+                  // Buttons
+                  Row(
+                    children: [
+                      // Cancel button
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF3F4F6),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: TextButton(
+                            onPressed: () => Get.back(result: false),
+                            child: const Text(
+                              'Batal',
+                              style: TextStyle(
+                                color: Color(0xFF6B7280),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Confirm button
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: targetStatus
+                                ? const Color(0xFF10B981)
+                                : const Color(0xFFF59E0B),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: TextButton(
+                            onPressed: () => Get.back(result: true),
+                            child: Text(
+                              statusLabel,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // If user cancelled, return early
+    if (confirmed != true) return;
 
     updatingStatusIds.add(id);
 
@@ -182,6 +320,16 @@ class MetodePembayaranController extends GetxController {
       await _metodeRepo.updateMetodePembayaranStatus(
         id: id,
         isActive: targetStatus,
+      );
+
+      // Show success message
+      Get.snackbar(
+        'Berhasil',
+        'Metode pembayaran berhasil ${targetStatus ? 'diaktifkan' : 'dinonaktifkan'}',
+        backgroundColor: const Color(0xFF10B981),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 2),
       );
     } catch (e) {
       // Rollback UI if backend update fails.
