@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../../services/supabase_service.dart';
 import '../../../routes/app_routes.dart';
@@ -10,14 +11,27 @@ class LoginController extends GetxController {
   final passwordController = TextEditingController();
   final isPasswordHidden = true.obs;
   final isLoading = false.obs;
+  final rememberMe = false.obs;
   final usernameError = Rx<String?>(null);
   final passwordError = Rx<String?>(null);
   final supabaseService = SupabaseService();
+
+  // SharedPreferences keys
+  static const String _rememberMeKey = 'remember_me';
+  static const String _savedUsernameKey = 'saved_username';
+  static const String _savedPasswordKey = 'saved_password';
+
   AuthController get authController {
     if (Get.isRegistered<AuthController>()) {
       return Get.find<AuthController>();
     }
     return Get.put(AuthController(), permanent: true);
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadSavedCredentials();
   }
 
   @override
@@ -31,10 +45,56 @@ class LoginController extends GetxController {
     isPasswordHidden.value = !isPasswordHidden.value;
   }
 
+  void toggleRememberMe() {
+    rememberMe.value = !rememberMe.value;
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final shouldRemember = prefs.getBool(_rememberMeKey) ?? false;
+
+      if (shouldRemember) {
+        final savedUsername = prefs.getString(_savedUsernameKey) ?? '';
+        final savedPassword = prefs.getString(_savedPasswordKey) ?? '';
+
+        usernameController.text = savedUsername;
+        passwordController.text = savedPassword;
+        rememberMe.value = true;
+      }
+    } catch (e) {
+      print('Error loading saved credentials: $e');
+    }
+  }
+
+  Future<void> _saveCredentials() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      if (rememberMe.value) {
+        await prefs.setBool(_rememberMeKey, true);
+        await prefs.setString(
+          _savedUsernameKey,
+          usernameController.text.trim(),
+        );
+        await prefs.setString(
+          _savedPasswordKey,
+          passwordController.text.trim(),
+        );
+      } else {
+        await prefs.remove(_rememberMeKey);
+        await prefs.remove(_savedUsernameKey);
+        await prefs.remove(_savedPasswordKey);
+      }
+    } catch (e) {
+      print('Error saving credentials: $e');
+    }
+  }
+
   Future<void> login() async {
     // Tutup keyboard sebelum proses login
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     final username = usernameController.text.trim();
     final password = passwordController.text.trim();
 
@@ -63,6 +123,9 @@ class LoginController extends GetxController {
         passwordError.value = 'Password salah';
         return;
       }
+
+      // Save credentials if remember me is checked
+      await _saveCredentials();
 
       await authController.setUser(user);
 
