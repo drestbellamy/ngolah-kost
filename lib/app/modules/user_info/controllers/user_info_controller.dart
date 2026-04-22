@@ -1,15 +1,35 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/pengumuman_repository.dart';
+import '../../../../repositories/peraturan_repository.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/controllers/notification_controller.dart';
 import '../../../data/models/pengumuman_model.dart';
 import '../../../data/models/peraturan_model.dart';
 
 class UserInfoController extends GetxController with WidgetsBindingObserver {
-  final SupabaseService _supabaseService = SupabaseService();
+  // Repository dependencies with dependency injection support
+  final PenghuniRepository _penghuniRepo;
+  final PengumumanRepository _pengumumanRepo;
+  final PeraturanRepository _peraturanRepo;
   final AuthController _authController = Get.find<AuthController>();
+
+  // Constructor with optional repository injection for testing
+  UserInfoController({
+    PenghuniRepository? penghuniRepository,
+    PengumumanRepository? pengumumanRepository,
+    PeraturanRepository? peraturanRepository,
+  }) : _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _pengumumanRepo =
+           pengumumanRepository ??
+           RepositoryFactory.instance.pengumumanRepository,
+       _peraturanRepo =
+           peraturanRepository ??
+           RepositoryFactory.instance.peraturanRepository;
 
   final RxInt selectedTabIndex = 0.obs;
   final RxBool isLoading = true.obs;
@@ -67,7 +87,7 @@ class UserInfoController extends GetxController with WidgetsBindingObserver {
       }
 
       // Get penghuni data to find kost_id
-      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      final penghuniData = await _penghuniRepo.getPenghuniByUserId(userId);
 
       if (penghuniData == null) {
         // User belum terdaftar sebagai penghuni
@@ -94,7 +114,7 @@ class UserInfoController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _loadPengumuman(String kostId) async {
     try {
-      final data = await _supabaseService.getPengumumanByKostId(kostId);
+      final data = await _pengumumanRepo.getPengumumanList(kostId: kostId);
       pengumumanList.value = data
           .map((item) => PengumumanModel.fromMap(item))
           .toList();
@@ -105,7 +125,7 @@ class UserInfoController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _loadPeraturan(String kostId) async {
     try {
-      final data = await _supabaseService.getPeraturanByKostId(kostId);
+      final data = await _peraturanRepo.getPeraturanList(kostId: kostId);
       peraturanList.value = data
           .map((item) => PeraturanModel.fromMap(item))
           .toList();

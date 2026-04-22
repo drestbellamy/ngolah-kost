@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/tagihan_repository.dart';
+import '../../../../repositories/penghuni_repository.dart';
 import '../models/penghuni_model.dart';
 import '../controllers/kelola_kontrak_controller.dart';
 import '../controllers/penghuni_controller.dart';
@@ -14,7 +16,10 @@ class PenghuniDetailView extends StatefulWidget {
 }
 
 class _PenghuniDetailViewState extends State<PenghuniDetailView> {
-  static final SupabaseService _supabaseService = SupabaseService();
+  static final TagihanRepository _tagihanRepo =
+      RepositoryFactory.instance.tagihanRepository;
+  static final PenghuniRepository _penghuniRepo =
+      RepositoryFactory.instance.penghuniRepository;
   PenghuniModel? _penghuni;
 
   @override
@@ -574,9 +579,16 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
 
                                   // Buat controller baru
                                   final controller = Get.put(
-                                    KelolaKontrakController(),
+                                    KelolaKontrakController(
+                                      penghuniRepository: RepositoryFactory
+                                          .instance
+                                          .penghuniRepository,
+                                      tagihanRepository: RepositoryFactory
+                                          .instance
+                                          .tagihanRepository,
+                                    ),
                                   );
-                                  
+
                                   // Set penghuni dan initialize form menggunakan method khusus
                                   controller.setPenghuniAndInitialize(penghuni);
 
@@ -586,7 +598,9 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
                                   );
 
                                   // Pastikan controller masih terdaftar dan penghuni tidak null
-                                  if (!Get.isRegistered<KelolaKontrakController>() ||
+                                  if (!Get.isRegistered<
+                                        KelolaKontrakController
+                                      >() ||
                                       controller.penghuni == null) {
                                     Get.snackbar(
                                       'Error',
@@ -656,7 +670,7 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
                                   if (Get.isDialogOpen ?? false) {
                                     Get.back();
                                   }
-                                  
+
                                   Get.snackbar(
                                     'Error',
                                     'Terjadi kesalahan: ${e.toString()}',
@@ -1045,7 +1059,7 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
     PenghuniModel penghuni,
   ) async {
     try {
-      final rows = await _supabaseService.getTagihanByPenghuniId(penghuni.id);
+      final rows = await _tagihanRepo.getTagihanByPenghuniId(penghuni.id);
       if (rows.isEmpty) {
         return [];
       }
@@ -1170,7 +1184,7 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
       }
     }
 
-    final row = await _supabaseService.getPenghuniDetailById(penghuniId);
+    final row = await _penghuniRepo.getPenghuniDetailById(penghuniId);
     if (row == null) return fallback;
 
     final durasi = _toInt(row['durasi_kontrak']);

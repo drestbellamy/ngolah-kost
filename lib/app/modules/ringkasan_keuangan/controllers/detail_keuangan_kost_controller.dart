@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/keuangan_repository.dart';
 
 class DetailKeuanganKostController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KeuanganRepository _keuanganRepo;
+
+  DetailKeuanganKostController({KeuanganRepository? keuanganRepository})
+    : _keuanganRepo =
+          keuanganRepository ?? RepositoryFactory.instance.keuanganRepository;
 
   final kostId = ''.obs;
   final kostName = ''.obs;
@@ -43,13 +48,9 @@ class DetailKeuanganKostController extends GetxController {
     errorMessage.value = null;
 
     try {
-      // Sinkronisasi pemasukan dari pembayaran verified (untuk data historis)
-      try {
-        await _supabaseService.sinkronisasiPemasukanFromPembayaran();
-      } catch (syncError) {
-        print('Warning: Sinkronisasi pemasukan gagal: $syncError');
-        // Lanjutkan load data meskipun sinkronisasi gagal
-      }
+      // TODO: Sinkronisasi pemasukan dari pembayaran verified (untuk data historis)
+      // Method sinkronisasiPemasukanFromPembayaran belum ada di KeuanganRepository
+      // Akan ditambahkan di fase berikutnya
 
       await Future.wait([
         loadPembayaranData(),
@@ -68,7 +69,8 @@ class DetailKeuanganKostController extends GetxController {
   Future<void> sinkronisasiPemasukan() async {
     try {
       isLoading.value = true;
-      await _supabaseService.sinkronisasiPemasukanFromPembayaran();
+      // TODO: Method sinkronisasiPemasukanFromPembayaran belum ada di KeuanganRepository
+      // Akan ditambahkan di fase berikutnya
 
       // Reload data setelah sinkronisasi
       await loadPembayaranData();
@@ -96,7 +98,8 @@ class DetailKeuanganKostController extends GetxController {
 
   Future<void> loadPembayaranData() async {
     try {
-      final data = await _supabaseService.getPemasukanByKostId(kostId.value);
+      // Use getPemasukanList with kostId filter
+      final data = await _keuanganRepo.getPemasukanList(kostId: kostId.value);
       pemasukanList.value = data;
       print('Loaded ${data.length} pemasukan records');
     } catch (e) {
@@ -107,7 +110,7 @@ class DetailKeuanganKostController extends GetxController {
 
   Future<void> loadPengeluaranData() async {
     try {
-      final data = await _supabaseService.getPengeluaranByKostId(kostId.value);
+      final data = await _keuanganRepo.getPengeluaranList(kostId: kostId.value);
       pengeluaranList.value = data;
       print('Loaded ${data.length} pengeluaran records');
     } catch (e) {
@@ -118,11 +121,11 @@ class DetailKeuanganKostController extends GetxController {
 
   Future<void> loadChartData() async {
     try {
-      final pemasukanData = await _supabaseService.getPemasukanByKostId(
-        kostId.value,
+      final pemasukanData = await _keuanganRepo.getPemasukanList(
+        kostId: kostId.value,
       );
-      final pengeluaranData = await _supabaseService.getPengeluaranByKostId(
-        kostId.value,
+      final pengeluaranData = await _keuanganRepo.getPengeluaranList(
+        kostId: kostId.value,
       );
 
       // Find earliest and latest transaction dates
@@ -291,7 +294,7 @@ class DetailKeuanganKostController extends GetxController {
       final description = data['description'] as String;
 
       // Simpan ke database
-      await _supabaseService.createPengeluaran(
+      await _keuanganRepo.createPengeluaran(
         kostId: kostId.value,
         nama: title,
         jumlah: amount,
@@ -338,8 +341,9 @@ class DetailKeuanganKostController extends GetxController {
       }
 
       // Update di database
-      await _supabaseService.updatePengeluaran(
+      await _keuanganRepo.updatePengeluaran(
         id: pengeluaranId,
+        kostId: kostId.value,
         nama: title,
         jumlah: amount,
         tanggal: date,
@@ -379,7 +383,7 @@ class DetailKeuanganKostController extends GetxController {
       }
 
       // Delete dari database
-      await _supabaseService.deletePengeluaran(pengeluaranId);
+      await _keuanganRepo.deletePengeluaran(pengeluaranId);
 
       // Reload data
       await loadPengeluaranData();

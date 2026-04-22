@@ -1,9 +1,19 @@
 import 'package:get/get.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kost_repository.dart';
+import '../../../../repositories/keuangan_repository.dart';
 import '../models/ringkasan_keuangan_model.dart';
 
 class RingkasanKeuanganController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+  final KeuanganRepository _keuanganRepo;
+
+  RingkasanKeuanganController({
+    KostRepository? kostRepository,
+    KeuanganRepository? keuanganRepository,
+  }) : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository,
+       _keuanganRepo =
+           keuanganRepository ?? RepositoryFactory.instance.keuanganRepository;
 
   final kostList = <RingkasanKeuanganModel>[].obs;
   final totalPemasukan = 0.0.obs;
@@ -23,12 +33,12 @@ class RingkasanKeuanganController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final kosts = await _supabaseService.getKostList();
+      final kosts = await _kostRepo.getKostList();
       final List<RingkasanKeuanganModel> tempList = [];
 
       for (final kost in kosts) {
-        final ringkasan = await _supabaseService.getRingkasanKeuanganByKostId(
-          kost.id,
+        final ringkasan = await _keuanganRepo.getFinancialSummary(
+          kostId: kost.id,
         );
 
         tempList.add(

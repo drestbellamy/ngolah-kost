@@ -2,14 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/tagihan_repository.dart';
 import '../../kamar/controllers/informasi_kamar_controller.dart';
 import '../../kelola_tagihan/controllers/kelola_tagihan_controller.dart';
 import '../models/penghuni_model.dart';
 import 'penghuni_controller.dart';
 
 class KelolaKontrakController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final PenghuniRepository _penghuniRepo;
+  final TagihanRepository _tagihanRepo;
+
+  KelolaKontrakController({
+    PenghuniRepository? penghuniRepository,
+    TagihanRepository? tagihanRepository,
+  }) : _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _tagihanRepo =
+           tagihanRepository ?? RepositoryFactory.instance.tagihanRepository;
   static const int maxTambahanDurasiBulan = 24;
   static const int maxDurasiKontrakBulan = 144; // 12 tahun
   static const List<int> _preferredSiklusBulan = [1, 3, 6, 12, 24];
@@ -38,7 +49,9 @@ class KelolaKontrakController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (penghuni == null && Get.arguments != null && Get.arguments is PenghuniModel) {
+    if (penghuni == null &&
+        Get.arguments != null &&
+        Get.arguments is PenghuniModel) {
       penghuni = Get.arguments as PenghuniModel;
     }
     if (penghuni != null) {
@@ -72,10 +85,10 @@ class KelolaKontrakController extends GetxController {
     if (penghuni != null) {
       final parsedDate = _parseDateFlexible(penghuni!.tanggalMasuk);
       selectedStartDate = parsedDate;
-      tanggalMulaiController.text = parsedDate != null 
+      tanggalMulaiController.text = parsedDate != null
           ? _formatDateId(parsedDate)
           : penghuni!.tanggalMasuk;
-      
+
       durasiKontrakController.text = penghuni!.durasiKontrak.toString();
       final siklusAwal = _parseSiklusBulan(penghuni!.sistemPembayaran);
       final labelAwal = siklusAwal > 0
@@ -150,12 +163,10 @@ class KelolaKontrakController extends GetxController {
   Future<void> pickStartDate() async {
     final now = DateTime.now();
     final initialDate = selectedStartDate ?? now;
-    
+
     final picked = await Get.dialog<DateTime>(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Container(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -233,7 +244,7 @@ class KelolaKontrakController extends GetxController {
     } catch (_) {
       // Ignore haptic feedback errors
     }
-    
+
     // Dismiss keyboard after a small delay to avoid build errors
     Future.microtask(() {
       try {
@@ -242,7 +253,7 @@ class KelolaKontrakController extends GetxController {
         // Ignore if focus manager is not available
       }
     });
-    
+
     if (tambahanDurasiController.text.isEmpty) {
       Get.snackbar(
         'Validasi Gagal',
@@ -361,8 +372,8 @@ class KelolaKontrakController extends GetxController {
 
     try {
       isLoading.value = true;
-      
-      await _supabaseService.updatePenghuniKontrak(
+
+      await _penghuniRepo.updatePenghuniKontrak(
         penghuniId: p.id,
         tanggalMasuk: tanggalMasuk,
         durasiKontrakBulan: durasiBaru,
@@ -370,7 +381,7 @@ class KelolaKontrakController extends GetxController {
         status: 'aktif',
       );
 
-      await _supabaseService.sinkronTagihanKontrak(
+      await _tagihanRepo.sinkronTagihanKontrak(
         penghuniId: p.id,
         tanggalMasuk: tanggalMasuk,
         durasiKontrakBulan: durasiBaru,
@@ -387,11 +398,11 @@ class KelolaKontrakController extends GetxController {
       } catch (_) {
         // Ignore haptic feedback errors on unsupported devices
       }
-      
+
       if (Get.isBottomSheetOpen ?? false) {
         Get.back(result: true);
       }
-      
+
       Get.snackbar(
         'Berhasil! 🎉',
         'Kontrak berhasil diperpanjang $tambahan bulan. Data tagihan telah diperbarui.',
@@ -424,7 +435,7 @@ class KelolaKontrakController extends GetxController {
     final fallbackSiklus = _parseSiklusBulan(p.sistemPembayaran);
 
     try {
-      final row = await _supabaseService.getPenghuniDetailById(p.id);
+      final row = await _penghuniRepo.getPenghuniDetailById(p.id);
       if (row == null) {
         final siklus = fallbackSiklus <= 0 ? 1 : fallbackSiklus;
         final durasi = p.durasiKontrak <= 0 ? 1 : p.durasiKontrak;
@@ -470,7 +481,7 @@ class KelolaKontrakController extends GetxController {
     } catch (_) {
       // Ignore haptic feedback errors
     }
-    
+
     // Dismiss keyboard after a small delay to avoid build errors
     Future.microtask(() {
       try {
@@ -479,7 +490,7 @@ class KelolaKontrakController extends GetxController {
         // Ignore if focus manager is not available
       }
     });
-    
+
     if (tanggalMulaiController.text.isEmpty ||
         durasiKontrakController.text.isEmpty ||
         sistemPembayaranEditController.text.isEmpty) {
@@ -509,7 +520,9 @@ class KelolaKontrakController extends GetxController {
 
     await _ensurePaidCoverageConstraintLoaded();
 
-    final tanggalMasuk = selectedStartDate ?? _parseDateFlexible(tanggalMulaiController.text.trim());
+    final tanggalMasuk =
+        selectedStartDate ??
+        _parseDateFlexible(tanggalMulaiController.text.trim());
     if (tanggalMasuk == null) {
       Get.snackbar(
         'Tanggal Tidak Valid',
@@ -596,8 +609,8 @@ class KelolaKontrakController extends GetxController {
 
     try {
       isLoading.value = true;
-      
-      await _supabaseService.updatePenghuniKontrak(
+
+      await _penghuniRepo.updatePenghuniKontrak(
         penghuniId: p.id,
         tanggalMasuk: tanggalMasuk,
         durasiKontrakBulan: durasiBaru,
@@ -605,7 +618,7 @@ class KelolaKontrakController extends GetxController {
         status: 'aktif',
       );
 
-      await _supabaseService.sinkronTagihanKontrak(
+      await _tagihanRepo.sinkronTagihanKontrak(
         penghuniId: p.id,
         tanggalMasuk: tanggalMasuk,
         durasiKontrakBulan: durasiBaru,
@@ -622,11 +635,11 @@ class KelolaKontrakController extends GetxController {
       } catch (_) {
         // Ignore haptic feedback errors on unsupported devices
       }
-      
+
       if (Get.isBottomSheetOpen ?? false) {
         Get.back(result: true);
       }
-      
+
       Get.snackbar(
         'Berhasil! 🎉',
         'Kontrak berhasil diperbarui. Data tagihan telah disesuaikan.',
@@ -678,13 +691,13 @@ class KelolaKontrakController extends GetxController {
         }
 
         if (Get.isDialogOpen ?? false) Get.back(); // Close dialog safely
-        
+
         try {
           HapticFeedback.mediumImpact();
         } catch (_) {
           // Ignore haptic feedback errors
         }
-        
+
         // Show undo snackbar
         bool cancelled = false;
         Get.snackbar(
@@ -730,8 +743,11 @@ class KelolaKontrakController extends GetxController {
         try {
           isLoading.value = true;
 
-          await _supabaseService.akhiriKontrakPenghuni(penghuniId: p.id);
-          
+          await _penghuniRepo.akhiriKontrakPenghuni(
+            penghuniId: p.id,
+            onDeleteUser: (_) {},
+          );
+
           // Wait for data to be fully synced
           await Future.delayed(const Duration(milliseconds: 500));
           await _refreshRelatedData();
@@ -741,11 +757,11 @@ class KelolaKontrakController extends GetxController {
           } catch (_) {
             // Ignore haptic feedback errors
           }
-          
+
           if (Get.isBottomSheetOpen ?? false) {
             Get.back(result: true); // Close bottom sheet
           }
-          
+
           Get.snackbar(
             'Kontrak Diakhiri',
             'Kontrak ${p.nama} telah diakhiri. Akun penghuni telah dinonaktifkan.',
@@ -826,7 +842,8 @@ class KelolaKontrakController extends GetxController {
   }
 
   String get editEndDateLabel {
-    final startDate = selectedStartDate ?? _parseDateFlexible(tanggalMulaiController.text);
+    final startDate =
+        selectedStartDate ?? _parseDateFlexible(tanggalMulaiController.text);
     final duration = int.tryParse(durasiKontrakController.text.trim()) ?? 0;
     if (startDate == null || duration <= 0) return '-';
 
@@ -980,13 +997,16 @@ class KelolaKontrakController extends GetxController {
     final replacement = selected <= 0
         ? options.first
         : _findClosestOption(selected, options);
-    
+
     // Show notification if auto-changed (only if user had a previous selection)
-    if (selected > 0 && replacement != selected && sistemPembayaranPerpanjangController.text.isNotEmpty) {
-      autoChangeMessage = 'Sistem pembayaran otomatis disesuaikan dari ${formatSistemPembayaranOption(selected)} ke ${formatSistemPembayaranOption(replacement)} karena perubahan durasi kontrak.';
+    if (selected > 0 &&
+        replacement != selected &&
+        sistemPembayaranPerpanjangController.text.isNotEmpty) {
+      autoChangeMessage =
+          'Sistem pembayaran otomatis disesuaikan dari ${formatSistemPembayaranOption(selected)} ke ${formatSistemPembayaranOption(replacement)} karena perubahan durasi kontrak.';
       showAutoChangeNotification.value = true;
     }
-    
+
     final label = formatSistemPembayaranOption(replacement);
     if (sistemPembayaranPerpanjangController.text != label) {
       sistemPembayaranPerpanjangController.text = label;
@@ -1012,13 +1032,16 @@ class KelolaKontrakController extends GetxController {
     final replacement = selected <= 0
         ? options.first
         : _findClosestOption(selected, options);
-    
+
     // Show notification if auto-changed (only if user had a previous selection)
-    if (selected > 0 && replacement != selected && sistemPembayaranEditController.text.isNotEmpty) {
-      autoChangeMessage = 'Sistem pembayaran otomatis disesuaikan dari ${formatSistemPembayaranOption(selected)} ke ${formatSistemPembayaranOption(replacement)} karena perubahan durasi kontrak.';
+    if (selected > 0 &&
+        replacement != selected &&
+        sistemPembayaranEditController.text.isNotEmpty) {
+      autoChangeMessage =
+          'Sistem pembayaran otomatis disesuaikan dari ${formatSistemPembayaranOption(selected)} ke ${formatSistemPembayaranOption(replacement)} karena perubahan durasi kontrak.';
       showAutoChangeNotification.value = true;
     }
-    
+
     final label = formatSistemPembayaranOption(replacement);
     if (sistemPembayaranEditController.text != label) {
       sistemPembayaranEditController.text = label;
@@ -1040,7 +1063,7 @@ class KelolaKontrakController extends GetxController {
         return;
       }
 
-      final rows = await _supabaseService.getTagihanByPenghuniId(p.id);
+      final rows = await _tagihanRepo.getTagihanByPenghuniId(p.id);
       if (rows.isEmpty) {
         paidCoveredPrefixMonths.value = 0;
         return;
@@ -1131,7 +1154,7 @@ class KelolaKontrakController extends GetxController {
       if (iso.year < 1900 || iso.year > 2100) return null;
       if (iso.month < 1 || iso.month > 12) return null;
       if (iso.day < 1 || iso.day > 31) return null;
-      
+
       // Check for invalid dates like Feb 31
       try {
         final validated = DateTime(iso.year, iso.month, iso.day);
@@ -1151,7 +1174,7 @@ class KelolaKontrakController extends GetxController {
         if (parsed.year < 1900 || parsed.year > 2100) continue;
         if (parsed.month < 1 || parsed.month > 12) continue;
         if (parsed.day < 1 || parsed.day > 31) continue;
-        
+
         // Verify date didn't roll over
         final validated = DateTime(parsed.year, parsed.month, parsed.day);
         if (validated.month == parsed.month && validated.day == parsed.day) {
@@ -1160,14 +1183,14 @@ class KelolaKontrakController extends GetxController {
       } catch (_) {
         // Try next pattern
       }
-      
+
       try {
         final parsed = DateFormat(pattern).parseStrict(input);
         // Validate parsed date
         if (parsed.year < 1900 || parsed.year > 2100) continue;
         if (parsed.month < 1 || parsed.month > 12) continue;
         if (parsed.day < 1 || parsed.day > 31) continue;
-        
+
         // Verify date didn't roll over
         final validated = DateTime(parsed.year, parsed.month, parsed.day);
         if (validated.month == parsed.month && validated.day == parsed.day) {

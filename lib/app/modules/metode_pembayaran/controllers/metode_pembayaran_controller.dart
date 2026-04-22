@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kost_repository.dart';
+import '../../../../repositories/metode_pembayaran_repository.dart';
 import '../models/metode_pembayaran_model.dart';
 
 class MetodePembayaranController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+  final MetodePembayaranRepository _metodeRepo;
+
+  MetodePembayaranController({
+    KostRepository? kostRepository,
+    MetodePembayaranRepository? metodePembayaranRepository,
+  }) : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository,
+       _metodeRepo =
+           metodePembayaranRepository ??
+           RepositoryFactory.instance.metodePembayaranRepository;
 
   final metodePembayaranList = <MetodePembayaranModel>[].obs;
   final filteredList = <MetodePembayaranModel>[].obs;
@@ -30,8 +41,8 @@ class MetodePembayaranController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final kostFuture = _supabaseService.getKostList();
-      final metodeFuture = _supabaseService.getMetodePembayaranList();
+      final kostFuture = _kostRepo.getKostList();
+      final metodeFuture = _metodeRepo.getMetodePembayaranList();
 
       final kostList = await kostFuture;
       final metodeRows = await metodeFuture;
@@ -106,7 +117,7 @@ class MetodePembayaranController extends GetxController {
 
   Future<void> _handleDeleteConfirmed(String id) async {
     try {
-      await _supabaseService.deleteMetodePembayaran(id);
+      await _metodeRepo.deleteMetodePembayaran(id);
       metodePembayaranList.removeWhere((m) => m.id == id);
       applyFilter();
 
@@ -168,7 +179,7 @@ class MetodePembayaranController extends GetxController {
     applyFilter();
 
     try {
-      await _supabaseService.updateMetodePembayaranStatus(
+      await _metodeRepo.updateMetodePembayaranStatus(
         id: id,
         isActive: targetStatus,
       );

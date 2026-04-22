@@ -1,10 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/tagihan_repository.dart';
+import '../../../../repositories/pembayaran_repository.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/repository_factory.dart';
 import '../models/tagihan_model.dart';
 
 class KelolaTagihanController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final TagihanRepository _tagihanRepo;
+  final PembayaranRepository _pembayaranRepo;
+  final PenghuniRepository _penghuniRepo;
+
+  KelolaTagihanController({
+    TagihanRepository? tagihanRepository,
+    PembayaranRepository? pembayaranRepository,
+    PenghuniRepository? penghuniRepository,
+  }) : _tagihanRepo =
+           tagihanRepository ?? RepositoryFactory.instance.tagihanRepository,
+       _pembayaranRepo =
+           pembayaranRepository ??
+           RepositoryFactory.instance.pembayaranRepository,
+       _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository;
   final searchController = TextEditingController();
   final selectedFilter = 'semua'.obs;
   final selectedMonthKey = 'semua'.obs;
@@ -25,7 +42,11 @@ class KelolaTagihanController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final rows = await _supabaseService.getTagihanList();
+      final rows = await _tagihanRepo.getTagihanList(
+        getPenghuniLookup: () => _penghuniRepo.buildPenghuniLookup(),
+        getPenghuniStatusLookup: () =>
+            _penghuniRepo.buildPenghuniStatusLookup(),
+      );
       final mapped = rows.map((row) {
         final bulan = _toInt(row['bulan']);
         final tahun = _toInt(row['tahun']);
@@ -255,7 +276,7 @@ class KelolaTagihanController extends GetxController {
     try {
       isLoading.value = true;
 
-      await _supabaseService.verifikasiPembayaran(
+      await _pembayaranRepo.verifikasiPembayaran(
         tagihanId: tagihan.id,
         pembayaranId: tagihan.pembayaranId!,
       );
@@ -296,7 +317,7 @@ class KelolaTagihanController extends GetxController {
     try {
       isLoading.value = true;
 
-      await _supabaseService.tolakPembayaran(
+      await _pembayaranRepo.tolakPembayaran(
         tagihanId: tagihan.id,
         pembayaranId: tagihan.pembayaranId!,
       );

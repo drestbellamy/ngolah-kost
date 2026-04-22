@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/repository_factory.dart';
+import '../../../../repositories/kost_repository.dart';
+import '../../../../repositories/metode_pembayaran_repository.dart';
 import '../models/metode_pembayaran_model.dart';
 
 class TambahMetodePembayaranController extends GetxController {
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepo;
+  final MetodePembayaranRepository _metodeRepo;
+
+  TambahMetodePembayaranController({
+    KostRepository? kostRepository,
+    MetodePembayaranRepository? metodePembayaranRepository,
+  }) : _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository,
+       _metodeRepo =
+           metodePembayaranRepository ??
+           RepositoryFactory.instance.metodePembayaranRepository;
 
   final selectedKostList = <Map<String, dynamic>>[].obs;
   final selectedTipe = ''.obs;
@@ -86,7 +97,7 @@ class TambahMetodePembayaranController extends GetxController {
     errorMessage.value = null;
 
     try {
-      final kosts = await _supabaseService.getKostList();
+      final kosts = await _kostRepo.getKostList();
       final mapped = kosts
           .map(
             (kost) => <String, dynamic>{
@@ -487,7 +498,7 @@ class TambahMetodePembayaranController extends GetxController {
   Future<void> simpan() async {
     // Tutup keyboard sebelum proses simpan
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     if (!canSave || isSaving.value || isUploadingQris.value) return;
 
     final selectedKostIds = selectedKostList
@@ -518,7 +529,7 @@ class TambahMetodePembayaranController extends GetxController {
       isSaving.value = true;
 
       if (isEditMode.value && editingMetode != null) {
-        await _supabaseService.updateMetodePembayaran(
+        await _metodeRepo.updateMetodePembayaran(
           id: editingMetode!.id,
           kostId: selectedKostIds.first,
           tipe: tipe,
@@ -542,7 +553,7 @@ class TambahMetodePembayaranController extends GetxController {
       }
 
       for (final kostId in selectedKostIds) {
-        await _supabaseService.createMetodePembayaran(
+        await _metodeRepo.createMetodePembayaran(
           kostId: kostId,
           tipe: tipe,
           nama: nama,
@@ -616,7 +627,7 @@ class TambahMetodePembayaranController extends GetxController {
       isUploadingQris.value = true;
 
       final bytes = await file.readAsBytes();
-      final publicUrl = await _supabaseService.uploadMetodePembayaranQrisImage(
+      final publicUrl = await _metodeRepo.uploadQrisImage(
         imageBytes: bytes,
         fileExt: ext,
         kostId: selectedKostId,

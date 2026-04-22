@@ -1,11 +1,34 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/controllers/auth_controller.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/pembayaran_repository.dart';
+import '../../../../repositories/tagihan_repository.dart';
+import '../../../../repositories/metode_pembayaran_repository.dart';
+import '../../../../repositories/repository_factory.dart';
 
 class UserHistoryPembayaranController extends GetxController {
-  final _supabaseService = SupabaseService();
+  final PenghuniRepository _penghuniRepo;
+  final PembayaranRepository _pembayaranRepo;
+  final TagihanRepository _tagihanRepo;
+  final MetodePembayaranRepository _metodeRepo;
   final authController = Get.find<AuthController>();
+
+  UserHistoryPembayaranController({
+    PenghuniRepository? penghuniRepository,
+    PembayaranRepository? pembayaranRepository,
+    TagihanRepository? tagihanRepository,
+    MetodePembayaranRepository? metodePembayaranRepository,
+  }) : _penghuniRepo =
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _pembayaranRepo =
+           pembayaranRepository ??
+           RepositoryFactory.instance.pembayaranRepository,
+       _tagihanRepo =
+           tagihanRepository ?? RepositoryFactory.instance.tagihanRepository,
+       _metodeRepo =
+           metodePembayaranRepository ??
+           RepositoryFactory.instance.metodePembayaranRepository;
 
   final paymentHistory = <Map<String, dynamic>>[].obs;
   final isLoading = true.obs;
@@ -52,7 +75,7 @@ class UserHistoryPembayaranController extends GetxController {
       print('Loading payment history for userId: $userId'); // Debug
 
       // Get penghuni data first
-      final penghuniData = await _supabaseService.getPenghuniByUserId(userId);
+      final penghuniData = await _penghuniRepo.getPenghuniByUserId(userId);
       if (penghuniData == null) {
         throw Exception('Data penghuni tidak ditemukan');
       }
@@ -68,7 +91,7 @@ class UserHistoryPembayaranController extends GetxController {
       }
 
       // Get pembayaran data from database
-      final pembayaranList = await _supabaseService.getPembayaranByPenghuniId(
+      final pembayaranList = await _pembayaranRepo.getPembayaranByPenghuniId(
         penghuniId,
       );
       print('Pembayaran data fetched: ${pembayaranList.length} items'); // Debug
@@ -86,9 +109,7 @@ class UserHistoryPembayaranController extends GetxController {
         String monthName = 'Pembayaran';
         if (tagihanId.isNotEmpty) {
           try {
-            final tagihanData = await _supabaseService.getTagihanById(
-              tagihanId,
-            );
+            final tagihanData = await _tagihanRepo.getTagihanById(tagihanId);
             if (tagihanData != null) {
               final bulan = tagihanData['bulan'] as int? ?? 0;
               final tahun = tagihanData['tahun'] as int? ?? 0;
@@ -111,7 +132,7 @@ class UserHistoryPembayaranController extends GetxController {
         String metodeName = 'Transfer Bank';
         if (metodeId.isNotEmpty) {
           try {
-            final metodeData = await _supabaseService.getMetodePembayaranById(
+            final metodeData = await _metodeRepo.getMetodePembayaranById(
               metodeId,
             );
             if (metodeData != null) {
