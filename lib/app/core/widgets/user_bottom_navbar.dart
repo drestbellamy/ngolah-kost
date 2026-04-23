@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../controllers/notification_controller.dart';
 import '../values/values.dart';
+import 'adaptive_bottom_navbar_wrapper.dart';
 
 class UserBottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -21,19 +22,21 @@ class UserBottomNavbar extends StatelessWidget {
       hasInfoNotif = controller.hasInfoNotification.value;
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: const Border(
-          top: BorderSide(color: Color(0xFFE5E7EB), width: 1),
+    return AdaptiveBottomNavbarWrapper(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: const Border(
+            top: BorderSide(color: Color(0xFFE5E7EB), width: 1),
+          ),
         ),
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
               _buildNavItem(
                 icon: Icons.home_outlined,
                 activeIcon: Icons.home,
@@ -94,6 +97,7 @@ class UserBottomNavbar extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }
