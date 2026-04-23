@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/utils/toast_helper.dart';
 import 'package:intl/intl.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/controllers/notification_controller.dart';
@@ -269,27 +270,15 @@ class UserHomeController extends GetxController {
   }
 
   void viewAllAnnouncements() {
-    Get.snackbar(
-      'Info',
-      'Menampilkan semua pengumuman',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    ToastHelper.showInfo('Menampilkan semua pengumuman');
   }
 
   void callKostManagement() {
-    Get.snackbar(
-      'Info',
-      'Menghubungi ${phoneNumber.value}',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    ToastHelper.showInfo('Menghubungi ${phoneNumber.value}');
   }
 
   void emailKostManagement() {
-    Get.snackbar(
-      'Info',
-      'Mengirim email ke ${email.value}',
-      snackPosition: SnackPosition.BOTTOM,
-    );
+    ToastHelper.showInfo('Mengirim email ke ${email.value}');
   }
 
   void showLogoutDialog() {

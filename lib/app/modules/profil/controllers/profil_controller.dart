@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/utils/toast_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
@@ -90,12 +91,7 @@ class ProfilController extends GetxController {
         await uploadPhoto(image);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal mengambil foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal mengambil foto: $e');
     }
   }
 
@@ -112,24 +108,14 @@ class ProfilController extends GetxController {
         await uploadPhoto(image);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memilih foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal memilih foto: $e');
     }
   }
 
   Future<void> uploadPhoto(XFile image) async {
     final user = authController.currentUser;
     if (user == null) {
-      Get.snackbar(
-        'Error',
-        'User tidak ditemukan',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('User tidak ditemukan');
       return;
     }
 
@@ -172,20 +158,10 @@ class ProfilController extends GetxController {
 
       fotoProfilUrl.value = photoUrl;
 
-      Get.snackbar(
-        'Berhasil',
-        'Foto profil berhasil diperbarui',
-        backgroundColor: const Color(0xFF5E8675),
-        colorText: Colors.white,
-      );
+      ToastHelper.showSuccess('Foto profil berhasil diperbarui');
     } catch (e) {
       print('❌ Upload photo error: $e');
-      Get.snackbar(
-        'Error',
-        'Gagal mengupload foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal mengupload foto: $e');
     } finally {
       isUploadingPhoto.value = false;
     }
@@ -194,12 +170,7 @@ class ProfilController extends GetxController {
   Future<void> deletePhoto() async {
     final user = authController.currentUser;
     if (user == null) {
-      Get.snackbar(
-        'Error',
-        'User tidak ditemukan',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('User tidak ditemukan');
       return;
     }
 
@@ -245,19 +216,9 @@ class ProfilController extends GetxController {
 
       fotoProfilUrl.value = null;
 
-      Get.snackbar(
-        'Berhasil',
-        'Foto profil berhasil dihapus',
-        backgroundColor: const Color(0xFF5E8675),
-        colorText: Colors.white,
-      );
+      ToastHelper.showSuccess('Foto profil berhasil dihapus');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal menghapus foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal menghapus foto: $e');
     } finally {
       isUploadingPhoto.value = false;
     }
@@ -283,21 +244,13 @@ class ProfilController extends GetxController {
       final confirmPassword = confirmPasswordForUsernameController.text;
 
       if (newUsername.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Username tidak boleh kosong',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        ToastHelper.showError('Username tidak boleh kosong');
         return;
       }
 
       if (confirmPassword.isEmpty) {
-        Get.snackbar(
-          'Error',
+        ToastHelper.showError(
           'Masukkan password untuk konfirmasi perubahan username',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
         );
         return;
       }
@@ -311,32 +264,17 @@ class ProfilController extends GetxController {
       if (oldPassword.isEmpty ||
           newPassword.isEmpty ||
           confirmPassword.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Semua field password harus diisi',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        ToastHelper.showError('Semua field password harus diisi');
         return;
       }
 
       if (newPassword.length < 6) {
-        Get.snackbar(
-          'Error',
-          'Password baru minimal 6 karakter',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        ToastHelper.showError('Password baru minimal 6 karakter');
         return;
       }
 
       if (newPassword != confirmPassword) {
-        Get.snackbar(
-          'Error',
-          'Password baru dan konfirmasi tidak cocok',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        ToastHelper.showError('Password baru dan konfirmasi tidak cocok');
         return;
       }
     }
@@ -374,12 +312,7 @@ class ProfilController extends GetxController {
   Future<void> _performSaveChanges() async {
     final user = authController.currentUser;
     if (user == null) {
-      Get.snackbar(
-        'Error',
-        'User tidak ditemukan',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('User tidak ditemukan');
       return;
     }
 
@@ -425,19 +358,9 @@ class ProfilController extends GetxController {
       // Reload profile
       await loadUserProfile();
 
-      Get.snackbar(
-        'Berhasil',
-        'Perubahan berhasil disimpan',
-        backgroundColor: const Color(0xFF5E8675),
-        colorText: Colors.white,
-      );
+      ToastHelper.showSuccess('Perubahan berhasil disimpan');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString().replaceAll('Exception: ', ''),
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError(e.toString().replaceAll('Exception: ', ''));
     } finally {
       isUploadingPhoto.value = false;
     }
@@ -445,12 +368,7 @@ class ProfilController extends GetxController {
 
   Future<void> logout() async {
     await authController.clearUser();
-    Get.snackbar(
-      'Logout',
-      'Anda telah keluar',
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-    );
+    ToastHelper.showInfo('Anda telah keluar', title: 'Logout');
     Get.offAllNamed(Routes.login);
   }
 

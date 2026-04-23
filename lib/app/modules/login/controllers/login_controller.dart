@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/controllers/auth_controller.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../../../../services/supabase_service.dart';
 import '../../../routes/app_routes.dart';
 
@@ -139,12 +140,9 @@ class LoginController extends GetxController {
         return;
       }
 
-      Get.snackbar(
-        'Role Tidak Dikenal',
+      ToastHelper.showWarning(
         'Role akun tidak dikenali: ${user.role}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
+        title: 'Role Tidak Dikenal',
       );
     } catch (e) {
       var message = 'Terjadi kesalahan saat login. Coba lagi.';
@@ -169,13 +167,7 @@ class LoginController extends GetxController {
             'Tidak dapat terhubung ke server. Periksa internet atau DNS jaringan Anda.';
       }
 
-      Get.snackbar(
-        'Error',
-        message,
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError(message);
     } finally {
       isLoading.value = false;
     }

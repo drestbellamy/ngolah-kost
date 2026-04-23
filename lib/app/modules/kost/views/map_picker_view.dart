@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/toast_helper.dart';
 
 class MapPickerView extends StatefulWidget {
   final double? initialLatitude;
@@ -79,10 +80,8 @@ class _MapPickerViewState extends State<MapPickerView> {
       _updateAddress(_centerPosition);
     } catch (e) {
       if (!mounted) return;
-      Get.snackbar(
-        'Info',
+      ToastHelper.showInfo(
         'Menggunakan lokasi default (Gagal mengakses lokasi anda)',
-        backgroundColor: const Color(0xFFE2E8F0),
       );
       setState(() => _isLoading = false);
       _updateAddress(_centerPosition);
@@ -196,7 +195,9 @@ class _MapPickerViewState extends State<MapPickerView> {
                         Expanded(
                           child: Text(
                             _currentAddress,
-                            style: AppTextStyles.body14.colored(const Color(0xFF2D3748)),
+                            style: AppTextStyles.body14.colored(
+                              const Color(0xFF2D3748),
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
