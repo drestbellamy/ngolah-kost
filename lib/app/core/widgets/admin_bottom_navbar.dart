@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../values/values.dart';
+import 'adaptive_bottom_navbar_wrapper.dart';
 
 /// Shared bottom navigation bar for all admin pages.
 /// Pass [currentIndex] to highlight the active tab:
@@ -32,49 +33,56 @@ class AdminBottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 81,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: const Border(
-          top: BorderSide(color: Color(0xFFE5E7EB), width: 1.1),
+    return AdaptiveBottomNavbarWrapper(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: const Border(
+            top: BorderSide(color: Color(0xFFE5E7EB), width: 1.1),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 50,
+              offset: const Offset(0, 25),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.25),
-            blurRadius: 50,
-            offset: const Offset(0, 25),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(
+                  icon: Icons.home_outlined,
+                  label: 'Beranda',
+                  index: 0,
+                  isSelected: currentIndex == 0,
+                ),
+                _buildNavItem(
+                  icon: Icons.home_work_outlined,
+                  label: 'Kost',
+                  index: 1,
+                  isSelected: currentIndex == 1,
+                ),
+                _buildNavItem(
+                  icon: Icons.people_outline,
+                  label: 'Penghuni',
+                  index: 2,
+                  isSelected: currentIndex == 2,
+                ),
+                _buildNavItem(
+                  icon: Icons.person_outline,
+                  label: 'Profil',
+                  index: 3,
+                  isSelected: currentIndex == 3,
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(
-            icon: Icons.home_outlined,
-            label: 'Beranda',
-            index: 0,
-            isSelected: currentIndex == 0,
-          ),
-          _buildNavItem(
-            icon: Icons.home_work_outlined,
-            label: 'Kost',
-            index: 1,
-            isSelected: currentIndex == 1,
-          ),
-          _buildNavItem(
-            icon: Icons.people_outline,
-            label: 'Penghuni',
-            index: 2,
-            isSelected: currentIndex == 2,
-          ),
-          _buildNavItem(
-            icon: Icons.person_outline,
-            label: 'Profil',
-            index: 3,
-            isSelected: currentIndex == 3,
-          ),
-        ],
+        ),
       ),
     );
   }
