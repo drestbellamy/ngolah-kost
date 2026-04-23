@@ -15,7 +15,7 @@ class LoginView extends GetView<LoginController> {
     const double logoSize = 100;
     const double lottieScale = 0.40;
     const double textLogoGap = -26;
-    final double imageHeightRatio = 0.55;
+    final double imageHeightRatio = 0.48; // Dikurangi lagi agar card putih lebih tinggi untuk menghindari swipe gesture
 
     const Color fieldBorderColor = Color(0xFF6B8E7A);
     const Color fieldFocusColor = Color(0xFF6B8E7A);
@@ -34,23 +34,24 @@ class LoginView extends GetView<LoginController> {
       child: Scaffold(
         backgroundColor: Colors.white,
         resizeToAvoidBottomInset: true,
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final imageHeight = constraints.maxHeight * imageHeightRatio;
+        body: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final imageHeight = constraints.maxHeight * imageHeightRatio;
 
-            return Stack(
-              children: [
-                // ── Background Image ──────────────────────────────────
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: imageHeight,
-                  child: Image.asset(
-                    'assets/images/login_page/gedung.png',
-                    fit: BoxFit.cover,
+              return Stack(
+                children: [
+                  // ── Background Image ──────────────────────────────────
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: imageHeight,
+                    child: Image.asset(
+                      'assets/images/login_page/gedung.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
 
                 // ── Subtle dark overlay on image ──────────────────────
                 Positioned(
@@ -91,11 +92,9 @@ class LoginView extends GetView<LoginController> {
                     // Image section with logo & app name
                     SizedBox(
                       height: imageHeight,
-                      child: SafeArea(
-                        bottom: false,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                             // ── Logo + teks dibungkus satu Transform ──
                             Transform.translate(
                               offset: Offset(0, logoVerticalOffset),
@@ -186,7 +185,6 @@ class LoginView extends GetView<LoginController> {
                           ],
                         ),
                       ),
-                    ),
 
                     // White card content
                     Expanded(
@@ -348,11 +346,7 @@ class LoginView extends GetView<LoginController> {
                               ),
                             ),
 
-                            // Bottom safe area padding
-                            SizedBox(
-                              height:
-                                  MediaQuery.of(context).padding.bottom + 24,
-                            ),
+                            const SizedBox(height: 80), // Padding bottom lebih besar untuk menghindari navbar sistem dan swipe gesture
                           ],
                         ),
                       ),
@@ -362,6 +356,7 @@ class LoginView extends GetView<LoginController> {
               ],
             );
           },
+        ),
         ),
       ),
     );

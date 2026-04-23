@@ -16,13 +16,13 @@ class LandingView extends GetView<LandingController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(
-        () => controller.showDescription.value
-            ? _buildOnboardingPager(context)
-            : Container(
-                width: double.infinity,
-                color: Colors.white,
-                child: SafeArea(
+      body: SafeArea(
+        child: Obx(
+          () => controller.showDescription.value
+              ? _buildOnboardingPager(context)
+              : Container(
+                  width: double.infinity,
+                  color: Colors.white,
                   child: Stack(
                     children: [
                       Obx(
@@ -41,7 +41,7 @@ class LandingView extends GetView<LandingController> {
                     ],
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }
