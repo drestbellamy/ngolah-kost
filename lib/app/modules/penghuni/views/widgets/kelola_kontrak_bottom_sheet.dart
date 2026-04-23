@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../../core/utils/toast_helper.dart';
 import '../../controllers/kelola_kontrak_controller.dart';
 
 // Custom input formatter to limit max value
@@ -45,15 +46,11 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
             if (Get.isBottomSheetOpen ?? false) {
               Get.back();
             }
-            Get.snackbar(
-              'Error',
+            ToastHelper.showError(
               'Data penghuni tidak ditemukan. Silakan coba lagi.',
-              backgroundColor: const Color(0xFFEF4444),
-              colorText: Colors.white,
-              snackPosition: SnackPosition.TOP,
             );
           });
-          
+
           // Return widget sementara
           return const SizedBox.shrink();
         }
@@ -300,16 +297,22 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(2),
-            _MaxValueTextInputFormatter(KelolaKontrakController.maxTambahanDurasiBulan),
+            _MaxValueTextInputFormatter(
+              KelolaKontrakController.maxTambahanDurasiBulan,
+            ),
           ],
           onChanged: (value) {
             final intValue = int.tryParse(value) ?? 0;
             if (intValue > KelolaKontrakController.maxTambahanDurasiBulan) {
-              controller.tambahanDurasiController.text = 
-                KelolaKontrakController.maxTambahanDurasiBulan.toString();
-              controller.tambahanDurasiController.selection = TextSelection.fromPosition(
-                TextPosition(offset: controller.tambahanDurasiController.text.length),
-              );
+              controller.tambahanDurasiController.text = KelolaKontrakController
+                  .maxTambahanDurasiBulan
+                  .toString();
+              controller.tambahanDurasiController.selection =
+                  TextSelection.fromPosition(
+                    TextPosition(
+                      offset: controller.tambahanDurasiController.text.length,
+                    ),
+                  );
             }
           },
           decoration: InputDecoration(
@@ -322,8 +325,10 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
-            errorText: controller.tambahanDurasiController.text.isNotEmpty &&
-                    (int.tryParse(controller.tambahanDurasiController.text) ?? 0) >
+            errorText:
+                controller.tambahanDurasiController.text.isNotEmpty &&
+                    (int.tryParse(controller.tambahanDurasiController.text) ??
+                            0) >
                         KelolaKontrakController.maxTambahanDurasiBulan
                 ? 'Maksimal ${KelolaKontrakController.maxTambahanDurasiBulan} bulan'
                 : null,
@@ -619,20 +624,27 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(3),
-            _MaxValueTextInputFormatter(KelolaKontrakController.maxDurasiKontrakBulan),
+            _MaxValueTextInputFormatter(
+              KelolaKontrakController.maxDurasiKontrakBulan,
+            ),
           ],
           onChanged: (value) {
             final intValue = int.tryParse(value) ?? 0;
             if (intValue > KelolaKontrakController.maxDurasiKontrakBulan) {
-              controller.durasiKontrakController.text = 
-                KelolaKontrakController.maxDurasiKontrakBulan.toString();
-              controller.durasiKontrakController.selection = TextSelection.fromPosition(
-                TextPosition(offset: controller.durasiKontrakController.text.length),
-              );
+              controller.durasiKontrakController.text = KelolaKontrakController
+                  .maxDurasiKontrakBulan
+                  .toString();
+              controller.durasiKontrakController.selection =
+                  TextSelection.fromPosition(
+                    TextPosition(
+                      offset: controller.durasiKontrakController.text.length,
+                    ),
+                  );
             }
           },
           decoration: InputDecoration(
-            hintText: 'Masukkan durasi kontrak (maks ${KelolaKontrakController.maxDurasiKontrakBulan} bulan / 12 tahun)',
+            hintText:
+                'Masukkan durasi kontrak (maks ${KelolaKontrakController.maxDurasiKontrakBulan} bulan / 12 tahun)',
             hintStyle: const TextStyle(color: Color(0xFFA0AEC0)),
             filled: true,
             fillColor: const Color(0xFFF7FAFC),

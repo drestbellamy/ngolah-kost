@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/utils/toast_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -154,12 +155,8 @@ class UserProfilController extends GetxController {
     } catch (e) {
       errorMessage.value = e.toString();
       print('Error in fetchUserProfile: $e'); // Debug log
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Gagal memuat profil: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.withValues(alpha: 0.1),
-        colorText: Colors.red,
         duration: const Duration(seconds: 5),
       );
     } finally {
@@ -228,12 +225,7 @@ class UserProfilController extends GetxController {
         await uploadPhoto(image);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal mengambil foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal mengambil foto: $e');
     }
   }
 
@@ -250,24 +242,14 @@ class UserProfilController extends GetxController {
         await uploadPhoto(image);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memilih foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal memilih foto: $e');
     }
   }
 
   Future<void> uploadPhoto(XFile image) async {
     final userId = _authController.currentUser?.id;
     if (userId == null || userId.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'User tidak ditemukan',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('User tidak ditemukan');
       return;
     }
 
@@ -298,20 +280,10 @@ class UserProfilController extends GetxController {
 
       fotoProfilUrl.value = photoUrl;
 
-      Get.snackbar(
-        'Berhasil',
-        'Foto profil berhasil diperbarui',
-        backgroundColor: const Color(0xFF6B8E7A),
-        colorText: Colors.white,
-      );
+      ToastHelper.showSuccess('Foto profil berhasil diperbarui');
     } catch (e) {
       print('❌ Upload photo error: $e');
-      Get.snackbar(
-        'Error',
-        'Gagal mengupload foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal mengupload foto: $e');
     } finally {
       isUploadingPhoto.value = false;
     }
@@ -320,12 +292,7 @@ class UserProfilController extends GetxController {
   Future<void> deletePhoto() async {
     final userId = _authController.currentUser?.id;
     if (userId == null || userId.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'User tidak ditemukan',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('User tidak ditemukan');
       return;
     }
 
@@ -368,19 +335,9 @@ class UserProfilController extends GetxController {
 
       fotoProfilUrl.value = null;
 
-      Get.snackbar(
-        'Berhasil',
-        'Foto profil berhasil dihapus',
-        backgroundColor: const Color(0xFF6B8E7A),
-        colorText: Colors.white,
-      );
+      ToastHelper.showSuccess('Foto profil berhasil dihapus');
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal menghapus foto: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal menghapus foto: $e');
     } finally {
       isUploadingPhoto.value = false;
     }
@@ -393,12 +350,7 @@ class UserProfilController extends GetxController {
     final lng = longitudeKost.value;
 
     if (address.isEmpty || address == '-') {
-      Get.snackbar(
-        'Info',
-        'Alamat tidak tersedia',
-        backgroundColor: Colors.orange,
-        colorText: Colors.white,
-      );
+      ToastHelper.showInfo('Alamat tidak tersedia');
       return;
     }
 
@@ -426,21 +378,11 @@ class UserProfilController extends GetxController {
       );
 
       if (!launched) {
-        Get.snackbar(
-          'Error',
-          'Tidak dapat membuka peta',
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        ToastHelper.showError('Tidak dapat membuka peta');
       }
     } catch (e) {
       print('Error opening map: $e');
-      Get.snackbar(
-        'Error',
-        'Gagal membuka peta: $e',
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal membuka peta: $e');
     }
   }
 }

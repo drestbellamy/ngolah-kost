@@ -12,6 +12,7 @@ import '../../../../repositories/pembayaran_repository.dart';
 import '../../../../repositories/metode_pembayaran_repository.dart';
 import '../../../../repositories/storage_repository.dart';
 import 'package:intl/intl.dart';
+import '../../../core/utils/toast_helper.dart';
 
 class UserTagihanController extends GetxController {
   // Repository dependencies with dependency injection support
@@ -219,10 +220,9 @@ class UserTagihanController extends GetxController {
   void toggleTagihan(TagihanUserModel tagihan) {
     // Don't allow selection if tagihan has pending payment
     if (!canSelectTagihan(tagihan)) {
-      Get.snackbar(
-        'Tidak Dapat Dipilih',
+      ToastHelper.showWarning(
         'Tagihan ini sudah memiliki pembayaran yang menunggu verifikasi',
-        snackPosition: SnackPosition.BOTTOM,
+        title: 'Tidak Dapat Dipilih',
         duration: const Duration(seconds: 2),
       );
       return;
@@ -365,31 +365,19 @@ class UserTagihanController extends GetxController {
     try {
       // Validasi
       if (tagihanTerpilih.isEmpty) {
-        Get.snackbar(
-          'Peringatan',
-          'Pilih tagihan yang akan dibayar terlebih dahulu',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showWarning('Pilih tagihan yang akan dibayar terlebih dahulu');
         return;
       }
 
       if (metodePembayaran.value.isEmpty) {
-        Get.snackbar(
-          'Peringatan',
-          'Pilih metode pembayaran terlebih dahulu',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showWarning('Pilih metode pembayaran terlebih dahulu');
         return;
       }
 
       // Get selected payment method
       final selectedMethods = getMethodsByType(metodePembayaran.value);
       if (selectedMethods.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Metode pembayaran tidak ditemukan',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showError('Metode pembayaran tidak ditemukan');
         return;
       }
 
@@ -464,12 +452,7 @@ class UserTagihanController extends GetxController {
         print('✅ Cash payment created successfully');
       }
 
-      Get.snackbar(
-        'Berhasil',
-        'Pembayaran tunai berhasil dikonfirmasi. Menunggu verifikasi admin.',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-      );
+      ToastHelper.showSuccess('Pembayaran tunai berhasil dikonfirmasi. Menunggu verifikasi admin.', duration: const Duration(seconds: 3));
 
       // Clear selection
       tagihanTerpilih.clear();
@@ -479,11 +462,7 @@ class UserTagihanController extends GetxController {
       await refreshData();
     } catch (e) {
       print('Error submit cash payment: $e');
-      Get.snackbar(
-        'Error',
-        'Gagal mengkonfirmasi pembayaran tunai: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      ToastHelper.showError('Gagal mengkonfirmasi pembayaran tunai: ${e.toString()}');
     } finally {
       isUploadingBukti.value = false;
     }
@@ -493,31 +472,19 @@ class UserTagihanController extends GetxController {
     try {
       // Validasi
       if (tagihanTerpilih.isEmpty) {
-        Get.snackbar(
-          'Peringatan',
-          'Pilih tagihan yang akan dibayar terlebih dahulu',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showWarning('Pilih tagihan yang akan dibayar terlebih dahulu');
         return;
       }
 
       if (metodePembayaran.value.isEmpty) {
-        Get.snackbar(
-          'Peringatan',
-          'Pilih metode pembayaran terlebih dahulu',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showWarning('Pilih metode pembayaran terlebih dahulu');
         return;
       }
 
       // Get selected payment method
       final selectedMethods = getMethodsByType(metodePembayaran.value);
       if (selectedMethods.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Metode pembayaran tidak ditemukan',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showError('Metode pembayaran tidak ditemukan');
         return;
       }
 
@@ -564,12 +531,7 @@ class UserTagihanController extends GetxController {
         print('✅ Pembayaran created successfully');
       }
 
-      Get.snackbar(
-        'Berhasil',
-        'Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-      );
+      ToastHelper.showSuccess('Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.', duration: const Duration(seconds: 3));
 
       // Clear selection
       tagihanTerpilih.clear();
@@ -579,11 +541,7 @@ class UserTagihanController extends GetxController {
       await refreshData();
     } catch (e) {
       print('Error upload bukti pembayaran: $e');
-      Get.snackbar(
-        'Error',
-        'Gagal mengunggah bukti pembayaran: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      ToastHelper.showError('Gagal mengunggah bukti pembayaran: ${e.toString()}');
     } finally {
       isUploadingBukti.value = false;
     }
@@ -594,31 +552,19 @@ class UserTagihanController extends GetxController {
     try {
       // Validasi
       if (tagihanTerpilih.isEmpty) {
-        Get.snackbar(
-          'Peringatan',
-          'Pilih tagihan yang akan dibayar terlebih dahulu',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showWarning('Pilih tagihan yang akan dibayar terlebih dahulu');
         return;
       }
 
       if (metodePembayaran.value.isEmpty) {
-        Get.snackbar(
-          'Peringatan',
-          'Pilih metode pembayaran terlebih dahulu',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showWarning('Pilih metode pembayaran terlebih dahulu');
         return;
       }
 
       // Get selected payment method
       final selectedMethods = getMethodsByType(metodePembayaran.value);
       if (selectedMethods.isEmpty) {
-        Get.snackbar(
-          'Error',
-          'Metode pembayaran tidak ditemukan',
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        ToastHelper.showError('Metode pembayaran tidak ditemukan');
         return;
       }
 
@@ -646,12 +592,7 @@ class UserTagihanController extends GetxController {
         );
       }
 
-      Get.snackbar(
-        'Berhasil',
-        'Bukti pembayaran berhasil diunggah',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
+      ToastHelper.showSuccess('Bukti pembayaran berhasil diunggah', duration: const Duration(seconds: 2));
 
       // Clear selection
       tagihanTerpilih.clear();
@@ -661,11 +602,7 @@ class UserTagihanController extends GetxController {
       Get.offNamed('/user-history-pembayaran');
     } catch (e) {
       print('Error upload bukti pembayaran: $e');
-      Get.snackbar(
-        'Error',
-        'Gagal mengunggah bukti pembayaran: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      ToastHelper.showError('Gagal mengunggah bukti pembayaran: ${e.toString()}');
     } finally {
       isUploadingBukti.value = false;
     }

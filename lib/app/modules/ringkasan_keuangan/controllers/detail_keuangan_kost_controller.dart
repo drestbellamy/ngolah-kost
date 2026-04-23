@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/utils/toast_helper.dart';
 import 'package:intl/intl.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/keuangan_repository.dart';
@@ -76,19 +77,14 @@ class DetailKeuanganKostController extends GetxController {
       await loadPembayaranData();
       await loadChartData();
 
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Sinkronisasi pemasukan berhasil',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } catch (e) {
-      Get.snackbar(
-        'Gagal',
+      ToastHelper.showError(
         'Sinkronisasi pemasukan gagal: ${e.toString()}',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Gagal',
         duration: const Duration(seconds: 3),
       );
     } finally {
@@ -306,21 +302,14 @@ class DetailKeuanganKostController extends GetxController {
       await loadPengeluaranData();
       await loadChartData();
 
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Pengeluaran berhasil ditambahkan',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } catch (e) {
-      Get.snackbar(
-        'Gagal',
+      ToastHelper.showError(
         'Gagal menambahkan pengeluaran: ${e.toString()}',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Gagal',
         duration: const Duration(seconds: 3),
       );
     }
@@ -354,21 +343,14 @@ class DetailKeuanganKostController extends GetxController {
       await loadPengeluaranData();
       await loadChartData();
 
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Pengeluaran berhasil diupdate',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } catch (e) {
-      Get.snackbar(
-        'Gagal',
+      ToastHelper.showError(
         'Gagal mengupdate pengeluaran: ${e.toString()}',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Gagal',
         duration: const Duration(seconds: 3),
       );
     }
@@ -389,21 +371,14 @@ class DetailKeuanganKostController extends GetxController {
       await loadPengeluaranData();
       await loadChartData();
 
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Pengeluaran berhasil dihapus',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
     } catch (e) {
-      Get.snackbar(
-        'Gagal',
+      ToastHelper.showError(
         'Gagal menghapus pengeluaran: ${e.toString()}',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Gagal',
         duration: const Duration(seconds: 3),
       );
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/tagihan_repository.dart';
 import '../../../../repositories/penghuni_repository.dart';
@@ -602,12 +603,8 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
                                         KelolaKontrakController
                                       >() ||
                                       controller.penghuni == null) {
-                                    Get.snackbar(
-                                      'Error',
+                                    ToastHelper.showError(
                                       'Gagal memuat data kontrak. Silakan coba lagi.',
-                                      backgroundColor: const Color(0xFFEF4444),
-                                      colorText: Colors.white,
-                                      snackPosition: SnackPosition.TOP,
                                     );
                                     return;
                                   }
@@ -671,12 +668,8 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
                                     Get.back();
                                   }
 
-                                  Get.snackbar(
-                                    'Error',
+                                  ToastHelper.showError(
                                     'Terjadi kesalahan: ${e.toString()}',
-                                    backgroundColor: const Color(0xFFEF4444),
-                                    colorText: Colors.white,
-                                    snackPosition: SnackPosition.TOP,
                                   );
                                 }
                               },

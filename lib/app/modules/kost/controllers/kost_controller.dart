@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/kost_repository.dart';
 import '../models/kost_model.dart';
@@ -58,12 +59,7 @@ class KostController extends GetxController {
     if (nameController.text.isEmpty ||
         addressController.text.isEmpty ||
         roomCountController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Semua field harus diisi',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Semua field harus diisi');
       return;
     }
 
@@ -80,21 +76,14 @@ class KostController extends GetxController {
       if (Get.isSnackbarOpen) Get.closeAllSnackbars();
       Get.until((route) => route.isFirst || route.settings.name == Routes.kost);
 
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Data kost berhasil diperbarui',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
+        icon: Icons.home_work,
       );
 
       fetchKostData(); // Update secara background tanpa await agar cepat
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memperbarui data kost: $e',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal memperbarui data kost: $e');
     }
   }
 
@@ -188,19 +177,13 @@ class KostController extends GetxController {
       await _kostRepo.deleteKost(id);
       await fetchKostData();
       Get.back();
-      Get.snackbar(
-        'Berhasil',
+
+      ToastHelper.showSuccess(
         'Kost berhasil dihapus',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        icon: Icons.delete_outline,
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal menghapus kost: $e',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal menghapus kost: $e');
     }
   }
 
@@ -220,12 +203,7 @@ class KostController extends GetxController {
     if (nameController.text.isEmpty ||
         addressController.text.isEmpty ||
         roomCountController.text.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Semua field harus diisi',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Semua field harus diisi');
       return;
     }
 
@@ -241,21 +219,14 @@ class KostController extends GetxController {
       if (Get.isSnackbarOpen) Get.closeAllSnackbars();
       Get.until((route) => route.isFirst || route.settings.name == Routes.kost);
 
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Kost baru berhasil ditambahkan',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
+        icon: Icons.home_work,
       );
 
       fetchKostData(); // Update secara background
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal menambahkan kost: $e',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-      );
+      ToastHelper.showError('Gagal menambahkan kost: $e');
     }
   }
 
@@ -272,11 +243,9 @@ class KostController extends GetxController {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        Get.snackbar(
-          'Error',
+        ToastHelper.showError(
           'Layanan lokasi tidak aktif',
-          backgroundColor: const Color(0xFFEF4444),
-          colorText: Colors.white,
+          icon: Icons.location_off,
         );
         return;
       }
@@ -285,22 +254,18 @@ class KostController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          Get.snackbar(
-            'Error',
+          ToastHelper.showError(
             'Izin lokasi ditolak',
-            backgroundColor: const Color(0xFFEF4444),
-            colorText: Colors.white,
+            icon: Icons.location_off,
           );
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        Get.snackbar(
-          'Error',
+        ToastHelper.showError(
           'Izin lokasi ditolak permanen',
-          backgroundColor: const Color(0xFFEF4444),
-          colorText: Colors.white,
+          icon: Icons.location_off,
         );
         return;
       }
@@ -326,20 +291,16 @@ class KostController extends GetxController {
 
         if (addressController.text != address) {
           addressController.text = address;
-          Get.snackbar(
-            'Berhasil',
+          ToastHelper.showSuccess(
             'Lokasi berhasil didapatkan',
-            backgroundColor: const Color(0xFF10B981),
-            colorText: Colors.white,
+            icon: Icons.location_on,
           );
         }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Gagal mendapatkan lokasi: $e',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        icon: Icons.location_off,
       );
     } finally {
       isLoadingLocation.value = false;
@@ -360,11 +321,9 @@ class KostController extends GetxController {
 
       if (addressController.text != newAddress) {
         addressController.text = newAddress;
-        Get.snackbar(
-          'Berhasil',
+        ToastHelper.showSuccess(
           'Titik lokasi berhasil dipilih',
-          backgroundColor: const Color(0xFF10B981),
-          colorText: Colors.white,
+          icon: Icons.location_on,
         );
       }
     }

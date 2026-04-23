@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/services/navigation_service.dart';
 import '../../../core/utils/distance_calculator.dart' as utils;
+import '../../../core/utils/toast_helper.dart';
 import '../../../data/models/kost_with_status_model.dart';
 import '../../../data/models/map_state_model.dart';
 import '../../../../services/supabase_service.dart';
@@ -198,12 +199,9 @@ class KostMapController extends GetxController {
 
         await _updateDistances();
 
-        Get.snackbar(
-          'Lokasi Ditemukan',
+        ToastHelper.showSuccess(
           'Lokasi Anda telah diperbarui',
-          backgroundColor: const Color(0xFF10B981),
-          colorText: const Color(0xFFFFFFFF),
-          snackPosition: SnackPosition.BOTTOM,
+          title: 'Lokasi Ditemukan',
           duration: const Duration(seconds: 2),
         );
       } else {
@@ -329,12 +327,9 @@ class KostMapController extends GetxController {
   /// Open navigation to kost location
   Future<void> openNavigation(KostWithStatus kost) async {
     if (!kost.hasValidCoordinates) {
-      Get.snackbar(
-        'Kesalahan Navigasi',
+      ToastHelper.showError(
         'Koordinat lokasi tidak tersedia untuk kost ini',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: const Color(0xFFFFFFFF),
-        snackPosition: SnackPosition.BOTTOM,
+        title: 'Kesalahan Navigasi',
       );
       return;
     }
@@ -348,12 +343,9 @@ class KostMapController extends GetxController {
     );
 
     if (success) {
-      Get.snackbar(
-        'Navigasi Dibuka',
+      ToastHelper.showSuccess(
         'Membuka navigasi ke ${kost.name}',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: const Color(0xFFFFFFFF),
-        snackPosition: SnackPosition.BOTTOM,
+        title: 'Navigasi Dibuka',
         duration: const Duration(seconds: 2),
       );
     }
