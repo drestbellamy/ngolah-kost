@@ -97,7 +97,7 @@ class ToastContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         gradient: _getBackgroundGradient(),
