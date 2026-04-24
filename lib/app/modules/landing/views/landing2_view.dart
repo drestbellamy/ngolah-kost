@@ -9,7 +9,7 @@ class Landing2View extends GetView<LandingController> {
 
   static const String _landingLottieAsset = 'assets/lotties/Home.json';
   static const String _landingPage2BackgroundAsset =
-      'assets/images/landing_page2/kamar.png';
+      'assets/images/landing_page2/Landing2.webp';
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +272,7 @@ class Landing2View extends GetView<LandingController> {
               Text(
                 'Ngolah Kost',
                 style: AppTextStyles.headlineLarge.copyWith(
+                  fontFamily: 'SF Pro',
                   color: titleColor,
                   letterSpacing: 0.4,
                   height: 0.1,

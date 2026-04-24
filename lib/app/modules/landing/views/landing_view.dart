@@ -11,7 +11,7 @@ class LandingView extends GetView<LandingController> {
 
   static const String _landingLottieAsset = 'assets/lotties/Home.json';
   static const String _landingPage1BackgroundAsset =
-      'assets/images/landing_page1/gedung.png';
+      'assets/images/landing_page1/Landing1.jpg';
 
   @override
   Widget build(BuildContext context) {
@@ -365,6 +365,7 @@ class LandingView extends GetView<LandingController> {
               Text(
                 'Ngolah Kost',
                 style: AppTextStyles.headlineLarge.copyWith(
+                  fontFamily: 'Helvetica Neue',
                   color: titleColor,
                   letterSpacing: 0.4,
                   height: 0.1,
@@ -502,6 +503,7 @@ class LandingView extends GetView<LandingController> {
               ? Text(
                   'Ngolah Kost',
                   style: AppTextStyles.headlineMedium.copyWith(
+                    fontFamily: 'Helvetica Neue',
                     color: const Color(0xFF4F6F5F),
                     letterSpacing: 0.5,
                   ),
