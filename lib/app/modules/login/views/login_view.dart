@@ -165,6 +165,7 @@ class LoginView extends GetView<LoginController> {
                                       'Ngolah Kost',
                                       style: AppTextStyles.headlineLarge
                                           .copyWith(
+                                            fontFamily: 'Helvetica Neue',
                                             color: Colors.white,
                                             letterSpacing: 0.4,
                                             height: 0.1,
