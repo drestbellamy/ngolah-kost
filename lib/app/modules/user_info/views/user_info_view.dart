@@ -32,9 +32,9 @@ class UserInfoView extends GetView<UserInfoController> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     const TabSelector(),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
                     const InfoContentSection(),
                     const SizedBox(height: 100),
                   ],

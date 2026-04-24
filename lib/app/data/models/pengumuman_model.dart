@@ -14,18 +14,31 @@ class PengumumanModel {
   });
 
   factory PengumumanModel.fromMap(Map<String, dynamic> map) {
+    // Handle tanggal/created_at safely
+    String tanggalValue = '';
+    if (map['tanggal'] != null) {
+      final tanggalStr = map['tanggal'].toString();
+      tanggalValue = tanggalStr.contains('T')
+          ? tanggalStr.split('T').first
+          : tanggalStr;
+    } else if (map['created_at'] != null) {
+      final createdAtStr = map['created_at'].toString();
+      tanggalValue = createdAtStr.contains('T')
+          ? createdAtStr.split('T').first
+          : createdAtStr;
+    }
+
     return PengumumanModel(
       id: map['id']?.toString() ?? '',
       kostId: map['kost_id']?.toString() ?? map['id_kost']?.toString() ?? '',
       judul: map['judul']?.toString() ?? map['title']?.toString() ?? '',
-      isi: map['isi']?.toString() ??
+      isi:
+          map['isi']?.toString() ??
           map['deskripsi']?.toString() ??
           map['content']?.toString() ??
           map['description']?.toString() ??
           '',
-      tanggal: map['tanggal']?.toString() ??
-          map['created_at']?.toString().split('T').first ??
-          '',
+      tanggal: tanggalValue,
     );
   }
 

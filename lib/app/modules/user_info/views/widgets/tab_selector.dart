@@ -73,9 +73,9 @@ class TabSelector extends GetView<UserInfoController> {
             const SizedBox(width: 8),
             Text(
               label,
-              style: AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(
-                isSelected ? Colors.white : const Color(0xFF6B8E7A),
-              ),
+              style: AppTextStyles.subtitle14
+                  .weighted(FontWeight.w600)
+                  .colored(isSelected ? Colors.white : const Color(0xFF6B8E7A)),
             ),
           ],
         ),
