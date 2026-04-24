@@ -14,6 +14,15 @@ class PeraturanModel {
   });
 
   factory PeraturanModel.fromMap(Map<String, dynamic> map) {
+    // Handle created_at safely
+    String createdAtValue = '';
+    if (map['created_at'] != null) {
+      final createdAtStr = map['created_at'].toString();
+      createdAtValue = createdAtStr.contains('T')
+          ? createdAtStr.split('T').first
+          : createdAtStr;
+    }
+
     return PeraturanModel(
       id: map['id']?.toString() ?? '',
       kostId: map['kost_id']?.toString() ?? map['id_kost']?.toString() ?? '',
@@ -24,7 +33,7 @@ class PeraturanModel {
           map['content']?.toString() ??
           map['description']?.toString() ??
           '',
-      createdAt: map['created_at']?.toString().split('T').first ?? '',
+      createdAt: createdAtValue,
     );
   }
 

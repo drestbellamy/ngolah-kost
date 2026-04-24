@@ -46,7 +46,9 @@ class PengumumanCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   pengumuman.judul,
-                  style: AppTextStyles.header16.colored(const Color(0xFF1F2937)),
+                  style: AppTextStyles.header16.colored(
+                    const Color(0xFF1F2937),
+                  ),
                 ),
               ),
             ],
@@ -54,7 +56,9 @@ class PengumumanCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             pengumuman.isi,
-            style: AppTextStyles.body14.colored(const Color(0xFF4B5563)).copyWith(height: 1.5),
+            style: AppTextStyles.body14
+                .colored(const Color(0xFF4B5563))
+                .copyWith(height: 1.5),
           ),
           const SizedBox(height: 16),
           Row(

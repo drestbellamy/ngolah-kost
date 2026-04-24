@@ -3,23 +3,18 @@ import 'base/base_repository.dart';
 import 'base/constants.dart';
 
 /// Repository for peraturan (rules) operations
-/// Handles CRUD operations for kost rules including ordering management
+/// Handles CRUD operations for kost rules
 class PeraturanRepository extends BaseRepository {
   @override
   String get repositoryName => 'PeraturanRepository';
 
   /// Get all peraturan with optional filters
   ///
-  /// Uses graceful degradation pattern with multiple select attempts
-  /// to handle different database schema versions (judul/isi vs judul/deskripsi)
-  ///
   /// Parameters:
   /// - [kostId]: Optional filter by kost ID
   /// - [isActive]: Optional filter by active status
   ///
-  /// Returns list of peraturan maps ordered by urutan (if available) or created_at
-  ///
-  /// Throws [Exception] if all attempts fail
+  /// Returns list of peraturan maps ordered by created_at
   Future<List<Map<String, dynamic>>> getPeraturanList({
     String? kostId,
     bool? isActive,
@@ -29,108 +24,62 @@ class PeraturanRepository extends BaseRepository {
       'isActive': isActive,
     });
 
-    final attempts = <({String select, String kostField, String? orderField})>[
-      (
-        select: 'id, kost_id, judul, isi, urutan, is_active, created_at',
-        kostField: 'kost_id',
-        orderField: 'urutan',
-      ),
-      (
-        select: 'id, id_kost, judul, isi, urutan, is_active, created_at',
-        kostField: 'id_kost',
-        orderField: 'urutan',
-      ),
-      (
-        select: 'id, kost_id, judul, deskripsi, urutan, is_active, created_at',
-        kostField: 'kost_id',
-        orderField: 'urutan',
-      ),
-      (
-        select: 'id, id_kost, judul, deskripsi, urutan, is_active, created_at',
-        kostField: 'id_kost',
-        orderField: 'urutan',
-      ),
-      (
-        select: 'id, kost_id, judul, isi, created_at',
-        kostField: 'kost_id',
-        orderField: 'created_at',
-      ),
-      (
-        select: 'id, id_kost, judul, isi, created_at',
-        kostField: 'id_kost',
-        orderField: 'created_at',
-      ),
-      (
-        select: 'id, kost_id, judul, deskripsi, created_at',
-        kostField: 'kost_id',
-        orderField: 'created_at',
-      ),
-      (
-        select: 'id, id_kost, judul, deskripsi, created_at',
-        kostField: 'id_kost',
-        orderField: 'created_at',
-      ),
-      (select: '*', kostField: 'kost_id', orderField: 'urutan'),
-      (select: '*', kostField: 'id_kost', orderField: 'urutan'),
-      (select: '*', kostField: 'kost_id', orderField: 'created_at'),
-      (select: '*', kostField: 'id_kost', orderField: 'created_at'),
-      (select: '*', kostField: 'kost_id', orderField: null),
-      (select: '*', kostField: 'id_kost', orderField: null),
-    ];
+    try {
+      var query = supabase.from(RepositoryConstants.peraturanTable).select('*');
 
-    for (final attempt in attempts) {
+      if (kostId != null && kostId.trim().isNotEmpty) {
+        query = query.eq('kost_id', kostId.trim());
+      }
+
+      if (isActive != null) {
+        query = query.eq('is_active', isActive);
+      }
+
+      final response = await query.order('created_at', ascending: false);
+
+      final result = (response as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+
+      logInfo('Successfully retrieved peraturan list', {
+        'count': result.length,
+      });
+      return result;
+    } catch (e) {
+      logError('Failed to get peraturan list', {'error': e.toString()});
+
+      // Fallback: try without ordering
       try {
-        dynamic query = supabase
+        var query = supabase
             .from(RepositoryConstants.peraturanTable)
-            .select(attempt.select);
+            .select('*');
 
-        // Apply kost filter if provided
         if (kostId != null && kostId.trim().isNotEmpty) {
-          query = query.eq(attempt.kostField, kostId.trim());
+          query = query.eq('kost_id', kostId.trim());
         }
 
-        // Apply isActive filter if provided
         if (isActive != null) {
           query = query.eq('is_active', isActive);
         }
 
-        // Apply ordering if available
-        if (attempt.orderField != null) {
-          query = query.order(attempt.orderField!, ascending: false);
-        }
+        final response = await query;
 
-        final raw = await query;
-        final result = raw
-            .map((item) => Map<String, dynamic>.from(item))
+        final result = (response as List)
+            .map((item) => Map<String, dynamic>.from(item as Map))
             .toList();
 
-        logInfo('Successfully retrieved peraturan list', {
+        logInfo('Retrieved peraturan list without ordering', {
           'count': result.length,
-          'select': attempt.select,
         });
-
         return result;
-      } catch (e) {
-        logDebug('Attempt failed, trying next shape', {
-          'select': attempt.select,
-          'error': e.toString(),
-        });
-        // Try next shape in case schema differs between environments
+      } catch (e2) {
+        logError('All attempts failed', {'error': e2.toString()});
+        throw Exception('Gagal memuat data peraturan');
       }
     }
-
-    logError('All attempts to get peraturan list failed');
-    throw Exception('Gagal memuat data peraturan');
   }
 
   /// Get peraturan by ID
-  ///
-  /// Parameters:
-  /// - [id]: Peraturan ID
-  ///
-  /// Returns peraturan map or null if not found
-  ///
-  /// Throws [Exception] on validation error or database error
   Future<Map<String, dynamic>?> getPeraturanById(String id) async {
     if (id.trim().isEmpty) {
       throw Exception('ID peraturan tidak valid');
@@ -160,20 +109,6 @@ class PeraturanRepository extends BaseRepository {
   }
 
   /// Create new peraturan
-  ///
-  /// Uses graceful degradation pattern with multiple payload attempts
-  /// to handle different database schema versions
-  ///
-  /// Parameters:
-  /// - [kostId]: Kost ID (required)
-  /// - [judul]: Rule title (required)
-  /// - [isi]: Rule content (required)
-  /// - [urutan]: Display order (defaults to 0)
-  /// - [isActive]: Active status (defaults to true)
-  ///
-  /// Returns the created peraturan ID
-  ///
-  /// Throws [Exception] on validation error or database error
   Future<String> createPeraturan({
     required String kostId,
     required String judul,
@@ -181,7 +116,6 @@ class PeraturanRepository extends BaseRepository {
     int urutan = 0,
     bool isActive = true,
   }) async {
-    // Validation
     if (kostId.trim().isEmpty) {
       throw Exception('ID kost tidak valid');
     }
@@ -193,121 +127,35 @@ class PeraturanRepository extends BaseRepository {
       throw Exception('Judul dan isi peraturan wajib diisi');
     }
 
-    logDebug('Creating peraturan', {
-      'kostId': kostId,
-      'judul': cleanJudul,
-      'urutan': urutan,
-    });
+    logDebug('Creating peraturan', {'kostId': kostId, 'judul': cleanJudul});
 
-    final nowIso = DateTime.now().toIso8601String();
+    try {
+      final result = await supabase
+          .from(RepositoryConstants.peraturanTable)
+          .insert({
+            'kost_id': kostId.trim(),
+            'judul': cleanJudul,
+            'isi': cleanIsi,
+          })
+          .select('id')
+          .single();
 
-    final payloads = <Map<String, dynamic>>[
-      {
-        'kost_id': kostId.trim(),
-        'judul': cleanJudul,
-        'isi': cleanIsi,
-        'urutan': urutan,
-        'is_active': isActive,
-        'created_at': nowIso,
-      },
-      {
-        'id_kost': kostId.trim(),
-        'judul': cleanJudul,
-        'isi': cleanIsi,
-        'urutan': urutan,
-        'is_active': isActive,
-        'created_at': nowIso,
-      },
-      {
-        'kost_id': kostId.trim(),
-        'judul': cleanJudul,
-        'deskripsi': cleanIsi,
-        'urutan': urutan,
-        'is_active': isActive,
-        'created_at': nowIso,
-      },
-      {
-        'id_kost': kostId.trim(),
-        'judul': cleanJudul,
-        'deskripsi': cleanIsi,
-        'urutan': urutan,
-        'is_active': isActive,
-        'created_at': nowIso,
-      },
-      {
-        'kost_id': kostId.trim(),
-        'judul': cleanJudul,
-        'isi': cleanIsi,
-        'created_at': nowIso,
-      },
-      {
-        'id_kost': kostId.trim(),
-        'judul': cleanJudul,
-        'isi': cleanIsi,
-        'created_at': nowIso,
-      },
-      {
-        'kost_id': kostId.trim(),
-        'judul': cleanJudul,
-        'deskripsi': cleanIsi,
-        'created_at': nowIso,
-      },
-      {
-        'id_kost': kostId.trim(),
-        'judul': cleanJudul,
-        'deskripsi': cleanIsi,
-        'created_at': nowIso,
-      },
-    ];
+      final id = result['id'] as String;
 
-    PostgrestException? lastError;
-    for (final payload in payloads) {
-      try {
-        final result = await supabase
-            .from(RepositoryConstants.peraturanTable)
-            .insert(payload)
-            .select('id')
-            .single();
+      logInfo('Successfully created peraturan', {
+        'id': id,
+        'judul': cleanJudul,
+      });
 
-        final id = result['id'] as String;
-
-        logInfo('Successfully created peraturan', {
-          'id': id,
-          'judul': cleanJudul,
-        });
-
-        return id;
-      } on PostgrestException catch (e) {
-        lastError = e;
-        logDebug('Payload attempt failed, trying next', {
-          'payload': payload.keys.toList(),
-          'error': e.message,
-        });
-      }
-    }
-
-    if (lastError != null) {
-      final errorMsg = formatPostgrestError(lastError);
+      return id;
+    } on PostgrestException catch (e) {
+      final errorMsg = formatPostgrestError(e);
       logError('Failed to create peraturan', {'error': errorMsg});
       throw Exception('Gagal menambahkan peraturan: $errorMsg');
     }
-
-    throw Exception('Gagal menambahkan peraturan');
   }
 
   /// Update existing peraturan
-  ///
-  /// Uses graceful degradation pattern with multiple payload attempts
-  /// to handle different database schema versions
-  ///
-  /// Parameters:
-  /// - [id]: Peraturan ID (required)
-  /// - [judul]: Rule title (required)
-  /// - [isi]: Rule content (required)
-  /// - [urutan]: Display order (optional)
-  /// - [isActive]: Active status (optional)
-  ///
-  /// Throws [Exception] on validation error or database error
   Future<void> updatePeraturan({
     required String id,
     required String judul,
@@ -315,7 +163,6 @@ class PeraturanRepository extends BaseRepository {
     int? urutan,
     bool? isActive,
   }) async {
-    // Validation
     if (id.trim().isEmpty) {
       throw Exception('ID peraturan tidak valid');
     }
@@ -327,65 +174,26 @@ class PeraturanRepository extends BaseRepository {
       throw Exception('Judul dan isi peraturan wajib diisi');
     }
 
-    logDebug('Updating peraturan', {
-      'id': id,
-      'judul': cleanJudul,
-      'urutan': urutan,
-    });
+    logDebug('Updating peraturan', {'id': id, 'judul': cleanJudul});
 
-    final payloads = <Map<String, dynamic>>[
-      {
+    try {
+      await supabase
+          .from(RepositoryConstants.peraturanTable)
+          .update({'judul': cleanJudul, 'isi': cleanIsi})
+          .eq('id', id.trim());
+
+      logInfo('Successfully updated peraturan', {
+        'id': id,
         'judul': cleanJudul,
-        'isi': cleanIsi,
-        if (urutan != null) 'urutan': urutan,
-        if (isActive != null) 'is_active': isActive,
-      },
-      {
-        'judul': cleanJudul,
-        'deskripsi': cleanIsi,
-        if (urutan != null) 'urutan': urutan,
-        if (isActive != null) 'is_active': isActive,
-      },
-    ];
-
-    PostgrestException? lastError;
-    for (final payload in payloads) {
-      try {
-        await supabase
-            .from(RepositoryConstants.peraturanTable)
-            .update(payload)
-            .eq('id', id.trim());
-
-        logInfo('Successfully updated peraturan', {
-          'id': id,
-          'judul': cleanJudul,
-        });
-
-        return;
-      } on PostgrestException catch (e) {
-        lastError = e;
-        logDebug('Payload attempt failed, trying next', {
-          'payload': payload.keys.toList(),
-          'error': e.message,
-        });
-      }
-    }
-
-    if (lastError != null) {
-      final errorMsg = formatPostgrestError(lastError);
+      });
+    } on PostgrestException catch (e) {
+      final errorMsg = formatPostgrestError(e);
       logError('Failed to update peraturan', {'id': id, 'error': errorMsg});
       throw Exception('Gagal memperbarui peraturan: $errorMsg');
     }
-
-    throw Exception('Gagal memperbarui peraturan');
   }
 
   /// Delete peraturan
-  ///
-  /// Parameters:
-  /// - [id]: Peraturan ID
-  ///
-  /// Throws [Exception] on validation error or database error
   Future<void> deletePeraturan(String id) async {
     if (id.trim().isEmpty) {
       throw Exception('ID peraturan tidak valid');
@@ -408,12 +216,6 @@ class PeraturanRepository extends BaseRepository {
   }
 
   /// Update peraturan status
-  ///
-  /// Parameters:
-  /// - [id]: Peraturan ID
-  /// - [isActive]: New active status
-  ///
-  /// Throws [Exception] on validation error or database error
   Future<void> updatePeraturanStatus({
     required String id,
     required bool isActive,
@@ -445,14 +247,6 @@ class PeraturanRepository extends BaseRepository {
   }
 
   /// Reorder peraturan by updating urutan field
-  ///
-  /// Accepts a list of peraturan IDs in the desired order and updates
-  /// their urutan field accordingly (starting from 1)
-  ///
-  /// Parameters:
-  /// - [orderedIds]: List of peraturan IDs in desired display order
-  ///
-  /// Throws [Exception] on validation error or database error
   Future<void> reorderPeraturan(List<String> orderedIds) async {
     if (orderedIds.isEmpty) {
       throw Exception('Daftar ID peraturan tidak boleh kosong');
@@ -464,12 +258,11 @@ class PeraturanRepository extends BaseRepository {
     });
 
     try {
-      // Update each peraturan with its new urutan value
       for (int i = 0; i < orderedIds.length; i++) {
         final id = orderedIds[i].trim();
         if (id.isEmpty) continue;
 
-        final urutan = i + 1; // Start from 1
+        final urutan = i + 1;
 
         await supabase
             .from(RepositoryConstants.peraturanTable)
@@ -488,11 +281,6 @@ class PeraturanRepository extends BaseRepository {
   }
 
   /// Get count of peraturan by kost ID
-  ///
-  /// Parameters:
-  /// - [kostId]: Kost ID
-  ///
-  /// Returns count of peraturan for the specified kost
   Future<int> getPeraturanCountByKostId(String kostId) async {
     if (kostId.trim().isEmpty) {
       logWarning('Empty kostId provided to getPeraturanCountByKostId');
@@ -501,33 +289,24 @@ class PeraturanRepository extends BaseRepository {
 
     logDebug('Getting peraturan count by kost ID', {'kostId': kostId});
 
-    final attempts = <String>['kost_id', 'id_kost'];
+    try {
+      final response = await supabase
+          .from(RepositoryConstants.peraturanTable)
+          .select('id')
+          .eq('kost_id', kostId.trim());
 
-    for (final kostField in attempts) {
-      try {
-        final raw = await supabase
-            .from(RepositoryConstants.peraturanTable)
-            .select('id')
-            .eq(kostField, kostId.trim());
-
-        final count = raw.length;
-        logInfo('Successfully retrieved peraturan count', {
-          'kostId': kostId,
-          'count': count,
-        });
-        return count;
-      } catch (e) {
-        logDebug('Attempt failed, trying next field', {
-          'kostField': kostField,
-          'error': e.toString(),
-        });
-        // Try next field variation
-      }
+      final count = (response as List).length;
+      logInfo('Successfully retrieved peraturan count', {
+        'kostId': kostId,
+        'count': count,
+      });
+      return count;
+    } catch (e) {
+      logWarning('Failed to get peraturan count', {
+        'kostId': kostId,
+        'error': e.toString(),
+      });
+      return 0;
     }
-
-    logWarning('All attempts to get peraturan count failed', {
-      'kostId': kostId,
-    });
-    return 0;
   }
 }
