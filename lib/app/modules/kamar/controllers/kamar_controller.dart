@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/kamar_repository.dart';
 import '../../../../repositories/penghuni_repository.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../../kost/models/kost_model.dart';
 import '../views/widgets/tambah_kamar_bottom_sheet.dart';
 import '../views/widgets/edit_kamar_bottom_sheet.dart';
@@ -76,12 +77,8 @@ class KamarController extends GetxController {
       kamarList.assignAll(mapped);
       _recalculateStats();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Gagal memuat data kamar: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      ToastHelper.showError(
+        'Gagal memuat data kamar. Exception: ${e.toString()}',
       );
     } finally {
       isLoading.value = false;
@@ -233,20 +230,12 @@ class KamarController extends GetxController {
         );
 
         await fetchKamarData();
-        Get.snackbar(
-          'Berhasil',
+        ToastHelper.showSuccess(
           'Kamar ${result['nomor']} berhasil ditambahkan',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFF10B981),
-          colorText: Colors.white,
         );
       } catch (e) {
-        Get.snackbar(
-          'Error',
-          'Gagal menambahkan kamar: $e',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        ToastHelper.showError(
+          'Gagal menambahkan kamar. Exception: ${e.toString()}',
         );
       }
     }
@@ -269,20 +258,10 @@ class KamarController extends GetxController {
         );
 
         await fetchKamarData();
-        Get.snackbar(
-          'Berhasil',
-          'Kamar berhasil diupdate',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFF10B981),
-          colorText: Colors.white,
-        );
+        ToastHelper.showSuccess('Kamar berhasil diupdate');
       } catch (e) {
-        Get.snackbar(
-          'Error',
-          'Gagal mengupdate kamar: $e',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        ToastHelper.showError(
+          'Gagal mengupdate kamar. Exception: ${e.toString()}',
         );
       }
     }
@@ -299,20 +278,10 @@ class KamarController extends GetxController {
         await _kamarRepo.deleteKamar(kamarId);
         await fetchKamarData();
 
-        Get.snackbar(
-          'Berhasil',
-          'Kamar ${kamar['nomor']} berhasil dihapus',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFF10B981),
-          colorText: Colors.white,
-        );
+        ToastHelper.showSuccess('Kamar ${kamar['nomor']} berhasil dihapus');
       } catch (e) {
-        Get.snackbar(
-          'Error',
-          'Gagal menghapus kamar: $e',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
+        ToastHelper.showError(
+          'Gagal menghapus kamar. Exception: ${e.toString()}',
         );
       }
     }

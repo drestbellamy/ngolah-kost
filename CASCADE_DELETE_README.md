@@ -50,47 +50,62 @@ Hapus Kost "Raja Kost" → ✅ BERHASIL
 
 ## 🚀 Cara Install
 
-### Step 1: Buka Supabase Dashboard
-1. Login ke [Supabase](https://supabase.com)
-2. Pilih project Anda
-3. Klik **SQL Editor** di sidebar kiri
+### ⭐ RECOMMENDED: Gunakan Script Complete (All-in-One)
 
-### Step 2: Jalankan Script
-1. Buka file `database_cascade_delete_setup.sql`
+1. Buka file **`database_cascade_delete_complete_fix.sql`**
 2. Copy semua isinya
-3. Paste ke SQL Editor di Supabase
-4. Klik tombol **Run** (atau tekan `Ctrl + Enter`)
+3. Login ke [Supabase](https://supabase.com) → Pilih project → **SQL Editor**
+4. Paste script dan klik **Run** (atau tekan `Ctrl + Enter`)
+5. ✅ Selesai! Semua foreign key sudah CASCADE
 
-### Step 3: Verifikasi
-Setelah script selesai, akan muncul tabel hasil verifikasi yang menunjukkan:
-- `table_name`: Nama tabel
-- `foreign_table_name`: Tabel yang direferensi
-- `delete_rule`: Harus `CASCADE`
-- `update_rule`: Harus `CASCADE`
+### Alternatif: Step-by-Step (Jika Ingin Manual)
+
+**Step 1:** Jalankan `database_cascade_delete_setup.sql` (setup awal)
+**Step 2:** Jalankan `database_cascade_delete_fix_pemasukan.sql` (fix pemasukan)
+**Step 3:** Jalankan `database_cascade_delete_fix_pembayaran_penghuni.sql` (fix pembayaran-penghuni)
+
+### Verifikasi Hasil
+
+Setelah script selesai, akan muncul tabel hasil verifikasi. Semua harus menunjukkan `✅ OK`:
 
 **Contoh hasil yang benar:**
 ```
-table_name              | foreign_table_name | delete_rule | update_rule
-------------------------|-------------------|-------------|-------------
-metode_pembayaran       | kost              | CASCADE     | CASCADE
-pembayaran              | metode_pembayaran | CASCADE     | CASCADE
-kamar                   | kost              | CASCADE     | CASCADE
-pengeluaran             | kost              | CASCADE     | CASCADE
+table_name        | column_name    | foreign_table_name | delete_rule | status
+------------------|----------------|-------------------|-------------|--------
+kamar             | kost_id        | kost              | CASCADE     | ✅ OK
+metode_pembayaran | kost_id        | kost              | CASCADE     | ✅ OK
+pembayaran        | metode_id      | metode_pembayaran | CASCADE     | ✅ OK
+pembayaran        | penghuni_id    | penghuni          | CASCADE     | ✅ OK
+pemasukan         | pembayaran_id  | pembayaran        | CASCADE     | ✅ OK
+pemasukan         | kost_id        | kost              | CASCADE     | ✅ OK
+pengeluaran       | kost_id        | kost              | CASCADE     | ✅ OK
+penghuni          | kamar_id       | kamar             | CASCADE     | ✅ OK
+pengumuman        | kost_id        | kost              | CASCADE     | ✅ OK
+peraturan         | kost_id        | kost              | CASCADE     | ✅ OK
 ```
+
+Jika ada yang masih `⚠️ NO ACTION` atau `⚠️ RESTRICT`, jalankan ulang script complete fix.
 
 ---
 
 ## 🧪 Testing
 
-### Test 1: Hapus Kost yang Punya Pembayaran
+### Test 1: Hapus Kost yang Punya Data
 ```sql
 -- Sebelumnya ini akan ERROR
 DELETE FROM kost WHERE nama = 'Raja Kost';
-
 -- Sekarang harusnya BERHASIL ✅
 ```
 
-### Test 2: Cek Data Terkait Sudah Terhapus
+### Test 2: Hapus Kamar yang Punya Penghuni
+```sql
+-- Hapus kamar yang ada penghuninya
+DELETE FROM kamar WHERE nama = 'Kamar B1';
+-- Sekarang harusnya BERHASIL ✅
+-- Penghuni & pembayaran otomatis terhapus
+```
+
+### Test 3: Cek Data Terkait Sudah Terhapus
 ```sql
 -- Cek metode pembayaran Raja Kost (harusnya kosong)
 SELECT * FROM metode_pembayaran WHERE kost_id = 'id_raja_kost';
@@ -102,7 +117,7 @@ WHERE metode_id IN (
 );
 ```
 
-### Test 3: Pastikan Kost Lain Tidak Terpengaruh
+### Test 4: Pastikan Kost/Kamar Lain Tidak Terpengaruh
 ```sql
 -- Kost lain harusnya masih ada
 SELECT * FROM kost WHERE nama != 'Raja Kost';
@@ -177,14 +192,18 @@ Script ini akan mengubah constraint di tabel-tabel berikut:
 
 | Tabel | Foreign Key | Referensi | Efek |
 |-------|-------------|-----------|------|
-| `metode_pembayaran` | `kost_id` | `kost(id)` | Hapus saat kost dihapus |
-| `pembayaran` | `metode_id` | `metode_pembayaran(id)` | Hapus saat metode dihapus |
 | `kamar` | `kost_id` | `kost(id)` | Hapus saat kost dihapus |
+| `metode_pembayaran` | `kost_id` | `kost(id)` | Hapus saat kost dihapus |
+| `penghuni` | `kamar_id` | `kamar(id)` | Hapus saat kamar dihapus |
+| `pembayaran` | `metode_id` | `metode_pembayaran(id)` | Hapus saat metode dihapus |
+| `pembayaran` | `penghuni_id` | `penghuni(id)` | Hapus saat penghuni dihapus |
+| `pemasukan` | `kost_id` | `kost(id)` | Hapus saat kost dihapus |
+| `pemasukan` | `pembayaran_id` | `pembayaran(id)` | Hapus saat pembayaran dihapus |
+| `pemasukan` | `penghuni_id` | `penghuni(id)` | Hapus saat penghuni dihapus |
 | `pengeluaran` | `kost_id` | `kost(id)` | Hapus saat kost dihapus |
 | `pengumuman` | `kost_id` | `kost(id)` | Hapus saat kost dihapus |
 | `peraturan` | `kost_id` | `kost(id)` | Hapus saat kost dihapus |
 | `tagihan` | `kost_id` / `kamar_id` | `kost(id)` / `kamar(id)` | Hapus saat kost/kamar dihapus |
-| `penghuni` | `kamar_id` | `kamar(id)` | Hapus saat kamar dihapus |
 
 ---
 
