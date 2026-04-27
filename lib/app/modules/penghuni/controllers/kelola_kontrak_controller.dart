@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/utils/toast_helper.dart';
+import '../../../routes/app_routes.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/penghuni_repository.dart';
 import '../../../../repositories/tagihan_repository.dart';
@@ -265,7 +266,9 @@ class KelolaKontrakController extends GetxController {
 
     final p = penghuni;
     if (p == null) {
-      ToastHelper.showError('Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.');
+      ToastHelper.showError(
+        'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
+      );
       return;
     }
 
@@ -273,7 +276,10 @@ class KelolaKontrakController extends GetxController {
 
     final tambahan = int.tryParse(tambahanDurasiController.text.trim()) ?? 0;
     if (tambahan <= 0) {
-      ToastHelper.showWarning('Tambahan durasi harus lebih dari 0 bulan', title: 'Validasi Gagal');
+      ToastHelper.showWarning(
+        'Tambahan durasi harus lebih dari 0 bulan',
+        title: 'Validasi Gagal',
+      );
       return;
     }
 
@@ -312,7 +318,10 @@ class KelolaKontrakController extends GetxController {
         : _parseSiklusBulan(rawSistemInput);
 
     if (sistemPembayaranBulanRaw <= 0) {
-      ToastHelper.showWarning('Format sistem pembayaran tidak valid. Silakan pilih sistem pembayaran dari daftar yang tersedia.', title: 'Validasi Gagal');
+      ToastHelper.showWarning(
+        'Format sistem pembayaran tidak valid. Silakan pilih sistem pembayaran dari daftar yang tersedia.',
+        title: 'Validasi Gagal',
+      );
       return;
     }
 
@@ -321,7 +330,10 @@ class KelolaKontrakController extends GetxController {
         : sistemPembayaranBulanRaw;
 
     if (sistemPembayaranBulan <= 0) {
-      ToastHelper.showWarning('Sistem pembayaran tidak valid. Silakan pilih ulang sistem pembayaran.', title: 'Validasi Gagal');
+      ToastHelper.showWarning(
+        'Sistem pembayaran tidak valid. Silakan pilih ulang sistem pembayaran.',
+        title: 'Validasi Gagal',
+      );
       return;
     }
 
@@ -382,7 +394,11 @@ class KelolaKontrakController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      ToastHelper.showError('Terjadi kesalahan saat memperpanjang kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.', title: 'Gagal Memperpanjang Kontrak', duration: const Duration(seconds: 5));
+      ToastHelper.showError(
+        'Terjadi kesalahan saat memperpanjang kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
+        title: 'Gagal Memperpanjang Kontrak',
+        duration: const Duration(seconds: 5),
+      );
     } finally {
       isLoading.value = false;
     }
@@ -455,13 +471,18 @@ class KelolaKontrakController extends GetxController {
     if (tanggalMulaiController.text.isEmpty ||
         durasiKontrakController.text.isEmpty ||
         sistemPembayaranEditController.text.isEmpty) {
-      ToastHelper.showWarning('Semua field harus diisi. Silakan lengkapi Tanggal Mulai, Durasi Kontrak, dan Sistem Pembayaran.', title: 'Validasi Gagal');
+      ToastHelper.showWarning(
+        'Semua field harus diisi. Silakan lengkapi Tanggal Mulai, Durasi Kontrak, dan Sistem Pembayaran.',
+        title: 'Validasi Gagal',
+      );
       return;
     }
 
     final p = penghuni;
     if (p == null) {
-      ToastHelper.showError('Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.');
+      ToastHelper.showError(
+        'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
+      );
       return;
     }
 
@@ -485,7 +506,10 @@ class KelolaKontrakController extends GetxController {
 
     final durasiBaru = int.tryParse(durasiKontrakController.text.trim()) ?? 0;
     if (durasiBaru <= 0) {
-      ToastHelper.showWarning('Durasi kontrak harus lebih dari 0 bulan', title: 'Validasi Gagal');
+      ToastHelper.showWarning(
+        'Durasi kontrak harus lebih dari 0 bulan',
+        title: 'Validasi Gagal',
+      );
       return;
     }
 
@@ -506,7 +530,10 @@ class KelolaKontrakController extends GetxController {
       sistemPembayaranEditController.text,
     );
     if (sistemPembayaranBulanRaw <= 0) {
-      ToastHelper.showWarning('Format sistem pembayaran tidak valid. Silakan pilih sistem pembayaran dari daftar yang tersedia.', title: 'Validasi Gagal');
+      ToastHelper.showWarning(
+        'Format sistem pembayaran tidak valid. Silakan pilih sistem pembayaran dari daftar yang tersedia.',
+        title: 'Validasi Gagal',
+      );
       return;
     }
 
@@ -515,7 +542,10 @@ class KelolaKontrakController extends GetxController {
         : sistemPembayaranBulanRaw;
 
     if (sistemPembayaranBulan <= 0) {
-      ToastHelper.showWarning('Sistem pembayaran tidak valid. Silakan pilih ulang sistem pembayaran.', title: 'Validasi Gagal');
+      ToastHelper.showWarning(
+        'Sistem pembayaran tidak valid. Silakan pilih ulang sistem pembayaran.',
+        title: 'Validasi Gagal',
+      );
       return;
     }
 
@@ -576,18 +606,22 @@ class KelolaKontrakController extends GetxController {
         duration: const Duration(seconds: 3),
       );
     } catch (e) {
-      ToastHelper.showError('Terjadi kesalahan saat memperbarui kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.', title: 'Gagal Memperbarui Kontrak', duration: const Duration(seconds: 5));
+      ToastHelper.showError(
+        'Terjadi kesalahan saat memperbarui kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
+        title: 'Gagal Memperbarui Kontrak',
+        duration: const Duration(seconds: 5),
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // Fungsi Akhiri Kontrak dengan Undo Mechanism
+  // Fungsi Akhiri Kontrak
   void akhiriKontrak() {
     Get.defaultDialog(
       title: 'Konfirmasi Akhiri Kontrak',
       middleText:
-          '⚠️ Tindakan ini akan:\n\n• Menghapus akses penghuni ke kamar\n• Mengarsipkan data kontrak\n• Menonaktifkan akun penghuni\n\nAnda akan memiliki waktu 10 detik untuk membatalkan setelah konfirmasi.',
+          '⚠️ Tindakan ini akan:\n\n• Menghapus akses penghuni ke kamar\n• Mengarsipkan data kontrak\n• Menonaktifkan akun penghuni\n\nApakah Anda yakin ingin mengakhiri kontrak?',
       textConfirm: 'Akhiri Kontrak',
       textCancel: 'Batal',
       confirmTextColor: Colors.white,
@@ -597,7 +631,9 @@ class KelolaKontrakController extends GetxController {
         final p = penghuni;
         if (p == null) {
           if (Get.isDialogOpen ?? false) Get.back();
-          ToastHelper.showError('Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.');
+          ToastHelper.showError(
+            'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
+          );
           return;
         }
 
@@ -608,48 +644,6 @@ class KelolaKontrakController extends GetxController {
         } catch (_) {
           // Ignore haptic feedback errors
         }
-
-        // Show undo snackbar
-        bool cancelled = false;
-        Get.snackbar(
-          'Memproses...',
-          'Kontrak akan diakhiri dalam 10 detik. Tekan BATAL untuk membatalkan.',
-          backgroundColor: const Color(0xFFF59E0B),
-          colorText: Colors.white,
-          icon: const Icon(Icons.timer, color: Colors.white),
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 10),
-          mainButton: TextButton(
-            onPressed: () {
-              cancelled = true;
-              try {
-                if (Get.isSnackbarOpen) Get.closeAllSnackbars();
-              } catch (_) {
-                // Ignore if snackbar already closed
-              }
-              Get.snackbar(
-                'Dibatalkan',
-                'Proses akhiri kontrak telah dibatalkan',
-                backgroundColor: const Color(0xFF6B7280),
-                colorText: Colors.white,
-                icon: const Icon(Icons.cancel, color: Colors.white),
-                snackPosition: SnackPosition.TOP,
-              );
-            },
-            child: const Text(
-              'BATAL',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        );
-
-        // Wait for 10 seconds
-        await Future.delayed(const Duration(seconds: 10));
-
-        if (cancelled) return;
 
         try {
           isLoading.value = true;
@@ -670,8 +664,13 @@ class KelolaKontrakController extends GetxController {
           }
 
           if (Get.isBottomSheetOpen ?? false) {
-            Get.back(result: true); // Close bottom sheet
+            Get.back(
+              result: 'kontrak_diakhiri',
+            ); // Return special value for ended contract
           }
+
+          // Navigate back to penghuni list page
+          Get.until((route) => route.settings.name == Routes.penghuni);
 
           Get.snackbar(
             'Kontrak Diakhiri',
@@ -683,7 +682,11 @@ class KelolaKontrakController extends GetxController {
             duration: const Duration(seconds: 4),
           );
         } catch (e) {
-          ToastHelper.showError('Terjadi kesalahan saat mengakhiri kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.', title: 'Gagal Mengakhiri Kontrak', duration: const Duration(seconds: 5));
+          ToastHelper.showError(
+            'Terjadi kesalahan saat mengakhiri kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
+            title: 'Gagal Mengakhiri Kontrak',
+            duration: const Duration(seconds: 5),
+          );
         } finally {
           isLoading.value = false;
         }

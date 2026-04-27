@@ -609,12 +609,17 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
                                     return;
                                   }
 
-                                  final result = await Get.bottomSheet<bool>(
+                                  final result = await Get.bottomSheet<dynamic>(
                                     const KelolaKontrakBottomSheet(),
                                     isScrollControlled: true,
                                     isDismissible: true,
                                     enableDrag: true,
                                   );
+
+                                  // If contract was ended, don't reload detail page
+                                  if (result == 'kontrak_diakhiri') {
+                                    return; // Already navigated back to penghuni list
+                                  }
 
                                   if (result != true) return;
 
