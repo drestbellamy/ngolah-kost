@@ -27,10 +27,10 @@ class ToastContainer extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0xFFD1FAE5), // Soft green
+            Color.fromARGB(255, 232, 255, 244), // Soft green
             Color(0xFFFFFFFF), // White
           ],
-          stops: [0.0, 0.35], // Gradient stops at 25% (around icon area)
+          stops: [0.0, 1.5], // Gradient stops at 25% (around icon area)
         );
       case ToastType.error:
         return const LinearGradient(
