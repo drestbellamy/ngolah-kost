@@ -618,79 +618,314 @@ class KelolaKontrakController extends GetxController {
 
   // Fungsi Akhiri Kontrak
   void akhiriKontrak() {
-    Get.defaultDialog(
-      title: 'Konfirmasi Akhiri Kontrak',
-      middleText:
-          '⚠️ Tindakan ini akan:\n\n• Menghapus akses penghuni ke kamar\n• Mengarsipkan data kontrak\n• Menonaktifkan akun penghuni\n\nApakah Anda yakin ingin mengakhiri kontrak?',
-      textConfirm: 'Akhiri Kontrak',
-      textCancel: 'Batal',
-      confirmTextColor: Colors.white,
-      buttonColor: const Color(0xFFEF4444),
-      cancelTextColor: const Color(0xFF6B7280),
-      onConfirm: () async {
-        final p = penghuni;
-        if (p == null) {
-          if (Get.isDialogOpen ?? false) Get.back();
-          ToastHelper.showError(
-            'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
-          );
-          return;
-        }
+    // Tampilkan popup konfirmasi sesuai desain
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon warning dengan background merah muda
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFEE2E2),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xFFEF4444),
+                        width: 3,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.priority_high,
+                        color: Color(0xFFEF4444),
+                        size: 32,
+                        weight: 700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              
+              // Title
+              const Text(
+                'Akhiri Kontrak?',
+                style: TextStyle(
+                  fontFamily: 'Helvetica Neue',
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1F2937),
+                  letterSpacing: -0.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              
+              // Subtitle
+              const Text(
+                'Tindakan ini bersifat permanen dan akan\nlangsung berdampak pada akses penghuni.',
+                style: TextStyle(
+                  fontFamily: 'SF Pro',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF6B7280),
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              
+              // Konsekuensi section
+              Container(
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Konsekuensi tindakan ini:',
+                      style: TextStyle(
+                        fontFamily: 'Helvetica Neue',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // Konsekuensi 1: Cabut Akses Kamar
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEE2E2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.key_off,
+                            color: Color(0xFFEF4444),
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Cabut Akses Kamar',
+                                style: TextStyle(
+                                  fontFamily: 'Helvetica Neue',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF1F2937),
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Penghuni tidak dapat lagi masuk ke kamar atau gedung.',
+                                style: TextStyle(
+                                  fontFamily: 'SF Pro',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF6B7280),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // Konsekuensi 2: Nonaktifkan Akun
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEE2E2),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.person_off,
+                            color: Color(0xFFEF4444),
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Nonaktifkan Akun',
+                                style: TextStyle(
+                                  fontFamily: 'Helvetica Neue',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF1F2937),
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Akun penghuni pada aplikasi akan segera dibekukan.',
+                                style: TextStyle(
+                                  fontFamily: 'SF Pro',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF6B7280),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              
+              // Buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Get.back(); // Tutup dialog
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF374151),
+                        side: const BorderSide(
+                          color: Color(0xFFD1D5DB),
+                          width: 1.5,
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Batal',
+                        style: TextStyle(
+                          fontFamily: 'SF Pro',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final p = penghuni;
+                        if (p == null) {
+                          if (Get.isDialogOpen ?? false) Get.back();
+                          ToastHelper.showError(
+                            'Data penghuni tidak ditemukan. Silakan kembali dan coba lagi.',
+                          );
+                          return;
+                        }
 
-        if (Get.isDialogOpen ?? false) Get.back(); // Close dialog safely
+                        if (Get.isDialogOpen ?? false) Get.back(); // Close dialog
 
-        try {
-          HapticFeedback.mediumImpact();
-        } catch (_) {
-          // Ignore haptic feedback errors
-        }
+                        try {
+                          HapticFeedback.mediumImpact();
+                        } catch (_) {
+                          // Ignore haptic feedback errors
+                        }
 
-        try {
-          isLoading.value = true;
+                        try {
+                          isLoading.value = true;
 
-          await _penghuniRepo.akhiriKontrakPenghuni(
-            penghuniId: p.id,
-            onDeleteUser: (_) {},
-          );
+                          await _penghuniRepo.akhiriKontrakPenghuni(
+                            penghuniId: p.id,
+                            onDeleteUser: (_) {},
+                          );
 
-          // Wait for data to be fully synced
-          await Future.delayed(const Duration(milliseconds: 500));
-          await _refreshRelatedData();
+                          // Wait for data to be fully synced
+                          await Future.delayed(const Duration(milliseconds: 500));
+                          await _refreshRelatedData();
 
-          try {
-            HapticFeedback.heavyImpact();
-          } catch (_) {
-            // Ignore haptic feedback errors
-          }
+                          try {
+                            HapticFeedback.heavyImpact();
+                          } catch (_) {
+                            // Ignore haptic feedback errors
+                          }
 
-          if (Get.isBottomSheetOpen ?? false) {
-            Get.back(
-              result: 'kontrak_diakhiri',
-            ); // Return special value for ended contract
-          }
+                          if (Get.isBottomSheetOpen ?? false) {
+                            Get.back(
+                              result: 'kontrak_diakhiri',
+                            ); // Return special value for ended contract
+                          }
 
-          // Navigate back to penghuni list page
-          Get.until((route) => route.settings.name == Routes.penghuni);
+                          // Navigate back to penghuni list page
+                          Get.until((route) => route.settings.name == Routes.penghuni);
 
-          Get.snackbar(
-            'Kontrak Diakhiri',
-            'Kontrak ${p.nama} telah diakhiri. Akun penghuni telah dinonaktifkan.',
-            backgroundColor: const Color(0xFFEF4444),
-            colorText: Colors.white,
-            icon: const Icon(Icons.check_circle, color: Colors.white),
-            snackPosition: SnackPosition.TOP,
-            duration: const Duration(seconds: 4),
-          );
-        } catch (e) {
-          ToastHelper.showError(
-            'Terjadi kesalahan saat mengakhiri kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
-            title: 'Gagal Mengakhiri Kontrak',
-            duration: const Duration(seconds: 5),
-          );
-        } finally {
-          isLoading.value = false;
-        }
-      },
+                          ToastHelper.showSuccess(
+                            'Kontrak ${p.nama} telah diakhiri. Akun penghuni telah dinonaktifkan.',
+                            title: 'Kontrak Diakhiri',
+                            duration: const Duration(seconds: 4),
+                          );
+                        } catch (e) {
+                          ToastHelper.showError(
+                            'Terjadi kesalahan saat mengakhiri kontrak: ${e.toString()}. Silakan coba lagi atau hubungi administrator.',
+                            title: 'Gagal Mengakhiri Kontrak',
+                            duration: const Duration(seconds: 5),
+                          );
+                        } finally {
+                          isLoading.value = false;
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFEF4444),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Ya, Akhiri',
+                        style: TextStyle(
+                          fontFamily: 'SF Pro',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false, // Tidak bisa ditutup dengan tap di luar
     );
   }
 
