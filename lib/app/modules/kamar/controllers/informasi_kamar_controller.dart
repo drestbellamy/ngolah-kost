@@ -75,6 +75,19 @@ class InformasiKamarController extends GetxController {
         final usernameUser = (user['username'] ?? item['username'] ?? '-')
             .toString();
 
+        // Format data baru
+        final nomorKtp = item['nomor_ktp']?.toString() ?? '';
+        final jenisKelamin = item['jenis_kelamin']?.toString() ?? '';
+        final tanggalLahirDate = DateTime.tryParse(
+          item['tanggal_lahir']?.toString() ?? '',
+        );
+        final alamatAsal = item['alamat_asal']?.toString() ?? '';
+        final namaKontakDarurat = item['nama_kontak_darurat']?.toString() ?? '';
+        final teleponKontakDarurat =
+            item['telepon_kontak_darurat']?.toString() ?? '';
+        final hubunganKontakDarurat =
+            item['hubungan_kontak_darurat']?.toString() ?? '';
+
         return {
           'id': item['id']?.toString() ?? '',
           'nama': namaUser.isEmpty ? 'Penghuni' : namaUser,
@@ -86,6 +99,22 @@ class InformasiKamarController extends GetxController {
           'tanggalMulai': _formatDateId(tanggalMasukDate),
           'tanggalBerakhir': _formatDateId(tanggalKeluarDate),
           'hargaSewa': hargaPerBulan.value.replaceAll('/Bulan', ''),
+          // Data baru
+          'nomorKtp': nomorKtp.isEmpty ? null : nomorKtp,
+          'jenisKelamin': jenisKelamin.isEmpty ? null : jenisKelamin,
+          'tanggalLahir': tanggalLahirDate != null
+              ? _formatDateId(tanggalLahirDate)
+              : null,
+          'alamatAsal': alamatAsal.isEmpty ? null : alamatAsal,
+          'namaKontakDarurat': namaKontakDarurat.isEmpty
+              ? null
+              : namaKontakDarurat,
+          'teleponKontakDarurat': teleponKontakDarurat.isEmpty
+              ? null
+              : teleponKontakDarurat,
+          'hubunganKontakDarurat': hubunganKontakDarurat.isEmpty
+              ? null
+              : hubunganKontakDarurat,
           'isExpanded': false,
         };
       }).toList();

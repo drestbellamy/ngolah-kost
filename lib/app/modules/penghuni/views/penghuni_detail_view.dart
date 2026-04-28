@@ -325,6 +325,201 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
 
                     const SizedBox(height: 16),
 
+                    // Card Data Pribadi (BARU)
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Icon(
+                                Icons.person_outline,
+                                size: 20,
+                                color: Color(0xFF6B8E7F),
+                              ),
+                              SizedBox(width: 8),
+                              Text(
+                                'Data Pribadi',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D3748),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // NIK
+                          if (penghuni.nomorKtp != null &&
+                              penghuni.nomorKtp!.isNotEmpty)
+                            Column(
+                              children: [
+                                _buildInfoRow(
+                                  Icons.badge_outlined,
+                                  'NIK',
+                                  penghuni.nomorKtp!,
+                                  const Color(
+                                    0xFF6B8E7F,
+                                  ).withValues(alpha: 0.1),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            ),
+
+                          // Jenis Kelamin
+                          if (penghuni.jenisKelamin != null &&
+                              penghuni.jenisKelamin!.isNotEmpty)
+                            Column(
+                              children: [
+                                _buildInfoRow(
+                                  penghuni.jenisKelamin == 'Laki-laki'
+                                      ? Icons.male
+                                      : Icons.female,
+                                  'Jenis Kelamin',
+                                  penghuni.jenisKelamin!,
+                                  (penghuni.jenisKelamin == 'Laki-laki'
+                                          ? Colors.blue
+                                          : Colors.pink)
+                                      .withValues(alpha: 0.1),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            ),
+
+                          // Tanggal Lahir
+                          if (penghuni.tanggalLahir != null &&
+                              penghuni.tanggalLahir!.isNotEmpty)
+                            Column(
+                              children: [
+                                _buildInfoRow(
+                                  Icons.cake_outlined,
+                                  'Tanggal Lahir',
+                                  penghuni.tanggalLahir!,
+                                  const Color(
+                                    0xFF6B8E7F,
+                                  ).withValues(alpha: 0.1),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            ),
+
+                          // Alamat Asal
+                          if (penghuni.alamatAsal != null &&
+                              penghuni.alamatAsal!.isNotEmpty)
+                            _buildInfoRow(
+                              Icons.home_outlined,
+                              'Alamat Asal',
+                              penghuni.alamatAsal!,
+                              const Color(0xFF6B8E7F).withValues(alpha: 0.1),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Card Kontak Darurat (BARU)
+                    if ((penghuni.namaKontakDarurat != null &&
+                            penghuni.namaKontakDarurat!.isNotEmpty) ||
+                        (penghuni.teleponKontakDarurat != null &&
+                            penghuni.teleponKontakDarurat!.isNotEmpty))
+                      Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Row(
+                                  children: [
+                                    Icon(
+                                      Icons.emergency_outlined,
+                                      size: 20,
+                                      color: Colors.red,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      'Kontak Darurat',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF2D3748),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Nama Kontak Darurat
+                                if (penghuni.namaKontakDarurat != null &&
+                                    penghuni.namaKontakDarurat!.isNotEmpty)
+                                  Column(
+                                    children: [
+                                      _buildInfoRow(
+                                        Icons.person_outline,
+                                        'Nama',
+                                        penghuni.namaKontakDarurat!,
+                                        Colors.red.withValues(alpha: 0.1),
+                                      ),
+                                      const SizedBox(height: 12),
+                                    ],
+                                  ),
+
+                                // Hubungan
+                                if (penghuni.hubunganKontakDarurat != null &&
+                                    penghuni.hubunganKontakDarurat!.isNotEmpty)
+                                  Column(
+                                    children: [
+                                      _buildInfoRow(
+                                        Icons.family_restroom,
+                                        'Hubungan',
+                                        penghuni.hubunganKontakDarurat!,
+                                        Colors.red.withValues(alpha: 0.1),
+                                      ),
+                                      const SizedBox(height: 12),
+                                    ],
+                                  ),
+
+                                // Nomor Telepon Darurat
+                                if (penghuni.teleponKontakDarurat != null &&
+                                    penghuni.teleponKontakDarurat!.isNotEmpty)
+                                  _buildInfoRow(
+                                    Icons.phone,
+                                    'Nomor Telepon',
+                                    penghuni.teleponKontakDarurat!,
+                                    Colors.red.withValues(alpha: 0.1),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+
                     // Card Informasi Kamar
                     Container(
                       padding: const EdgeInsets.all(20),
