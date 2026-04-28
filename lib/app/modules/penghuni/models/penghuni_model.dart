@@ -27,6 +27,14 @@ class PenghuniModel {
   final String tanggalBerakhir;
   final double totalNilaiKontrak;
   final List<PembayaranModel> historyPembayaran;
+  // New fields
+  final String? nomorKtp;
+  final String? jenisKelamin;
+  final String? tanggalLahir;
+  final String? alamatAsal;
+  final String? namaKontakDarurat;
+  final String? teleponKontakDarurat;
+  final String? hubunganKontakDarurat;
 
   PenghuniModel({
     required this.id,
@@ -41,5 +49,13 @@ class PenghuniModel {
     required this.tanggalBerakhir,
     required this.totalNilaiKontrak,
     this.historyPembayaran = const [],
+    // New fields
+    this.nomorKtp,
+    this.jenisKelamin,
+    this.tanggalLahir,
+    this.alamatAsal,
+    this.namaKontakDarurat,
+    this.teleponKontakDarurat,
+    this.hubunganKontakDarurat,
   });
 }

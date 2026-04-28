@@ -37,13 +37,26 @@ class TambahPenghuniController extends GetxController {
   final hargaPerBulan = ''.obs;
   final hargaBulanan = 0.obs;
 
-  // Step 1 - Data Pribadi & Akun
+  // Step 1 - Data Pribadi
   final namaController = TextEditingController();
+  final nomorKtpController = TextEditingController();
   final teleponController = TextEditingController();
+  final jenisKelamin = ''.obs;
+  final tanggalLahir = ''.obs;
+  final tanggalLahirDate = Rx<DateTime?>(null);
+
+  // Step 2 - Alamat & Kontak Darurat
+  final alamatAsalController = TextEditingController();
+  final namaKontakDaruratController = TextEditingController();
+  final teleponKontakDaruratController = TextEditingController();
+  final hubunganKontakDarurat = ''.obs;
+
+  // Step 3 - Akun
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final konfirmasiPasswordController = TextEditingController();
 
-  // Step 2 - Informasi Kontrak
+  // Step 4 - Informasi Kontrak
   final tanggalMasuk = ''.obs;
   final tanggalMasukDate = Rx<DateTime?>(null);
   final durasiKontrak = ''.obs;
@@ -61,6 +74,15 @@ class TambahPenghuniController extends GetxController {
     '24 Bulan ( 2 Tahun )',
   ];
 
+  // Hubungan options
+  final hubunganOptions = [
+    'Orang Tua',
+    'Saudara Kandung',
+    'Pasangan',
+    'Teman',
+    'Lainnya',
+  ];
+
   // Sistem pembayaran options (dynamic based on durasi)
   final sistemPembayaranOptions = <String>[].obs;
 
@@ -73,9 +95,16 @@ class TambahPenghuniController extends GetxController {
 
   // Inline error states
   final namaError = RxnString();
+  final nomorKtpError = RxnString();
   final teleponError = RxnString();
+  final jenisKelaminError = RxnString();
+  final alamatAsalError = RxnString();
+  final namaKontakDaruratError = RxnString();
+  final teleponKontakDaruratError = RxnString();
+  final hubunganKontakDaruratError = RxnString();
   final usernameError = RxnString();
   final passwordError = RxnString();
+  final konfirmasiPasswordError = RxnString();
   final tanggalMasukError = RxnString();
   final durasiKontrakError = RxnString();
   final sistemPembayaranError = RxnString();
@@ -115,9 +144,14 @@ class TambahPenghuniController extends GetxController {
   @override
   void onClose() {
     namaController.dispose();
+    nomorKtpController.dispose();
     teleponController.dispose();
+    alamatAsalController.dispose();
+    namaKontakDaruratController.dispose();
+    teleponKontakDaruratController.dispose();
     usernameController.dispose();
     passwordController.dispose();
+    konfirmasiPasswordController.dispose();
     super.onClose();
   }
 
@@ -126,7 +160,7 @@ class TambahPenghuniController extends GetxController {
     if (currentStep.value == 1) {
       Get.back();
     } else {
-      currentStep.value = 1;
+      currentStep.value--;
     }
   }
 
@@ -138,8 +172,17 @@ class TambahPenghuniController extends GetxController {
       if (_validateStep1()) {
         currentStep.value = 2;
       }
-    } else {
+    } else if (currentStep.value == 2) {
       if (_validateStep2()) {
+        currentStep.value = 3;
+      }
+    } else if (currentStep.value == 3) {
+      if (_validateStep3()) {
+        currentStep.value = 4;
+      }
+    } else {
+      // Step 4 - Submit
+      if (_validateStep4()) {
         await _submitForm();
       }
     }
@@ -147,14 +190,19 @@ class TambahPenghuniController extends GetxController {
 
   bool _validateStep1() {
     final nama = namaController.text.trim();
+    final nomorKtp = nomorKtpController.text.trim();
     final telepon = teleponController.text.trim();
-    final username = usernameController.text.trim();
-    final password = passwordController.text;
 
     namaError.value = nama.isEmpty
         ? 'Nama lengkap harus diisi'
         : nama.length > 50
         ? 'Nama maksimal 50 karakter'
+        : null;
+
+    nomorKtpError.value = nomorKtp.isEmpty
+        ? 'Nomor KTP harus diisi'
+        : nomorKtp.length != 16
+        ? 'Nomor KTP harus 16 digit'
         : null;
 
     teleponError.value = telepon.isEmpty
@@ -164,6 +212,56 @@ class TambahPenghuniController extends GetxController {
         : telepon.length > 15
         ? 'Nomor telepon maksimal 15 digit'
         : null;
+
+    jenisKelaminError.value = jenisKelamin.value.isEmpty
+        ? 'Jenis kelamin harus dipilih'
+        : null;
+
+    return namaError.value == null &&
+        nomorKtpError.value == null &&
+        teleponError.value == null &&
+        jenisKelaminError.value == null;
+  }
+
+  bool _validateStep2() {
+    final alamatAsal = alamatAsalController.text.trim();
+    final namaKontakDarurat = namaKontakDaruratController.text.trim();
+    final teleponKontakDarurat = teleponKontakDaruratController.text.trim();
+
+    alamatAsalError.value = alamatAsal.isEmpty
+        ? 'Alamat asal harus diisi'
+        : alamatAsal.length > 200
+        ? 'Alamat maksimal 200 karakter'
+        : null;
+
+    namaKontakDaruratError.value = namaKontakDarurat.isEmpty
+        ? 'Nama kontak darurat harus diisi'
+        : namaKontakDarurat.length > 50
+        ? 'Nama maksimal 50 karakter'
+        : null;
+
+    teleponKontakDaruratError.value = teleponKontakDarurat.isEmpty
+        ? 'Nomor kontak darurat harus diisi'
+        : teleponKontakDarurat.length < 10
+        ? 'Nomor telepon minimal 10 digit'
+        : teleponKontakDarurat.length > 15
+        ? 'Nomor telepon maksimal 15 digit'
+        : null;
+
+    hubunganKontakDaruratError.value = hubunganKontakDarurat.value.isEmpty
+        ? 'Hubungan kontak darurat harus dipilih'
+        : null;
+
+    return alamatAsalError.value == null &&
+        namaKontakDaruratError.value == null &&
+        teleponKontakDaruratError.value == null &&
+        hubunganKontakDaruratError.value == null;
+  }
+
+  bool _validateStep3() {
+    final username = usernameController.text.trim();
+    final password = passwordController.text;
+    final konfirmasiPassword = konfirmasiPasswordController.text;
 
     usernameError.value = username.isEmpty
         ? null
@@ -181,13 +279,18 @@ class TambahPenghuniController extends GetxController {
         ? 'Password maksimal 32 karakter'
         : null;
 
-    return namaError.value == null &&
-        teleponError.value == null &&
-        usernameError.value == null &&
-        passwordError.value == null;
+    konfirmasiPasswordError.value = konfirmasiPassword.isEmpty
+        ? 'Konfirmasi password harus diisi'
+        : konfirmasiPassword != password
+        ? 'Konfirmasi password tidak sama'
+        : null;
+
+    return usernameError.value == null &&
+        passwordError.value == null &&
+        konfirmasiPasswordError.value == null;
   }
 
-  bool _validateStep2() {
+  bool _validateStep4() {
     tanggalMasukError.value = tanggalMasuk.value.isEmpty
         ? 'Tanggal mulai masuk harus dipilih'
         : null;
@@ -270,6 +373,14 @@ class TambahPenghuniController extends GetxController {
         tanggalMasuk: tanggalMasukDate.value!,
         tanggalKeluar: tanggalKeluarDate,
         status: 'aktif',
+        // New fields
+        nomorKtp: nomorKtpController.text.trim(),
+        jenisKelamin: jenisKelamin.value,
+        tanggalLahir: tanggalLahirDate.value,
+        alamatAsal: alamatAsalController.text.trim(),
+        namaKontakDarurat: namaKontakDaruratController.text.trim(),
+        teleponKontakDarurat: teleponKontakDaruratController.text.trim(),
+        hubunganKontakDarurat: hubunganKontakDarurat.value,
       );
 
       if (penghuniId.isEmpty) {
@@ -662,6 +773,18 @@ class TambahPenghuniController extends GetxController {
     }
   }
 
+  void onNomorKtpChanged(String value) {
+    submitError.value = null;
+    if (nomorKtpError.value != null) {
+      final v = value.trim();
+      nomorKtpError.value = v.isEmpty
+          ? 'Nomor KTP harus diisi'
+          : v.length != 16
+          ? 'Nomor KTP harus 16 digit'
+          : null;
+    }
+  }
+
   void onTeleponChanged(String value) {
     submitError.value = null;
     if (teleponError.value != null) {
@@ -673,6 +796,77 @@ class TambahPenghuniController extends GetxController {
           ? 'Nomor telepon maksimal 15 digit'
           : null;
     }
+  }
+
+  void setJenisKelamin(String gender) {
+    submitError.value = null;
+    jenisKelamin.value = gender;
+    jenisKelaminError.value = null;
+  }
+
+  void setTanggalLahir(DateTime date) {
+    submitError.value = null;
+    tanggalLahirDate.value = date;
+    // Format: 27 Maret 2026
+    final months = [
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    tanggalLahir.value = '${date.day} ${months[date.month]} ${date.year}';
+  }
+
+  void onAlamatAsalChanged(String value) {
+    submitError.value = null;
+    if (alamatAsalError.value != null) {
+      final v = value.trim();
+      alamatAsalError.value = v.isEmpty
+          ? 'Alamat asal harus diisi'
+          : v.length > 200
+          ? 'Alamat maksimal 200 karakter'
+          : null;
+    }
+  }
+
+  void onNamaKontakDaruratChanged(String value) {
+    submitError.value = null;
+    if (namaKontakDaruratError.value != null) {
+      final v = value.trim();
+      namaKontakDaruratError.value = v.isEmpty
+          ? 'Nama kontak darurat harus diisi'
+          : v.length > 50
+          ? 'Nama maksimal 50 karakter'
+          : null;
+    }
+  }
+
+  void onTeleponKontakDaruratChanged(String value) {
+    submitError.value = null;
+    if (teleponKontakDaruratError.value != null) {
+      teleponKontakDaruratError.value = value.isEmpty
+          ? 'Nomor kontak darurat harus diisi'
+          : value.length < 10
+          ? 'Nomor telepon minimal 10 digit'
+          : value.length > 15
+          ? 'Nomor telepon maksimal 15 digit'
+          : null;
+    }
+  }
+
+  void setHubunganKontakDarurat(String hubungan) {
+    submitError.value = null;
+    hubunganKontakDarurat.value = hubungan;
+    hubunganKontakDaruratError.value = null;
   }
 
   void onUsernameChanged(String value) {
@@ -698,6 +892,17 @@ class TambahPenghuniController extends GetxController {
           ? 'Password minimal 6 karakter'
           : value.length > 32
           ? 'Password maksimal 32 karakter'
+          : null;
+    }
+  }
+
+  void onKonfirmasiPasswordChanged(String value) {
+    submitError.value = null;
+    if (konfirmasiPasswordError.value != null) {
+      konfirmasiPasswordError.value = value.isEmpty
+          ? 'Konfirmasi password harus diisi'
+          : value != passwordController.text
+          ? 'Konfirmasi password tidak sama'
           : null;
     }
   }

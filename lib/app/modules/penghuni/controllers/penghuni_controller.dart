@@ -83,6 +83,11 @@ class PenghuniController extends GetxController {
             final siklusBulan = siklusBulanRaw <= 0 ? 1 : siklusBulanRaw;
             final harga = _toDouble(kamar['harga']);
 
+            // Format data baru
+            final tanggalLahirDate = DateTime.tryParse(
+              row['tanggal_lahir']?.toString() ?? '',
+            );
+
             merged.add(
               PenghuniModel(
                 id: row['id']?.toString() ?? '',
@@ -98,6 +103,17 @@ class PenghuniController extends GetxController {
                 tanggalBerakhir: _formatDate(row['tanggal_keluar']),
                 totalNilaiKontrak: harga * durasi,
                 historyPembayaran: const [],
+                // New fields
+                nomorKtp: row['nomor_ktp']?.toString(),
+                jenisKelamin: row['jenis_kelamin']?.toString(),
+                tanggalLahir: tanggalLahirDate != null
+                    ? _formatDate(row['tanggal_lahir'])
+                    : null,
+                alamatAsal: row['alamat_asal']?.toString(),
+                namaKontakDarurat: row['nama_kontak_darurat']?.toString(),
+                teleponKontakDarurat: row['telepon_kontak_darurat']?.toString(),
+                hubunganKontakDarurat: row['hubungan_kontak_darurat']
+                    ?.toString(),
               ),
             );
           }

@@ -27,6 +27,14 @@ class PenghuniRepository extends BaseRepository {
     required DateTime tanggalMasuk,
     required DateTime tanggalKeluar,
     String status = 'aktif',
+    // New fields
+    String? nomorKtp,
+    String? jenisKelamin,
+    DateTime? tanggalLahir,
+    String? alamatAsal,
+    String? namaKontakDarurat,
+    String? teleponKontakDarurat,
+    String? hubunganKontakDarurat,
   }) async {
     logInfo('Creating penghuni', {
       'kamarId': kamarId,
@@ -42,6 +50,32 @@ class PenghuniRepository extends BaseRepository {
       'tanggal_keluar': tanggalKeluar.toIso8601String().split('T').first,
       'status': status,
     };
+
+    // Add new fields if provided
+    if (nomorKtp != null && nomorKtp.isNotEmpty) {
+      payload['nomor_ktp'] = nomorKtp;
+    }
+    if (jenisKelamin != null && jenisKelamin.isNotEmpty) {
+      payload['jenis_kelamin'] = jenisKelamin;
+    }
+    if (tanggalLahir != null) {
+      payload['tanggal_lahir'] = tanggalLahir
+          .toIso8601String()
+          .split('T')
+          .first;
+    }
+    if (alamatAsal != null && alamatAsal.isNotEmpty) {
+      payload['alamat_asal'] = alamatAsal;
+    }
+    if (namaKontakDarurat != null && namaKontakDarurat.isNotEmpty) {
+      payload['nama_kontak_darurat'] = namaKontakDarurat;
+    }
+    if (teleponKontakDarurat != null && teleponKontakDarurat.isNotEmpty) {
+      payload['telepon_kontak_darurat'] = teleponKontakDarurat;
+    }
+    if (hubunganKontakDarurat != null && hubunganKontakDarurat.isNotEmpty) {
+      payload['hubungan_kontak_darurat'] = hubunganKontakDarurat;
+    }
 
     if (sistemPembayaranBulan != null && sistemPembayaranBulan > 0) {
       payload['sistem_pembayaran_bulan'] = sistemPembayaranBulan;
@@ -128,7 +162,7 @@ class PenghuniRepository extends BaseRepository {
     dynamic fallbackQuery = supabase
         .from(RepositoryConstants.penghuniTable)
         .select(
-          'id, user_id, kamar_id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, created_at, users:user_id(id, nama, no_tlpn, username)',
+          'id, user_id, kamar_id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, created_at, nomor_ktp, jenis_kelamin, tanggal_lahir, alamat_asal, nama_kontak_darurat, telepon_kontak_darurat, hubungan_kontak_darurat, users:user_id(id, nama, no_tlpn, username)',
         )
         .eq('kamar_id', kamarId);
 
@@ -158,7 +192,7 @@ class PenghuniRepository extends BaseRepository {
       final raw = await supabase
           .from(RepositoryConstants.penghuniTable)
           .select(
-            'id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, users:user_id(nama, no_tlpn), kamar:kamar_id(no_kamar, harga, kost:kost_id(nama_kost))',
+            'id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, nomor_ktp, jenis_kelamin, tanggal_lahir, alamat_asal, nama_kontak_darurat, telepon_kontak_darurat, hubungan_kontak_darurat, users:user_id(nama, no_tlpn), kamar:kamar_id(no_kamar, harga, kost:kost_id(nama_kost))',
           )
           .eq('id', penghuniId)
           .maybeSingle();
@@ -182,6 +216,14 @@ class PenghuniRepository extends BaseRepository {
           'nomor_kamar': (kamar['no_kamar'] ?? '').toString(),
           'harga': kamar['harga'],
           'nama_kost': (kost['nama_kost'] ?? '').toString(),
+          // New fields
+          'nomor_ktp': map['nomor_ktp']?.toString(),
+          'jenis_kelamin': map['jenis_kelamin']?.toString(),
+          'tanggal_lahir': map['tanggal_lahir']?.toString(),
+          'alamat_asal': map['alamat_asal']?.toString(),
+          'nama_kontak_darurat': map['nama_kontak_darurat']?.toString(),
+          'telepon_kontak_darurat': map['telepon_kontak_darurat']?.toString(),
+          'hubungan_kontak_darurat': map['hubungan_kontak_darurat']?.toString(),
         };
       }
     } catch (e) {
@@ -218,6 +260,15 @@ class PenghuniRepository extends BaseRepository {
             'nomor_kamar': (kamar['no_kamar'] ?? '').toString(),
             'harga': kamar['harga'],
             'nama_kost': kost.name,
+            // New fields
+            'nomor_ktp': row['nomor_ktp']?.toString(),
+            'jenis_kelamin': row['jenis_kelamin']?.toString(),
+            'tanggal_lahir': row['tanggal_lahir']?.toString(),
+            'alamat_asal': row['alamat_asal']?.toString(),
+            'nama_kontak_darurat': row['nama_kontak_darurat']?.toString(),
+            'telepon_kontak_darurat': row['telepon_kontak_darurat']?.toString(),
+            'hubungan_kontak_darurat': row['hubungan_kontak_darurat']
+                ?.toString(),
           };
         }
       }
@@ -297,6 +348,13 @@ class PenghuniRepository extends BaseRepository {
             tanggal_keluar, 
             status, 
             kamar_id,
+            nomor_ktp,
+            jenis_kelamin,
+            tanggal_lahir,
+            alamat_asal,
+            nama_kontak_darurat,
+            telepon_kontak_darurat,
+            hubungan_kontak_darurat,
             users!inner(nama, no_tlpn)
             ''')
           .eq('user_id', userId)
@@ -353,6 +411,14 @@ class PenghuniRepository extends BaseRepository {
         'harga': kamar['harga'],
         'kost_id': kostId,
         'nama_kost': (kost['nama_kost'] ?? '').toString(),
+        // New fields
+        'nomor_ktp': map['nomor_ktp']?.toString(),
+        'jenis_kelamin': map['jenis_kelamin']?.toString(),
+        'tanggal_lahir': map['tanggal_lahir']?.toString(),
+        'alamat_asal': map['alamat_asal']?.toString(),
+        'nama_kontak_darurat': map['nama_kontak_darurat']?.toString(),
+        'telepon_kontak_darurat': map['telepon_kontak_darurat']?.toString(),
+        'hubungan_kontak_darurat': map['hubungan_kontak_darurat']?.toString(),
       };
 
       logInfo('Penghuni profile fetched via fallback');
