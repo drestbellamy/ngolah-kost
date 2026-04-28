@@ -251,6 +251,15 @@ class HomeView extends GetView<HomeController> {
                             ),
                             const SizedBox(height: 12),
                             MenuItem(
+                              icon: Icons.trending_up_outlined,
+                              title: 'Kelola Keuangan',
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF10B981), Color(0xFF059669)],
+                              ),
+                              onTap: controller.navigateToKelolaKeuangan,
+                            ),
+                            const SizedBox(height: 12),
+                            MenuItem(
                               icon: Icons.campaign_outlined,
                               title: 'Kelola Pengumuman',
                               gradient: const LinearGradient(
