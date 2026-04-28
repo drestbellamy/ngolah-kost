@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
 import '../controllers/ringkasan_keuangan_controller.dart';
+import '../widgets/financial_chart.dart';
 
 class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
   const RingkasanKeuanganView({super.key});
@@ -131,6 +132,75 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: 24),
+
+                        // Grafik Keuangan Bulanan
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Grafik Keuangan Bulanan',
+                                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                                ),
+                                const SizedBox(height: 20),
+                                // Chart
+                                Obx(
+                                  () => controller.pemasukanChartData.isNotEmpty
+                                      ? FinancialChart(
+                                          pemasukanData: controller
+                                              .pemasukanChartData
+                                              .toList(),
+                                          pengeluaranData: controller
+                                              .pengeluaranChartData
+                                              .toList(),
+                                          labels: controller.chartLabels.toList(),
+                                        )
+                                      : const SizedBox(
+                                          height: 200,
+                                          child: Center(
+                                            child: CircularProgressIndicator(
+                                              color: Color(0xFF6B8E7A),
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                                const SizedBox(height: 16),
+                                // Legend
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _buildLegend(
+                                      'Pemasukan',
+                                      const Color(0xFF10B981),
+                                    ),
+                                    const SizedBox(width: 24),
+                                    _buildLegend(
+                                      'Pengeluaran',
+                                      const Color(0xFFEF4444),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
                         const SizedBox(height: 24),
 
                         // Total Summary Card
@@ -385,6 +455,20 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLegend(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        Text(label, style: AppTextStyles.body14.colored(AppColors.textSecondary)),
+      ],
     );
   }
 

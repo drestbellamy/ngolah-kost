@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/utils/toast_helper.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +17,11 @@ class DetailKeuanganKostController extends GetxController {
 
   final pemasukanList = <Map<String, dynamic>>[].obs;
   final pengeluaranList = <Map<String, dynamic>>[].obs;
+
+  // Financial summary
+  final totalPemasukan = 0.0.obs;
+  final totalPengeluaran = 0.0.obs;
+  final labaBersih = 0.0.obs;
 
   // Chart data
   final pemasukanChartData = <double>[].obs;
@@ -58,6 +62,9 @@ class DetailKeuanganKostController extends GetxController {
         loadPengeluaranData(),
         loadChartData(),
       ]);
+
+      // Calculate financial summary
+      calculateFinancialSummary();
     } catch (e) {
       errorMessage.value = 'Gagal memuat data: ${e.toString()}';
       print('Error loading keuangan data: $e');
@@ -76,6 +83,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data setelah sinkronisasi
       await loadPembayaranData();
       await loadChartData();
+      calculateFinancialSummary();
 
       ToastHelper.showSuccess(
         'Sinkronisasi pemasukan berhasil',
@@ -301,6 +309,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data
       await loadPengeluaranData();
       await loadChartData();
+      calculateFinancialSummary();
 
       ToastHelper.showSuccess(
         'Pengeluaran berhasil ditambahkan',
@@ -342,6 +351,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data
       await loadPengeluaranData();
       await loadChartData();
+      calculateFinancialSummary();
 
       ToastHelper.showSuccess(
         'Pengeluaran berhasil diupdate',
@@ -370,6 +380,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data
       await loadPengeluaranData();
       await loadChartData();
+      calculateFinancialSummary();
 
       ToastHelper.showSuccess(
         'Pengeluaran berhasil dihapus',
@@ -384,13 +395,40 @@ class DetailKeuanganKostController extends GetxController {
     }
   }
 
+  void calculateFinancialSummary() {
+    // Calculate total pemasukan
+    totalPemasukan.value = pemasukanList.fold<double>(0.0, (sum, item) {
+      final jumlah = item['jumlah'];
+      if (jumlah is int) return sum + jumlah.toDouble();
+      if (jumlah is double) return sum + jumlah;
+      return sum + (double.tryParse(jumlah?.toString() ?? '0') ?? 0.0);
+    });
+
+    // Calculate total pengeluaran
+    totalPengeluaran.value = pengeluaranList.fold<double>(0.0, (sum, item) {
+      final jumlah = item['jumlah'];
+      if (jumlah is int) return sum + jumlah.toDouble();
+      if (jumlah is double) return sum + jumlah;
+      return sum + (double.tryParse(jumlah?.toString() ?? '0') ?? 0.0);
+    });
+
+    // Calculate laba bersih
+    labaBersih.value = totalPemasukan.value - totalPengeluaran.value;
+  }
+
   String formatCurrency(double amount) {
-    final formatter = NumberFormat.currency(
-      locale: 'id_ID',
-      symbol: 'Rp ',
-      decimalDigits: 0,
-    );
-    return formatter.format(amount);
+    final absAmount = amount.abs();
+    String formatted;
+
+    if (absAmount >= 1000000) {
+      formatted = 'Rp ${(absAmount / 1000000).toStringAsFixed(1)} Jt';
+    } else if (absAmount >= 1000) {
+      formatted = 'Rp ${(absAmount / 1000).toStringAsFixed(0)} Rb';
+    } else {
+      formatted = 'Rp ${absAmount.toStringAsFixed(0)}';
+    }
+
+    return amount < 0 ? '-$formatted' : formatted;
   }
 
   String _getMonthName(int month) {
