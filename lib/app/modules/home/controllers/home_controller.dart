@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import '../../kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../../kelola_pengumuman/views/kelola_pengumuman_view.dart';
+import '../../ringkasan_keuangan/bindings/ringkasan_keuangan_binding.dart';
+import '../../ringkasan_keuangan/views/ringkasan_keuangan_view.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/dashboard_repository.dart';
 
@@ -54,6 +56,19 @@ class HomeController extends GetxController {
 
   void navigateToMetodePembayaran() {
     Get.toNamed('/metode-pembayaran');
+  }
+
+  void navigateToKelolaKeuangan() {
+    try {
+      print("Menu Kelola Keuangan ditekan - mencoba navigasi langsung...");
+      Get.to(
+        () => const RingkasanKeuanganView(),
+        binding: RingkasanKeuanganBinding(),
+      );
+    } catch (e) {
+      Get.snackbar('Error Navigasi', 'Gagal membuka halaman: $e');
+      print("Navigasi error: $e");
+    }
   }
 
   void navigateToKelolaPengumuman() {
