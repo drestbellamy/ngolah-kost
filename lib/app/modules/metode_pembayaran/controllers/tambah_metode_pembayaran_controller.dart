@@ -116,14 +116,7 @@ class TambahMetodePembayaranController extends GetxController {
     } catch (e) {
       availableKostList.clear();
       errorMessage.value = _resolveErrorMessage(e, 'Gagal memuat daftar kost.');
-      Get.snackbar(
-        'Error',
-        errorMessage.value ?? 'Gagal memuat daftar kost.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
-      );
+      ToastHelper.showError(errorMessage.value ?? 'Gagal memuat daftar kost.');
     } finally {
       isLoadingKost.value = false;
     }
@@ -194,26 +187,12 @@ class TambahMetodePembayaranController extends GetxController {
 
   void showPilihKostBottomSheet() {
     if (isLoadingKost.value) {
-      Get.snackbar(
-        'Info',
-        'Daftar kost sedang dimuat, tunggu sebentar.',
-        backgroundColor: const Color(0xFF3B82F6),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
-      );
+      ToastHelper.showInfo('Daftar kost sedang dimuat, tunggu sebentar.');
       return;
     }
 
     if (availableKostList.isEmpty) {
-      Get.snackbar(
-        'Info',
-        'Belum ada data kost yang bisa dipilih.',
-        backgroundColor: const Color(0xFF3B82F6),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
-      );
+      ToastHelper.showInfo('Belum ada data kost yang bisa dipilih.');
       return;
     }
 
@@ -509,14 +488,7 @@ class TambahMetodePembayaranController extends GetxController {
         .toList();
 
     if (selectedKostIds.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Pilih minimal satu kost terlebih dahulu',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
-      );
+      ToastHelper.showError('Pilih minimal satu kost terlebih dahulu');
       return;
     }
 
@@ -542,14 +514,7 @@ class TambahMetodePembayaranController extends GetxController {
         );
 
         Get.back(result: true);
-        Get.snackbar(
-          'Berhasil',
-          'Metode pembayaran berhasil diperbarui',
-          backgroundColor: const Color(0xFF10B981),
-          colorText: Colors.white,
-          snackPosition: SnackPosition.TOP,
-          duration: const Duration(seconds: 2),
-        );
+        ToastHelper.showSuccess('Metode pembayaran berhasil diperbarui');
         return;
       }
 
@@ -566,22 +531,12 @@ class TambahMetodePembayaranController extends GetxController {
       }
 
       Get.back(result: true);
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Metode pembayaran berhasil ditambahkan untuk ${selectedKostIds.length} kost',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal menyimpan metode pembayaran'),
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
       );
     } finally {
       isSaving.value = false;
@@ -638,22 +593,10 @@ class TambahMetodePembayaranController extends GetxController {
       selectedQrisImage.value = publicUrl;
       selectedKostList.refresh();
 
-      Get.snackbar(
-        'Berhasil',
-        'Gambar QRIS berhasil diupload',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
-      );
+      ToastHelper.showSuccess('Gambar QRIS berhasil diupload');
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal upload gambar QRIS'),
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
       );
     } finally {
       isUploadingQris.value = false;

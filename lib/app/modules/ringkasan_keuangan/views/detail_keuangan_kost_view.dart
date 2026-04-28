@@ -107,6 +107,68 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
 
                       const SizedBox(height: 24),
 
+                      // Ringkasan Keuangan Kost
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Ringkasan Keuangan Kost',
+                                style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                              ),
+                              const SizedBox(height: 16),
+                              Obx(() => _buildFinancialSummaryItem(
+                                'Pemasukan',
+                                controller.formatCurrency(
+                                  controller.totalPemasukan.value,
+                                ),
+                                const Color(0xFF10B981),
+                                Icons.trending_up,
+                              )),
+                              const SizedBox(height: 12),
+                              Obx(() => _buildFinancialSummaryItem(
+                                'Pengeluaran',
+                                controller.formatCurrency(
+                                  controller.totalPengeluaran.value,
+                                ),
+                                const Color(0xFFEF4444),
+                                Icons.trending_down,
+                              )),
+                              const SizedBox(height: 12),
+                              Obx(() => _buildFinancialSummaryItem(
+                                controller.labaBersih.value >= 0
+                                    ? 'Laba Bersih'
+                                    : 'Rugi Bersih',
+                                '${controller.labaBersih.value >= 0 ? '+' : ''}${controller.formatCurrency(controller.labaBersih.value)}',
+                                controller.labaBersih.value >= 0
+                                    ? const Color(0xFF8B5CF6)
+                                    : const Color(0xFFEF4444),
+                                controller.labaBersih.value >= 0
+                                    ? Icons.savings
+                                    : Icons.warning,
+                              )),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 24),
+
                       // Pemasukan dari Penghuni
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -564,6 +626,42 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
         const SizedBox(width: 8),
         Text(label, style: AppTextStyles.body14.colored(AppColors.textSecondary)),
       ],
+    );
+  }
+
+  Widget _buildFinancialSummaryItem(
+    String label,
+    String value,
+    Color color,
+    IconData icon,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border(left: BorderSide(color: color, width: 5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: color),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: AppTextStyles.subtitle14.colored(AppColors.textSecondary).weighted(FontWeight.w500),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: AppTextStyles.header20.copyWith(fontSize: 28).colored(AppColors.textPrimary),
+          ),
+        ],
+      ),
     );
   }
 }

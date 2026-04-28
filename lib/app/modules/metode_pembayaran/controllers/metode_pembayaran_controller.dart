@@ -123,22 +123,10 @@ class MetodePembayaranController extends GetxController {
       applyFilter();
 
       Get.back();
-      Get.snackbar(
-        'Berhasil',
-        'Metode pembayaran berhasil dihapus',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
-      );
+      ToastHelper.showSuccess('Metode pembayaran berhasil dihapus');
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal menghapus metode pembayaran'),
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
       );
     }
   }
@@ -324,13 +312,8 @@ class MetodePembayaranController extends GetxController {
       );
 
       // Show success message
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Metode pembayaran berhasil ${targetStatus ? 'diaktifkan' : 'dinonaktifkan'}',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 2),
       );
     } catch (e) {
       // Rollback UI if backend update fails.
@@ -338,13 +321,8 @@ class MetodePembayaranController extends GetxController {
       metodePembayaranList.refresh();
       applyFilter();
 
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal memperbarui status metode pembayaran'),
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
       );
     } finally {
       updatingStatusIds.remove(id);
