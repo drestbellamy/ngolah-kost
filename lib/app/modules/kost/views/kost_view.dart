@@ -178,7 +178,61 @@ class KostView extends GetView<KostController> {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: Color(0xFFCBD5E0)),
+                // Three-dot menu
+                PopupMenuButton<String>(
+                  icon: const Icon(
+                    Icons.more_vert,
+                    color: Color(0xFF718096),
+                  ),
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  offset: const Offset(0, 40),
+                  onSelected: (value) {
+                    if (value == 'edit') {
+                      controller.editKost(kost.id);
+                    } else if (value == 'delete') {
+                      controller.deleteKost(kost.id);
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem<String>(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.edit,
+                            size: 20,
+                            color: Color.fromARGB(255, 54, 54, 54),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Edit',
+                            style: AppTextStyles.bodyMedium.colored(const Color(0xFF2D3748)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.delete_outline,
+                            size: 20,
+                            color: Color(0xFFE53E3E),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Delete',
+                            style: AppTextStyles.bodyMedium.colored(const Color(0xFFE53E3E)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -193,44 +247,6 @@ class KostView extends GetView<KostController> {
                 '${kost.roomCount} Rooms',
                 style: AppTextStyles.body12.colored(AppColors.successLight),
               ),
-            ),
-            const SizedBox(height: 12),
-            // Buttons
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => controller.editKost(kost.id),
-                    icon: const Icon(Icons.edit, size: 18),
-                    label: Text('Edit', style: AppTextStyles.buttonMedium),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B8E7F),
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => controller.deleteKost(kost.id),
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    label: Text('Delete', style: AppTextStyles.buttonMedium),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFFE53E3E),
-                      side: const BorderSide(color: Color(0xFFE53E3E)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
