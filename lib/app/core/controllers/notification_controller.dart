@@ -14,6 +14,9 @@ class NotificationController extends GetxController {
 
   final hasTagihanNotification = false.obs;
   final hasInfoNotification = false.obs;
+  
+  // Counter for notification badges
+  final infoNotificationCount = 0.obs;
 
   // Track last seen IDs instead of timestamps
   final RxnString lastSeenPengumumanId = RxnString();
@@ -36,14 +39,19 @@ class NotificationController extends GetxController {
       // TODO: Move to repository when notification repository is created
       final data = await SupabaseService().supabase
           .from('user_notification_status')
-          .select('last_seen_tagihan, last_seen_info')
+          .select('last_seen_tagihan, last_seen_pengumuman, last_seen_peraturan')
           .eq('user_id', userId)
           .maybeSingle();
 
       if (data != null) {
         // Store as ID for simpler comparison
         lastSeenTagihanId.value = data['last_seen_tagihan']?.toString();
-        lastSeenPengumumanId.value = data['last_seen_info']?.toString();
+        lastSeenPengumumanId.value = data['last_seen_pengumuman']?.toString();
+        lastSeenPeraturanId.value = data['last_seen_peraturan']?.toString();
+        
+        print('=== Loaded Last Seen IDs ===');
+        print('Pengumuman: ${lastSeenPengumumanId.value}');
+        print('Peraturan: ${lastSeenPeraturanId.value}');
       }
     } catch (e) {
       print('Error loading last seen IDs: $e');
@@ -119,24 +127,32 @@ class NotificationController extends GetxController {
         return;
       }
 
+      int newCount = 0;
+
       // TODO: Move to PengumumanRepository and PeraturanRepository when methods are available
       // Check for new pengumuman (uses 'tanggal' column)
       final pengumumanList = await SupabaseService().supabase
           .from('pengumuman')
           .select('id, tanggal')
           .eq('kost_id', kostId)
-          .order('tanggal', ascending: false)
-          .limit(1);
+          .order('tanggal', ascending: false);
 
-      print('Latest pengumuman: $pengumumanList');
+      print('All pengumuman: $pengumumanList');
 
-      // If there's any pengumuman and it's different from last seen, show notification
+      // Count new pengumuman
       if (pengumumanList.isNotEmpty) {
-        final latestId = pengumumanList.first['id']?.toString();
-        if (latestId != null && latestId != lastSeenPengumumanId.value) {
-          hasInfoNotification.value = true;
-          print('✅ Info notification SET TO TRUE (new pengumuman)');
-          return;
+        final lastSeenId = lastSeenPengumumanId.value;
+        
+        if (lastSeenId == null) {
+          // If never seen before, count all
+          newCount += pengumumanList.length;
+        } else {
+          // Count until we find the last seen ID
+          for (var item in pengumumanList) {
+            final itemId = item['id']?.toString();
+            if (itemId == lastSeenId) break;
+            newCount++;
+          }
         }
       }
 
@@ -145,25 +161,36 @@ class NotificationController extends GetxController {
           .from('peraturan')
           .select('id, created_at')
           .eq('kost_id', kostId)
-          .order('created_at', ascending: false)
-          .limit(1);
+          .order('created_at', ascending: false);
 
-      print('Latest peraturan: $peraturanList');
+      print('All peraturan: $peraturanList');
 
+      // Count new peraturan
       if (peraturanList.isNotEmpty) {
-        final latestId = peraturanList.first['id']?.toString();
-        if (latestId != null && latestId != lastSeenPeraturanId.value) {
-          hasInfoNotification.value = true;
-          print('✅ Info notification SET TO TRUE (new peraturan)');
-          return;
+        final lastSeenId = lastSeenPeraturanId.value;
+        
+        if (lastSeenId == null) {
+          // If never seen before, count all
+          newCount += peraturanList.length;
+        } else {
+          // Count until we find the last seen ID
+          for (var item in peraturanList) {
+            final itemId = item['id']?.toString();
+            if (itemId == lastSeenId) break;
+            newCount++;
+          }
         }
       }
 
-      hasInfoNotification.value = false;
-      print('❌ Info notification SET TO FALSE');
+      infoNotificationCount.value = newCount;
+      hasInfoNotification.value = newCount > 0;
+      
+      print('✅ Info notification count: $newCount');
+      print('✅ Has info notification: ${hasInfoNotification.value}');
     } catch (e) {
       print('Error checking info notification: $e');
       hasInfoNotification.value = false;
+      infoNotificationCount.value = 0;
     }
   }
 
@@ -224,9 +251,10 @@ class NotificationController extends GetxController {
           .order('tanggal', ascending: false)
           .limit(1);
 
+      String? latestPengumumanId;
       if (pengumumanList.isNotEmpty) {
-        final latestId = pengumumanList.first['id']?.toString();
-        lastSeenPengumumanId.value = latestId;
+        latestPengumumanId = pengumumanList.first['id']?.toString();
+        lastSeenPengumumanId.value = latestPengumumanId;
       }
 
       final peraturanList = await SupabaseService().supabase
@@ -236,22 +264,30 @@ class NotificationController extends GetxController {
           .order('created_at', ascending: false)
           .limit(1);
 
+      String? latestPeraturanId;
       if (peraturanList.isNotEmpty) {
-        final latestId = peraturanList.first['id']?.toString();
-        lastSeenPeraturanId.value = latestId;
+        latestPeraturanId = peraturanList.first['id']?.toString();
+        lastSeenPeraturanId.value = latestPeraturanId;
       }
 
       hasInfoNotification.value = false;
+      infoNotificationCount.value = 0;
+
+      print('=== Marking Info as Seen ===');
+      print('Latest Pengumuman ID: $latestPengumumanId');
+      print('Latest Peraturan ID: $latestPeraturanId');
 
       // TODO: Move to notification repository when created
-      // Store the latest pengumuman ID as last_seen_info
+      // Store BOTH pengumuman and peraturan IDs separately
       await SupabaseService().supabase.from('user_notification_status').upsert({
         'user_id': userId,
-        'last_seen_info':
-            lastSeenPengumumanId.value ?? lastSeenPeraturanId.value,
+        'last_seen_pengumuman': latestPengumumanId,
+        'last_seen_peraturan': latestPeraturanId,
       });
+      
+      print('✅ Successfully saved to database');
     } catch (e) {
-      print('Error marking info as seen: $e');
+      print('❌ Error marking info as seen: $e');
     }
   }
 }
