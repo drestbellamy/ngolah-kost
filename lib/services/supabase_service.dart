@@ -34,6 +34,24 @@ class SupabaseService {
     return LoginUserModel.fromMap(row);
   }
 
+  /// Check if username exists in database
+  ///
+  /// Uses RPC function 'check_username_exists' to bypass RLS
+  ///
+  /// Returns true if username exists, false otherwise
+  Future<bool> checkUsernameExists(String username) async {
+    try {
+      final response = await supabase.rpc(
+        'check_username_exists',
+        params: {'p_username': username},
+      );
+      return response == true;
+    } catch (e) {
+      // If RPC function doesn't exist or error, return true to avoid false positives
+      return true;
+    }
+  }
+
   /// Get kost list with room availability status
   ///
   /// Returns list of kost with calculated availability status based on room occupancy

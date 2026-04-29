@@ -117,11 +117,24 @@ class LoginController extends GetxController {
 
     isLoading.value = true;
     try {
+      // Try to login directly
       final user = await supabaseService.login(username, password);
 
       if (user == null) {
-        usernameError.value = 'Username salah';
-        passwordError.value = 'Password salah';
+        // Login failed - check if username exists
+        final usernameExists = await supabaseService.checkUsernameExists(
+          username,
+        );
+
+        if (!usernameExists) {
+          // Username doesn't exist
+          usernameError.value = 'Username salah';
+          passwordError.value = null;
+        } else {
+          // Username exists, so password must be wrong
+          usernameError.value = null;
+          passwordError.value = 'Password salah';
+        }
         return;
       }
 
