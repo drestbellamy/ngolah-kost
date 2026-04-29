@@ -5,23 +5,39 @@ import '../controllers/notification_controller.dart';
 import '../values/values.dart';
 import 'adaptive_bottom_navbar_wrapper.dart';
 
-class UserBottomNavbar extends StatelessWidget {
+class UserBottomNavbar extends StatefulWidget {
   final int currentIndex;
 
   const UserBottomNavbar({super.key, required this.currentIndex});
 
   @override
+  State<UserBottomNavbar> createState() => _UserBottomNavbarState();
+}
+
+class _UserBottomNavbarState extends State<UserBottomNavbar> {
+  NotificationController? _notificationController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Safely get controller after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && Get.isRegistered<NotificationController>()) {
+        setState(() {
+          _notificationController = Get.find<NotificationController>();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _notificationController = null;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Get notification status without reactive binding
-    bool hasTagihanNotif = false;
-    bool hasInfoNotif = false;
-
-    if (Get.isRegistered<NotificationController>()) {
-      final controller = Get.find<NotificationController>();
-      hasTagihanNotif = controller.hasTagihanNotification.value;
-      hasInfoNotif = controller.hasInfoNotification.value;
-    }
-
     return AdaptiveBottomNavbarWrapper(
       child: Container(
         decoration: BoxDecoration(
@@ -34,71 +50,118 @@ class UserBottomNavbar extends StatelessWidget {
           top: false,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-              _buildNavItem(
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: 'Home',
-                isActive: currentIndex == 0,
-                onTap: () {
-                  if (currentIndex != 0) {
-                    Get.offAllNamed(Routes.userHome);
-                  }
-                },
-              ),
-              _buildNavItem(
-                icon: Icons.receipt_long_outlined,
-                activeIcon: Icons.receipt_long,
-                label: 'Tagihan',
-                isActive: currentIndex == 1,
-                hasNotification: hasTagihanNotif,
-                onTap: () {
-                  if (currentIndex != 1) {
-                    Get.offAllNamed(Routes.userTagihan);
-                  }
-                },
-              ),
-              _buildNavItem(
-                icon: Icons.history_outlined,
-                activeIcon: Icons.history,
-                label: 'Riwayat',
-                isActive: currentIndex == 2,
-                onTap: () {
-                  if (currentIndex != 2) {
-                    Get.offAllNamed(Routes.userHistoryPembayaran);
-                  }
-                },
-              ),
-              _buildNavItem(
-                icon: Icons.notifications_none_outlined,
-                activeIcon: Icons.notifications,
-                label: 'Info',
-                isActive: currentIndex == 3,
-                hasNotification: hasInfoNotif,
-                onTap: () {
-                  if (currentIndex != 3) {
-                    Get.offAllNamed(Routes.userInfo);
-                  }
-                },
-              ),
-              _buildNavItem(
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: 'Profil',
-                isActive: currentIndex == 4,
-                onTap: () {
-                  if (currentIndex != 4) {
-                    Get.offAllNamed(Routes.userProfil);
-                  }
-                },
-              ),
-            ],
+            child: _buildNavbarContent(),
           ),
         ),
       ),
-      ),
+    );
+  }
+
+  Widget _buildNavbarContent() {
+    // If controller not ready, show without notifications
+    if (_notificationController == null) {
+      return _buildNavbarRow(
+        hasTagihanNotif: false,
+        hasInfoNotif: false,
+        infoNotifCount: 0,
+      );
+    }
+
+    // Use Obx for reactive updates with error handling
+    try {
+      return Obx(() {
+        // Check if controller is still valid
+        if (_notificationController == null) {
+          return _buildNavbarRow(
+            hasTagihanNotif: false,
+            hasInfoNotif: false,
+            infoNotifCount: 0,
+          );
+        }
+        
+        return _buildNavbarRow(
+          hasTagihanNotif: _notificationController!.hasTagihanNotification.value,
+          hasInfoNotif: _notificationController!.hasInfoNotification.value,
+          infoNotifCount: _notificationController!.infoNotificationCount.value,
+        );
+      });
+    } catch (e) {
+      // Fallback if Obx fails
+      return _buildNavbarRow(
+        hasTagihanNotif: false,
+        hasInfoNotif: false,
+        infoNotifCount: 0,
+      );
+    }
+  }
+
+  Widget _buildNavbarRow({
+    required bool hasTagihanNotif,
+    required bool hasInfoNotif,
+    required int infoNotifCount,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildNavItem(
+          icon: Icons.home_outlined,
+          activeIcon: Icons.home,
+          label: 'Home',
+          isActive: widget.currentIndex == 0,
+          onTap: () {
+            if (widget.currentIndex != 0) {
+              Get.offAllNamed(Routes.userHome);
+            }
+          },
+        ),
+        _buildNavItem(
+          icon: Icons.receipt_long_outlined,
+          activeIcon: Icons.receipt_long,
+          label: 'Tagihan',
+          isActive: widget.currentIndex == 1,
+          hasNotification: hasTagihanNotif,
+          onTap: () {
+            if (widget.currentIndex != 1) {
+              Get.offAllNamed(Routes.userTagihan);
+            }
+          },
+        ),
+        _buildNavItem(
+          icon: Icons.history_outlined,
+          activeIcon: Icons.history,
+          label: 'Riwayat',
+          isActive: widget.currentIndex == 2,
+          onTap: () {
+            if (widget.currentIndex != 2) {
+              Get.offAllNamed(Routes.userHistoryPembayaran);
+            }
+          },
+        ),
+        _buildNavItem(
+          icon: Icons.notifications_none_outlined,
+          activeIcon: Icons.notifications,
+          label: 'Info',
+          isActive: widget.currentIndex == 3,
+          hasNotification: hasInfoNotif,
+          notificationCount: infoNotifCount,
+          onTap: () {
+            if (widget.currentIndex != 3) {
+              Get.offAllNamed(Routes.userInfo);
+            }
+          },
+        ),
+        _buildNavItem(
+          icon: Icons.person_outline,
+          activeIcon: Icons.person,
+          label: 'Profil',
+          isActive: widget.currentIndex == 4,
+          onTap: () {
+            if (widget.currentIndex != 4) {
+              Get.offAllNamed(Routes.userProfil);
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -109,6 +172,7 @@ class UserBottomNavbar extends StatelessWidget {
     required bool isActive,
     required VoidCallback onTap,
     bool hasNotification = false,
+    int notificationCount = 0,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -135,7 +199,37 @@ class UserBottomNavbar extends StatelessWidget {
                       : const Color(0xFF6C727F),
                   size: 24,
                 ),
-                if (hasNotification)
+                if (hasNotification && notificationCount > 0)
+                  Positioned(
+                    right: -6,
+                    top: -4,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF3B30),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.white, width: 1.5),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 18,
+                        minHeight: 18,
+                      ),
+                      child: Text(
+                        notificationCount > 99 ? '99+' : '$notificationCount',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                else if (hasNotification)
                   Positioned(
                     right: -2,
                     top: 0,

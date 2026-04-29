@@ -43,7 +43,14 @@ class UserInfoController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     loadData();
-    _markInfoAsSeen();
+    
+    // Mark info as seen after the widget tree is fully built
+    // Use Future.delayed to ensure all builds are complete
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!isClosed) {
+        _markInfoAsSeen();
+      }
+    });
 
     // Auto refresh disabled - user can manually refresh with pull-to-refresh
   }
@@ -51,11 +58,16 @@ class UserInfoController extends GetxController with WidgetsBindingObserver {
   void _markInfoAsSeen() {
     // Mark info as seen when page is opened
     if (Get.isRegistered<NotificationController>()) {
-      final notificationController = Get.find<NotificationController>();
-      // Immediately hide badge for better UX
-      notificationController.hasInfoNotification.value = false;
-      // Then update database in background
-      notificationController.markInfoAsSeen();
+      try {
+        final notificationController = Get.find<NotificationController>();
+        // Immediately hide badge for better UX
+        notificationController.hasInfoNotification.value = false;
+        notificationController.infoNotificationCount.value = 0;
+        // Then update database in background
+        notificationController.markInfoAsSeen();
+      } catch (e) {
+        print('Error marking info as seen: $e');
+      }
     }
   }
 
