@@ -4,6 +4,7 @@ import '../../controllers/user_tagihan_controller.dart';
 import '../../../../core/controllers/auth_controller.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../core/values/values.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import 'tagihan_card.dart';
 
 class TagihanListSection extends GetView<UserTagihanController> {
@@ -33,14 +34,14 @@ class TagihanListSection extends GetView<UserTagihanController> {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.all(24.0),
+      padding: context.allPadding(24),
       sliver: Obx(() {
         if (controller.isLoading.value) {
-          return const SliverToBoxAdapter(
+          return SliverToBoxAdapter(
             child: Center(
               child: Padding(
-                padding: EdgeInsets.all(40.0),
-                child: CircularProgressIndicator(color: Color(0xFF6B8E7A)),
+                padding: context.allPadding(40),
+                child: const CircularProgressIndicator(color: Color(0xFF6B8E7A)),
               ),
             ),
           );
@@ -50,32 +51,36 @@ class TagihanListSection extends GetView<UserTagihanController> {
           return SliverToBoxAdapter(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(40.0),
+                padding: context.allPadding(40),
                 child: Column(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
-                      size: 48,
-                      color: Color(0xFFEF4444),
+                      size: context.iconSize(48),
+                      color: const Color(0xFFEF4444),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing(16)),
                     Text(
                       'Terjadi Kesalahan',
-                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
+                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary).copyWith(
+                        fontSize: context.fontSize(18),
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.spacing(8)),
                     Text(
                       controller.errorMessage.value,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.body14.colored(AppColors.textGray),
+                      style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                        fontSize: context.fontSize(14),
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing(16)),
                     ElevatedButton(
                       onPressed: () => controller.loadTagihanData(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6B8E7A),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(context.borderRadius(8)),
                         ),
                       ),
                       child: const Text(
@@ -83,13 +88,13 @@ class TagihanListSection extends GetView<UserTagihanController> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing(12)),
                     OutlinedButton(
                       onPressed: () => _showLogoutDialog(),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(context.borderRadius(8)),
                         ),
                       ),
                       child: const Text(
@@ -108,24 +113,28 @@ class TagihanListSection extends GetView<UserTagihanController> {
           return SliverToBoxAdapter(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(40.0),
+                padding: context.allPadding(40),
                 child: Column(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.check_circle_outline,
-                      size: 48,
-                      color: Color(0xFF10B981),
+                      size: context.iconSize(48),
+                      color: const Color(0xFF10B981),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: context.spacing(16)),
                     Text(
                       'Semua Tagihan Lunas',
-                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
+                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary).copyWith(
+                        fontSize: context.fontSize(18),
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: context.spacing(8)),
                     Text(
                       'Tidak ada tagihan yang perlu dibayar saat ini.',
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.body14.colored(AppColors.textGray),
+                      style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                        fontSize: context.fontSize(14),
+                      ),
                     ),
                   ],
                 ),

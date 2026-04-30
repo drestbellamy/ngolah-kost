@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../values/values.dart';
+import '../utils/responsive_utils.dart';
 import 'adaptive_bottom_navbar_wrapper.dart';
 
 /// Shared bottom navigation bar for all admin pages.
@@ -93,34 +94,38 @@ class AdminBottomNavbar extends StatelessWidget {
     required int index,
     required bool isSelected,
   }) {
-    return GestureDetector(
-      onTap: () => _onTabTapped(index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: 20,
-              color: isSelected ? AppColors.primary : AppColors.textGray,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTextStyles.labelMedium.weighted(
-                isSelected ? FontWeight.w600 : FontWeight.w500
-              ).colored(
-                isSelected ? AppColors.primary : AppColors.textGray
+    return Builder(
+      builder: (context) => GestureDetector(
+        onTap: () => _onTabTapped(index),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: context.padding(16),
+            vertical: context.padding(8),
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.primary.withValues(alpha: 0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(context.borderRadius(16)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: context.iconSize(20),
+                color: isSelected ? AppColors.primary : AppColors.textGray,
               ),
-            ),
-          ],
+              SizedBox(height: context.spacing(4)),
+              Text(
+                label,
+                style: AppTextStyles.labelMedium
+                    .weighted(isSelected ? FontWeight.w600 : FontWeight.w500)
+                    .colored(isSelected ? AppColors.primary : AppColors.textGray)
+                    .copyWith(fontSize: context.fontSize(11)),
+              ),
+            ],
+          ),
         ),
       ),
     );

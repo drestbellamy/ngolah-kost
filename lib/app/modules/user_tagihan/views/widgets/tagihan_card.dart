@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../data/models/tagihan_user_model.dart';
 import '../../controllers/user_tagihan_controller.dart';
 import '../../../../core/values/values.dart';
+import '../../../../core/utils/responsive_utils.dart';
 
 class TagihanCard extends GetView<UserTagihanController> {
   final TagihanUserModel tagihan;
@@ -21,10 +22,10 @@ class TagihanCard extends GetView<UserTagihanController> {
         child: Opacity(
           opacity: hasPendingPayment ? 0.6 : 1.0,
           child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
+            margin: EdgeInsets.only(bottom: context.spacing(16)),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(context.borderRadius(16)),
               border: Border.all(
                 color: hasPendingPayment
                     ? const Color(0xFFF59E0B)
@@ -41,45 +42,49 @@ class TagihanCard extends GetView<UserTagihanController> {
                 ),
               ],
             ),
-            padding: const EdgeInsets.all(20),
+            padding: context.allPadding(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: context.iconSize(40),
+                      height: context.iconSize(40),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(context.borderRadius(10)),
                       ),
                       child: Icon(
                         hasPendingPayment ? Icons.schedule : Icons.receipt_long,
                         color: hasPendingPayment
                             ? const Color(0xFFF59E0B)
                             : const Color(0xFF6B8E7A),
-                        size: 20,
+                        size: context.iconSize(20),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: context.spacing(12)),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Tagihan Bulanan',
-                            style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                            style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
+                              fontSize: context.fontSize(16),
+                            ),
                           ),
                           Text(
                             tagihan.nomorKamar,
-                            style: AppTextStyles.body12.colored(AppColors.textGray),
+                            style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
+                              fontSize: context.fontSize(12),
+                            ),
                           ),
                         ],
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: context.symmetricPadding(
                         horizontal: 10,
                         vertical: 4,
                       ),
@@ -87,46 +92,54 @@ class TagihanCard extends GetView<UserTagihanController> {
                         color: hasPendingPayment
                             ? const Color(0xFFFEF3C7)
                             : const Color(0xFFFEF3C7),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(context.borderRadius(20)),
                       ),
                       child: Text(
                         hasPendingPayment
                             ? 'Menunggu Verifikasi'
                             : tagihan.status,
-                        style: AppTextStyles.body10.weighted(FontWeight.w700).colored(const Color(0xFFD97706)),
+                        style: AppTextStyles.body10.weighted(FontWeight.w700).colored(const Color(0xFFD97706)).copyWith(
+                          fontSize: context.fontSize(10),
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: context.spacing(20)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Periode Penagihan',
-                      style: AppTextStyles.body12.colored(AppColors.textGray),
+                      style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
+                        fontSize: context.fontSize(12),
+                      ),
                     ),
                     Text(
                       tagihan.periodePenagihan,
-                      style: AppTextStyles.subtitle12.colored(AppColors.textPrimary),
+                      style: AppTextStyles.subtitle12.colored(AppColors.textPrimary).copyWith(
+                        fontSize: context.fontSize(12),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing(12)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.calendar_today_outlined,
-                          size: 14,
+                          size: context.iconSize(14),
                           color: AppColors.textGray,
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: context.spacing(4)),
                         Text(
                           'Tanggal Jatuh Tempo',
-                          style: AppTextStyles.body12.colored(AppColors.textGray),
+                          style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
+                            fontSize: context.fontSize(12),
+                          ),
                         ),
                       ],
                     ),
@@ -135,11 +148,13 @@ class TagihanCard extends GetView<UserTagihanController> {
                         'dd MMMM yyyy',
                         'id_ID',
                       ).format(tagihan.jatuhTempo),
-                      style: AppTextStyles.subtitle12.colored(AppColors.errorLight),
+                      style: AppTextStyles.subtitle12.colored(AppColors.errorLight).copyWith(
+                        fontSize: context.fontSize(12),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: context.spacing(20)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -147,8 +162,8 @@ class TagihanCard extends GetView<UserTagihanController> {
                       children: [
                         // Checkbox visual untuk simulasi selection
                         Container(
-                          width: 20,
-                          height: 20,
+                          width: context.iconSize(20),
+                          height: context.iconSize(20),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
@@ -166,23 +181,25 @@ class TagihanCard extends GetView<UserTagihanController> {
                                 : Colors.transparent,
                           ),
                           child: isSelected && !hasPendingPayment
-                              ? const Icon(
+                              ? Icon(
                                   Icons.check,
-                                  size: 14,
+                                  size: context.iconSize(14),
                                   color: Colors.white,
                                 )
                               : hasPendingPayment
-                              ? const Icon(
+                              ? Icon(
                                   Icons.schedule,
-                                  size: 12,
-                                  color: Color(0xFF9CA3AF),
+                                  size: context.iconSize(12),
+                                  color: const Color(0xFF9CA3AF),
                                 )
                               : null,
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: context.spacing(8)),
                         Text(
                           'Jumlah Total',
-                          style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
+                          style: AppTextStyles.subtitle14.colored(AppColors.textPrimary).copyWith(
+                            fontSize: context.fontSize(14),
+                          ),
                         ),
                       ],
                     ),
@@ -192,7 +209,9 @@ class TagihanCard extends GetView<UserTagihanController> {
                         symbol: 'Rp ',
                         decimalDigits: 0,
                       ).format(tagihan.totalBayar),
-                      style: AppTextStyles.header20.colored(AppColors.primary),
+                      style: AppTextStyles.header20.colored(AppColors.primary).copyWith(
+                        fontSize: context.fontSize(20),
+                      ),
                     ),
                   ],
                 ),

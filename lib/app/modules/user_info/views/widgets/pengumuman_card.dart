@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/values/values.dart';
 import '../../../../data/models/pengumuman_model.dart';
 
@@ -10,11 +11,11 @@ class PengumumanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: context.spacing(16)),
+      padding: context.allPadding(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(context.borderRadius(16)),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
@@ -31,47 +32,49 @@ class PengumumanCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: context.allPadding(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.notifications_active_outlined,
-                  color: Color(0xFF6B8E7A),
-                  size: 20,
+                  color: const Color(0xFF6B8E7A),
+                  size: context.iconSize(20),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing(12)),
               Expanded(
                 child: Text(
                   pengumuman.judul,
                   style: AppTextStyles.header16.colored(
                     const Color(0xFF1F2937),
-                  ),
+                  ).copyWith(fontSize: context.fontSize(16)),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing(12)),
           Text(
             pengumuman.isi,
             style: AppTextStyles.body14
                 .colored(const Color(0xFF4B5563))
-                .copyWith(height: 1.5),
+                .copyWith(height: 1.5, fontSize: context.fontSize(14)),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing(16)),
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.calendar_today_outlined,
-                size: 14,
-                color: Color(0xFF9CA3AF),
+                size: context.iconSize(14),
+                color: const Color(0xFF9CA3AF),
               ),
-              const SizedBox(width: 4),
+              SizedBox(width: context.spacing(4)),
               Text(
                 pengumuman.tanggal,
-                style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
+                style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)).copyWith(
+                  fontSize: context.fontSize(12),
+                ),
               ),
             ],
           ),

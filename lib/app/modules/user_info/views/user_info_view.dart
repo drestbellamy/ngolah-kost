@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
+import '../../../core/utils/responsive_utils.dart';
 import '../controllers/user_info_controller.dart';
 import 'widgets/info_content_section.dart';
 import 'widgets/tab_selector.dart';
@@ -32,11 +33,11 @@ class UserInfoView extends GetView<UserInfoController> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
+                    SizedBox(height: context.spacing(20)),
                     const TabSelector(),
-                    const SizedBox(height: 12),
+                    SizedBox(height: context.spacing(12)),
                     const InfoContentSection(),
-                    const SizedBox(height: 100),
+                    SizedBox(height: context.spacing(100)),
                   ],
                 ),
               ),

@@ -5,6 +5,7 @@ import '../controllers/landing_controller.dart';
 import 'landing2_view.dart';
 import 'landing3_view.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/responsive_utils.dart';
 
 class LandingView extends GetView<LandingController> {
   const LandingView({super.key});
@@ -91,8 +92,8 @@ class LandingView extends GetView<LandingController> {
           right: 0,
           bottom: MediaQuery.of(context).size.height * 0.45,
           child: ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              bottom: Radius.circular(40),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(context.borderRadius(40)),
             ),
             child: Stack(
               fit: StackFit.expand,
@@ -113,23 +114,24 @@ class LandingView extends GetView<LandingController> {
           child: Align(
             alignment: Alignment.topRight,
             child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, right: 24.0),
+              padding: EdgeInsets.only(top: context.padding(8.0), right: context.padding(24.0)),
               child: GestureDetector(
                 onTap: controller.navigateToLogin,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding: context.symmetricPadding(
                     horizontal: 16,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(context.borderRadius(16)),
                   ),
                   child: Text(
                     'Lewati',
                     style: AppTextStyles.body14.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
+                      fontSize: context.fontSize(14),
                     ),
                   ),
                 ),
@@ -160,7 +162,12 @@ class LandingView extends GetView<LandingController> {
           child: Container(
             color: Colors
                 .transparent, // Transparan karena belakang sudah putih di cover container dasar
-            padding: const EdgeInsets.fromLTRB(28, 48, 28, 32),
+            padding: EdgeInsets.fromLTRB(
+              context.padding(28),
+              context.padding(48),
+              context.padding(28),
+              context.padding(32),
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -169,12 +176,15 @@ class LandingView extends GetView<LandingController> {
                   style: AppTextStyles.headlineLarge.copyWith(
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF5F8571),
+                    fontSize: context.fontSize(28),
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: context.spacing(16)),
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)),
+                    style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)).copyWith(
+                      fontSize: context.fontSize(16),
+                    ),
                     children: [
                       TextSpan(
                         text:
@@ -204,39 +214,39 @@ class LandingView extends GetView<LandingController> {
                 Row(
                   children: [
                     Container(
-                      width: 28,
-                      height: 8,
+                      width: context.spacing(28),
+                      height: context.spacing(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFF6E947F),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: context.spacing(8)),
                     Container(
-                      width: 8,
-                      height: 8,
+                      width: context.spacing(8),
+                      height: context.spacing(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: context.spacing(8)),
                     Container(
-                      width: 8,
-                      height: 8,
+                      width: context.spacing(8),
+                      height: context.spacing(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: context.spacing(24)),
 
                 // Button
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: context.buttonHeight(56),
                   child: ElevatedButton(
                     onPressed: () {
                       controller.pageController.nextPage(
@@ -247,7 +257,7 @@ class LandingView extends GetView<LandingController> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6E947F),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(context.borderRadius(16)),
                       ),
                       elevation: 0,
                     ),
@@ -258,13 +268,14 @@ class LandingView extends GetView<LandingController> {
                           'Selanjutnya',
                           style: AppTextStyles.buttonLarge.copyWith(
                             color: Colors.white,
+                            fontSize: context.fontSize(16),
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        const Icon(
+                        SizedBox(width: context.spacing(8)),
+                        Icon(
                           Icons.arrow_forward,
                           color: Colors.white,
-                          size: 20,
+                          size: context.iconSize(20),
                         ),
                       ],
                     ),
@@ -311,86 +322,91 @@ class LandingView extends GetView<LandingController> {
     required Color logoBackground,
     required String subtitle,
   }) {
-    return Column(
-      children: [
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: logoBackground,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.25),
-                  width: 1.2,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.50),
-                    blurRadius: 6,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(1),
-              child: Transform.scale(
-                scale: 0.40,
-                child: Lottie.asset(
-                  _landingLottieAsset,
-                  repeat: true,
-                  fit: BoxFit.cover,
-                  frameRate: FrameRate.composition,
-                  options: LottieOptions(enableMergePaths: true),
-                  errorBuilder: (_, __, _) => const Icon(
-                    Icons.home_rounded,
-                    size: 58,
-                    color: Color(0xFF6B8E7A),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        Transform.translate(
-          offset: const Offset(
-            0,
-            -26, // Menambah nilai minus agar lebih dekat
-          ), // Mengurangi jarak antara animasi dan teks
-          child: Column(
+    return Builder(
+      builder: (context) => Column(
+        children: [
+          Stack(
+            alignment: Alignment.center,
             children: [
-              Text(
-                'Ngolah Kost',
-                style: AppTextStyles.headlineLarge.copyWith(
-                  fontFamily: 'Helvetica Neue',
-                  color: titleColor,
-                  letterSpacing: 0.4,
-                  height: 0.1,
-                  shadows: [
-                    Shadow(
+              Container(
+                width: context.iconSize(100),
+                height: context.iconSize(100),
+                decoration: BoxDecoration(
+                  color: logoBackground,
+                  borderRadius: BorderRadius.circular(context.borderRadius(24)),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.25),
+                    width: 1.2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
                       color: Colors.black.withValues(alpha: 0.50),
-                      offset: const Offset(0, 2),
                       blurRadius: 6,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: Text(
-                  subtitle,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.body16.colored(subtitleColor),
+                padding: context.allPadding(1),
+                child: Transform.scale(
+                  scale: 0.40,
+                  child: Lottie.asset(
+                    _landingLottieAsset,
+                    repeat: true,
+                    fit: BoxFit.cover,
+                    frameRate: FrameRate.composition,
+                    options: LottieOptions(enableMergePaths: true),
+                    errorBuilder: (_, __, _) => Icon(
+                      Icons.home_rounded,
+                      size: context.iconSize(58),
+                      color: const Color(0xFF6B8E7A),
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      ],
+          Transform.translate(
+            offset: const Offset(
+              0,
+              -26, // Menambah nilai minus agar lebih dekat
+            ), // Mengurangi jarak antara animasi dan teks
+            child: Column(
+              children: [
+                Text(
+                  'Ngolah Kost',
+                  style: AppTextStyles.headlineLarge.copyWith(
+                    fontFamily: 'Helvetica Neue',
+                    color: titleColor,
+                    letterSpacing: 0.4,
+                    height: 0.1,
+                    fontSize: context.fontSize(28),
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.50),
+                        offset: const Offset(0, 2),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: context.spacing(8)),
+                Padding(
+                  padding: context.horizontalPadding(40),
+                  child: Text(
+                    subtitle,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.body16.colored(subtitleColor).copyWith(
+                      fontSize: context.fontSize(16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

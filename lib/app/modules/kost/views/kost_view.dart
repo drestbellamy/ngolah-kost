@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/text_styles.dart';
 import '../../../core/values/app_colors.dart';
+import '../../../core/utils/responsive_utils.dart';
 import '../controllers/kost_controller.dart';
 import '../models/kost_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
@@ -27,24 +28,37 @@ class KostView extends GetView<KostController> {
             ),
 
             // Map View Button
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => Get.toNamed(Routes.kostMap),
-                  icon: const Icon(Icons.map, size: 20),
-                  label: Text(
-                    'Lihat Peta Lokasi Kost',
-                    style: AppTextStyles.buttonMedium,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6B8E7F),
-                    foregroundColor: Colors.white,
-                    elevation: 2,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+            Builder(
+              builder: (context) => Padding(
+                padding: EdgeInsets.fromLTRB(
+                  context.padding(16),
+                  context.padding(16),
+                  context.padding(16),
+                  0,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () => Get.toNamed(Routes.kostMap),
+                    icon: Icon(Icons.map, size: context.iconSize(20)),
+                    label: Text(
+                      'Lihat Peta Lokasi Kost',
+                      style: AppTextStyles.buttonMedium.copyWith(
+                        fontSize: context.fontSize(14),
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6B8E7F),
+                      foregroundColor: Colors.white,
+                      elevation: 2,
+                      padding: EdgeInsets.symmetric(
+                        vertical: context.padding(14),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(12),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -86,11 +100,13 @@ class KostView extends GetView<KostController> {
 
                   return Obx(
                     () => ListView.builder(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(
+                        ResponsiveUtils.padding(context, 16),
+                      ),
                       itemCount: controller.kostList.length,
                       itemBuilder: (context, index) {
                         final kost = controller.kostList[index];
-                        return _buildKostCard(kost);
+                        return _buildKostCard(context, kost);
                       },
                     ),
                   );
@@ -109,15 +125,15 @@ class KostView extends GetView<KostController> {
     );
   }
 
-  Widget _buildKostCard(KostModel kost) {
+  Widget _buildKostCard(BuildContext context, KostModel kost) {
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.kamar, arguments: kost),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: context.padding(16)),
+        padding: context.allPadding(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(context.borderRadius(16)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -133,18 +149,20 @@ class KostView extends GetView<KostController> {
               children: [
                 // Icon
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: context.allPadding(12),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE8F0ED),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(12),
+                    ),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.apartment,
-                    color: Color(0xFF6B8E7F),
-                    size: 24,
+                    color: const Color(0xFF6B8E7F),
+                    size: context.iconSize(24),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: context.spacing(12)),
                 // Info
                 Expanded(
                   child: Column(
@@ -154,21 +172,25 @@ class KostView extends GetView<KostController> {
                         kost.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.header16.colored(AppColors.textSecondary),
+                        style: AppTextStyles.header16
+                            .colored(AppColors.textSecondary)
+                            .copyWith(fontSize: context.fontSize(16)),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: context.spacing(4)),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.location_on,
-                            size: 14,
+                            size: context.iconSize(14),
                             color: AppColors.textTertiary,
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: context.spacing(4)),
                           Expanded(
                             child: Text(
                               kost.address,
-                              style: AppTextStyles.body12.colored(AppColors.textTertiary),
+                              style: AppTextStyles.body12
+                                  .colored(AppColors.textTertiary)
+                                  .copyWith(fontSize: context.fontSize(12)),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -180,15 +202,18 @@ class KostView extends GetView<KostController> {
                 ),
                 // Three-dot menu
                 PopupMenuButton<String>(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.more_vert,
-                    color: Color(0xFF718096),
+                    color: const Color(0xFF718096),
+                    size: context.iconSize(24),
                   ),
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(12),
+                    ),
                   ),
-                  offset: const Offset(0, 40),
+                  offset: Offset(0, context.padding(40)),
                   onSelected: (value) {
                     if (value == 'edit') {
                       controller.editKost(kost.id);
@@ -196,20 +221,22 @@ class KostView extends GetView<KostController> {
                       controller.deleteKost(kost.id);
                     }
                   },
-                  itemBuilder: (BuildContext context) => [
+                  itemBuilder: (BuildContext menuContext) => [
                     PopupMenuItem<String>(
                       value: 'edit',
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.edit,
-                            size: 20,
-                            color: Color.fromARGB(255, 54, 54, 54),
+                            size: context.iconSize(20),
+                            color: const Color.fromARGB(255, 54, 54, 54),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: context.spacing(12)),
                           Text(
                             'Edit',
-                            style: AppTextStyles.bodyMedium.colored(const Color(0xFF2D3748)),
+                            style: AppTextStyles.bodyMedium
+                                .colored(const Color(0xFF2D3748))
+                                .copyWith(fontSize: context.fontSize(14)),
                           ),
                         ],
                       ),
@@ -218,15 +245,17 @@ class KostView extends GetView<KostController> {
                       value: 'delete',
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.delete_outline,
-                            size: 20,
-                            color: Color(0xFFE53E3E),
+                            size: context.iconSize(20),
+                            color: const Color(0xFFE53E3E),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: context.spacing(12)),
                           Text(
                             'Delete',
-                            style: AppTextStyles.bodyMedium.colored(const Color(0xFFE53E3E)),
+                            style: AppTextStyles.bodyMedium
+                                .colored(const Color(0xFFE53E3E))
+                                .copyWith(fontSize: context.fontSize(14)),
                           ),
                         ],
                       ),
@@ -235,17 +264,22 @@ class KostView extends GetView<KostController> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: context.spacing(12)),
             // Room count
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.padding(8),
+                vertical: context.padding(4),
+              ),
               decoration: BoxDecoration(
                 color: const Color(0xFFE8F5E9),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(context.borderRadius(6)),
               ),
               child: Text(
                 '${kost.roomCount} Rooms',
-                style: AppTextStyles.body12.colored(AppColors.successLight),
+                style: AppTextStyles.body12
+                    .colored(AppColors.successLight)
+                    .copyWith(fontSize: context.fontSize(12)),
               ),
             ),
           ],

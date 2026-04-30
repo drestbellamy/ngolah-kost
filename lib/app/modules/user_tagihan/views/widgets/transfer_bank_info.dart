@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import '../../../../data/models/metode_pembayaran_model.dart';
 
 class TransferBankInfo extends StatelessWidget {
@@ -10,14 +11,14 @@ class TransferBankInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     if (methods.isEmpty) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: context.allPadding(16),
         decoration: BoxDecoration(
           color: const Color(0xFFFEF3C7),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(context.borderRadius(12)),
         ),
-        child: const Text(
+        child: Text(
           'Belum ada rekening bank yang tersedia.',
-          style: TextStyle(fontSize: 12, color: Color(0xFFD97706)),
+          style: TextStyle(fontSize: context.fontSize(12), color: const Color(0xFFD97706)),
         ),
       );
     }
@@ -27,11 +28,11 @@ class TransferBankInfo extends StatelessWidget {
         // Display all available bank accounts
         ...methods.map(
           (metode) => Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(16),
+            margin: EdgeInsets.only(bottom: context.spacing(12)),
+            padding: context.allPadding(16),
             decoration: BoxDecoration(
               color: const Color(0xFFF9FAFB),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(context.borderRadius(12)),
               border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
             child: Column(
@@ -39,47 +40,47 @@ class TransferBankInfo extends StatelessWidget {
               children: [
                 Text(
                   metode.nama,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: TextStyle(
+                    fontSize: context.fontSize(14),
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F2937),
+                    color: const Color(0xFF1F2937),
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: context.spacing(8)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'No. Rekening:',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
+                      style: TextStyle(fontSize: context.fontSize(12), color: const Color(0xFF6B7280)),
                     ),
                     Text(
                       metode.noRek,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: TextStyle(
+                        fontSize: context.fontSize(14),
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF1F2937),
+                        color: const Color(0xFF1F2937),
                       ),
                     ),
                   ],
                 ),
                 if (metode.atasNama != null && metode.atasNama!.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  SizedBox(height: context.spacing(4)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Atas Nama:',
                         style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF6B7280),
+                          fontSize: context.fontSize(12),
+                          color: const Color(0xFF6B7280),
                         ),
                       ),
                       Text(
                         metode.atasNama!,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF1F2937),
+                        style: TextStyle(
+                          fontSize: context.fontSize(12),
+                          color: const Color(0xFF1F2937),
                         ),
                       ),
                     ],

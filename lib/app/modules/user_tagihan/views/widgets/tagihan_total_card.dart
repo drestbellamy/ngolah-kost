@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/user_tagihan_controller.dart';
 import '../../../../core/values/values.dart';
+import '../../../../core/utils/responsive_utils.dart';
 
 class TagihanTotalCard extends GetView<UserTagihanController> {
   const TagihanTotalCard({super.key});
@@ -10,13 +11,18 @@ class TagihanTotalCard extends GetView<UserTagihanController> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      padding: EdgeInsets.fromLTRB(
+        context.spacing(24),
+        context.spacing(24),
+        context.spacing(24),
+        0,
+      ),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        padding: context.symmetricPadding(horizontal: 24, vertical: 20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(context.borderRadius(16)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -30,9 +36,11 @@ class TagihanTotalCard extends GetView<UserTagihanController> {
           children: [
             Text(
               'Total yang dibayar',
-              style: AppTextStyles.subtitle16.colored(AppColors.textGray),
+              style: AppTextStyles.subtitle16.colored(AppColors.textGray).copyWith(
+                fontSize: context.fontSize(16),
+              ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: context.spacing(8)),
             Obx(
               () => Text(
                 NumberFormat.currency(
@@ -40,7 +48,9 @@ class TagihanTotalCard extends GetView<UserTagihanController> {
                   symbol: 'Rp ',
                   decimalDigits: 0,
                 ).format(controller.totalBayarTerpilih),
-                style: AppTextStyles.displaySmall.colored(AppColors.primary),
+                style: AppTextStyles.displaySmall.colored(AppColors.primary).copyWith(
+                  fontSize: context.fontSize(32),
+                ),
               ),
             ),
           ],

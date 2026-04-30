@@ -7,6 +7,7 @@ import 'widgets/ringkasan_keuangan_widget.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/responsive_utils.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -37,17 +38,17 @@ class HomeView extends GetView<HomeController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 24),
+                      SizedBox(height: context.spacing(24)),
 
                       // Verification Alert Card - Only show if there are payments to verify
                       Obx(() {
                         if (controller.menungguVerifikasi.value > 0) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            padding: context.horizontalPadding(24),
                             child: GestureDetector(
                               onTap: controller.navigateToVerifikasi,
                               child: Container(
-                                padding: const EdgeInsets.all(20),
+                                padding: context.allPadding(20),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
                                     colors: [
@@ -55,10 +56,12 @@ class HomeView extends GetView<HomeController> {
                                       Color(0xFFF54900),
                                     ],
                                   ),
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(
+                                    context.borderRadius(16),
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.12),
+                                      color: Colors.black.withValues(alpha: 0.12),
                                       blurRadius: 16,
                                       offset: const Offset(0, 6),
                                     ),
@@ -67,19 +70,21 @@ class HomeView extends GetView<HomeController> {
                                 child: Row(
                                   children: [
                                     Container(
-                                      width: 48,
-                                      height: 48,
+                                      width: context.iconSize(48),
+                                      height: context.iconSize(48),
                                       decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.2),
-                                        borderRadius: BorderRadius.circular(16),
+                                        color: Colors.white.withValues(alpha: 0.2),
+                                        borderRadius: BorderRadius.circular(
+                                          context.borderRadius(16),
+                                        ),
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.info_outline,
                                         color: Colors.white,
-                                        size: 24,
+                                        size: context.iconSize(24),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                    SizedBox(width: context.spacing(12)),
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -87,20 +92,28 @@ class HomeView extends GetView<HomeController> {
                                         children: [
                                           Text(
                                             '${controller.menungguVerifikasi.value} Pembayaran\nPerlu Verifikasi',
-                                            style: AppTextStyles.header18.colored(Colors.white),
+                                            style: AppTextStyles.header18
+                                                .colored(Colors.white)
+                                                .copyWith(
+                                                  fontSize: context.fontSize(18),
+                                                ),
                                           ),
-                                          const SizedBox(height: 4),
+                                          SizedBox(height: context.spacing(4)),
                                           Text(
                                             'Klik untuk memeriksa bukti transfer',
-                                            style: AppTextStyles.body14.colored(AppColors.alertOrangeLight),
+                                            style: AppTextStyles.body14
+                                                .colored(AppColors.alertOrangeLight)
+                                                .copyWith(
+                                                  fontSize: context.fontSize(14),
+                                                ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    const Icon(
+                                    Icon(
                                       Icons.arrow_forward_ios,
                                       color: Colors.white,
-                                      size: 20,
+                                      size: context.iconSize(20),
                                     ),
                                   ],
                                 ),
@@ -112,17 +125,17 @@ class HomeView extends GetView<HomeController> {
                         }
                       }),
 
-                      const SizedBox(height: 20),
+                      SizedBox(height: context.spacing(20)),
 
                       // Dashboard Cards Grid
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: context.horizontalPadding(24),
                         child: Obx(() {
                           if (controller.isLoading.value) {
-                            return const Center(
+                            return Center(
                               child: Padding(
-                                padding: EdgeInsets.all(40.0),
-                                child: CircularProgressIndicator(
+                                padding: context.allPadding(40),
+                                child: const CircularProgressIndicator(
                                   color: Color(0xFF6B8E7A),
                                 ),
                               ),
@@ -142,7 +155,7 @@ class HomeView extends GetView<HomeController> {
                                       iconBgColor: const Color(0xFF6B8E7A),
                                     ),
                                   ),
-                                  const SizedBox(width: 16),
+                                  SizedBox(width: context.spacing(16)),
                                   Expanded(
                                     child: DashboardCard(
                                       icon: Icons.meeting_room_outlined,
@@ -154,7 +167,7 @@ class HomeView extends GetView<HomeController> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: context.spacing(16)),
                               Row(
                                 children: [
                                   Expanded(
@@ -166,7 +179,7 @@ class HomeView extends GetView<HomeController> {
                                       iconBgColor: const Color(0xFFF2A65A),
                                     ),
                                   ),
-                                  const SizedBox(width: 16),
+                                  SizedBox(width: context.spacing(16)),
                                   Expanded(
                                     child: DashboardCard(
                                       icon: Icons.people_outline,
@@ -178,7 +191,7 @@ class HomeView extends GetView<HomeController> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: context.spacing(16)),
                               Row(
                                 children: [
                                   Expanded(
@@ -190,7 +203,7 @@ class HomeView extends GetView<HomeController> {
                                       iconBgColor: const Color(0xFFF59E0B),
                                     ),
                                   ),
-                                  const SizedBox(width: 16),
+                                  SizedBox(width: context.spacing(16)),
                                   Expanded(
                                     child: DashboardCard(
                                       icon: Icons.check_circle_outline,
@@ -207,29 +220,31 @@ class HomeView extends GetView<HomeController> {
                         }),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: context.spacing(24)),
 
                       // Ringkasan Keuangan Widget
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24),
-                        child: RingkasanKeuanganWidget(),
+                      Padding(
+                        padding: context.horizontalPadding(24),
+                        child: const RingkasanKeuanganWidget(),
                       ),
 
-                      const SizedBox(height: 24),
+                      SizedBox(height: context.spacing(24)),
 
                       // Settings Section
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: context.horizontalPadding(24),
                         child: Text(
                           'Pengaturan & Lainnya',
-                          style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
+                          style: AppTextStyles.subtitle18
+                              .colored(AppColors.textPrimary)
+                              .copyWith(fontSize: context.fontSize(18)),
                         ),
                       ),
 
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing(16)),
 
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: context.horizontalPadding(24),
                         child: Column(
                           children: [
                             MenuItem(
@@ -240,7 +255,7 @@ class HomeView extends GetView<HomeController> {
                               ),
                               onTap: controller.navigateToMetodePembayaran,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: context.spacing(12)),
                             MenuItem(
                               icon: Icons.receipt_long_outlined,
                               title: 'Kelola Tagihan',
@@ -249,7 +264,7 @@ class HomeView extends GetView<HomeController> {
                               ),
                               onTap: controller.navigateToKelolaTagihan,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: context.spacing(12)),
                             MenuItem(
                               icon: Icons.trending_up_outlined,
                               title: 'Kelola Keuangan',
@@ -258,7 +273,7 @@ class HomeView extends GetView<HomeController> {
                               ),
                               onTap: controller.navigateToKelolaKeuangan,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: context.spacing(12)),
                             MenuItem(
                               icon: Icons.campaign_outlined,
                               title: 'Kelola Pengumuman',
@@ -267,7 +282,7 @@ class HomeView extends GetView<HomeController> {
                               ),
                               onTap: controller.navigateToKelolaPengumuman,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: context.spacing(12)),
                             MenuItem(
                               icon: Icons.rule_outlined,
                               title: 'Kelola Peraturan',
@@ -280,7 +295,7 @@ class HomeView extends GetView<HomeController> {
                         ),
                       ),
 
-                      const SizedBox(height: 100),
+                      SizedBox(height: context.spacing(100)),
                     ],
                   ),
                 ),
