@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/responsive_utils.dart';
 import '../controllers/user_history_pembayaran_controller.dart';
 import 'widgets/filter_tabs.dart';
 import 'widgets/payment_history_list.dart';
@@ -26,28 +27,30 @@ class UserHistoryPembayaranView
               showBackButton: false,
             ),
           ),
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: TotalPaymentCard(),
-          ),
-          const SizedBox(height: 24),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: FilterTabs(),
-          ),
-          const SizedBox(height: 24),
+          SizedBox(height: context.spacing(24)),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: context.horizontalPadding(24),
+            child: const TotalPaymentCard(),
+          ),
+          SizedBox(height: context.spacing(24)),
+          Padding(
+            padding: context.horizontalPadding(24),
+            child: const FilterTabs(),
+          ),
+          SizedBox(height: context.spacing(24)),
+          Padding(
+            padding: context.horizontalPadding(24),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Riwayat Transaksi',
-                style: AppTextStyles.header18.colored(AppColors.textPrimary),
+                style: AppTextStyles.header18.colored(AppColors.textPrimary).copyWith(
+                  fontSize: context.fontSize(18),
+                ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: context.spacing(16)),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => controller.refreshData(),

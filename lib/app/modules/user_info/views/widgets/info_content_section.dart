@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/values/values.dart';
 import '../../controllers/user_info_controller.dart';
 import '../../../../core/controllers/auth_controller.dart';
@@ -10,13 +11,16 @@ import 'peraturan_card.dart';
 class InfoContentSection extends GetView<UserInfoController> {
   const InfoContentSection({super.key});
 
-  void _showLogoutDialog() {
+  void _showLogoutDialog(BuildContext context) {
     Get.dialog(
       AlertDialog(
-        title: const Text('Keluar'),
-        content: const Text('Apakah Anda yakin ingin keluar?'),
+        title: Text('Keluar', style: TextStyle(fontSize: context.fontSize(18))),
+        content: Text('Apakah Anda yakin ingin keluar?', style: TextStyle(fontSize: context.fontSize(14))),
         actions: [
-          TextButton(onPressed: () => Get.back(), child: Text('Batal', style: AppTextStyles.subtitle14)),
+          TextButton(
+            onPressed: () => Get.back(), 
+            child: Text('Batal', style: AppTextStyles.subtitle14.copyWith(fontSize: context.fontSize(14))),
+          ),
           TextButton(
             onPressed: () async {
               Get.back();
@@ -24,7 +28,7 @@ class InfoContentSection extends GetView<UserInfoController> {
               await authCtrl.clearUser();
               Get.offAllNamed(Routes.login);
             },
-            child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red)),
+            child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red).copyWith(fontSize: context.fontSize(14))),
           ),
         ],
       ),
@@ -48,45 +52,47 @@ class InfoContentSection extends GetView<UserInfoController> {
       }
 
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: context.spacing(24), vertical: context.spacing(8)),
         child: controller.selectedTabIndex.value == 0
-            ? _buildPengumumanList()
-            : _buildPeraturanList(),
+            ? _buildPengumumanList(context)
+            : _buildPeraturanList(context),
       );
     });
   }
 
   Widget _buildErrorState() {
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(Get.context!.spacing(24)),
       child: Center(
         child: Column(
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
-            const SizedBox(height: 16),
+            Icon(Icons.error_outline, size: Get.context!.iconSize(48), color: Colors.red),
+            SizedBox(height: Get.context!.spacing(16)),
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body14.colored(Colors.red),
+              style: AppTextStyles.body14.colored(Colors.red).copyWith(
+                fontSize: Get.context!.fontSize(14),
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: Get.context!.spacing(16)),
             ElevatedButton(
               onPressed: controller.refresh,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B8E7A),
               ),
-              child: const Text('Coba Lagi'),
+              child: Text('Coba Lagi', style: TextStyle(fontSize: Get.context!.fontSize(14))),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: Get.context!.spacing(12)),
             OutlinedButton(
-              onPressed: () => _showLogoutDialog(),
+              onPressed: () => _showLogoutDialog(Get.context!),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Colors.red),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(8)),
                 ),
               ),
-              child: const Text('Keluar', style: TextStyle(color: Colors.red)),
+              child: Text('Keluar', style: TextStyle(color: Colors.red, fontSize: Get.context!.fontSize(14))),
             ),
           ],
         ),
@@ -94,14 +100,16 @@ class InfoContentSection extends GetView<UserInfoController> {
     );
   }
 
-  Widget _buildPengumumanList() {
+  Widget _buildPengumumanList(BuildContext context) {
     if (controller.pengumumanList.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.all(48.0),
+        padding: EdgeInsets.all(context.spacing(48)),
         child: Center(
           child: Text(
             'Belum ada pengumuman',
-            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
+            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)).copyWith(
+              fontSize: context.fontSize(14),
+            ),
           ),
         ),
       );
@@ -119,14 +127,16 @@ class InfoContentSection extends GetView<UserInfoController> {
     );
   }
 
-  Widget _buildPeraturanList() {
+  Widget _buildPeraturanList(BuildContext context) {
     if (controller.peraturanList.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.all(48.0),
+        padding: EdgeInsets.all(context.spacing(48)),
         child: Center(
           child: Text(
             'Belum ada peraturan',
-            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
+            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)).copyWith(
+              fontSize: context.fontSize(14),
+            ),
           ),
         ),
       );
