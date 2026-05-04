@@ -10,6 +10,7 @@ import 'widgets/room_info_card.dart';
 import 'widgets/payment_due_alert.dart';
 import 'widgets/payment_summary_card.dart';
 import 'widgets/contact_management_card.dart';
+import 'widgets/pengaduan_card.dart';
 
 class UserHomeView extends GetView<UserHomeController> {
   const UserHomeView({super.key});
@@ -43,10 +44,7 @@ class UserHomeView extends GetView<UserHomeController> {
                 style: TextStyle(fontSize: context.fontSize(14)),
               ),
               style: ElevatedButton.styleFrom(
-                padding: context.symmetricPadding(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
+                padding: context.symmetricPadding(horizontal: 24, vertical: 12),
               ),
             ),
             SizedBox(height: context.spacing(16)),
@@ -57,10 +55,7 @@ class UserHomeView extends GetView<UserHomeController> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(context.borderRadius(8)),
                 ),
-                padding: context.symmetricPadding(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
+                padding: context.symmetricPadding(horizontal: 24, vertical: 12),
               ),
               child: Text(
                 'Keluar',
@@ -144,6 +139,8 @@ class UserHomeView extends GetView<UserHomeController> {
                           SizedBox(height: context.spacing(24)),
                         ],
                         PaymentSummaryCard(controller: controller),
+                        SizedBox(height: context.spacing(24)),
+                        const PengaduanCard(),
                         SizedBox(height: context.spacing(24)),
                         ContactManagementCard(controller: controller),
                         SizedBox(height: context.spacing(24)),
