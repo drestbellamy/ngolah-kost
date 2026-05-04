@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/utils/toast_helper.dart';
 import '../../controllers/kelola_pengumuman_controller.dart';
 import 'info_banner_widget.dart';
 import 'form_helpers.dart';
@@ -130,8 +131,9 @@ class EditPengumumanDialog extends GetView<KelolaPengumumanController> {
                             : () async {
                                 FocusManager.instance.primaryFocus?.unfocus();
                                 if (!(formKey.currentState?.validate() ??
-                                    false))
+                                    false)) {
                                   return;
+                                }
 
                                 try {
                                   final success = await controller
@@ -142,8 +144,10 @@ class EditPengumumanDialog extends GetView<KelolaPengumumanController> {
                                       );
                                   if (success) {
                                     Get.back();
-                                    Get.snackbar(
-                                      'Berhasil',
+                                    await Future.delayed(
+                                      const Duration(milliseconds: 100),
+                                    );
+                                    ToastHelper.showSuccess(
                                       'Pengumuman berhasil diperbarui',
                                     );
                                   }
