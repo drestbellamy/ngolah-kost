@@ -197,4 +197,78 @@ class PengaduanRepository {
         ? abbreviation.substring(0, 5)
         : abbreviation;
   }
+
+  // ===== ADMIN METHODS =====
+
+  /// Fetch all pengaduan for admin (from all penghuni)
+  /// Uses RPC function to bypass RLS restrictions
+  Future<List<Map<String, dynamic>>> fetchAllPengaduanForAdmin() async {
+    print('=== FETCH ALL PENGADUAN FOR ADMIN ===');
+
+    try {
+      // Call RPC function that has SECURITY DEFINER
+      final response = await _client.rpc('get_all_pengaduan_for_admin');
+
+      print('RPC response: $response');
+
+      if (response == null) {
+        print('RPC returned null');
+        return [];
+      }
+
+      final pengaduanList = (response as List)
+          .map((item) => Map<String, dynamic>.from(item as Map))
+          .toList();
+
+      print('Total pengaduan fetched: ${pengaduanList.length}');
+
+      // Enrich each pengaduan with proper structure for model
+      final enrichedList = <Map<String, dynamic>>[];
+
+      for (final pengaduan in pengaduanList) {
+        print('Processing pengaduan: ${pengaduan['kode_laporan']}');
+        print('  Nama: ${pengaduan['nama_penghuni']}');
+        print('  Kost: ${pengaduan['nama_kost']}');
+
+        // Create enriched structure that matches PengaduanAdminModel
+        final enrichedPengaduan = Map<String, dynamic>.from(pengaduan);
+
+        // Add nested structure for compatibility with model
+        enrichedPengaduan['penghuni_data'] = {
+          'nama': pengaduan['nama_penghuni'] ?? 'Penghuni',
+        };
+        enrichedPengaduan['kost_data'] = {
+          'nama_kost': pengaduan['nama_kost'] ?? '-',
+        };
+
+        enrichedList.add(enrichedPengaduan);
+      }
+
+      print('Total pengaduan enriched: ${enrichedList.length}');
+      return enrichedList;
+    } catch (e) {
+      print('✗ ERROR fetching pengaduan via RPC: $e');
+      print('Stack trace: ${StackTrace.current}');
+
+      // Fallback: return empty list
+      return [];
+    }
+  }
+
+  /// Update status pengaduan by admin
+  Future<void> updateStatusPengaduan({
+    required int idLaporan,
+    required String newStatus,
+  }) async {
+    print('=== UPDATE STATUS PENGADUAN ===');
+    print('ID Laporan: $idLaporan');
+    print('New Status: $newStatus');
+
+    await _client
+        .from('pengaduan')
+        .update({'status': newStatus})
+        .eq('id_laporan', idLaporan);
+
+    print('Status updated successfully');
+  }
 }

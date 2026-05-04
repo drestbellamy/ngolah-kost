@@ -107,7 +107,7 @@ class UserPengaduanDetailView extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
-                                      pengaduan.status.toUpperCase(),
+                                      _getStatusLabel(pengaduan.status),
                                       style: TextStyle(
                                         color: statusColor,
                                         fontWeight: FontWeight.bold,
@@ -424,6 +424,19 @@ class UserPengaduanDetailView extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status.toUpperCase()) {
+      case 'MENUNGGU':
+        return 'Menunggu';
+      case 'DIPROSES':
+        return 'Diproses';
+      case 'SELESAI':
+        return 'Selesai';
+      default:
+        return status;
+    }
   }
 }
 

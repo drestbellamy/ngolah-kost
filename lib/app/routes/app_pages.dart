@@ -49,6 +49,8 @@ import '../modules/user_profil/bindings/user_profil_binding.dart';
 import '../modules/user_profil/views/user_profil_view.dart';
 import '../modules/user_pengaduan/bindings/user_pengaduan_binding.dart';
 import '../modules/user_pengaduan/views/user_pengaduan_view.dart';
+import '../modules/kelola_pengaduan/bindings/kelola_pengaduan_binding.dart';
+import '../modules/kelola_pengaduan/views/kelola_pengaduan_view.dart';
 import '../core/middleware/auth_middleware.dart';
 import '../core/middleware/role_middleware.dart';
 import 'app_routes.dart';
@@ -234,6 +236,12 @@ class AppPages {
       page: () => const UserPengaduanView(),
       binding: UserPengaduanBinding(),
       middlewares: [AuthMiddleware(), UserOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.kelolaPengaduan,
+      page: () => const KelolaPengaduanView(),
+      binding: KelolaPengaduanBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
     ),
   ];
 }

@@ -178,7 +178,7 @@ class UserPengaduanView extends GetView<UserPengaduanController> {
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
-                                      item.status.toUpperCase(),
+                                      _getStatusLabel(item.status),
                                       style: TextStyle(
                                         color: statusColor,
                                         fontWeight: FontWeight.bold,
@@ -274,5 +274,18 @@ class UserPengaduanView extends GetView<UserPengaduanController> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status.toUpperCase()) {
+      case 'MENUNGGU':
+        return 'Menunggu';
+      case 'DIPROSES':
+        return 'Diproses';
+      case 'SELESAI':
+        return 'Selesai';
+      default:
+        return status;
+    }
   }
 }
