@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '../../../../core/values/values.dart';
 
 // Custom formatter untuk currency
 class CurrencyInputFormatter extends TextInputFormatter {
@@ -157,9 +156,8 @@ class _TambahPengeluaranBottomSheetState
       setState(() => amountError = 'Jumlah harus diisi');
       isValid = false;
     } else {
-      final amount = double.tryParse(
-        amountController.text.trim().replaceAll(',', ''),
-      );
+      final cleanAmount = amountController.text.trim().replaceAll(',', '');
+      final amount = int.tryParse(cleanAmount);
       if (amount == null || amount <= 0) {
         setState(
           () =>
@@ -174,14 +172,15 @@ class _TambahPengeluaranBottomSheetState
 
   void _submit() {
     if (_validate()) {
-      // Parse amount dengan menghapus koma dan format
+      // Parse amount dengan menghapus koma dan convert ke integer
       final cleanAmount = amountController.text.trim().replaceAll(',', '');
+      final amountInt = int.parse(cleanAmount); // Parse ke integer
 
       Get.back(
         result: {
           'title': titleController.text.trim(),
           'description': descriptionController.text.trim(),
-          'amount': cleanAmount, // Kirim angka bersih tanpa koma
+          'amount': amountInt, // Kirim sebagai integer, bukan string
           'date': selectedDate,
         },
       );

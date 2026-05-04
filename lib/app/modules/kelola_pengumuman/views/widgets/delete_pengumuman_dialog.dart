@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/utils/toast_helper.dart';
 import '../../controllers/kelola_pengumuman_controller.dart';
-import 'form_helpers.dart';
 
 class DeletePengumumanDialog extends GetView<KelolaPengumumanController> {
   final String pengumumanId;
@@ -89,19 +89,31 @@ class DeletePengumumanDialog extends GetView<KelolaPengumumanController> {
                       onPressed: controller.isSavingPengumuman.value
                           ? null
                           : () async {
+                              // Tutup dialog dulu
+                              Get.back();
+                              
                               try {
+                                // Jalankan delete
                                 final success = await controller
                                     .deletePengumuman(pengumumanId);
+                                
+                                // Delay untuk memastikan dialog tertutup
+                                await Future.delayed(
+                                  const Duration(milliseconds: 100),
+                                );
+                                
+                                // Tampilkan toast sesuai hasil
                                 if (success) {
-                                  Get.back();
-                                  Get.snackbar(
-                                    'Berhasil',
+                                  ToastHelper.showSuccess(
                                     'Pengumuman berhasil dihapus',
                                   );
                                 }
                               } catch (e) {
-                                FormHelpers.showFormException(
-                                  e,
+                                // Tampilkan error toast
+                                await Future.delayed(
+                                  const Duration(milliseconds: 100),
+                                );
+                                ToastHelper.showError(
                                   'Terjadi kesalahan saat menghapus pengumuman',
                                 );
                               }
