@@ -61,7 +61,9 @@ class HomeView extends GetView<HomeController> {
                                   ),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.12),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.12,
+                                      ),
                                       blurRadius: 16,
                                       offset: const Offset(0, 6),
                                     ),
@@ -73,7 +75,9 @@ class HomeView extends GetView<HomeController> {
                                       width: context.iconSize(48),
                                       height: context.iconSize(48),
                                       decoration: BoxDecoration(
-                                        color: Colors.white.withValues(alpha: 0.2),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.2,
+                                        ),
                                         borderRadius: BorderRadius.circular(
                                           context.borderRadius(16),
                                         ),
@@ -95,16 +99,22 @@ class HomeView extends GetView<HomeController> {
                                             style: AppTextStyles.header18
                                                 .colored(Colors.white)
                                                 .copyWith(
-                                                  fontSize: context.fontSize(18),
+                                                  fontSize: context.fontSize(
+                                                    18,
+                                                  ),
                                                 ),
                                           ),
                                           SizedBox(height: context.spacing(4)),
                                           Text(
                                             'Klik untuk memeriksa bukti transfer',
                                             style: AppTextStyles.body14
-                                                .colored(AppColors.alertOrangeLight)
+                                                .colored(
+                                                  AppColors.alertOrangeLight,
+                                                )
                                                 .copyWith(
-                                                  fontSize: context.fontSize(14),
+                                                  fontSize: context.fontSize(
+                                                    14,
+                                                  ),
                                                 ),
                                           ),
                                         ],
@@ -290,6 +300,15 @@ class HomeView extends GetView<HomeController> {
                                 colors: [Color(0xFF8FAA9F), Color(0xFF6B8E7A)],
                               ),
                               onTap: controller.navigateToKelolaPeraturan,
+                            ),
+                            SizedBox(height: context.spacing(12)),
+                            MenuItem(
+                              icon: Icons.report_problem_outlined,
+                              title: 'Kelola Pengaduan',
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                              ),
+                              onTap: controller.navigateToKelolaPengaduan,
                             ),
                           ],
                         ),

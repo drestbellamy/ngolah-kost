@@ -88,6 +88,10 @@ class HomeController extends GetxController {
     Get.toNamed('/kelola-peraturan');
   }
 
+  void navigateToKelolaPengaduan() {
+    Get.toNamed('/kelola-pengaduan');
+  }
+
   void navigateToVerifikasi() {
     Get.toNamed('/kelola-tagihan');
   }
