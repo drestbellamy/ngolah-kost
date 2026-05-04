@@ -283,10 +283,14 @@ class DetailKeuanganKostController extends GetxController {
   }
 
   // Helper method untuk parsing amount yang robust
-  double _parseAmount(dynamic amountData) {
+  int _parseAmount(dynamic amountData) {
+    // Jika sudah integer, langsung return
+    if (amountData is int) return amountData;
+    
+    // Jika string atau tipe lain, parse ke integer
     final amountString = amountData?.toString() ?? '0';
     final cleanAmountString = amountString.replaceAll(RegExp(r'[^0-9]'), '');
-    return double.tryParse(cleanAmountString) ?? 0;
+    return int.tryParse(cleanAmountString) ?? 0;
   }
 
   void addPengeluaran(Map<String, dynamic> data) async {
@@ -297,11 +301,11 @@ class DetailKeuanganKostController extends GetxController {
       final title = data['title'] as String;
       final description = data['description'] as String;
 
-      // Simpan ke database
+      // Simpan ke database (convert int ke double untuk repository)
       await _keuanganRepo.createPengeluaran(
         kostId: kostId.value,
         nama: title,
-        jumlah: amount,
+        jumlah: amount.toDouble(),
         tanggal: date,
         deskripsi: description,
       );
@@ -338,12 +342,12 @@ class DetailKeuanganKostController extends GetxController {
         throw Exception('ID pengeluaran tidak ditemukan');
       }
 
-      // Update di database
+      // Update di database (convert int ke double untuk repository)
       await _keuanganRepo.updatePengeluaran(
         id: pengeluaranId,
         kostId: kostId.value,
         nama: title,
-        jumlah: amount,
+        jumlah: amount.toDouble(),
         tanggal: date,
         deskripsi: description,
       );
