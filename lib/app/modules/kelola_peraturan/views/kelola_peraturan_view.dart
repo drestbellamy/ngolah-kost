@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../../../core/values/values.dart';
 import '../controllers/kelola_peraturan_controller.dart';
 
@@ -542,8 +543,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                                     .tambahKategori();
                                 if (success) {
                                   Get.back();
-                                  Get.snackbar(
-                                    'Berhasil',
+                                  // Delay sedikit agar dialog tertutup dulu
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 100),
+                                  );
+                                  ToastHelper.showSuccess(
                                     'Peraturan berhasil ditambahkan',
                                   );
                                 }
@@ -704,8 +708,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                                 );
                                 if (success) {
                                   Get.back();
-                                  Get.snackbar(
-                                    'Berhasil',
+                                  // Delay sedikit agar dialog tertutup dulu
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 100),
+                                  );
+                                  ToastHelper.showSuccess(
                                     'Peraturan berhasil diperbarui',
                                   );
                                 }
@@ -818,8 +825,11 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                                 );
                                 if (success) {
                                   Get.back();
-                                  Get.snackbar(
-                                    'Berhasil',
+                                  // Delay sedikit agar dialog tertutup dulu
+                                  await Future.delayed(
+                                    const Duration(milliseconds: 100),
+                                  );
+                                  ToastHelper.showSuccess(
                                     'Peraturan berhasil dihapus',
                                   );
                                 }
