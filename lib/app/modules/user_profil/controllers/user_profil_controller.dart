@@ -275,6 +275,7 @@ class UserProfilController extends GetxController {
                         Get.back();
                         final authCtrl = Get.find<AuthController>();
                         await authCtrl.clearUser();
+                        ToastHelper.showInfo('Anda telah keluar', title: 'Logout');
                         Get.offAllNamed(Routes.login);
                       },
                       style: ElevatedButton.styleFrom(
