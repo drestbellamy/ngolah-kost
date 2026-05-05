@@ -180,25 +180,53 @@ class ProfilController extends GetxController {
       // Show confirmation dialog
       final confirmed = await Get.dialog<bool>(
         AlertDialog(
+          backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: const Text('Hapus Foto Profil'),
-          content: const Text('Apakah Anda yakin ingin menghapus foto profil?'),
+          title: const Text(
+            'Hapus Foto Profil',
+            style: TextStyle(
+              fontFamily: 'Helvetica Neue',
+              fontWeight: FontWeight.bold,
+              letterSpacing: -0.5,
+            ),
+          ),
+          content: const Text(
+            'Apakah Anda yakin ingin menghapus foto profil?',
+            style: TextStyle(
+              fontFamily: 'SF Pro',
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Get.back(result: false),
-              child: const Text('Batal', style: TextStyle(color: Colors.grey)),
+              child: const Text(
+                'Batal',
+                style: TextStyle(
+                  fontFamily: 'SF Pro',
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () => Get.back(result: true),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
+                elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+              child: const Text(
+                'Hapus',
+                style: TextStyle(
+                  fontFamily: 'SF Pro',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),

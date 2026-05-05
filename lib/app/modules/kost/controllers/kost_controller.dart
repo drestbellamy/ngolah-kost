@@ -90,7 +90,7 @@ class KostController extends GetxController {
   void deleteKost(String id) {
     Get.dialog(
       Dialog(
-        backgroundColor: const Color(0xFFF0F4F3),
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -104,9 +104,11 @@ class KostController extends GetxController {
                   const Text(
                     'Hapus Unit',
                     style: TextStyle(
+                      fontFamily: 'Helvetica Neue',
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2D3748),
+                      letterSpacing: -0.5,
                     ),
                   ),
                   IconButton(
@@ -116,6 +118,17 @@ class KostController extends GetxController {
                     constraints: const BoxConstraints(),
                   ),
                 ],
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Apakah Anda yakin ingin menghapus unit kost ini? Tindakan ini tidak dapat dibatalkan.',
+                style: TextStyle(
+                  fontFamily: 'SF Pro',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF6B7280),
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 24),
               Row(
@@ -135,6 +148,7 @@ class KostController extends GetxController {
                       child: const Text(
                         'Batal',
                         style: TextStyle(
+                          fontFamily: 'SF Pro',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -157,6 +171,7 @@ class KostController extends GetxController {
                       child: const Text(
                         'Hapus',
                         style: TextStyle(
+                          fontFamily: 'SF Pro',
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
