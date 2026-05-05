@@ -4,6 +4,7 @@ import 'package:lottie/lottie.dart';
 import '../controllers/login_controller.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/responsive_utils.dart';
 
 class LoginView extends GetView<LoginController> {
   const LoginView({super.key});
@@ -12,11 +13,9 @@ class LoginView extends GetView<LoginController> {
   Widget build(BuildContext context) {
     const double logoVerticalOffset = -55;
     const double logoBottomPadding = 0;
-    const double logoSize = 100;
     const double lottieScale = 0.40;
     const double textLogoGap = -26;
-    final double imageHeightRatio =
-        0.48; // Dikurangi lagi agar card putih lebih tinggi untuk menghindari swipe gesture
+    final double imageHeightRatio = 0.48;
 
     const Color fieldBorderColor = Color(0xFF6B8E7A);
     const Color fieldFocusColor = Color(0xFF6B8E7A);
@@ -24,12 +23,13 @@ class LoginView extends GetView<LoginController> {
     const Color fieldHintColor = Color(0xFFAAAAAA);
     const Color fieldTextColor = Color(0xFF333333);
     const Color fieldFillColor = Colors.white;
-    const double fieldBorderRadius = 20;
-    const double fieldBorderWidth = 1.4;
-    const double fieldFocusWidth = 2.4;
-    const double fieldVertPadding = 15;
-    const double fieldHorizPadding = 12;
-    const double usernamePasswordFieldGap = 18;
+    final double fieldBorderRadius = context.borderRadius(20);
+    final double fieldBorderWidth = context.isSmallMobile ? 1.2 : 1.4;
+    final double fieldFocusWidth = context.isSmallMobile ? 2.0 : 2.4;
+    final double fieldVertPadding = context.padding(15);
+    final double fieldHorizPadding = context.padding(12);
+    final double usernamePasswordFieldGap = context.spacing(18);
+    final double logoSize = context.iconSize(100);
 
     return KeyboardDismissible(
       child: Scaffold(
@@ -193,7 +193,12 @@ class LoginView extends GetView<LoginController> {
                         child: SingleChildScrollView(
                           keyboardDismissBehavior:
                               ScrollViewKeyboardDismissBehavior.onDrag,
-                          padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+                          padding: EdgeInsets.fromLTRB(
+                            context.padding(24),
+                            context.padding(28),
+                            context.padding(24),
+                            0,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -202,20 +207,22 @@ class LoginView extends GetView<LoginController> {
                                 'Selamat Datang',
                                 style: AppTextStyles.headlineSmall
                                     .weighted(FontWeight.w800)
-                                    .colored(const Color(0xFF4A7A5A)),
+                                    .colored(const Color(0xFF4A7A5A))
+                                    .copyWith(fontSize: context.fontSize(24)),
                               ),
-                              const SizedBox(height: 6),
+                              SizedBox(height: context.spacing(6)),
                               Text(
                                 'Silakan masuk ke akun Anda untuk melanjutkan',
-                                style: AppTextStyles.body14.colored(
-                                  const Color(0xFF9E9E9E),
-                                ),
+                                style: AppTextStyles.body14
+                                    .colored(const Color(0xFF9E9E9E))
+                                    .copyWith(fontSize: context.fontSize(14)),
                               ),
-                              const SizedBox(height: 30),
+                              SizedBox(height: context.spacing(30)),
 
                               // Username field
                               Obx(
                                 () => _buildTextField(
+                                  context: context,
                                   textController: controller.usernameController,
                                   hintText: 'Username',
                                   icon: Icons.person_outline_rounded,
@@ -233,11 +240,12 @@ class LoginView extends GetView<LoginController> {
                                   horizPadding: fieldHorizPadding,
                                 ),
                               ),
-                              const SizedBox(height: usernamePasswordFieldGap),
+                              SizedBox(height: usernamePasswordFieldGap),
 
                               // Password field
                               Obx(
                                 () => _buildTextField(
+                                  context: context,
                                   textController: controller.passwordController,
                                   hintText: 'Password',
                                   icon: Icons.lock_outline_rounded,
@@ -261,15 +269,15 @@ class LoginView extends GetView<LoginController> {
                                 ),
                               ),
 
-                              const SizedBox(height: 20),
+                              SizedBox(height: context.spacing(20)),
 
                               // Remember Me checkbox
                               Obx(
                                 () => Row(
                                   children: [
                                     SizedBox(
-                                      width: 24,
-                                      height: 24,
+                                      width: context.iconSize(24),
+                                      height: context.iconSize(24),
                                       child: Checkbox(
                                         value: controller.rememberMe.value,
                                         onChanged: (value) =>
@@ -278,32 +286,34 @@ class LoginView extends GetView<LoginController> {
                                         checkColor: Colors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            4,
+                                            context.borderRadius(4),
                                           ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 12),
+                                    SizedBox(width: context.spacing(12)),
                                     GestureDetector(
                                       onTap: controller.toggleRememberMe,
                                       child: Text(
                                         'Ingatkan saya',
-                                        style: AppTextStyles.body14.colored(
-                                          const Color(0xFF6B7280),
-                                        ),
+                                        style: AppTextStyles.body14
+                                            .colored(const Color(0xFF6B7280))
+                                            .copyWith(
+                                              fontSize: context.fontSize(14),
+                                            ),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
 
-                              const SizedBox(height: 35),
+                              SizedBox(height: context.spacing(35)),
 
                               // Login button
                               Obx(
                                 () => SizedBox(
                                   width: double.infinity,
-                                  height: 56,
+                                  height: context.buttonHeight(56),
                                   child: ElevatedButton(
                                     onPressed: controller.isLoading.value
                                         ? null
@@ -314,15 +324,17 @@ class LoginView extends GetView<LoginController> {
                                         0xFF4E7B63,
                                       ).withValues(alpha: 0.6),
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(
+                                          context.borderRadius(16),
+                                        ),
                                       ),
                                       elevation: 0,
                                     ),
                                     child: controller.isLoading.value
-                                        ? const SizedBox(
-                                            width: 24,
-                                            height: 24,
-                                            child: CircularProgressIndicator(
+                                        ? SizedBox(
+                                            width: context.iconSize(24),
+                                            height: context.iconSize(24),
+                                            child: const CircularProgressIndicator(
                                               strokeWidth: 2.5,
                                               color: Colors.white,
                                             ),
@@ -337,13 +349,14 @@ class LoginView extends GetView<LoginController> {
                                                     .copyWith(
                                                       color: Colors.white,
                                                       letterSpacing: 0.4,
+                                                      fontSize: context.fontSize(16),
                                                     ),
                                               ),
-                                              const SizedBox(width: 8),
-                                              const Icon(
+                                              SizedBox(width: context.spacing(8)),
+                                              Icon(
                                                 Icons.arrow_forward_rounded,
                                                 color: Colors.white,
-                                                size: 20,
+                                                size: context.iconSize(20),
                                               ),
                                             ],
                                           ),
@@ -351,9 +364,7 @@ class LoginView extends GetView<LoginController> {
                                 ),
                               ),
 
-                              const SizedBox(
-                                height: 80,
-                              ), // Padding bottom lebih besar untuk menghindari navbar sistem dan swipe gesture
+                              SizedBox(height: context.spacing(80)),
                             ],
                           ),
                         ),
@@ -370,6 +381,7 @@ class LoginView extends GetView<LoginController> {
   }
 
   Widget _buildTextField({
+    required BuildContext context,
     required TextEditingController textController,
     required String hintText,
     required IconData icon,
@@ -392,19 +404,27 @@ class LoginView extends GetView<LoginController> {
     return TextField(
       controller: textController,
       obscureText: obscureText,
-      style: AppTextStyles.body14.copyWith(fontSize: 15, color: textColor),
+      style: AppTextStyles.body14.copyWith(
+        fontSize: context.fontSize(15),
+        color: textColor,
+      ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: AppTextStyles.body14.copyWith(
           color: hintColor,
-          fontSize: 15,
+          fontSize: context.fontSize(15),
         ),
         errorText: errorText,
         errorStyle: AppTextStyles.body12.copyWith(
           color: Colors.red,
           fontWeight: FontWeight.w500,
+          fontSize: context.fontSize(12),
         ),
-        prefixIcon: Icon(icon, color: iconColor, size: 22),
+        prefixIcon: Icon(
+          icon,
+          color: iconColor,
+          size: context.iconSize(22),
+        ),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
@@ -412,7 +432,7 @@ class LoginView extends GetView<LoginController> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   color: iconColor,
-                  size: 22,
+                  size: context.iconSize(22),
                 ),
                 onPressed: onTogglePassword,
               )

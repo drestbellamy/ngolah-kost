@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../values/values.dart';
+import '../utils/responsive_utils.dart';
 
 class CustomHeader extends StatelessWidget {
   final String title;
@@ -41,23 +42,23 @@ class CustomHeader extends StatelessWidget {
                 image: AssetImage(backgroundImage!),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
-                  Colors.black.withOpacity(0.10),
+                  Colors.black.withValues(alpha: 0.10),
                   BlendMode.darken,
                 ),
               )
             : null,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(context.borderRadius(24)),
+          bottomRight: Radius.circular(context.borderRadius(24)),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 25,
             offset: const Offset(0, 20),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 8),
           ),
@@ -68,25 +69,25 @@ class CustomHeader extends StatelessWidget {
           // Decorative circles
           if (backgroundImage == null) ...[
             Positioned(
-              right: -120,
-              top: -180,
+              right: context.isSmallMobile ? -100 : -120,
+              top: context.isSmallMobile ? -150 : -180,
               child: Container(
-                width: 256,
-                height: 256,
+                width: context.isSmallMobile ? 200 : 256,
+                height: context.isSmallMobile ? 200 : 256,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
               ),
             ),
             Positioned(
-              left: -80,
-              bottom: -100,
+              left: context.isSmallMobile ? -60 : -80,
+              bottom: context.isSmallMobile ? -80 : -100,
               child: Container(
-                width: 192,
-                height: 192,
+                width: context.isSmallMobile ? 150 : 192,
+                height: context.isSmallMobile ? 150 : 192,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -96,10 +97,10 @@ class CustomHeader extends StatelessWidget {
           // Content
           Padding(
             padding: EdgeInsets.fromLTRB(
-              24, 
-              MediaQuery.of(context).padding.top + 24, 
-              24, 
-              30
+              context.padding(24),
+              MediaQuery.of(context).padding.top + context.padding(24),
+              context.padding(24),
+              context.padding(30),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,17 +111,19 @@ class CustomHeader extends StatelessWidget {
                       GestureDetector(
                         onTap: onBackPressed ?? () => Get.back(),
                         child: Container(
-                          width: 40,
-                          height: 40,
-                          margin: const EdgeInsets.only(right: 16),
+                          width: context.iconSize(40),
+                          height: context.iconSize(40),
+                          margin: EdgeInsets.only(right: context.spacing(16)),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(
+                              context.borderRadius(12),
+                            ),
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.arrow_back,
                             color: Colors.white,
-                            size: 20,
+                            size: context.iconSize(20),
                           ),
                         ),
                       ),
@@ -134,15 +137,18 @@ class CustomHeader extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: AppTextStyles.headlineSmall
                                 .weighted(FontWeight.w700)
-                                .colored(Colors.white),
+                                .colored(Colors.white)
+                                .copyWith(fontSize: context.fontSize(20)),
                           ),
-                          const SizedBox(height: 4),
+                          SizedBox(height: context.spacing(4)),
                           if (subtitleWidget != null)
                             subtitleWidget!
                           else if (subtitle != null)
                             Text(
                               subtitle!,
-                              style: AppTextStyles.subtitle14.colored(AppColors.primaryLight),
+                              style: AppTextStyles.subtitle14
+                                  .colored(AppColors.primaryLight)
+                                  .copyWith(fontSize: context.fontSize(14)),
                             ),
                         ],
                       ),
@@ -151,7 +157,7 @@ class CustomHeader extends StatelessWidget {
                   ],
                 ),
                 if (progressIndicator != null) ...[
-                  const SizedBox(height: 16),
+                  SizedBox(height: context.spacing(16)),
                   progressIndicator!,
                 ],
               ],

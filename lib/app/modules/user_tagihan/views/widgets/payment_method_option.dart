@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/values/values.dart';
+import '../../../../core/utils/responsive_utils.dart';
 
 class PaymentMethodOption extends StatelessWidget {
   final String title;
@@ -27,7 +28,7 @@ class PaymentMethodOption extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(context.borderRadius(16)),
           border: Border.all(
             color: isSelected
                 ? const Color(0xFF6B8E7A)
@@ -44,22 +45,24 @@ class PaymentMethodOption extends StatelessWidget {
                 ]
               : [],
         ),
-        padding: const EdgeInsets.all(20),
+        padding: context.allPadding(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, color: const Color(0xFFFBBF24)),
-                const SizedBox(width: 12),
+                Icon(icon, color: const Color(0xFFFBBF24), size: context.iconSize(24)),
+                SizedBox(width: context.spacing(12)),
                 Text(
                   title,
-                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                  style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
+                    fontSize: context.fontSize(16),
+                  ),
                 ),
               ],
             ),
             if (isExpanded && expandedContent != null) ...[
-              const SizedBox(height: 16),
+              SizedBox(height: context.spacing(16)),
               expandedContent!,
             ],
           ],

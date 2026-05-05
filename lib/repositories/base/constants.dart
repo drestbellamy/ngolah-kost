@@ -30,6 +30,8 @@ class RepositoryConstants {
   static const String getPenghuniByKamarSecureRpc =
       'get_penghuni_by_kamar_secure';
   static const String getUserProfileDataRpc = 'get_user_profile_data';
+  static const String getAllPengaduanForAdminRpc =
+      'get_all_pengaduan_for_admin';
 
   // Status Values
   static const String statusAktif = 'aktif';

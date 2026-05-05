@@ -25,6 +25,7 @@ class KelolaTagihanController extends GetxController {
   final searchController = TextEditingController();
   final selectedFilter = 'semua'.obs;
   final selectedMonthKey = 'semua'.obs;
+  final selectedKostId = 'semua'.obs; // Filter kost
   final searchQuery = ''.obs;
   final tagihanList = <TagihanModel>[].obs;
   final filteredTagihanList = <TagihanModel>[].obs;
@@ -116,6 +117,11 @@ class KelolaTagihanController extends GetxController {
     _applyFilters();
   }
 
+  void changeKostFilter(String kostId) {
+    selectedKostId.value = kostId;
+    _applyFilters();
+  }
+
   void searchTagihan(String query) {
     searchQuery.value = query.trim().toLowerCase();
     _applyFilters();
@@ -156,19 +162,43 @@ class KelolaTagihanController extends GetxController {
     return _formatPeriode(month, year);
   }
 
+  /// Get list of unique kost from tagihan data
+  List<Map<String, String>> get kostFilterList {
+    final kostMap = <String, String>{};
+    for (final tagihan in tagihanList) {
+      final kostName = tagihan.namaKost;
+      if (kostName.isNotEmpty && kostName != '-') {
+        kostMap[kostName] = kostName; // Using name as both key and value
+      }
+    }
+
+    final sorted =
+        kostMap.entries.map((e) => {'id': e.key, 'name': e.value}).toList()
+          ..sort((a, b) => a['name']!.compareTo(b['name']!));
+
+    return sorted;
+  }
+
+  String getKostFilterLabel(String kostId) {
+    if (kostId == 'semua') return 'Semua Kost';
+    return kostId;
+  }
+
   void _applyFilters() {
     final query = searchQuery.value;
     final filter = selectedFilter.value;
+    final kostFilter = selectedKostId.value;
 
     final result = tagihanList.where((tagihan) {
       final matchMonth = _matchesSelectedMonth(tagihan);
       final matchFilter = filter == 'semua' || tagihan.status == filter;
+      final matchKost = kostFilter == 'semua' || tagihan.namaKost == kostFilter;
       final matchQuery =
           query.isEmpty ||
           tagihan.namaPenghuni.toLowerCase().contains(query) ||
           tagihan.nomorKamar.toLowerCase().contains(query) ||
           tagihan.namaKost.toLowerCase().contains(query);
-      return matchMonth && matchFilter && matchQuery;
+      return matchMonth && matchFilter && matchKost && matchQuery;
     }).toList();
 
     filteredTagihanList.assignAll(result);

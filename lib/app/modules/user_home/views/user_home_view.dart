@@ -3,46 +3,66 @@ import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/responsive_utils.dart';
 import '../../../routes/app_routes.dart';
 import '../controllers/user_home_controller.dart';
 import 'widgets/room_info_card.dart';
 import 'widgets/payment_due_alert.dart';
 import 'widgets/payment_summary_card.dart';
 import 'widgets/contact_management_card.dart';
+import 'widgets/pengaduan_card.dart';
 
 class UserHomeView extends GetView<UserHomeController> {
   const UserHomeView({super.key});
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: context.allPadding(24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
+            Icon(
+              Icons.error_outline,
+              size: context.iconSize(64),
+              color: Colors.red,
+            ),
+            SizedBox(height: context.spacing(16)),
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body14.colored(Colors.red),
+              style: AppTextStyles.body14
+                  .colored(Colors.red)
+                  .copyWith(fontSize: context.fontSize(14)),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: context.spacing(24)),
             ElevatedButton.icon(
               onPressed: controller.loadUserData,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Coba Lagi'),
+              icon: Icon(Icons.refresh, size: context.iconSize(20)),
+              label: Text(
+                'Coba Lagi',
+                style: TextStyle(fontSize: context.fontSize(14)),
+              ),
+              style: ElevatedButton.styleFrom(
+                padding: context.symmetricPadding(horizontal: 24, vertical: 12),
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing(16)),
             OutlinedButton(
               onPressed: () => controller.showLogoutDialog(),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Colors.red),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(context.borderRadius(8)),
                 ),
+                padding: context.symmetricPadding(horizontal: 24, vertical: 12),
               ),
-              child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red)),
+              child: Text(
+                'Keluar',
+                style: AppTextStyles.subtitle14
+                    .colored(Colors.red)
+                    .copyWith(fontSize: context.fontSize(14)),
+              ),
             ),
           ],
         ),
@@ -60,7 +80,7 @@ class UserHomeView extends GetView<UserHomeController> {
         }
 
         if (controller.errorMessage.value.isNotEmpty) {
-          return _buildErrorState();
+          return _buildErrorState(context);
         }
 
         return Column(
@@ -77,8 +97,8 @@ class UserHomeView extends GetView<UserHomeController> {
                   return GestureDetector(
                     onTap: () => Get.toNamed(Routes.userProfil),
                     child: Container(
-                      width: 48,
-                      height: 48,
+                      width: context.iconSize(48),
+                      height: context.iconSize(48),
                       decoration: BoxDecoration(
                         color: Colors.grey[200],
                         shape: BoxShape.circle,
@@ -91,9 +111,9 @@ class UserHomeView extends GetView<UserHomeController> {
                             : null,
                       ),
                       child: photoUrl == null || photoUrl.isEmpty
-                          ? const Icon(
+                          ? Icon(
                               Icons.person,
-                              size: 32,
+                              size: context.iconSize(32),
                               color: Colors.grey,
                             )
                           : null,
@@ -108,20 +128,22 @@ class UserHomeView extends GetView<UserHomeController> {
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   child: Padding(
-                    padding: const EdgeInsets.all(24),
+                    padding: context.allPadding(24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         RoomInfoCard(controller: controller),
-                        const SizedBox(height: 20),
+                        SizedBox(height: context.spacing(20)),
                         if (controller.hasDuePayment.value) ...[
                           PaymentDueAlert(controller: controller),
-                          const SizedBox(height: 24),
+                          SizedBox(height: context.spacing(24)),
                         ],
                         PaymentSummaryCard(controller: controller),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing(24)),
+                        const PengaduanCard(),
+                        SizedBox(height: context.spacing(24)),
                         ContactManagementCard(controller: controller),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing(24)),
                       ],
                     ),
                   ),

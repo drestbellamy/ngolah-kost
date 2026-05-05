@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/values/values.dart';
 import '../../../../data/models/peraturan_model.dart';
 
@@ -10,11 +11,11 @@ class PeraturanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: context.spacing(16)),
+      padding: context.allPadding(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(context.borderRadius(16)),
         border: Border.all(color: const Color(0xFFE5E7EB)),
         boxShadow: [
           BoxShadow(
@@ -30,30 +31,35 @@ class PeraturanCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: context.allPadding(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.menu_book_outlined,
-                  color: Color(0xFF6B8E7A),
-                  size: 20,
+                  color: const Color(0xFF6B8E7A),
+                  size: context.iconSize(20),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing(12)),
               Expanded(
                 child: Text(
                   peraturan.judul,
-                  style: AppTextStyles.header16.colored(const Color(0xFF1F2937)),
+                  style: AppTextStyles.header16.colored(const Color(0xFF1F2937)).copyWith(
+                    fontSize: context.fontSize(16),
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: context.spacing(12)),
           Text(
             peraturan.isi,
-            style: AppTextStyles.body14.colored(const Color(0xFF4B5563)).copyWith(height: 1.5),
+            style: AppTextStyles.body14.colored(const Color(0xFF4B5563)).copyWith(
+              height: 1.5,
+              fontSize: context.fontSize(14),
+            ),
           ),
         ],
       ),

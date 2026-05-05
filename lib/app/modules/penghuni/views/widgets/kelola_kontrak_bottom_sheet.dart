@@ -64,22 +64,17 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
     KelolaKontrakController controller,
     BuildContext context,
   ) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.3,
-      maxChildSize: 0.9,
-      expand: false,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(24),
-              topRight: Radius.circular(24),
-            ),
-          ),
-          child: Column(
-            children: [
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
               // Header
               Padding(
                 padding: const EdgeInsets.all(20),
@@ -105,10 +100,13 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
               ),
 
               // Content yang bisa di-scroll
-              Expanded(
+              Flexible(
                 child: SingleChildScrollView(
-                  controller: scrollController,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    bottom: MediaQuery.of(context).padding.bottom + MediaQuery.of(context).viewInsets.bottom,
+                  ),
                   physics: const ClampingScrollPhysics(),
                   child: Column(
                     children: [
@@ -229,8 +227,6 @@ class KelolaKontrakBottomSheet extends StatelessWidget {
             ],
           ),
         );
-      },
-    );
   }
 
   Widget _buildTab(

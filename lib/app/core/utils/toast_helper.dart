@@ -96,7 +96,7 @@ class ToastHelper {
       GetSnackBar(
         messageText: _buildToastContent(
           message: message,
-          title: title ?? 'Informmasi',
+          title: title ?? 'Informasi',
           icon: icon ?? Icons.info_outline,
           type: ToastType.info,
         ),

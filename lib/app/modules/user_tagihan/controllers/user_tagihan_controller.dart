@@ -5,6 +5,7 @@ import '../../../data/models/tagihan_user_model.dart';
 import '../../../data/models/metode_pembayaran_model.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/controllers/notification_controller.dart';
+import '../../../core/utils/responsive_utils.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/penghuni_repository.dart';
 import '../../../../repositories/tagihan_repository.dart';
@@ -403,9 +404,11 @@ class UserTagihanController extends GetxController {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Pembayaran akan dikirim ke admin untuk verifikasi.',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+              Builder(
+                builder: (context) => Text(
+                  'Pembayaran akan dikirim ke admin untuk verifikasi.',
+                  style: TextStyle(fontSize: context.fontSize(12), color: Colors.grey),
+                ),
               ),
             ],
           ),

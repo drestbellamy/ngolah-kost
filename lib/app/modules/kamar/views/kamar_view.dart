@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/responsive_utils.dart';
 import '../controllers/kamar_controller.dart';
 
 class KamarView extends GetView<KamarController> {
@@ -50,17 +51,18 @@ class KamarView extends GetView<KamarController> {
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
-                          const SizedBox(height: 12),
+                          SizedBox(height: context.spacing(12)),
 
                           // Stats Grid (scrollable)
                           Padding(
-                            padding: const EdgeInsets.only(left: 24, right: 24),
+                            padding: context.horizontalPadding(24),
                             child: Column(
                               children: [
                                 Row(
                                   children: [
                                     Expanded(
                                       child: _buildStatCard(
+                                        context,
                                         'Total Ruangan',
                                         controller.totalRuangan.value
                                             .toString(),
@@ -68,9 +70,10 @@ class KamarView extends GetView<KamarController> {
                                         const Color(0xFF6B8E7A),
                                       ),
                                     ),
-                                    const SizedBox(width: 16),
+                                    SizedBox(width: context.spacing(16)),
                                     Expanded(
                                       child: _buildStatCard(
+                                        context,
                                         'Total Penghuni',
                                         controller.totalPenghuni.value
                                             .toString(),
@@ -80,20 +83,22 @@ class KamarView extends GetView<KamarController> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: context.spacing(16)),
                                 Row(
                                   children: [
                                     Expanded(
                                       child: _buildStatCard(
+                                        context,
                                         'Terisi',
                                         controller.ditempati.value.toString(),
                                         Icons.meeting_room_outlined,
                                         const Color(0xFF34D399),
                                       ),
                                     ),
-                                    const SizedBox(width: 16),
+                                    SizedBox(width: context.spacing(16)),
                                     Expanded(
                                       child: _buildStatCard(
+                                        context,
                                         'Kosong',
                                         controller.kosong.value.toString(),
                                         Icons.door_front_door_outlined,
@@ -105,44 +110,44 @@ class KamarView extends GetView<KamarController> {
                               ],
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          SizedBox(height: context.spacing(12)),
                         ],
                       ),
                     ),
                     SliverPersistentHeader(
                       pinned: true,
                       delegate: _StickyTabsHeaderDelegate(
-                        height: 64,
-                        child: Container(
-                          color: const Color(0xFFF7F9F8),
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          alignment: Alignment.center,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 6,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      _buildTab('Semua Kamar', 0),
-                                      _buildTab('Kosong', 1),
-                                      _buildTab('Terisi Sebagian', 2),
-                                      _buildTab('Penuh', 3),
-                                    ],
+                        height: context.buttonHeight(64),
+                        child: Builder(
+                          builder: (context) => Container(
+                            color: const Color(0xFFF7F9F8),
+                            padding: context.horizontalPadding(24),
+                            alignment: Alignment.center,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    padding: context.verticalPadding(6),
+                                    child: Row(
+                                      children: [
+                                        _buildTab(context, 'Semua Kamar', 0),
+                                        _buildTab(context, 'Kosong', 1),
+                                        _buildTab(context, 'Terisi Sebagian', 2),
+                                        _buildTab(context, 'Penuh', 3),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              _buildSortButton(),
-                            ],
+                                SizedBox(width: context.spacing(8)),
+                                _buildSortButton(context),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    ..._buildBodySlivers(filteredKamar),
+                    ..._buildBodySlivers(context, filteredKamar),
                   ],
                 );
               }),
@@ -150,16 +155,20 @@ class KamarView extends GetView<KamarController> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: controller.tambahKamar,
-        backgroundColor: const Color(0xFFF2A65A),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Builder(
+        builder: (context) => FloatingActionButton(
+          onPressed: controller.tambahKamar,
+          backgroundColor: const Color(0xFFF2A65A),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(context.borderRadius(16)),
+          ),
+          child: Icon(Icons.add, color: Colors.white, size: context.iconSize(24)),
+        ),
       ),
     );
   }
 
-  List<Widget> _buildBodySlivers(List<Map<String, dynamic>> filteredKamar) {
+  List<Widget> _buildBodySlivers(BuildContext context, List<Map<String, dynamic>> filteredKamar) {
     if (controller.isLoading.value) {
       return const [
         SliverFillRemaining(
@@ -173,19 +182,26 @@ class KamarView extends GetView<KamarController> {
       return [
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 96),
+            padding: EdgeInsets.fromLTRB(
+              context.padding(24),
+              context.padding(24),
+              context.padding(24),
+              context.padding(96),
+            ),
             child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding: context.allPadding(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(context.borderRadius(16)),
                 border: Border.all(color: const Color(0xFFE5E7EB)),
               ),
               child: Text(
                 'Belum ada data kamar. Silakan tekan tombol + untuk menambahkan kamar baru.',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.body14.colored(AppColors.textGray),
+                style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                  fontSize: context.fontSize(14),
+                ),
               ),
             ),
           ),
@@ -195,12 +211,17 @@ class KamarView extends GetView<KamarController> {
 
     return [
       SliverPadding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 96),
+        padding: EdgeInsets.fromLTRB(
+          context.padding(24),
+          context.padding(8),
+          context.padding(24),
+          context.padding(96),
+        ),
         sliver: SliverList.builder(
           itemCount: filteredKamar.length,
           itemBuilder: (context, index) {
             final kamar = filteredKamar[index];
-            return _buildKamarCard(kamar);
+            return _buildKamarCard(context, kamar);
           },
         ),
       ),
@@ -208,17 +229,18 @@ class KamarView extends GetView<KamarController> {
   }
 
   Widget _buildStatCard(
+    BuildContext context,
     String label,
     String value,
     IconData icon,
     Color iconColor,
   ) {
     return Container(
-      height: 86, // Ukuran pasti agar ke-4 cardbox sama tinggi
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      height: context.buttonHeight(86),
+      padding: context.symmetricPadding(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(context.borderRadius(16)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -231,14 +253,14 @@ class KamarView extends GetView<KamarController> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: context.allPadding(10),
             decoration: BoxDecoration(
               color: iconColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: iconColor, size: 24),
+            child: Icon(icon, color: iconColor, size: context.iconSize(24)),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: context.spacing(12)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,21 +268,21 @@ class KamarView extends GetView<KamarController> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: TextStyle(
+                    fontSize: context.fontSize(12),
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF6B7280),
+                    color: const Color(0xFF6B7280),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing(4)),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: TextStyle(
+                    fontSize: context.fontSize(20),
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2F2F2F),
+                    color: const Color(0xFF2F2F2F),
                   ),
                 ),
               ],
@@ -271,18 +293,18 @@ class KamarView extends GetView<KamarController> {
     );
   }
 
-  Widget _buildTab(String title, int index) {
+  Widget _buildTab(BuildContext context, String title, int index) {
     final isSelected = controller.selectedTab.value == index;
     final tabColor = _tabColor(index);
 
     return GestureDetector(
       onTap: () => controller.changeTab(index),
       child: Container(
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+        margin: EdgeInsets.only(right: context.spacing(8)),
+        padding: context.symmetricPadding(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
           color: isSelected ? tabColor : Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(context.borderRadius(20)),
           border: Border.all(
             color: isSelected ? tabColor : const Color(0xFFE5E7EB),
             width: isSelected ? 1.4 : 1,
@@ -302,7 +324,9 @@ class KamarView extends GetView<KamarController> {
           textAlign: TextAlign.center,
           style: AppTextStyles.subtitle12.weighted(
             isSelected ? FontWeight.w700 : FontWeight.w600
-          ).colored(isSelected ? Colors.white : AppColors.textGray),
+          ).colored(isSelected ? Colors.white : AppColors.textGray).copyWith(
+            fontSize: context.fontSize(12),
+          ),
         ),
       ),
     );
@@ -321,7 +345,7 @@ class KamarView extends GetView<KamarController> {
     }
   }
 
-  Widget _buildSortButton() {
+  Widget _buildSortButton(BuildContext context) {
     return Obx(() {
       final isAsc = controller.isSortAsc.value;
       return InkWell(
@@ -367,7 +391,7 @@ class KamarView extends GetView<KamarController> {
     });
   }
 
-  Widget _buildKamarCard(Map<String, dynamic> kamar) {
+  Widget _buildKamarCard(BuildContext context, Map<String, dynamic> kamar) {
     final kapasitas = kamar['kapasitas'] ?? 2;
     final terisi = kamar['terisi'] ?? (kamar['status'] == 'Kosong' ? 0 : 1);
     final rasioPenghuni = '$terisi/$kapasitas';
@@ -378,11 +402,11 @@ class KamarView extends GetView<KamarController> {
     return GestureDetector(
       onTap: () => controller.navigateToInformasiKamar(kamar),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(16),
+        margin: EdgeInsets.only(bottom: context.spacing(16)),
+        padding: context.allPadding(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(context.borderRadius(16)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -397,19 +421,19 @@ class KamarView extends GetView<KamarController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: context.iconSize(48),
+                  height: context.iconSize(48),
                   decoration: BoxDecoration(
                     color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(context.borderRadius(12)),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.meeting_room_outlined,
-                    color: Color(0xFF6B8E7A),
-                    size: 24,
+                    color: const Color(0xFF6B8E7A),
+                    size: context.iconSize(24),
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: context.spacing(16)),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -423,33 +447,32 @@ class KamarView extends GetView<KamarController> {
                                 Flexible(
                                   child: Text(
                                     'Kamar ${kamar['nomor']}',
-                                    style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                                    style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
+                                      fontSize: context.fontSize(16),
+                                    ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                const SizedBox(width: 4),
-                                const Icon(
+                                SizedBox(width: context.spacing(4)),
+                                Icon(
                                   Icons.chevron_right,
-                                  color: Color(0xFF6B7280),
-                                  size: 18,
+                                  color: const Color(0xFF6B7280),
+                                  size: context.iconSize(18),
                                 ),
                               ],
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
+                            padding: context.symmetricPadding(horizontal: 12, vertical: 4),
                             decoration: BoxDecoration(
                               color: statusColor.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(context.borderRadius(20)),
                             ),
                             child: Text(
                               kamar['status'],
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: context.fontSize(12),
                                 fontWeight: FontWeight.w600,
                                 color: statusColor,
                               ),
@@ -457,62 +480,66 @@ class KamarView extends GetView<KamarController> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
+                      SizedBox(height: context.spacing(6)),
                       Row(
                         children: [
                           Text(
                             'Penghuni: $rasioPenghuni',
-                            style: AppTextStyles.body12.colored(AppColors.textGray),
+                            style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
+                              fontSize: context.fontSize(12),
+                            ),
                           ),
-                          const SizedBox(width: 4),
-                          const Icon(
+                          SizedBox(width: context.spacing(4)),
+                          Icon(
                             Icons.person_outline,
-                            size: 16,
-                            color: Color(0xFF6B7280),
+                            size: context.iconSize(16),
+                            color: const Color(0xFF6B7280),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: context.spacing(10)),
                       Text(
                         kamar['harga'],
-                        style: AppTextStyles.subtitle14.colored(AppColors.primary),
+                        style: AppTextStyles.subtitle14.colored(AppColors.primary).copyWith(
+                          fontSize: context.fontSize(14),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing(16)),
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () => controller.editKamar(kamar),
-                    icon: const Icon(Icons.edit_outlined, size: 18),
-                    label: const Text('Edit'),
+                    icon: Icon(Icons.edit_outlined, size: context.iconSize(18)),
+                    label: Text('Edit', style: TextStyle(fontSize: context.fontSize(14))),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6B8E7A),
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: context.symmetricPadding(horizontal: 16, vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(context.borderRadius(12)),
                       ),
                       elevation: 0,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: context.spacing(12)),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () => controller.hapusKamar(kamar),
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    label: const Text('Hapus'),
+                    icon: Icon(Icons.delete_outline, size: context.iconSize(18)),
+                    label: Text('Hapus', style: TextStyle(fontSize: context.fontSize(14))),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFF1F2),
                       foregroundColor: const Color(0xFFEF4444),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding: context.symmetricPadding(horizontal: 16, vertical: 12),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(context.borderRadius(12)),
                       ),
                       elevation: 0,
                     ),

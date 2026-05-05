@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
 import '../controllers/notification_controller.dart';
 import '../values/values.dart';
+import '../utils/responsive_utils.dart';
 import 'adaptive_bottom_navbar_wrapper.dart';
 
 class UserBottomNavbar extends StatefulWidget {
@@ -174,87 +175,95 @@ class _UserBottomNavbarState extends State<UserBottomNavbar> {
     bool hasNotification = false,
     int notificationCount = 0,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isActive
-              ? const Color(0xFF6B8E7A).withValues(alpha: 0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Icon(
-                  isActive ? activeIcon : icon,
-                  color: isActive
-                      ? const Color(0xFF6B8E7A)
-                      : const Color(0xFF6C727F),
-                  size: 24,
-                ),
-                if (hasNotification && notificationCount > 0)
-                  Positioned(
-                    right: -6,
-                    top: -4,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 5,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFF3B30),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Colors.white, width: 1.5),
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 18,
-                        minHeight: 18,
-                      ),
-                      child: Text(
-                        notificationCount > 99 ? '99+' : '$notificationCount',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  )
-                else if (hasNotification)
-                  Positioned(
-                    right: -2,
-                    top: 0,
-                    child: Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFF3B30),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 1.5),
-                      ),
-                    ),
+    return Builder(
+      builder: (context) => GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: EdgeInsets.symmetric(
+            horizontal: context.padding(16),
+            vertical: context.padding(10),
+          ),
+          decoration: BoxDecoration(
+            color: isActive
+                ? const Color(0xFF6B8E7A).withValues(alpha: 0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(context.borderRadius(16)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Icon(
+                    isActive ? activeIcon : icon,
+                    color: isActive
+                        ? const Color(0xFF6B8E7A)
+                        : const Color(0xFF6C727F),
+                    size: context.iconSize(24),
                   ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTextStyles.labelMedium.weighted(
-                isActive ? FontWeight.w600 : FontWeight.w400
-              ).colored(
-                isActive ? AppColors.primary : const Color(0xFF6C727F)
+                  if (hasNotification && notificationCount > 0)
+                    Positioned(
+                      right: -6,
+                      top: -4,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: context.padding(5),
+                          vertical: context.padding(2),
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF3B30),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(10),
+                          ),
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: context.iconSize(18),
+                          minHeight: context.iconSize(18),
+                        ),
+                        child: Text(
+                          notificationCount > 99 ? '99+' : '$notificationCount',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: context.fontSize(10),
+                            fontWeight: FontWeight.w700,
+                            height: 1.2,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  else if (hasNotification)
+                    Positioned(
+                      right: -2,
+                      top: 0,
+                      child: Container(
+                        width: context.iconSize(10),
+                        height: context.iconSize(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFF3B30),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 1.5),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ),
-          ],
+              SizedBox(height: context.spacing(4)),
+              Text(
+                label,
+                style: AppTextStyles.labelMedium
+                    .weighted(isActive ? FontWeight.w600 : FontWeight.w400)
+                    .colored(
+                      isActive ? AppColors.primary : const Color(0xFF6C727F),
+                    )
+                    .copyWith(fontSize: context.fontSize(11)),
+              ),
+            ],
+          ),
         ),
       ),
     );

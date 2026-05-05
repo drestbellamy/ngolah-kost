@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/values/values.dart';
 import '../../controllers/user_history_pembayaran_controller.dart';
 
@@ -11,7 +12,7 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(context.borderRadius(12)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -25,6 +26,7 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
           children: [
             Expanded(
               child: _buildFilterTab(
+                context,
                 label: 'Semua',
                 index: 0,
                 isSelected: controller.selectedFilter.value == 0,
@@ -32,6 +34,7 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
             ),
             Expanded(
               child: _buildFilterTab(
+                context,
                 label: 'Lunas',
                 index: 1,
                 isSelected: controller.selectedFilter.value == 1,
@@ -39,6 +42,7 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
             ),
             Expanded(
               child: _buildFilterTab(
+                context,
                 label: 'Pending',
                 index: 2,
                 isSelected: controller.selectedFilter.value == 2,
@@ -50,7 +54,8 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
     );
   }
 
-  Widget _buildFilterTab({
+  Widget _buildFilterTab(
+    BuildContext context, {
     required String label,
     required int index,
     required bool isSelected,
@@ -58,17 +63,21 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
     return GestureDetector(
       onTap: () => controller.changeFilter(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.symmetric(vertical: context.spacing(12)),
         decoration: BoxDecoration(
           color: isSelected ? const Color(0xFF6B8E7A) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(context.borderRadius(12)),
         ),
         child: Text(
           label,
           textAlign: TextAlign.center,
           style: isSelected 
-              ? AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(Colors.white)
-              : AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(AppColors.textSecondary),
+              ? AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(Colors.white).copyWith(
+                  fontSize: context.fontSize(14),
+                )
+              : AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(AppColors.textSecondary).copyWith(
+                  fontSize: context.fontSize(14),
+                ),
         ),
       ),
     );

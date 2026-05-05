@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/user_profil_controller.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/responsive_utils.dart';
 import 'widgets/contract_info_section.dart';
 import 'widgets/profile_header.dart';
 import 'widgets/room_info_section.dart';
@@ -30,54 +31,54 @@ class UserProfilView extends GetView<UserProfilController> {
                 children: [
                   const ProfileHeader(),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
+                    padding: context.symmetricPadding(
                       horizontal: 24.0,
                       vertical: 24.0,
                     ),
                     child: Column(
                       children: [
                         const RoomInfoSection(),
-                        const SizedBox(height: 16),
+                        SizedBox(height: context.spacing(16)),
                         const TenantInfoSection(),
-                        const SizedBox(height: 16),
+                        SizedBox(height: context.spacing(16)),
                         const ContractInfoSection(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing(24)),
                         // Error message card
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(16),
+                          padding: context.allPadding(16),
                           decoration: BoxDecoration(
                             color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(context.borderRadius(12)),
                             border: Border.all(
                               color: Colors.red.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Column(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.info_outline,
                                 color: Colors.red,
-                                size: 24,
+                                size: context.iconSize(24),
                               ),
-                              const SizedBox(height: 8),
+                              SizedBox(height: context.spacing(8)),
                               Text(
                                 controller.errorMessage.value,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.red,
-                                  fontSize: 14,
+                                  fontSize: context.fontSize(14),
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              SizedBox(height: context.spacing(12)),
                               ElevatedButton.icon(
                                 onPressed: controller.fetchUserProfile,
-                                icon: const Icon(Icons.refresh, size: 16),
-                                label: const Text('Coba Lagi'),
+                                icon: Icon(Icons.refresh, size: context.iconSize(16)),
+                                label: Text('Coba Lagi', style: TextStyle(fontSize: context.fontSize(14))),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
+                                  padding: context.symmetricPadding(
                                     horizontal: 16,
                                     vertical: 8,
                                   ),
@@ -86,9 +87,9 @@ class UserProfilView extends GetView<UserProfilController> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildLogoutButton(),
-                        const SizedBox(height: 24),
+                        SizedBox(height: context.spacing(16)),
+                        _buildLogoutButton(context),
+                        SizedBox(height: context.spacing(24)),
                       ],
                     ),
                   ),
@@ -106,20 +107,20 @@ class UserProfilView extends GetView<UserProfilController> {
               children: [
                 const ProfileHeader(),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
+                  padding: context.symmetricPadding(
                     horizontal: 24.0,
                     vertical: 24.0,
                   ),
                   child: Column(
                     children: [
                       const RoomInfoSection(),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing(16)),
                       const TenantInfoSection(),
-                      const SizedBox(height: 16),
+                      SizedBox(height: context.spacing(16)),
                       const ContractInfoSection(),
-                      const SizedBox(height: 24),
-                      _buildLogoutButton(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: context.spacing(24)),
+                      _buildLogoutButton(context),
+                      SizedBox(height: context.spacing(24)),
                     ],
                   ),
                 ),
@@ -132,26 +133,28 @@ class UserProfilView extends GetView<UserProfilController> {
     );
   }
 
-  Widget _buildLogoutButton() {
+  Widget _buildLogoutButton(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: OutlinedButton(
         onPressed: () => controller.showLogoutDialog(),
         style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: context.verticalPadding(16),
           side: const BorderSide(color: Colors.red),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(context.borderRadius(12)),
           ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.logout, color: Colors.red, size: 20),
-            const SizedBox(width: 8),
+            Icon(Icons.logout, color: Colors.red, size: context.iconSize(20)),
+            SizedBox(width: context.spacing(8)),
             Text(
               'Keluar',
-              style: AppTextStyles.subtitle14.colored(Colors.red),
+              style: AppTextStyles.subtitle14.colored(Colors.red).copyWith(
+                fontSize: context.fontSize(14),
+              ),
             ),
           ],
         ),

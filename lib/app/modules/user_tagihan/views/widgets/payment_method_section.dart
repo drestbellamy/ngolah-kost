@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/user_tagihan_controller.dart';
 import '../../../../core/values/values.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import 'payment_method_option.dart';
 import 'transfer_bank_info.dart';
 import 'qris_info.dart';
@@ -15,23 +16,30 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        padding: EdgeInsets.fromLTRB(
+          context.spacing(24),
+          0,
+          context.spacing(24),
+          context.spacing(24),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Metode Pembayaran',
-              style: AppTextStyles.subtitle16.colored(AppColors.textGray),
+              style: AppTextStyles.subtitle16.colored(AppColors.textGray).copyWith(
+                fontSize: context.fontSize(16),
+              ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: context.spacing(16)),
 
             // Loading state for payment methods
             Obx(() {
               if (controller.isLoadingMetodePembayaran.value) {
-                return const Center(
+                return Center(
                   child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: CircularProgressIndicator(color: Color(0xFF6B8E7A)),
+                    padding: context.allPadding(20),
+                    child: const CircularProgressIndicator(color: Color(0xFF6B8E7A)),
                   ),
                 );
               }
@@ -39,29 +47,33 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
               if (controller.metodePembayaranList.isEmpty) {
                 return Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(20),
+                  padding: context.allPadding(20),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFEF3C7),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(context.borderRadius(12)),
                     border: Border.all(color: const Color(0xFFFBBF24)),
                   ),
                   child: Column(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.warning_amber_outlined,
-                        color: Color(0xFFD97706),
-                        size: 24,
+                        color: const Color(0xFFD97706),
+                        size: context.iconSize(24),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: context.spacing(8)),
                       Text(
                         'Metode Pembayaran Belum Tersedia',
-                        style: AppTextStyles.subtitle14.colored(const Color(0xFFD97706)),
+                        style: AppTextStyles.subtitle14.colored(const Color(0xFFD97706)).copyWith(
+                          fontSize: context.fontSize(14),
+                        ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: context.spacing(4)),
                       Text(
                         'Silakan hubungi pengelola kost untuk informasi pembayaran.',
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.body12.colored(const Color(0xFFD97706)),
+                        style: AppTextStyles.body12.colored(const Color(0xFFD97706)).copyWith(
+                          fontSize: context.fontSize(12),
+                        ),
                       ),
                     ],
                   ),
@@ -89,20 +101,20 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                             expandedContent: _buildExpandedContent(tipe),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: context.spacing(12)),
                       ],
                     );
-                  }).toList(),
+                  }),
                 ],
               );
             }),
 
-            const SizedBox(height: 32),
+            SizedBox(height: context.spacing(32)),
 
             // Tombol Kirim
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: context.buttonHeight(50),
               child: Obx(() {
                 bool isEnabled =
                     controller.tagihanTerpilih.isNotEmpty &&
@@ -129,15 +141,15 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                       0xFFFBBF24,
                     ).withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(context.borderRadius(12)),
                     ),
                     elevation: 0,
                   ),
                   child: controller.isUploadingBukti.value
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
+                      ? SizedBox(
+                          height: context.iconSize(20),
+                          width: context.iconSize(20),
+                          child: const CircularProgressIndicator(
                             color: Colors.white,
                             strokeWidth: 2,
                           ),
@@ -147,12 +159,14 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                                   'tunai'
                               ? 'Konfirmasi Pembayaran Tunai'
                               : 'Kirim Bukti Pembayaran',
-                          style: AppTextStyles.subtitle16.colored(Colors.white),
+                          style: AppTextStyles.subtitle16.colored(Colors.white).copyWith(
+                            fontSize: context.fontSize(16),
+                          ),
                         ),
                 );
               }),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: context.spacing(40)),
           ],
         ),
       ),

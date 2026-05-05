@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/kost_repository.dart';
 import '../../../../repositories/pengumuman_repository.dart';
@@ -233,14 +234,14 @@ class KelolaPengumumanController extends GetxController {
   Future<bool> addPengumuman(String title, String description) async {
     final selected = selectedGedung.value;
     if (selected == null) {
-      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      ToastHelper.showError('Pilih gedung kost terlebih dahulu');
       return false;
     }
 
     final judul = title.trim();
     final deskripsi = description.trim();
     if (judul.isEmpty || deskripsi.isEmpty) {
-      Get.snackbar('Error', 'Judul dan deskripsi wajib diisi');
+      ToastHelper.showError('Judul dan deskripsi wajib diisi');
       return false;
     }
 
@@ -254,8 +255,7 @@ class KelolaPengumumanController extends GetxController {
       await _loadPengumumanByGedung(selected);
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal menambahkan pengumuman'),
       );
       return false;
@@ -271,14 +271,14 @@ class KelolaPengumumanController extends GetxController {
   ) async {
     final selected = selectedGedung.value;
     if (selected == null) {
-      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      ToastHelper.showError('Pilih gedung kost terlebih dahulu');
       return false;
     }
 
     final judul = title.trim();
     final deskripsi = description.trim();
     if (judul.isEmpty || deskripsi.isEmpty) {
-      Get.snackbar('Error', 'Judul dan deskripsi wajib diisi');
+      ToastHelper.showError('Judul dan deskripsi wajib diisi');
       return false;
     }
 
@@ -292,8 +292,7 @@ class KelolaPengumumanController extends GetxController {
       await _loadPengumumanByGedung(selected);
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal memperbarui pengumuman'),
       );
       return false;
@@ -305,7 +304,7 @@ class KelolaPengumumanController extends GetxController {
   Future<bool> deletePengumuman(String id) async {
     final selected = selectedGedung.value;
     if (selected == null) {
-      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      ToastHelper.showError('Pilih gedung kost terlebih dahulu');
       return false;
     }
 
@@ -315,8 +314,7 @@ class KelolaPengumumanController extends GetxController {
       await _loadPengumumanByGedung(selected);
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal menghapus pengumuman'),
       );
       return false;

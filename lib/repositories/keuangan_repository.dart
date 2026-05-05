@@ -611,7 +611,7 @@ class KeuanganRepository extends BaseRepository {
     final payload = <String, dynamic>{
       'kost_id': kostId.trim(),
       'nama': cleanNama,
-      'jumlah': jumlah,
+      'jumlah': jumlah.toInt(), // Convert double ke int untuk database
       'tanggal': tanggal.toIso8601String(),
       'deskripsi': (deskripsi ?? '').trim().isEmpty ? null : deskripsi!.trim(),
     };
@@ -689,7 +689,7 @@ class KeuanganRepository extends BaseRepository {
     final payload = <String, dynamic>{
       'kost_id': kostId.trim(),
       'nama': cleanNama,
-      'jumlah': jumlah,
+      'jumlah': jumlah.toInt(), // Convert double ke int untuk database
       'tanggal': tanggal.toIso8601String(),
       'deskripsi': (deskripsi ?? '').trim().isEmpty ? null : deskripsi!.trim(),
     };

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/values/values.dart';
 
 class PaymentCard extends StatelessWidget {
@@ -31,11 +32,11 @@ class PaymentCard extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: context.spacing(16)),
+      padding: context.allPadding(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(context.borderRadius(16)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -48,16 +49,16 @@ class PaymentCard extends StatelessWidget {
         children: [
           // Status Icon
           Container(
-            width: 48,
-            height: 48,
+            width: context.spacing(48),
+            height: context.spacing(48),
             decoration: BoxDecoration(
               color: statusBgColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(statusIcon, color: statusColor, size: 24),
+            child: Icon(statusIcon, color: statusColor, size: context.iconSize(24)),
           ),
 
-          const SizedBox(width: 16),
+          SizedBox(width: context.spacing(16)),
 
           // Payment Info
           Expanded(
@@ -70,51 +71,61 @@ class PaymentCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         payment['month'],
-                        style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                        style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
+                          fontSize: context.fontSize(16),
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.spacing(12),
+                        vertical: context.spacing(4),
                       ),
                       decoration: BoxDecoration(
                         color: statusBgColor,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(context.borderRadius(12)),
                       ),
                       child: Text(
                         payment['status'],
-                        style: AppTextStyles.body12.weighted(FontWeight.w600).colored(statusColor),
+                        style: AppTextStyles.body12.weighted(FontWeight.w600).colored(statusColor).copyWith(
+                          fontSize: context.fontSize(12),
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: context.spacing(4)),
                 Text(
                   payment['method'],
-                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
+                  style: AppTextStyles.body14.colored(AppColors.textSecondary).copyWith(
+                    fontSize: context.fontSize(14),
+                  ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: context.spacing(12)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       payment['amount'],
-                      style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                      style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
+                        fontSize: context.fontSize(16),
+                      ),
                     ),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.calendar_today_outlined,
-                          size: 14,
-                          color: Color(0xFF9CA3AF),
+                          size: context.iconSize(14),
+                          color: const Color(0xFF9CA3AF),
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: context.spacing(4)),
                         Text(
                           payment['date'],
-                          style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
+                          style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)).copyWith(
+                            fontSize: context.fontSize(12),
+                          ),
                         ),
                       ],
                     ),

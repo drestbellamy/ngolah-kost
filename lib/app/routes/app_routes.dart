@@ -25,4 +25,6 @@ abstract class Routes {
   static const userTagihan = '/user-tagihan';
   static const userInfo = '/user-info';
   static const userProfil = '/user-profil';
+  static const userPengaduan = '/user-pengaduan';
+  static const kelolaPengaduan = '/kelola-pengaduan';
 }

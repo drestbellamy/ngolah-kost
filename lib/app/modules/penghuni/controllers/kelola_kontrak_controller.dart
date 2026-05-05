@@ -284,13 +284,9 @@ class KelolaKontrakController extends GetxController {
     }
 
     if (tambahan > maxTambahanDurasiBulan) {
-      Get.snackbar(
-        'Validasi Gagal',
+      ToastHelper.showWarning(
         'Tambahan durasi maksimal $maxTambahanDurasiBulan bulan. Anda memasukkan $tambahan bulan.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
+        title: 'Validasi Gagal',
       );
       return;
     }
@@ -298,13 +294,9 @@ class KelolaKontrakController extends GetxController {
     final latestKontrak = await _getLatestKontrakBase(p);
     final tanggalMasuk = latestKontrak.tanggalMasuk;
     if (tanggalMasuk == null) {
-      Get.snackbar(
-        'Error Data',
+      ToastHelper.showError(
         'Tanggal mulai kontrak tidak valid. Silakan periksa data kontrak di menu Edit.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
+        title: 'Error Data',
         duration: const Duration(seconds: 4),
       );
       return;
@@ -339,13 +331,9 @@ class KelolaKontrakController extends GetxController {
 
     if (!_isSiklusAllowedByPaidCoverage(sistemPembayaranBulan)) {
       final covered = paidCoveredPrefixMonths.value;
-      Get.snackbar(
-        'Sistem Pembayaran Tidak Sesuai',
+      ToastHelper.showWarning(
         'Sistem pembayaran $sistemPembayaranBulan bulan tidak dapat digunakan karena $covered bulan pertama sudah lunas. Pilih sistem pembayaran yang merupakan kelipatan dari $covered bulan.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        icon: const Icon(Icons.info_outline, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
+        title: 'Sistem Pembayaran Tidak Sesuai',
         duration: const Duration(seconds: 5),
       );
       return;
@@ -384,14 +372,10 @@ class KelolaKontrakController extends GetxController {
         Get.back(result: true);
       }
 
-      Get.snackbar(
-        'Berhasil! 🎉',
+      ToastHelper.showSuccess(
         'Kontrak berhasil diperpanjang $tambahan bulan. Data tagihan telah diperbarui.',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        icon: const Icon(Icons.check_circle, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
+        title: 'Berhasil!',
+        duration: const Duration(seconds: 5),
       );
     } catch (e) {
       ToastHelper.showError(
@@ -492,13 +476,9 @@ class KelolaKontrakController extends GetxController {
         selectedStartDate ??
         _parseDateFlexible(tanggalMulaiController.text.trim());
     if (tanggalMasuk == null) {
-      Get.snackbar(
-        'Tanggal Tidak Valid',
+      ToastHelper.showWarning(
         'Format tanggal mulai tidak valid. Silakan pilih tanggal dari date picker.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        icon: const Icon(Icons.calendar_today, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
+        title: 'Tanggal Tidak Valid',
         duration: const Duration(seconds: 4),
       );
       return;
@@ -514,13 +494,9 @@ class KelolaKontrakController extends GetxController {
     }
 
     if (durasiBaru > maxDurasiKontrakBulan) {
-      Get.snackbar(
-        'Validasi Gagal',
+      ToastHelper.showWarning(
         'Durasi kontrak maksimal $maxDurasiKontrakBulan bulan (12 tahun). Anda memasukkan $durasiBaru bulan.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
+        title: 'Validasi Gagal',
         duration: const Duration(seconds: 4),
       );
       return;
@@ -551,13 +527,9 @@ class KelolaKontrakController extends GetxController {
 
     if (!_isSiklusAllowedByPaidCoverage(sistemPembayaranBulan)) {
       final covered = paidCoveredPrefixMonths.value;
-      Get.snackbar(
-        'Sistem Pembayaran Tidak Sesuai',
+      ToastHelper.showWarning(
         'Sistem pembayaran $sistemPembayaranBulan bulan tidak dapat digunakan karena $covered bulan pertama sudah lunas. Pilih sistem pembayaran yang merupakan kelipatan dari $covered bulan.',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
-        icon: const Icon(Icons.info_outline, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
+        title: 'Sistem Pembayaran Tidak Sesuai',
         duration: const Duration(seconds: 5),
       );
       return;
@@ -596,14 +568,10 @@ class KelolaKontrakController extends GetxController {
         Get.back(result: true);
       }
 
-      Get.snackbar(
-        'Berhasil! 🎉',
+      ToastHelper.showSuccess(
         'Kontrak berhasil diperbarui. Data tagihan telah disesuaikan.',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
-        icon: const Icon(Icons.check_circle, color: Colors.white),
-        snackPosition: SnackPosition.TOP,
-        duration: const Duration(seconds: 3),
+        title: 'Berhasil!',
+        duration: const Duration(seconds: 5),
       );
     } catch (e) {
       ToastHelper.showError(
@@ -888,7 +856,7 @@ class KelolaKontrakController extends GetxController {
                           ToastHelper.showSuccess(
                             'Kontrak ${p.nama} telah diakhiri. Akun penghuni telah dinonaktifkan.',
                             title: 'Kontrak Diakhiri',
-                            duration: const Duration(seconds: 4),
+                            duration: const Duration(seconds: 5),
                           );
                         } catch (e) {
                           ToastHelper.showError(

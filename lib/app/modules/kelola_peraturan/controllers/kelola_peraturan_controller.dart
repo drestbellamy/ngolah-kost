@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/kost_repository.dart';
 import '../../../../repositories/peraturan_repository.dart';
@@ -271,14 +272,14 @@ class KelolaPeraturanController extends GetxController {
   Future<bool> tambahKategori() async {
     final gedung = selectedGedung.value;
     if (gedung == null) {
-      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      ToastHelper.showError('Pilih gedung kost terlebih dahulu');
       return false;
     }
 
     final judul = namaController.text.trim();
     final isi = deskripsiController.text.trim();
     if (judul.isEmpty || isi.isEmpty) {
-      Get.snackbar('Error', 'Nama kategori dan deskripsi wajib diisi');
+      ToastHelper.showError('Nama kategori dan deskripsi wajib diisi');
       return false;
     }
 
@@ -293,8 +294,7 @@ class KelolaPeraturanController extends GetxController {
       resetForm();
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal menambahkan peraturan'),
       );
       return false;
@@ -306,14 +306,14 @@ class KelolaPeraturanController extends GetxController {
   Future<bool> editKategori(String id) async {
     final gedung = selectedGedung.value;
     if (gedung == null) {
-      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      ToastHelper.showError('Pilih gedung kost terlebih dahulu');
       return false;
     }
 
     final judul = namaController.text.trim();
     final isi = deskripsiController.text.trim();
     if (judul.isEmpty || isi.isEmpty) {
-      Get.snackbar('Error', 'Nama kategori dan deskripsi wajib diisi');
+      ToastHelper.showError('Nama kategori dan deskripsi wajib diisi');
       return false;
     }
 
@@ -324,8 +324,7 @@ class KelolaPeraturanController extends GetxController {
       resetForm();
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal memperbarui peraturan'),
       );
       return false;
@@ -337,7 +336,7 @@ class KelolaPeraturanController extends GetxController {
   Future<bool> hapusKategori(String id) async {
     final gedung = selectedGedung.value;
     if (gedung == null) {
-      Get.snackbar('Error', 'Pilih gedung kost terlebih dahulu');
+      ToastHelper.showError('Pilih gedung kost terlebih dahulu');
       return false;
     }
 
@@ -347,8 +346,7 @@ class KelolaPeraturanController extends GetxController {
       await _loadPeraturanByGedung(gedung);
       return true;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         _resolveErrorMessage(e, 'Gagal menghapus peraturan'),
       );
       return false;
