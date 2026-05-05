@@ -27,7 +27,7 @@ class ToastContainer extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color.fromARGB(255, 232, 255, 244), // Soft green
+            Color.fromARGB(255, 227, 255, 241), // Soft green
             Color(0xFFFFFFFF), // White
           ],
           stops: [0.0, 1.5], // Gradient stops at 25% (around icon area)
@@ -37,7 +37,7 @@ class ToastContainer extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0xFFFECACA), // Soft red/pink
+            Color.fromARGB(255, 255, 221, 221), // Soft red/pink
             Color(0xFFFFFFFF), // White
           ],
           stops: [0.0, 0.35], // Gradient stops at 25% (around icon area)
@@ -47,7 +47,7 @@ class ToastContainer extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0xFFFDE68A), // Soft yellow
+            Color.fromARGB(255, 255, 246, 210), // Soft yellow
             Color(0xFFFFFFFF), // White
           ],
           stops: [0.0, 0.35], // Gradient stops at 25% (around icon area)
@@ -57,7 +57,7 @@ class ToastContainer extends StatelessWidget {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0xFFBFDBFE), // Soft blue
+            Color.fromARGB(255, 199, 224, 255), // Soft blue
             Color(0xFFFFFFFF), // White
           ],
           stops: [0.0, 0.35], // Gradient stops at 25% (around icon area)
