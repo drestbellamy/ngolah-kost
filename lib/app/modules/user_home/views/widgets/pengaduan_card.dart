@@ -24,7 +24,10 @@ class PengaduanCard extends StatelessWidget {
               gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFFFF6B6B), Color(0xFFFF8E8E)],
+                colors: [
+                  Color.fromARGB(255, 255, 131, 131),
+                  Color.fromARGB(255, 255, 86, 86),
+                ],
               ),
               borderRadius: BorderRadius.circular(16),
             ),
