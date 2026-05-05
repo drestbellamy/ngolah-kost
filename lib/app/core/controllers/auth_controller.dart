@@ -7,6 +7,7 @@ import '../../modules/login/models/login_user_model.dart';
 import '../../routes/app_routes.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/repository_factory.dart';
+import '../utils/toast_helper.dart';
 
 class AuthController extends GetxController {
   static const _keyId = 'auth_user_id';
@@ -108,10 +109,10 @@ class AuthController extends GetxController {
           if (Get.currentRoute != Routes.login) {
             Get.offAllNamed(Routes.login);
           }
-          Get.snackbar(
-            'Sesi Berakhir',
+          ToastHelper.showWarning(
             'Akun Anda sudah tidak aktif. Silakan hubungi pengelola kost.',
-            snackPosition: SnackPosition.BOTTOM,
+            title: 'Sesi Berakhir',
+            duration: const Duration(seconds: 5),
           );
         });
       }

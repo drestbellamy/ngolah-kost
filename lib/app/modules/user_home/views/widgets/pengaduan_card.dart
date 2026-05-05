@@ -25,8 +25,8 @@ class PengaduanCard extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color.fromARGB(255, 255, 131, 131),
-                  Color.fromARGB(255, 255, 86, 86),
+                  Color.fromARGB(255, 255, 112, 112),
+                  Color.fromARGB(255, 255, 55, 55),
                 ],
               ),
               borderRadius: BorderRadius.circular(16),
