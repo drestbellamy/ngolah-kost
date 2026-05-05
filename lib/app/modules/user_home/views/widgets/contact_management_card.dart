@@ -24,7 +24,10 @@ class ContactManagementCard extends StatelessWidget {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6B8E7A), Color(0xFF8FAA9F)],
+              colors: [
+                Color.fromARGB(255, 136, 159, 149),
+                Color.fromARGB(255, 107, 162, 134)
+              ],
             ),
             borderRadius: BorderRadius.circular(16),
           ),
@@ -55,7 +58,9 @@ class ContactManagementCard extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           controller.phoneNumber.value,
-                          style: AppTextStyles.subtitle14.weighted(FontWeight.w500).colored(Colors.white),
+                          style: AppTextStyles.subtitle14
+                              .weighted(FontWeight.w500)
+                              .colored(Colors.white),
                         ),
                       ],
                     ),
@@ -82,7 +87,9 @@ class ContactManagementCard extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           controller.email.value,
-                          style: AppTextStyles.subtitle14.weighted(FontWeight.w500).colored(Colors.white),
+                          style: AppTextStyles.subtitle14
+                              .weighted(FontWeight.w500)
+                              .colored(Colors.white),
                         ),
                       ],
                     ),
