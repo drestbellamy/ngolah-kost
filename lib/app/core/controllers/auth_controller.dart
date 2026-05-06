@@ -1,13 +1,9 @@
-import 'dart:async';
-
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../modules/login/models/login_user_model.dart';
 import '../../routes/app_routes.dart';
 import '../../../repositories/auth_repository.dart';
 import '../../../repositories/repository_factory.dart';
-import '../utils/toast_helper.dart';
 
 class AuthController extends GetxController {
   static const _keyId = 'auth_user_id';
@@ -17,8 +13,6 @@ class AuthController extends GetxController {
 
   final Rxn<LoginUserModel> _currentUser = Rxn<LoginUserModel>();
   final AuthRepository _authRepo;
-  Timer? _sessionGuardTimer;
-  bool _isSessionValidationRunning = false;
 
   AuthController({AuthRepository? authRepository})
     : _authRepo = authRepository ?? RepositoryFactory.instance.authRepository;
@@ -61,71 +55,15 @@ class AuthController extends GetxController {
     await prefs.setString(_keyUsername, user.username);
     await prefs.setString(_keyRole, user.role);
     await prefs.setBool(_keyIsActive, user.isActive);
-
-    startSessionGuard();
   }
 
   Future<void> clearUser() async {
     _currentUser.value = null;
-    stopSessionGuard();
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyId);
     await prefs.remove(_keyUsername);
     await prefs.remove(_keyRole);
     await prefs.remove(_keyIsActive);
-  }
-
-  void startSessionGuard() {
-    stopSessionGuard();
-    if (!isLoggedIn) return;
-
-    _sessionGuardTimer = Timer.periodic(const Duration(seconds: 8), (_) {
-      _validateCurrentSession();
-    });
-
-    _validateCurrentSession();
-  }
-
-  void stopSessionGuard() {
-    _sessionGuardTimer?.cancel();
-    _sessionGuardTimer = null;
-  }
-
-  Future<void> _validateCurrentSession() async {
-    if (_isSessionValidationRunning) return;
-    final user = _currentUser.value;
-    if (user == null) return;
-
-    _isSessionValidationRunning = true;
-    try {
-      final latest = await _authRepo.getUserById(user.id);
-      final isStillActive = latest?['is_active'] == true;
-
-      if (latest == null || !isStillActive) {
-        await clearUser();
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (Get.currentRoute != Routes.login) {
-            Get.offAllNamed(Routes.login);
-          }
-          ToastHelper.showWarning(
-            'Akun Anda sudah tidak aktif. Silakan hubungi pengelola kost.',
-            title: 'Sesi Berakhir',
-            duration: const Duration(seconds: 5),
-          );
-        });
-      }
-    } catch (_) {
-      // Keep session if server check fails due connectivity issues.
-    } finally {
-      _isSessionValidationRunning = false;
-    }
-  }
-
-  @override
-  void onClose() {
-    stopSessionGuard();
-    super.onClose();
   }
 }
