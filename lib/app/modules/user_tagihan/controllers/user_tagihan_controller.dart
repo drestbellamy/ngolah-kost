@@ -125,7 +125,6 @@ class UserTagihanController extends GetxController {
       final tagihanList = await _tagihanRepo.getTagihanByPenghuniId(
         penghuniIdValue,
       );
-      print('Tagihan data fetched: ${tagihanList.length} items'); // Debug
 
       // Convert to TagihanUserModel
       final List<TagihanUserModel> tagihan = [];
@@ -176,7 +175,6 @@ class UserTagihanController extends GetxController {
       await checkPendingPayments();
     } catch (e) {
       errorMessage.value = e.toString();
-      print('Error loading tagihan: $e');
     } finally {
       isLoading.value = false;
     }
@@ -207,9 +205,8 @@ class UserTagihanController extends GetxController {
           .toList();
 
       tagihanWithPendingPayment.assignAll(pendingTagihanIds);
-      print('Tagihan with pending payment: ${pendingTagihanIds.length}');
     } catch (e) {
-      print('Error checking pending payments: $e');
+      // Error checking pending payments
     }
   }
 
@@ -245,57 +242,29 @@ class UserTagihanController extends GetxController {
     try {
       isLoadingMetodePembayaran.value = true;
 
-      print('=== Loading Metode Pembayaran ==='); // Debug
-
       // Wait for kost_id to be available
       if (userKostId.value.isEmpty) {
-        print('⚠️ Kost ID is empty, waiting...'); // Debug
         // If kost_id not available yet, wait a bit and retry
         await Future.delayed(const Duration(milliseconds: 500));
         if (userKostId.value.isEmpty) {
-          print('❌ Kost ID still not available after waiting');
           return;
         }
       }
 
-      print('✅ User Kost ID: ${userKostId.value}'); // Debug
-
       // Get metode pembayaran data
       final metodePembayaranData = await _metodePembayaranRepo
           .getMetodePembayaranList(kostId: userKostId.value);
-      print(
-        '📦 Total metode pembayaran from DB: ${metodePembayaranData.length}',
-      ); // Debug
-
-      // Debug: Print all metode pembayaran with their kost_id
-      for (final item in metodePembayaranData) {
-        print(
-          '  - Metode: ${item['nama']}, Kost ID: ${item['kost_id']}, Active: ${item['is_active']}',
-        );
-      }
 
       // Convert to MetodePembayaranModel and filter by kost_id and active status
       final List<MetodePembayaranModel> metodeList = [];
       for (final item in metodePembayaranData) {
         final metode = MetodePembayaranModel.fromMap(item);
-        print(
-          '  Checking: ${metode.nama} - Kost ID: "${metode.kostId}" vs User Kost ID: "${userKostId.value}"',
-        ); // Debug
 
         // Filter by kost_id and active status
         if (metode.isActive && metode.kostId == userKostId.value) {
-          print('    ✅ MATCH! Adding ${metode.nama}'); // Debug
           metodeList.add(metode);
-        } else {
-          print(
-            '    ❌ NO MATCH - Active: ${metode.isActive}, Kost Match: ${metode.kostId == userKostId.value}',
-          ); // Debug
         }
       }
-
-      print(
-        '🎯 Filtered metode pembayaran for this kost: ${metodeList.length} items',
-      ); // Debug
 
       metodePembayaranList.assignAll(metodeList);
 
@@ -317,9 +286,9 @@ class UserTagihanController extends GetxController {
         }
       }
 
-      print('Active metode pembayaran: ${metodeList.length} items'); // Debug
+      metodePembayaranList.assignAll(metodeList);
     } catch (e) {
-      print('Error loading metode pembayaran: $e');
+      // Error loading metode pembayaran
     } finally {
       isLoadingMetodePembayaran.value = false;
     }
@@ -366,7 +335,9 @@ class UserTagihanController extends GetxController {
     try {
       // Validasi
       if (tagihanTerpilih.isEmpty) {
-        ToastHelper.showWarning('Pilih tagihan yang akan dibayar terlebih dahulu');
+        ToastHelper.showWarning(
+          'Pilih tagihan yang akan dibayar terlebih dahulu',
+        );
         return;
       }
 
@@ -407,7 +378,10 @@ class UserTagihanController extends GetxController {
               Builder(
                 builder: (context) => Text(
                   'Pembayaran akan dikirim ke admin untuk verifikasi.',
-                  style: TextStyle(fontSize: context.fontSize(12), color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: context.fontSize(12),
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ],
@@ -455,7 +429,10 @@ class UserTagihanController extends GetxController {
         print('✅ Cash payment created successfully');
       }
 
-      ToastHelper.showSuccess('Pembayaran tunai berhasil dikonfirmasi. Menunggu verifikasi admin.', duration: const Duration(seconds: 3));
+      ToastHelper.showSuccess(
+        'Pembayaran tunai berhasil dikonfirmasi. Menunggu verifikasi admin.',
+        duration: const Duration(seconds: 3),
+      );
 
       // Clear selection
       tagihanTerpilih.clear();
@@ -465,7 +442,9 @@ class UserTagihanController extends GetxController {
       await refreshData();
     } catch (e) {
       print('Error submit cash payment: $e');
-      ToastHelper.showError('Gagal mengkonfirmasi pembayaran tunai: ${e.toString()}');
+      ToastHelper.showError(
+        'Gagal mengkonfirmasi pembayaran tunai: ${e.toString()}',
+      );
     } finally {
       isUploadingBukti.value = false;
     }
@@ -475,7 +454,9 @@ class UserTagihanController extends GetxController {
     try {
       // Validasi
       if (tagihanTerpilih.isEmpty) {
-        ToastHelper.showWarning('Pilih tagihan yang akan dibayar terlebih dahulu');
+        ToastHelper.showWarning(
+          'Pilih tagihan yang akan dibayar terlebih dahulu',
+        );
         return;
       }
 
@@ -534,7 +515,10 @@ class UserTagihanController extends GetxController {
         print('✅ Pembayaran created successfully');
       }
 
-      ToastHelper.showSuccess('Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.', duration: const Duration(seconds: 3));
+      ToastHelper.showSuccess(
+        'Bukti pembayaran berhasil diunggah. Menunggu verifikasi admin.',
+        duration: const Duration(seconds: 3),
+      );
 
       // Clear selection
       tagihanTerpilih.clear();
@@ -544,7 +528,9 @@ class UserTagihanController extends GetxController {
       await refreshData();
     } catch (e) {
       print('Error upload bukti pembayaran: $e');
-      ToastHelper.showError('Gagal mengunggah bukti pembayaran: ${e.toString()}');
+      ToastHelper.showError(
+        'Gagal mengunggah bukti pembayaran: ${e.toString()}',
+      );
     } finally {
       isUploadingBukti.value = false;
     }
@@ -555,7 +541,9 @@ class UserTagihanController extends GetxController {
     try {
       // Validasi
       if (tagihanTerpilih.isEmpty) {
-        ToastHelper.showWarning('Pilih tagihan yang akan dibayar terlebih dahulu');
+        ToastHelper.showWarning(
+          'Pilih tagihan yang akan dibayar terlebih dahulu',
+        );
         return;
       }
 
@@ -595,7 +583,10 @@ class UserTagihanController extends GetxController {
         );
       }
 
-      ToastHelper.showSuccess('Bukti pembayaran berhasil diunggah', duration: const Duration(seconds: 2));
+      ToastHelper.showSuccess(
+        'Bukti pembayaran berhasil diunggah',
+        duration: const Duration(seconds: 2),
+      );
 
       // Clear selection
       tagihanTerpilih.clear();
@@ -605,7 +596,9 @@ class UserTagihanController extends GetxController {
       Get.offNamed('/user-history-pembayaran');
     } catch (e) {
       print('Error upload bukti pembayaran: $e');
-      ToastHelper.showError('Gagal mengunggah bukti pembayaran: ${e.toString()}');
+      ToastHelper.showError(
+        'Gagal mengunggah bukti pembayaran: ${e.toString()}',
+      );
     } finally {
       isUploadingBukti.value = false;
     }

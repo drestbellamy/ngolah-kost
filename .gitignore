@@ -47,6 +47,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 android/gradle.properties.local
+android/key.properties
 
 # Kiro AI - Internal development specs (not for client delivery)
 .kiro/
