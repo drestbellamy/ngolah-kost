@@ -138,7 +138,8 @@ class MetodePembayaranController extends GetxController {
   }
 
   Future<void> tambahMetode() async {
-    final result = await Get.toNamed('/tambah-metode-pembayaran');
+    final arg = selectedKost.value == 'Semua Kost' ? null : {'namaKost': selectedKost.value};
+    final result = await Get.toNamed('/tambah-metode-pembayaran', arguments: arg);
     await _handleFormResult(result);
   }
 

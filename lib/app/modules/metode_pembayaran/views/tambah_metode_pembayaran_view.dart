@@ -239,7 +239,7 @@ class TambahMetodePembayaranView
                                                     ),
                                                     const SizedBox(height: 2),
                                                     Text(
-                                                      kost['alamat'],
+                                                      kost['alamat']?.toString() ?? '-',
                                                       style: AppTextStyles
                                                           .body12
                                                           .colored(
