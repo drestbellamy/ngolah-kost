@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app/core/controllers/auth_controller.dart';
 import 'app/core/controllers/notification_controller.dart';
+import 'config/env.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,10 +28,11 @@ void main() async {
     ),
   );
 
+  // Initialize Supabase with environment variables
+  // For production builds, use: flutter build apk --dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...
   await Supabase.initialize(
-    url: 'https://dajiymvbdpmeijvrqdus.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhaml5bXZiZHBtZWlqdnJxZHVzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1MjcxNDIsImV4cCI6MjA5MTEwMzE0Mn0.C8pvRZ4U3yi-lIr-S45tUGYOoX2zgplK93ip8qMwNt0',
+    url: Environment.supabaseUrl,
+    anonKey: Environment.supabaseAnonKey,
   );
 
   final authController = Get.put(AuthController(), permanent: true);
