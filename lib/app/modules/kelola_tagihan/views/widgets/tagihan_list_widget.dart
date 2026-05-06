@@ -46,25 +46,46 @@ class TagihanListWidget extends GetView<KelolaTagihanController> {
 
       if (controller.filteredTagihanList.isEmpty) {
         return Container(
-          margin: const EdgeInsets.only(top: 8), // Konsisten dengan card
-          padding: const EdgeInsets.all(24),
+          margin: const EdgeInsets.only(top: 70),
+          padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowLight,
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.inbox_outlined, size: 48, color: Colors.grey[400]),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryLighter,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.request_quote_outlined,
+                  size: 40,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Belum Ada Tagihan',
+                style: AppTextStyles.header16.colored(AppColors.textPrimary),
+              ),
               const SizedBox(height: 12),
               Text(
-                'Belum ada data tagihan',
-                style: AppTextStyles.header16.colored(const Color(0xFF6B7280)),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Data tagihan akan muncul di sini',
-                style: AppTextStyles.body12.colored(AppColors.textGray),
+                'Tidak ada data tagihan untuk saat ini.\nTagihan akan otomatis muncul saat siklus\npembayaran dimulai.',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                  height: 1.5,
+                ),
               ),
             ],
           ),

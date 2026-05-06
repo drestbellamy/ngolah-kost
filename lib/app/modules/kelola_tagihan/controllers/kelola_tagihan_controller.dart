@@ -3,25 +3,31 @@ import 'package:get/get.dart';
 import '../../../../repositories/tagihan_repository.dart';
 import '../../../../repositories/pembayaran_repository.dart';
 import '../../../../repositories/penghuni_repository.dart';
+import '../../../../repositories/kost_repository.dart';
 import '../../../../repositories/repository_factory.dart';
+import '../../kost/models/kost_model.dart';
 import '../models/tagihan_model.dart';
 
 class KelolaTagihanController extends GetxController {
   final TagihanRepository _tagihanRepo;
   final PembayaranRepository _pembayaranRepo;
   final PenghuniRepository _penghuniRepo;
+  final KostRepository _kostRepo;
 
   KelolaTagihanController({
     TagihanRepository? tagihanRepository,
     PembayaranRepository? pembayaranRepository,
     PenghuniRepository? penghuniRepository,
+    KostRepository? kostRepository,
   }) : _tagihanRepo =
            tagihanRepository ?? RepositoryFactory.instance.tagihanRepository,
        _pembayaranRepo =
            pembayaranRepository ??
            RepositoryFactory.instance.pembayaranRepository,
        _penghuniRepo =
-           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository;
+           penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
+       _kostRepo =
+           kostRepository ?? RepositoryFactory.instance.kostRepository;
   final searchController = TextEditingController();
   final selectedFilter = 'semua'.obs;
   final selectedMonthKey = 'semua'.obs;
@@ -29,6 +35,7 @@ class KelolaTagihanController extends GetxController {
   final searchQuery = ''.obs;
   final tagihanList = <TagihanModel>[].obs;
   final filteredTagihanList = <TagihanModel>[].obs;
+  final allKostList = <Map<String, String>>[].obs;
   final isLoading = false.obs;
   final errorMessage = RxnString();
 
@@ -43,6 +50,12 @@ class KelolaTagihanController extends GetxController {
     errorMessage.value = null;
 
     try {
+      // Fetch all kost for filter
+      final kosts = await _kostRepo.getKostList();
+      final mappedKost = kosts.map((k) => {'id': k.name, 'name': k.name}).toList()
+        ..sort((a, b) => a['name']!.compareTo(b['name']!));
+      allKostList.assignAll(mappedKost);
+
       final rows = await _tagihanRepo.getTagihanList(
         getPenghuniLookup: () => _penghuniRepo.buildPenghuniLookup(),
         getPenghuniStatusLookup: () =>
@@ -162,21 +175,9 @@ class KelolaTagihanController extends GetxController {
     return _formatPeriode(month, year);
   }
 
-  /// Get list of unique kost from tagihan data
+  /// Get list of unique kost
   List<Map<String, String>> get kostFilterList {
-    final kostMap = <String, String>{};
-    for (final tagihan in tagihanList) {
-      final kostName = tagihan.namaKost;
-      if (kostName.isNotEmpty && kostName != '-') {
-        kostMap[kostName] = kostName; // Using name as both key and value
-      }
-    }
-
-    final sorted =
-        kostMap.entries.map((e) => {'id': e.key, 'name': e.value}).toList()
-          ..sort((a, b) => a['name']!.compareTo(b['name']!));
-
-    return sorted;
+    return allKostList.toList();
   }
 
   String getKostFilterLabel(String kostId) {
