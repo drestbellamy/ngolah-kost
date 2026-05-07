@@ -16,7 +16,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
     return KeyboardDismissible(
       child: Scaffold(
         backgroundColor: const Color(0xFFF7F9F8),
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         body: Column(
           children: [
             // Header with gradient
@@ -81,91 +81,148 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
               ),
             ),
 
-            // Fixed info card
+            // Collapsible info card
             Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Menambahkan penghuni ke:',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
-                    ),
-                    const SizedBox(height: 4),
-                    Obx(
-                      () => Text(
-                        controller.nomorKamar.value,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2F2F2F),
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+              child: Obx(
+                () => GestureDetector(
+                  onTap: controller.toggleInfoCard,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
-                      ),
+                      ],
                     ),
-                    Obx(
-                      () => Text(
-                        controller.namaKost.value,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF6B7280),
+                    child: Column(
+                      children: [
+                        // Always visible row
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF6B8E7A,
+                                ).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.meeting_room_outlined,
+                                size: 18,
+                                color: Color(0xFF6B8E7A),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    controller.nomorKamar.value,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF2F2F2F),
+                                    ),
+                                  ),
+                                  if (!controller.isInfoCardExpanded.value)
+                                    Text(
+                                      controller.hargaPerBulan.value,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF6B8E7A),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              controller.isInfoCardExpanded.value
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down,
+                              size: 20,
+                              color: const Color(0xFF6B7280),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Obx(
-                      () => Text(
-                        controller.hargaPerBulan.value,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF6B8E7A),
+                        // Expandable content
+                        AnimatedCrossFade(
+                          firstChild: const SizedBox.shrink(),
+                          secondChild: Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Column(
+                              children: [
+                                const Divider(
+                                  height: 1,
+                                  color: Color(0xFFE5E7EB),
+                                ),
+                                const SizedBox(height: 12),
+                                _buildInfoRow(
+                                  Icons.home_outlined,
+                                  'Nama Kost',
+                                  controller.namaKost.value,
+                                ),
+                                const SizedBox(height: 8),
+                                _buildInfoRow(
+                                  Icons.payments_outlined,
+                                  'Harga Sewa',
+                                  controller.hargaPerBulan.value,
+                                ),
+                              ],
+                            ),
+                          ),
+                          crossFadeState: controller.isInfoCardExpanded.value
+                              ? CrossFadeState.showSecond
+                              : CrossFadeState.showFirst,
+                          duration: const Duration(milliseconds: 300),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
 
             // Form content (scrollable)
             Expanded(
-              child: SingleChildScrollView(
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: EdgeInsets.fromLTRB(
-                  24,
-                  0,
-                  24,
-                  24 + MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: Column(
-                  children: [
-                    // Form content based on step
-                    Obx(
-                      () => controller.currentStep.value == 1
-                          ? _buildStep1()
-                          : controller.currentStep.value == 2
-                          ? _buildStep2()
-                          : controller.currentStep.value == 3
-                          ? _buildStep3()
-                          : _buildStep4(),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    padding: EdgeInsets.fromLTRB(
+                      24,
+                      0,
+                      24,
+                      24 + MediaQuery.of(context).viewInsets.bottom,
                     ),
-                  ],
-                ),
+                    child: Column(
+                      children: [
+                        // Form content based on step
+                        Obx(
+                          () => controller.currentStep.value == 1
+                              ? _buildStep1()
+                              : controller.currentStep.value == 2
+                              ? _buildStep2()
+                              : controller.currentStep.value == 3
+                              ? _buildStep3()
+                              : _buildStep4(),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -182,86 +239,94 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                   ),
                 ],
               ),
-              child: Obx(
-                () => Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: controller.handleBack,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF6B7280),
-                          backgroundColor: Colors.white,
-                          side: const BorderSide(
-                            color: Color(0xFFE5E7EB),
-                            width: 1.5,
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          controller.currentStep.value == 1
-                              ? 'Batal'
-                              : 'Kembali',
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: controller.isSubmitting.value
-                            ? null
-                            : controller.handleNext,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6B8E7A),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: controller.isSubmitting.value
-                            ? const SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : Text(
-                                controller.currentStep.value == 1
-                                    ? 'Lanjut'
-                                    : controller.currentStep.value == 4
-                                    ? 'Tambahkan'
-                                    : 'Lanjut',
-                                style: AppTextStyles.subtitle14.colored(
-                                  Colors.white,
-                                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Obx(
+                    () => controller.submitError.value == null
+                        ? const SizedBox.shrink()
+                        : Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Text(
+                              controller.submitError.value!,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
                               ),
-                      ),
+                            ),
+                          ),
+                  ),
+                  Obx(
+                    () => Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: controller.handleBack,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF6B7280),
+                              backgroundColor: Colors.white,
+                              side: const BorderSide(
+                                color: Color(0xFFE5E7EB),
+                                width: 1.5,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Text(
+                              controller.currentStep.value == 1
+                                  ? 'Batal'
+                                  : 'Kembali',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: controller.isSubmitting.value
+                                ? null
+                                : controller.handleNext,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF6B8E7A),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: controller.isSubmitting.value
+                                ? const SizedBox(
+                                    height: 18,
+                                    width: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    controller.currentStep.value == 1
+                                        ? 'Lanjut'
+                                        : controller.currentStep.value == 4
+                                        ? 'Tambahkan'
+                                        : 'Lanjut',
+                                    style: AppTextStyles.subtitle14.colored(
+                                      Colors.white,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ),
-            Obx(
-              () => controller.submitError.value == null
-                  ? const SizedBox.shrink()
-                  : Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                      child: Text(
-                        controller.submitError.value!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.red, fontSize: 12),
-                      ),
-                    ),
             ),
           ],
         ),
@@ -278,7 +343,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           _buildSectionHeader(Icons.person_outline, 'Data Pribadi'),
           const SizedBox(height: 8),
           Text(
-            'Informasi dasar sesuai KTP',
+            'Informasi dasar penghuni',
             style: AppTextStyles.body12.colored(AppColors.textGray),
           ),
           const SizedBox(height: 16),
@@ -289,27 +354,10 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
             controller: controller.namaController,
             isRequired: true,
             maxLength: 50,
-            helperText: 'Sesuai KTP',
+            helperText: 'Nama lengkap penghuni',
             errorText: controller.namaError.value,
             onChanged: controller.onNamaChanged,
             inputFormatters: [LengthLimitingTextInputFormatter(50)],
-          ),
-          const SizedBox(height: 16),
-
-          _buildTextField(
-            label: 'Nomor KTP (NIK)',
-            hint: '16 digit nomor KTP',
-            controller: controller.nomorKtpController,
-            keyboardType: TextInputType.number,
-            isRequired: true,
-            maxLength: 16,
-            helperText: '16 digit angka',
-            errorText: controller.nomorKtpError.value,
-            onChanged: controller.onNomorKtpChanged,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(16),
-            ],
           ),
           const SizedBox(height: 16),
 
@@ -405,7 +453,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
 
           _buildTextField(
             label: 'Alamat Asal',
-            hint: 'Alamat lengkap sesuai KTP',
+            hint: 'Alamat lengkap penghuni',
             controller: controller.alamatAsalController,
             keyboardType: TextInputType.multiline,
             maxLines: 3,
@@ -1034,6 +1082,34 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
     );
   }
 
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: const Color(0xFF6B7280)),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+              ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF2F2F2F),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildLabel(String label, {bool isRequired = false}) {
     return RichText(
       text: TextSpan(
@@ -1077,7 +1153,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
           keyboardType: keyboardType,
           maxLines: maxLines,
           obscureText: isPassword ? isPasswordHidden : false,
-          scrollPadding: const EdgeInsets.only(bottom: 220),
+          scrollPadding: const EdgeInsets.only(bottom: 300),
           onChanged: onChanged,
           maxLength: maxLength,
           inputFormatters: inputFormatters,

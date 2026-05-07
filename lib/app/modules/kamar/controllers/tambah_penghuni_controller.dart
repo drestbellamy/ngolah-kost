@@ -36,10 +36,14 @@ class TambahPenghuniController extends GetxController {
   final namaKost = ''.obs;
   final hargaPerBulan = ''.obs;
   final hargaBulanan = 0.obs;
+  final isInfoCardExpanded = false.obs;
+
+  void toggleInfoCard() {
+    isInfoCardExpanded.value = !isInfoCardExpanded.value;
+  }
 
   // Step 1 - Data Pribadi
   final namaController = TextEditingController();
-  final nomorKtpController = TextEditingController();
   final teleponController = TextEditingController();
   final jenisKelamin = ''.obs;
   final tanggalLahir = ''.obs;
@@ -95,7 +99,6 @@ class TambahPenghuniController extends GetxController {
 
   // Inline error states
   final namaError = RxnString();
-  final nomorKtpError = RxnString();
   final teleponError = RxnString();
   final jenisKelaminError = RxnString();
   final alamatAsalError = RxnString();
@@ -117,10 +120,20 @@ class TambahPenghuniController extends GetxController {
     // Load data from arguments
     if (Get.arguments != null) {
       final kamar = Get.arguments as Map<String, dynamic>;
+
+      // Debug: Print received arguments
+      print('DEBUG onInit: Get.arguments = $kamar');
+      print('DEBUG onInit: kamar_id from args = ${kamar['kamar_id']}');
+
       kamarId.value = kamar['kamar_id']?.toString() ?? '';
       nomorKamar.value = kamar['nomor'] ?? '';
       namaKost.value = kamar['namaKost']?.toString() ?? '-';
       hargaPerBulan.value = kamar['harga'] ?? '';
+
+      // Debug: Print after assignment
+      print(
+        'DEBUG onInit: kamarId.value after assignment = "${kamarId.value}"',
+      );
 
       // Extract numeric value from harga
       final hargaStr = hargaPerBulan.value.replaceAll(RegExp(r'[^0-9]'), '');
@@ -129,6 +142,8 @@ class TambahPenghuniController extends GetxController {
       if (usernameController.text.trim().isEmpty) {
         _setInitialUsernamePreview();
       }
+    } else {
+      print('DEBUG onInit: Get.arguments is NULL!');
     }
   }
 
@@ -144,7 +159,6 @@ class TambahPenghuniController extends GetxController {
   @override
   void onClose() {
     namaController.dispose();
-    nomorKtpController.dispose();
     teleponController.dispose();
     alamatAsalController.dispose();
     namaKontakDaruratController.dispose();
@@ -190,19 +204,12 @@ class TambahPenghuniController extends GetxController {
 
   bool _validateStep1() {
     final nama = namaController.text.trim();
-    final nomorKtp = nomorKtpController.text.trim();
     final telepon = teleponController.text.trim();
 
     namaError.value = nama.isEmpty
         ? 'Nama lengkap harus diisi'
         : nama.length > 50
         ? 'Nama maksimal 50 karakter'
-        : null;
-
-    nomorKtpError.value = nomorKtp.isEmpty
-        ? 'Nomor KTP harus diisi'
-        : nomorKtp.length != 16
-        ? 'Nomor KTP harus 16 digit'
         : null;
 
     teleponError.value = telepon.isEmpty
@@ -218,7 +225,6 @@ class TambahPenghuniController extends GetxController {
         : null;
 
     return namaError.value == null &&
-        nomorKtpError.value == null &&
         teleponError.value == null &&
         jenisKelaminError.value == null;
   }
@@ -310,6 +316,10 @@ class TambahPenghuniController extends GetxController {
     if (isSubmitting.value) return;
     submitError.value = null;
 
+    // Debug: Print kamarId value
+    print('DEBUG: kamarId.value = "${kamarId.value}"');
+    print('DEBUG: kamarId.value.isEmpty = ${kamarId.value.isEmpty}');
+
     if (kamarId.value.isEmpty) {
       submitError.value = 'ID kamar tidak ditemukan';
       return;
@@ -373,8 +383,7 @@ class TambahPenghuniController extends GetxController {
         tanggalMasuk: tanggalMasukDate.value!,
         tanggalKeluar: tanggalKeluarDate,
         status: 'aktif',
-        // New fields
-        nomorKtp: nomorKtpController.text.trim(),
+        // New fields (without nomorKtp)
         jenisKelamin: jenisKelamin.value,
         tanggalLahir: tanggalLahirDate.value,
         alamatAsal: alamatAsalController.text.trim(),
@@ -769,18 +778,6 @@ class TambahPenghuniController extends GetxController {
           ? 'Nama lengkap harus diisi'
           : v.length > 50
           ? 'Nama maksimal 50 karakter'
-          : null;
-    }
-  }
-
-  void onNomorKtpChanged(String value) {
-    submitError.value = null;
-    if (nomorKtpError.value != null) {
-      final v = value.trim();
-      nomorKtpError.value = v.isEmpty
-          ? 'Nomor KTP harus diisi'
-          : v.length != 16
-          ? 'Nomor KTP harus 16 digit'
           : null;
     }
   }
