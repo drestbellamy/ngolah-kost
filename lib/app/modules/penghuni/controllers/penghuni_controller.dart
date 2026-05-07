@@ -104,8 +104,7 @@ class PenghuniController extends GetxController {
                 tanggalBerakhir: _formatDate(row['tanggal_keluar']),
                 totalNilaiKontrak: harga * durasi,
                 historyPembayaran: const [],
-                // New fields
-                nomorKtp: row['nomor_ktp']?.toString(),
+                // Additional fields
                 jenisKelamin: row['jenis_kelamin']?.toString(),
                 tanggalLahir: tanggalLahirDate != null
                     ? _formatDate(row['tanggal_lahir'])
@@ -332,12 +331,16 @@ class PenghuniController extends GetxController {
 
     try {
       final kosts = await _kostRepo.getKostList();
-      final selectedKost = kosts.firstWhereOrNull((k) => k.name.trim() == selectedFilter.value);
-      
+      final selectedKost = kosts.firstWhereOrNull(
+        (k) => k.name.trim() == selectedFilter.value,
+      );
+
       if (selectedKost != null) {
         final kamarList = await _kamarRepo.getKamarByKostId(selectedKost.id);
         if (kamarList.isEmpty) {
-          ToastHelper.showInfo('Silakan tambahkan kamar terlebih dahulu pada kost ini.');
+          ToastHelper.showInfo(
+            'Silakan tambahkan kamar terlebih dahulu pada kost ini.',
+          );
         }
         Get.toNamed('/kamar', arguments: selectedKost);
       } else {

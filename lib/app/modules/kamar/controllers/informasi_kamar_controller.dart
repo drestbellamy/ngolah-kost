@@ -75,8 +75,7 @@ class InformasiKamarController extends GetxController {
         final usernameUser = (user['username'] ?? item['username'] ?? '-')
             .toString();
 
-        // Format data baru
-        final nomorKtp = item['nomor_ktp']?.toString() ?? '';
+        // Format additional data
         final jenisKelamin = item['jenis_kelamin']?.toString() ?? '';
         final tanggalLahirDate = DateTime.tryParse(
           item['tanggal_lahir']?.toString() ?? '',
@@ -99,8 +98,7 @@ class InformasiKamarController extends GetxController {
           'tanggalMulai': _formatDateId(tanggalMasukDate),
           'tanggalBerakhir': _formatDateId(tanggalKeluarDate),
           'hargaSewa': hargaPerBulan.value.replaceAll('/Bulan', ''),
-          // Data baru
-          'nomorKtp': nomorKtp.isEmpty ? null : nomorKtp,
+          // Additional data
           'jenisKelamin': jenisKelamin.isEmpty ? null : jenisKelamin,
           'tanggalLahir': tanggalLahirDate != null
               ? _formatDateId(tanggalLahirDate)

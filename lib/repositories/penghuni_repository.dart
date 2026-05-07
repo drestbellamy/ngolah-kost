@@ -27,8 +27,7 @@ class PenghuniRepository extends BaseRepository {
     required DateTime tanggalMasuk,
     required DateTime tanggalKeluar,
     String status = 'aktif',
-    // New fields
-    String? nomorKtp,
+    // Additional fields
     String? jenisKelamin,
     DateTime? tanggalLahir,
     String? alamatAsal,
@@ -51,10 +50,7 @@ class PenghuniRepository extends BaseRepository {
       'status': status,
     };
 
-    // Add new fields if provided
-    if (nomorKtp != null && nomorKtp.isNotEmpty) {
-      payload['nomor_ktp'] = nomorKtp;
-    }
+    // Add additional fields if provided
     if (jenisKelamin != null && jenisKelamin.isNotEmpty) {
       payload['jenis_kelamin'] = jenisKelamin;
     }
@@ -162,7 +158,7 @@ class PenghuniRepository extends BaseRepository {
     dynamic fallbackQuery = supabase
         .from(RepositoryConstants.penghuniTable)
         .select(
-          'id, user_id, kamar_id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, created_at, nomor_ktp, jenis_kelamin, tanggal_lahir, alamat_asal, nama_kontak_darurat, telepon_kontak_darurat, hubungan_kontak_darurat, users:user_id(id, nama, no_tlpn, username)',
+          'id, user_id, kamar_id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, created_at, jenis_kelamin, tanggal_lahir, alamat_asal, nama_kontak_darurat, telepon_kontak_darurat, hubungan_kontak_darurat, users:user_id(id, nama, no_tlpn, username)',
         )
         .eq('kamar_id', kamarId);
 
@@ -192,7 +188,7 @@ class PenghuniRepository extends BaseRepository {
       final raw = await supabase
           .from(RepositoryConstants.penghuniTable)
           .select(
-            'id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, nomor_ktp, jenis_kelamin, tanggal_lahir, alamat_asal, nama_kontak_darurat, telepon_kontak_darurat, hubungan_kontak_darurat, users:user_id(nama, no_tlpn), kamar:kamar_id(no_kamar, harga, kost:kost_id(nama_kost))',
+            'id, durasi_kontrak, sistem_pembayaran_bulan, tanggal_masuk, tanggal_keluar, status, jenis_kelamin, tanggal_lahir, alamat_asal, nama_kontak_darurat, telepon_kontak_darurat, hubungan_kontak_darurat, users:user_id(nama, no_tlpn), kamar:kamar_id(no_kamar, harga, kost:kost_id(nama_kost))',
           )
           .eq('id', penghuniId)
           .maybeSingle();
@@ -216,8 +212,7 @@ class PenghuniRepository extends BaseRepository {
           'nomor_kamar': (kamar['no_kamar'] ?? '').toString(),
           'harga': kamar['harga'],
           'nama_kost': (kost['nama_kost'] ?? '').toString(),
-          // New fields
-          'nomor_ktp': map['nomor_ktp']?.toString(),
+          // Additional fields
           'jenis_kelamin': map['jenis_kelamin']?.toString(),
           'tanggal_lahir': map['tanggal_lahir']?.toString(),
           'alamat_asal': map['alamat_asal']?.toString(),
@@ -260,8 +255,7 @@ class PenghuniRepository extends BaseRepository {
             'nomor_kamar': (kamar['no_kamar'] ?? '').toString(),
             'harga': kamar['harga'],
             'nama_kost': kost.name,
-            // New fields
-            'nomor_ktp': row['nomor_ktp']?.toString(),
+            // Additional fields
             'jenis_kelamin': row['jenis_kelamin']?.toString(),
             'tanggal_lahir': row['tanggal_lahir']?.toString(),
             'alamat_asal': row['alamat_asal']?.toString(),
@@ -411,8 +405,7 @@ class PenghuniRepository extends BaseRepository {
         'harga': kamar['harga'],
         'kost_id': kostId,
         'nama_kost': (kost['nama_kost'] ?? '').toString(),
-        // New fields
-        'nomor_ktp': map['nomor_ktp']?.toString(),
+        // Additional fields
         'jenis_kelamin': map['jenis_kelamin']?.toString(),
         'tanggal_lahir': map['tanggal_lahir']?.toString(),
         'alamat_asal': map['alamat_asal']?.toString(),
