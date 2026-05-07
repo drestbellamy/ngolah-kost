@@ -27,8 +27,7 @@ class PenghuniModel {
   final String tanggalBerakhir;
   final double totalNilaiKontrak;
   final List<PembayaranModel> historyPembayaran;
-  // New fields
-  final String? nomorKtp;
+  // Additional fields
   final String? jenisKelamin;
   final String? tanggalLahir;
   final String? alamatAsal;
@@ -49,8 +48,7 @@ class PenghuniModel {
     required this.tanggalBerakhir,
     required this.totalNilaiKontrak,
     this.historyPembayaran = const [],
-    // New fields
-    this.nomorKtp,
+    // Additional fields
     this.jenisKelamin,
     this.tanggalLahir,
     this.alamatAsal,

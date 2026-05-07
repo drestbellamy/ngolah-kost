@@ -362,23 +362,6 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
                           ),
                           const SizedBox(height: 16),
 
-                          // NIK
-                          if (penghuni.nomorKtp != null &&
-                              penghuni.nomorKtp!.isNotEmpty)
-                            Column(
-                              children: [
-                                _buildInfoRow(
-                                  Icons.badge_outlined,
-                                  'NIK',
-                                  penghuni.nomorKtp!,
-                                  const Color(
-                                    0xFF6B8E7F,
-                                  ).withValues(alpha: 0.1),
-                                ),
-                                const SizedBox(height: 12),
-                              ],
-                            ),
-
                           // Jenis Kelamin
                           if (penghuni.jenisKelamin != null &&
                               penghuni.jenisKelamin!.isNotEmpty)
