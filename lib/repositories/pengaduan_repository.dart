@@ -30,7 +30,7 @@ class PengaduanRepository {
           return response['id']?.toString();
         }
       } catch (e) {
-        print('Error getting penghuni_id: $e');
+        // Error getting penghuni_id
       }
     }
     return null;
@@ -43,10 +43,6 @@ class PengaduanRepository {
     if (penghuniId == null) {
       throw Exception('Penghuni not found. Please contact administrator.');
     }
-
-    print('=== FETCH PENGADUAN ===');
-    print('Penghuni ID: $penghuniId');
-    print('=======================');
 
     // Fetch pengaduan created by current penghuni OR legacy data (penghuni_id is null)
     // This allows viewing old reports while migrating data
@@ -66,15 +62,6 @@ class PengaduanRepository {
   }) async {
     // Get current penghuni ID
     final penghuniId = await _currentPenghuniId;
-
-    print('=== DEBUG AUTH ===');
-    print('Penghuni ID: $penghuniId');
-    if (Get.isRegistered<AuthController>()) {
-      final authController = Get.find<AuthController>();
-      print('Current User: ${authController.currentUser?.username}');
-      print('Is Logged In: ${authController.isLoggedIn}');
-    }
-    print('==================');
 
     if (penghuniId == null) {
       throw Exception('Penghuni not found. Please contact administrator.');
@@ -105,32 +92,23 @@ class PengaduanRepository {
     String namaKost = 'KOST';
     try {
       // Direct query to get nama kost from penghuni
-      print('Getting nama kost for penghuni_id: $penghuniId');
-
       final penghuniData = await _client
           .from('penghuni')
           .select('kamar:kamar_id(kost:kost_id(nama_kost))')
           .eq('id', penghuniId)
           .maybeSingle();
 
-      print('Penghuni data: $penghuniData');
-
       if (penghuniData != null &&
           penghuniData['kamar'] != null &&
           penghuniData['kamar']['kost'] != null) {
         namaKost = penghuniData['kamar']['kost']['nama_kost'] ?? 'KOST';
-        print('Nama kost found: $namaKost');
-      } else {
-        print('Nama kost not found, using default: KOST');
       }
     } catch (e) {
       // If query fails, fallback to default 'KOST'
-      print('Failed to get kost name: $e');
     }
 
     // Create abbreviation from nama kost
     final abbreviation = _createAbbreviation(namaKost);
-    print('Abbreviation created: $abbreviation (from: $namaKost)');
 
     // Get count of today's reports for sequential number
     final today = DateTime.now();
@@ -161,12 +139,6 @@ class PengaduanRepository {
     );
 
     final jsonData = pengaduan.toJson();
-    print('=== SUBMITTING PENGADUAN ===');
-    print('Penghuni ID: $penghuniId');
-    print('Photo count: ${imageUrls.length}');
-    print('Photo URLs: $imageUrls');
-    print('JSON data: $jsonData');
-    print('===========================');
 
     await _client.from('pengaduan').insert(jsonData);
   }
@@ -203,16 +175,11 @@ class PengaduanRepository {
   /// Fetch all pengaduan for admin (from all penghuni)
   /// Uses RPC function to bypass RLS restrictions
   Future<List<Map<String, dynamic>>> fetchAllPengaduanForAdmin() async {
-    print('=== FETCH ALL PENGADUAN FOR ADMIN ===');
-
     try {
       // Call RPC function that has SECURITY DEFINER
       final response = await _client.rpc('get_all_pengaduan_for_admin');
 
-      print('RPC response: $response');
-
       if (response == null) {
-        print('RPC returned null');
         return [];
       }
 
@@ -220,16 +187,10 @@ class PengaduanRepository {
           .map((item) => Map<String, dynamic>.from(item as Map))
           .toList();
 
-      print('Total pengaduan fetched: ${pengaduanList.length}');
-
       // Enrich each pengaduan with proper structure for model
       final enrichedList = <Map<String, dynamic>>[];
 
       for (final pengaduan in pengaduanList) {
-        print('Processing pengaduan: ${pengaduan['kode_laporan']}');
-        print('  Nama: ${pengaduan['nama_penghuni']}');
-        print('  Kost: ${pengaduan['nama_kost']}');
-
         // Create enriched structure that matches PengaduanAdminModel
         final enrichedPengaduan = Map<String, dynamic>.from(pengaduan);
 
@@ -244,12 +205,8 @@ class PengaduanRepository {
         enrichedList.add(enrichedPengaduan);
       }
 
-      print('Total pengaduan enriched: ${enrichedList.length}');
       return enrichedList;
     } catch (e) {
-      print('✗ ERROR fetching pengaduan via RPC: $e');
-      print('Stack trace: ${StackTrace.current}');
-
       // Fallback: return empty list
       return [];
     }
@@ -260,15 +217,9 @@ class PengaduanRepository {
     required int idLaporan,
     required String newStatus,
   }) async {
-    print('=== UPDATE STATUS PENGADUAN ===');
-    print('ID Laporan: $idLaporan');
-    print('New Status: $newStatus');
-
     await _client
         .from('pengaduan')
         .update({'status': newStatus})
         .eq('id_laporan', idLaporan);
-
-    print('Status updated successfully');
   }
 }
