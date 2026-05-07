@@ -316,10 +316,6 @@ class TambahPenghuniController extends GetxController {
     if (isSubmitting.value) return;
     submitError.value = null;
 
-    // Debug: Print kamarId value
-    print('DEBUG: kamarId.value = "${kamarId.value}"');
-    print('DEBUG: kamarId.value.isEmpty = ${kamarId.value.isEmpty}');
-
     if (kamarId.value.isEmpty) {
       submitError.value = 'ID kamar tidak ditemukan';
       return;
