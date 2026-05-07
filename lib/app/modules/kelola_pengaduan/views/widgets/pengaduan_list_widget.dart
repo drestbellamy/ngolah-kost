@@ -12,97 +12,67 @@ class PengaduanListWidget extends GetView<KelolaPengaduanController> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.filteredPengaduanList.isEmpty) {
-        return Center(
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: context.allPadding(40),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Ilustrasi dengan background circle
-                  Container(
-                    width: context.screenWidth * 0.4,
-                    height: context.screenWidth * 0.4,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
+        return SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF6B8E7A).withValues(alpha: 0.08),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-                    child: Center(
-                      child: Icon(
-                        Icons.inbox_outlined,
-                        size: context.iconSize(80),
-                        color: const Color(0xFF6B8E7A).withValues(alpha: 0.6),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: context.spacing(24)),
-
-                  // Title
-                  Text(
-                    'Belum Ada Pengaduan',
-                    style: TextStyle(
-                      fontSize: context.fontSize(18),
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2D3748),
-                    ),
-                  ),
-                  SizedBox(height: context.spacing(8)),
-
-                  // Description
-                  Text(
-                    controller.selectedFilter.value == 'semua'
-                        ? 'Belum ada laporan pengaduan dari penghuni'
-                        : 'Tidak ada pengaduan dengan status "${_getFilterLabel()}"',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: context.fontSize(14),
-                      color: Colors.grey[600],
-                      height: 1.5,
-                    ),
-                  ),
-
-                  // Hint jika ada filter aktif
-                  if (controller.selectedFilter.value != 'semua' ||
-                      controller.selectedKostId.value != 'semua' ||
-                      controller.searchQuery.value.isNotEmpty) ...[
-                    SizedBox(height: context.spacing(24)),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
                     Container(
-                      padding: context.allPadding(16),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF9E6),
-                        borderRadius: BorderRadius.circular(
-                          context.borderRadius(12),
-                        ),
-                        border: Border.all(
-                          color: const Color(0xFFFFE082),
-                          width: 1,
-                        ),
+                        color: const Color(0xFF6B8E7A).withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
                       ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            size: context.iconSize(20),
-                            color: const Color(0xFFF57C00),
-                          ),
-                          SizedBox(width: context.spacing(12)),
-                          Expanded(
-                            child: Text(
-                              'Coba hapus filter atau ubah pencarian',
-                              style: TextStyle(
-                                fontSize: context.fontSize(13),
-                                color: const Color(0xFFF57C00),
-                              ),
-                            ),
-                          ),
-                        ],
+                      child: const Icon(
+                        Icons.chat_bubble_outline,
+                        size: 40,
+                        color: Color(0xFF6B8E7A),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Belum Ada Pengaduan',
+                      style: TextStyle(
+                        fontSize: context.fontSize(16),
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF2D3748),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      controller.selectedFilter.value == 'semua' &&
+                              controller.selectedKostId.value == 'semua' &&
+                              controller.searchQuery.value.isEmpty
+                          ? 'Saat ini tidak ada laporan pengaduan dari penghuni. Laporan baru akan muncul di sini saat ada keluhan.'
+                          : 'Tidak ada pengaduan dengan filter yang dipilih.\nCoba hapus filter atau ubah pencarian.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: context.fontSize(14),
+                        color: Colors.grey[600],
+                        height: 1.5,
                       ),
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
+            ],
           ),
         );
       }
@@ -125,17 +95,5 @@ class PengaduanListWidget extends GetView<KelolaPengaduanController> {
       );
     });
   }
-
-  String _getFilterLabel() {
-    switch (controller.selectedFilter.value.toLowerCase()) {
-      case 'menunggu':
-        return 'Menunggu';
-      case 'diproses':
-        return 'Diproses';
-      case 'selesai':
-        return 'Selesai';
-      default:
-        return 'Semua';
-    }
-  }
 }
+
