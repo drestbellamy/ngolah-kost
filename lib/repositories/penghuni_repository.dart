@@ -139,6 +139,16 @@ class PenghuniRepository extends BaseRepository {
         var rows = response
             .map((item) => Map<String, dynamic>.from(item))
             .toList();
+
+        // Debug: Check if users data is present
+        if (rows.isNotEmpty) {
+          logDebug('RPC response sample', {
+            'first_row_keys': rows.first.keys.toList(),
+            'has_users': rows.first.containsKey('users'),
+            'users_value': rows.first['users'],
+          });
+        }
+
         if (onlyActive) {
           rows = rows.where((row) {
             final status = (row['status']?.toString() ?? '').toLowerCase();
@@ -173,6 +183,17 @@ class PenghuniRepository extends BaseRepository {
       'created_at',
       ascending: false,
     );
+
+    // Debug: Log fallback query result
+    logInfo('Fallback query returned ${fallback.length} rows');
+    if (fallback.isNotEmpty) {
+      final firstRow = Map<String, dynamic>.from(fallback.first as Map);
+      logDebug('Fallback first row keys', {'keys': firstRow.keys.toList()});
+      logDebug('Fallback users data', {
+        'users': firstRow['users'],
+        'user_id': firstRow['user_id'],
+      });
+    }
 
     logInfo('Fetched ${fallback.length} penghuni via fallback query');
     return fallback.map((item) => Map<String, dynamic>.from(item)).toList();
@@ -342,7 +363,6 @@ class PenghuniRepository extends BaseRepository {
             tanggal_keluar, 
             status, 
             kamar_id,
-            nomor_ktp,
             jenis_kelamin,
             tanggal_lahir,
             alamat_asal,
