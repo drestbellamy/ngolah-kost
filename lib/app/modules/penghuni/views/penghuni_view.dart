@@ -208,15 +208,77 @@ class PenghuniView extends GetView<PenghuniController> {
                 }
 
                 if (controller.filteredPenghuniList.isEmpty) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Text(
-                        controller.emptyStateText,
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.body14.colored(const Color(0xFF6B7280)),
+                  return ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 70),
+                        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.shadowLight,
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primaryLighter,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.people_outline,
+                                size: 40,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Belum Ada Penghuni',
+                              style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Tambahkan data penghuni masa sewa\ndan tagihan dari penghuni.',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                                height: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            ElevatedButton(
+                              onPressed: controller.tambahPenghuni,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 0,
+                              ),
+                              child: const Text(
+                                'Tambah Penghuni',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   );
                 }
 
