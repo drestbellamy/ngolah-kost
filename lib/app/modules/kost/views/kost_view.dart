@@ -27,45 +27,7 @@ class KostView extends GetView<KostController> {
               showBackButton: false,
             ),
 
-            // Map View Button
-            Builder(
-              builder: (context) => Padding(
-                padding: EdgeInsets.fromLTRB(
-                  context.padding(16),
-                  context.padding(16),
-                  context.padding(16),
-                  0,
-                ),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => Get.toNamed(Routes.kostMap),
-                    icon: Icon(Icons.map, size: context.iconSize(20)),
-                    label: Text(
-                      'Lihat Peta Lokasi Kost',
-                      style: AppTextStyles.buttonMedium.copyWith(
-                        fontSize: context.fontSize(14),
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B8E7F),
-                      foregroundColor: Colors.white,
-                      elevation: 2,
-                      padding: EdgeInsets.symmetric(
-                        vertical: context.padding(14),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          context.borderRadius(12),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            // List Kost
+            // Content
             Expanded(
               child: FutureBuilder<List<KostModel>>(
                 future: controller.kostFuture,
@@ -84,44 +46,154 @@ class KostView extends GetView<KostController> {
                     );
                   }
 
-                  if (controller.kostList.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'Belum ada data kost',
-                        style: TextStyle(
-                          fontFamily: 'SF Pro',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400, // Regular
-                          color: Color(0xFF718096),
-                        ),
-                      ),
-                    );
-                  }
-
-                  return Obx(
-                    () => ListView.builder(
-                      padding: EdgeInsets.all(
-                        ResponsiveUtils.padding(context, 16),
-                      ),
-                      itemCount: controller.kostList.length,
-                      itemBuilder: (context, index) {
-                        final kost = controller.kostList[index];
-                        return _buildKostCard(context, kost);
-                      },
-                    ),
-                  );
+                  return Obx(() {
+                    if (controller.kostList.isEmpty) {
+                      return _buildEmptyState(context);
+                    }
+                    return _buildKostListContent(context);
+                  });
                 },
               ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: controller.addKost,
-        backgroundColor: const Color(0xFFFF9F66),
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Obx(
+        () => controller.kostList.isEmpty
+            ? const SizedBox.shrink()
+            : FloatingActionButton(
+                onPressed: controller.addKost,
+                backgroundColor: const Color(0xFFFF9F66),
+                child: const Icon(Icons.add, color: Colors.white),
+              ),
       ),
       bottomNavigationBar: const AdminBottomNavbar(currentIndex: 1),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Container(
+        margin: const EdgeInsets.only(top: 100),
+        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 60),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.shadowLight,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                color: AppColors.primaryLighter,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.home_work_outlined,
+                size: 40,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Belum Ada Unit Kost',
+              style: AppTextStyles.header16.colored(AppColors.textPrimary),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Tambahkan unit kost pertama Anda\nuntuk mulai mengelola properti.',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: controller.addKost,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              child: const Text(
+                'Tambah Kost',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKostListContent(BuildContext context) {
+    return Column(
+      children: [
+        // Map View Button
+        Padding(
+          padding: EdgeInsets.fromLTRB(
+            context.padding(16),
+            context.padding(16),
+            context.padding(16),
+            0,
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => Get.toNamed(Routes.kostMap),
+              icon: Icon(Icons.map, size: context.iconSize(20)),
+              label: Text(
+                'Lihat Peta Lokasi Kost',
+                style: AppTextStyles.buttonMedium.copyWith(
+                  fontSize: context.fontSize(14),
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6B8E7F),
+                foregroundColor: Colors.white,
+                elevation: 2,
+                padding: EdgeInsets.symmetric(
+                  vertical: context.padding(14),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                    context.borderRadius(12),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // Kost List
+        Expanded(
+          child: ListView.builder(
+            padding: EdgeInsets.all(
+              ResponsiveUtils.padding(context, 16),
+            ),
+            itemCount: controller.kostList.length,
+            itemBuilder: (context, index) {
+              final kost = controller.kostList[index];
+              return _buildKostCard(context, kost);
+            },
+          ),
+        ),
+      ],
     );
   }
 
