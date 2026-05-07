@@ -125,7 +125,7 @@ class SupabaseService {
 
       return kostListWithStatus;
     } catch (e) {
-      print('Error getting kost list with status: $e');
+      // Error getting kost list with status
       return [];
     }
   }

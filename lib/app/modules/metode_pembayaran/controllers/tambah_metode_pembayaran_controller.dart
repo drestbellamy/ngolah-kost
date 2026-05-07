@@ -84,6 +84,15 @@ class TambahMetodePembayaranController extends GetxController {
           'jumlahKamar': 0,
         },
       ];
+    } else if (Get.arguments is Map<String, dynamic> && Get.arguments['namaKost'] != null) {
+      selectedKostList.value = [
+        {
+          'id': '',
+          'nama': Get.arguments['namaKost'],
+          'alamat': '-',
+          'jumlahKamar': 0,
+        }
+      ];
     }
 
     namaBankController.addListener(_updateState);

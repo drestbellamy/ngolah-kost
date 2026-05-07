@@ -1,0 +1,16 @@
+# Android Release Signing Configuration
+# 
+# IMPORTANT: This is an example file. DO NOT commit the actual key.properties file!
+# 
+# Instructions:
+# 1. Generate a keystore file:
+#    keytool -genkey -v -keystore ~/ngolah-kost-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias ngolah-kost
+# 
+# 2. Copy this file to key.properties (without .example)
+# 3. Fill in the actual values below
+# 4. Make sure key.properties is in .gitignore
+
+storePassword=YOUR_STORE_PASSWORD_HERE
+keyPassword=YOUR_KEY_PASSWORD_HERE
+keyAlias=ngolah-kost
+storeFile=C:/path/to/your/ngolah-kost-keystore.jks
