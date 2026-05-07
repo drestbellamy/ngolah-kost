@@ -5,6 +5,7 @@ import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/kost_repository.dart';
 import '../../../../repositories/kamar_repository.dart';
 import '../../../../repositories/penghuni_repository.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../models/penghuni_model.dart';
 
 class PenghuniController extends GetxController {
@@ -321,6 +322,30 @@ class PenghuniController extends GetxController {
 
   void goToDetail(PenghuniModel penghuni) {
     Get.toNamed('/penghuni/detail', arguments: penghuni);
+  }
+
+  Future<void> tambahPenghuni() async {
+    if (selectedFilter.value == 'Semua Kost') {
+      Get.toNamed('/tambah-penghuni');
+      return;
+    }
+
+    try {
+      final kosts = await _kostRepo.getKostList();
+      final selectedKost = kosts.firstWhereOrNull((k) => k.name.trim() == selectedFilter.value);
+      
+      if (selectedKost != null) {
+        final kamarList = await _kamarRepo.getKamarByKostId(selectedKost.id);
+        if (kamarList.isEmpty) {
+          ToastHelper.showInfo('Silakan tambahkan kamar terlebih dahulu pada kost ini.');
+        }
+        Get.toNamed('/kamar', arguments: selectedKost);
+      } else {
+        Get.toNamed('/tambah-penghuni');
+      }
+    } catch (e) {
+      Get.toNamed('/tambah-penghuni');
+    }
   }
 
   @override
