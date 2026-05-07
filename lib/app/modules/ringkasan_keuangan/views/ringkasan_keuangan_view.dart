@@ -95,33 +95,50 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                   if (controller.kostList.isEmpty) {
                     return SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.6,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.home_work_outlined,
-                                  size: 64,
-                                  color: Color(0xFF9CA3AF),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Belum ada data kost',
-                                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Tambahkan kost terlebih dahulu untuk melihat ringkasan keuangan',
-                                  textAlign: TextAlign.center,
-                                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
-                                ),
-                              ],
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 100),
+                        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.shadowLight,
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                          ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: const BoxDecoration(
+                                color: AppColors.primaryLighter,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.account_balance_wallet_outlined,
+                                size: 40,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              'Belum Ada Data Keuangan',
+                              style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Data keuangan akan muncul setelah Anda\nmenambahkan properti kost pemasukan\nserta pengeluaran.',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );
