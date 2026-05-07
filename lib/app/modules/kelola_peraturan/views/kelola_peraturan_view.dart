@@ -231,33 +231,35 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
         child: Column(
           children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6B8E7A),
-                minimumSize: const Size(double.infinity, 46),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-              onPressed: controller.isSavingPeraturan.value
-                  ? null
-                  : _showAddModal,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.add, color: Colors.white, size: 22),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Tambah Kategori Peraturan',
-                    style: AppTextStyles.subtitle16.colored(Colors.white),
+            if (!controller.isLoadingPeraturan.value && controller.kategoriList.isNotEmpty) ...[
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6B8E7A),
+                  minimumSize: const Size(double.infinity, 46),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                ],
+                  elevation: 0,
+                ),
+                onPressed: controller.isSavingPeraturan.value
+                    ? null
+                    : _showAddModal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.add, color: Colors.white, size: 22),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Tambah Kategori Peraturan',
+                      style: AppTextStyles.subtitle16.colored(Colors.white),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            _buildInfoBannerModal(),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
+              _buildInfoBannerModal(),
+              const SizedBox(height: 12),
+            ],
             if (controller.isLoadingPeraturan.value)
               const Padding(
                 padding: EdgeInsets.only(top: 24),
@@ -283,20 +285,70 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
               )
             else if (controller.kategoriList.isEmpty)
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  vertical: 28,
-                  horizontal: 20,
-                ),
+                margin: const EdgeInsets.only(top: 70),
+                padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadowLight,
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'Belum ada peraturan. Tambahkan peraturan untuk gedung kost ini.',
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.header16.colored(AppColors.textGray).copyWith(height: 1.4),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primaryLighter,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.gpp_maybe_outlined,
+                        size: 40,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Belum Ada Peraturan',
+                      style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Tetapkan peraturan kost agar lingkungan\ntetap aman bagi seluruh penghuni.',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton(
+                      onPressed: controller.isSavingPeraturan.value
+                          ? null
+                          : _showAddModal,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Tambah Peraturan',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               )
             else
