@@ -8,13 +8,12 @@ import '../../../core/utils/distance_calculator.dart' as utils;
 import '../../../core/utils/toast_helper.dart';
 import '../../../data/models/kost_with_status_model.dart';
 import '../../../data/models/map_state_model.dart';
-import '../../../../services/supabase_service.dart';
+import '../../../../repositories/kost_repository.dart';
 import '../../kost/models/kost_model.dart';
 import '../../../routes/app_routes.dart';
 
 class KostMapController extends GetxController {
-  // TODO: Replace with KostRepository when getKostListWithStatus is added
-  final SupabaseService _supabaseService = SupabaseService();
+  final KostRepository _kostRepository = KostRepository();
 
   // Reactive state
   final Rx<MapState> _mapState = const MapState().obs;
@@ -94,8 +93,8 @@ class KostMapController extends GetxController {
         _mapState.value.copyWith(isLoading: true, clearError: true),
       );
 
-      // Get kost list with status from Supabase
-      final kostListWithStatus = await _supabaseService.getKostListWithStatus();
+      // Get kost list with status from repository
+      final kostListWithStatus = await _kostRepository.getKostListWithStatus();
 
       print('🗺️ MAP DEBUG: Total kost from DB: ${kostListWithStatus.length}');
 
@@ -370,52 +369,6 @@ class KostMapController extends GetxController {
       _mapState.value.copyWith(searchQuery: '', statusFilter: StatusFilter.all),
     );
     _applyFilters();
-  }
-
-  /// Center map on specific kost
-  void centerMapOnKost(KostWithStatus kost) {
-    if (kost.hasValidCoordinates) {
-      final location = LatLng(kost.latitude!, kost.longitude!);
-      _updateMapState(
-        _mapState.value.copyWith(
-          mapCenter: location,
-          mapZoom: 16.0, // Zoom in when centering on specific kost
-        ),
-      );
-    }
-  }
-
-  /// Center map on admin location
-  void centerMapOnAdmin() {
-    if (adminLocation != null) {
-      _updateMapState(
-        _mapState.value.copyWith(mapCenter: adminLocation, mapZoom: 15.0),
-      );
-    } else {
-      getCurrentLocation();
-    }
-  }
-
-  /// Fit map to show all kost
-  void fitMapToAllKost() {
-    if (_filteredKostList.isEmpty) return;
-
-    final locations = _filteredKostList
-        .where((kost) => kost.hasValidCoordinates)
-        .map((kost) => LatLng(kost.latitude!, kost.longitude!))
-        .toList();
-
-    if (locations.isNotEmpty) {
-      final center = utils.DistanceCalculator.getCenterPoint(locations);
-      if (center != null) {
-        _updateMapState(
-          _mapState.value.copyWith(
-            mapCenter: center,
-            mapZoom: 12.0, // Zoom out to show all
-          ),
-        );
-      }
-    }
   }
 
   /// Update map state

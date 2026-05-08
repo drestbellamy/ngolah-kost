@@ -4,7 +4,6 @@ import '../../../../data/models/map_state_model.dart';
 class MapFloatingButtons extends StatelessWidget {
   final VoidCallback onMyLocationPressed;
   final VoidCallback onToggleViewPressed;
-  final VoidCallback onFitAllPressed;
   final bool isLoadingLocation;
   final MapViewMode viewMode;
 
@@ -12,7 +11,6 @@ class MapFloatingButtons extends StatelessWidget {
     super.key,
     required this.onMyLocationPressed,
     required this.onToggleViewPressed,
-    required this.onFitAllPressed,
     required this.isLoadingLocation,
     required this.viewMode,
   });
@@ -22,17 +20,6 @@ class MapFloatingButtons extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Fit All Markers Button
-        FloatingActionButton(
-          heroTag: 'fit_all',
-          onPressed: onFitAllPressed,
-          backgroundColor: Colors.white,
-          elevation: 4,
-          child: const Icon(Icons.fit_screen, color: Color(0xFF6B8E7F)),
-        ),
-
-        const SizedBox(height: 12),
-
         // My Location Button
         FloatingActionButton(
           heroTag: 'my_location',

@@ -5,6 +5,7 @@ class KostWithStatus extends KostModel {
   final RoomAvailabilityStatus availabilityStatus;
   final int availableRooms;
   final int occupiedRooms;
+  final int totalPenghuni; // Total number of active penghuni
   final double? distanceFromAdmin; // Distance in kilometers
 
   KostWithStatus({
@@ -17,6 +18,7 @@ class KostWithStatus extends KostModel {
     required this.availabilityStatus,
     required this.availableRooms,
     required this.occupiedRooms,
+    required this.totalPenghuni,
     this.distanceFromAdmin,
   });
 
@@ -25,6 +27,7 @@ class KostWithStatus extends KostModel {
     required KostModel kost,
     required int availableRooms,
     required int occupiedRooms,
+    required int totalPenghuni,
     double? distanceFromAdmin,
   }) {
     final totalRooms = kost.roomCount;
@@ -52,6 +55,7 @@ class KostWithStatus extends KostModel {
       availabilityStatus: status,
       availableRooms: availableRooms,
       occupiedRooms: occupiedRooms,
+      totalPenghuni: totalPenghuni,
       distanceFromAdmin: distanceFromAdmin,
     );
   }
@@ -65,6 +69,9 @@ class KostWithStatus extends KostModel {
     final occupiedRooms = map['occupied_rooms'] is int
         ? map['occupied_rooms'] as int
         : int.tryParse(map['occupied_rooms']?.toString() ?? '0') ?? 0;
+    final totalPenghuni = map['total_penghuni'] is int
+        ? map['total_penghuni'] as int
+        : int.tryParse(map['total_penghuni']?.toString() ?? '0') ?? 0;
 
     final distanceFromAdmin = map['distance_from_admin'] != null
         ? double.tryParse(map['distance_from_admin'].toString())
@@ -100,6 +107,7 @@ class KostWithStatus extends KostModel {
       availabilityStatus: status,
       availableRooms: availableRooms,
       occupiedRooms: occupiedRooms,
+      totalPenghuni: totalPenghuni,
       distanceFromAdmin: distanceFromAdmin,
     );
   }
@@ -115,6 +123,7 @@ class KostWithStatus extends KostModel {
       'longitude': longitude,
       'available_rooms': availableRooms,
       'occupied_rooms': occupiedRooms,
+      'total_penghuni': totalPenghuni,
       'availability_status': availabilityStatus.name,
     };
 
@@ -157,12 +166,13 @@ class KostWithStatus extends KostModel {
       availabilityStatus: availabilityStatus,
       availableRooms: availableRooms,
       occupiedRooms: occupiedRooms,
+      totalPenghuni: totalPenghuni,
       distanceFromAdmin: newDistance,
     );
   }
 
   @override
   String toString() {
-    return 'KostWithStatus{id: $id, name: $name, status: ${availabilityStatus.name}, available: $availableRooms, occupied: $occupiedRooms, distance: $formattedDistance}';
+    return 'KostWithStatus{id: $id, name: $name, status: ${availabilityStatus.name}, available: $availableRooms, occupied: $occupiedRooms, penghuni: $totalPenghuni, distance: $formattedDistance}';
   }
 }

@@ -88,7 +88,6 @@ class KostMapView extends GetView<KostMapController> {
           child: MapFloatingButtons(
             onMyLocationPressed: controller.getCurrentLocation,
             onToggleViewPressed: controller.toggleViewMode,
-            onFitAllPressed: controller.fitMapToAllKost,
             isLoadingLocation: controller.isLoadingLocation,
             viewMode: controller.viewMode,
           ),
@@ -118,15 +117,15 @@ class KostMapView extends GetView<KostMapController> {
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
-                  padding: const EdgeInsets.all(32),
+                  margin: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 20,
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 16,
                         offset: const Offset(0, 4),
                       ),
                     ],
@@ -134,77 +133,77 @@ class KostMapView extends GetView<KostMapController> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Icon with background
+                      // Icon
                       Container(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(16),
                         decoration: const BoxDecoration(
                           color: Color(0xFFE8F0ED),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.map_outlined,
-                          size: 56,
+                          size: 40,
                           color: Color(0xFF6B8E7F),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
+
+                      // Title
                       const Text(
                         'Tidak Ada Data Kost',
-                        style: AppTextStyles.header20,
+                        style: AppTextStyles.header18,
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
+
+                      // Description
                       Text(
                         'Belum ada kost dengan koordinat lokasi yang valid.',
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.body14.copyWith(fontSize: 15).colored(const Color(0xFF6B7280)),
+                        style: AppTextStyles.body14.colored(
+                          const Color(0xFF6B7280),
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Tambahkan latitude & longitude pada data kost Anda.',
-                        textAlign: TextAlign.center,
-                        style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)),
-                      ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
+
                       // Buttons
-                      Column(
+                      Row(
                         children: [
-                          SizedBox(
-                            width: double.infinity,
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: controller.refreshData,
+                              icon: const Icon(Icons.refresh, size: 18),
+                              label: const Text('Refresh'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF6B8E7F),
+                                side: const BorderSide(
+                                  color: Color(0xFF6B8E7F),
+                                  width: 1.5,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
                             child: ElevatedButton.icon(
                               onPressed: controller.getCurrentLocation,
-                              icon: const Icon(Icons.my_location, size: 20),
-                              label: const Text('Coba Lokasi Saya'),
+                              icon: const Icon(Icons.my_location, size: 18),
+                              label: const Text('Lokasi'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF6B8E7F),
                                 foregroundColor: Colors.white,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
+                                  vertical: 12,
                                 ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: controller.refreshData,
-                              icon: const Icon(Icons.refresh, size: 20),
-                              label: const Text('Refresh Data'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: const Color(0xFF6B8E7F),
-                                side: const BorderSide(
-                                  color: Color(0xFF6B8E7F),
-                                  width: 2,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                             ),
@@ -241,7 +240,9 @@ class KostMapView extends GetView<KostMapController> {
                     Expanded(
                       child: Text(
                         controller.errorMessage!,
-                        style: AppTextStyles.body14.colored(const Color(0xFFEF4444)),
+                        style: AppTextStyles.body14.colored(
+                          const Color(0xFFEF4444),
+                        ),
                       ),
                     ),
                     IconButton(
@@ -481,7 +482,7 @@ class KostMapView extends GetView<KostMapController> {
             child: ElevatedButton.icon(
               onPressed: controller.toggleViewMode,
               icon: const Icon(Icons.map),
-              label: const Text('View on Map'),
+              label: const Text('Lihat Peta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B8E7F),
                 foregroundColor: Colors.white,
@@ -532,7 +533,9 @@ class KostMapView extends GetView<KostMapController> {
               Expanded(
                 child: Text(
                   kost.name,
-                  style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)),
+                  style: AppTextStyles.subtitle16.colored(
+                    const Color(0xFF2D3748),
+                  ),
                 ),
               ),
 
@@ -615,7 +618,7 @@ class KostMapView extends GetView<KostMapController> {
                 child: OutlinedButton.icon(
                   onPressed: () => controller.openNavigation(kost),
                   icon: const Icon(Icons.directions, size: 16),
-                  label: const Text('Route'),
+                  label: const Text('Rute'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFF6B8E7F),
                     side: const BorderSide(color: Color(0xFF6B8E7F)),
