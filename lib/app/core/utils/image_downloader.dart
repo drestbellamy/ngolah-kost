@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:get/get.dart' as getx;
 import 'package:device_info_plus/device_info_plus.dart';
+import '../utils/toast_helper.dart';
 
 class ImageDownloader {
   static Future<bool> downloadImage(String imageUrl, String fileName) async {
@@ -17,10 +17,9 @@ class ImageDownloader {
         if (androidInfo.version.sdkInt < 33) {
           final status = await Permission.storage.request();
           if (!status.isGranted) {
-            getx.Get.snackbar(
-              'Izin Ditolak',
+            ToastHelper.showWarning(
               'Izin penyimpanan diperlukan untuk download gambar',
-              snackPosition: getx.SnackPosition.BOTTOM,
+              title: 'Izin Ditolak',
             );
             return false;
           }
@@ -68,20 +67,18 @@ class ImageDownloader {
         },
       );
 
-      getx.Get.snackbar(
-        'Download Berhasil',
+      ToastHelper.showSuccess(
         'QR Code berhasil disimpan di folder Download',
-        snackPosition: getx.SnackPosition.BOTTOM,
+        title: 'Download Berhasil',
         duration: const Duration(seconds: 3),
       );
 
       return true;
     } catch (e) {
       print('Error downloading image: $e');
-      getx.Get.snackbar(
-        'Download Gagal',
+      ToastHelper.showError(
         'Terjadi kesalahan saat download: ${e.toString()}',
-        snackPosition: getx.SnackPosition.BOTTOM,
+        title: 'Download Gagal',
       );
       return false;
     }

@@ -6,6 +6,7 @@ import '../../ringkasan_keuangan/views/ringkasan_keuangan_view.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/dashboard_repository.dart';
 import '../views/widgets/ringkasan_keuangan_widget.dart';
+import '../../../core/utils/toast_helper.dart';
 
 class HomeController extends GetxController {
   final DashboardRepository _dashboardRepo;
@@ -41,10 +42,9 @@ class HomeController extends GetxController {
       tagihanBelumBayar.value = stats['tagihanBelumBayar'] ?? 0;
       menungguVerifikasi.value = stats['menungguVerifikasi'] ?? 0;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Gagal memuat data dashboard: $e',
-        snackPosition: SnackPosition.BOTTOM,
+        title: 'Error',
       );
     } finally {
       isLoading.value = false;
@@ -70,7 +70,7 @@ class HomeController extends GetxController {
       );
       refreshAllData();
     } catch (e) {
-      Get.snackbar('Error Navigasi', 'Gagal membuka halaman: $e');
+      ToastHelper.showError('Gagal membuka halaman: $e', title: 'Error Navigasi');
       print("Navigasi error: $e");
     }
   }
@@ -84,7 +84,7 @@ class HomeController extends GetxController {
       );
       refreshAllData();
     } catch (e) {
-      Get.snackbar('Error Navigasi', 'Gagal membuka halaman: $e');
+      ToastHelper.showError('Gagal membuka halaman: $e', title: 'Error Navigasi');
       print("Navigasi error: $e");
     }
   }

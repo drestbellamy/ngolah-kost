@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:get/get.dart';
+import '../utils/toast_helper.dart';
 
 class NavigationService {
   /// Open navigation to a specific location using external apps
@@ -109,12 +108,9 @@ class NavigationService {
 
   /// Show error message when no navigation apps are available
   static void _showNavigationError() {
-    Get.snackbar(
-      'Navigation Error',
+    ToastHelper.showError(
       'No navigation app found. Please install Google Maps or Waze.',
-      backgroundColor: const Color(0xFFEF4444),
-      colorText: const Color(0xFFFFFFFF),
-      snackPosition: SnackPosition.BOTTOM,
+      title: 'Navigation Error',
       duration: const Duration(seconds: 3),
     );
   }
