@@ -5,6 +5,8 @@ import '../../ringkasan_keuangan/bindings/ringkasan_keuangan_binding.dart';
 import '../../ringkasan_keuangan/views/ringkasan_keuangan_view.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/dashboard_repository.dart';
+import '../views/widgets/ringkasan_keuangan_widget.dart';
+import '../../../core/utils/toast_helper.dart';
 
 class HomeController extends GetxController {
   final DashboardRepository _dashboardRepo;
@@ -40,59 +42,74 @@ class HomeController extends GetxController {
       tagihanBelumBayar.value = stats['tagihanBelumBayar'] ?? 0;
       menungguVerifikasi.value = stats['menungguVerifikasi'] ?? 0;
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Gagal memuat data dashboard: $e',
-        snackPosition: SnackPosition.BOTTOM,
+        title: 'Error',
       );
     } finally {
       isLoading.value = false;
     }
   }
 
-  void navigateToKelolaTagihan() {
-    Get.toNamed('/kelola-tagihan');
+  void navigateToKelolaTagihan() async {
+    await Get.toNamed('/kelola-tagihan');
+    refreshAllData();
   }
 
-  void navigateToMetodePembayaran() {
-    Get.toNamed('/metode-pembayaran');
+  void navigateToMetodePembayaran() async {
+    await Get.toNamed('/metode-pembayaran');
+    refreshAllData();
   }
 
-  void navigateToKelolaKeuangan() {
+  void navigateToKelolaKeuangan() async {
     try {
       print("Menu Kelola Keuangan ditekan - mencoba navigasi langsung...");
-      Get.to(
+      await Get.to(
         () => const RingkasanKeuanganView(),
         binding: RingkasanKeuanganBinding(),
       );
+      refreshAllData();
     } catch (e) {
-      Get.snackbar('Error Navigasi', 'Gagal membuka halaman: $e');
+      ToastHelper.showError('Gagal membuka halaman: $e', title: 'Error Navigasi');
       print("Navigasi error: $e");
     }
   }
 
-  void navigateToKelolaPengumuman() {
+  void navigateToKelolaPengumuman() async {
     try {
       print("Menu Kelola Pengumuman ditekan - mencoba navigasi langsung...");
-      Get.to(
+      await Get.to(
         () => const KelolaPengumumanView(),
         binding: KelolaPengumumanBinding(),
       );
+      refreshAllData();
     } catch (e) {
-      Get.snackbar('Error Navigasi', 'Gagal membuka halaman: $e');
+      ToastHelper.showError('Gagal membuka halaman: $e', title: 'Error Navigasi');
       print("Navigasi error: $e");
     }
   }
 
-  void navigateToKelolaPeraturan() {
-    Get.toNamed('/kelola-peraturan');
+  void navigateToKelolaPeraturan() async {
+    await Get.toNamed('/kelola-peraturan');
+    refreshAllData();
   }
 
-  void navigateToKelolaPengaduan() {
-    Get.toNamed('/kelola-pengaduan');
+  void navigateToKelolaPengaduan() async {
+    await Get.toNamed('/kelola-pengaduan');
+    refreshAllData();
   }
 
-  void navigateToVerifikasi() {
-    Get.toNamed('/kelola-tagihan');
+  void navigateToVerifikasi() async {
+    await Get.toNamed('/kelola-tagihan');
+    refreshAllData();
+  }
+
+  void refreshAllData() {
+    loadDashboardData();
+    
+    // Refresh the Ringkasan Keuangan widget if it's already in the widget tree
+    if (Get.isRegistered<RingkasanKeuanganWidgetController>()) {
+      Get.find<RingkasanKeuanganWidgetController>().loadRingkasanKeuangan();
+    }
   }
 }

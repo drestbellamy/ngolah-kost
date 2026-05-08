@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import '../../../../core/utils/toast_helper.dart';
 
 /// Helper class untuk form utilities yang digunakan di dialog-dialog
 class FormHelpers {
@@ -48,7 +48,7 @@ class FormHelpers {
     return null;
   }
 
-  /// Show error snackbar dengan format yang konsisten
+  /// Show error toast dengan format yang konsisten
   static void showFormException(Object error, String fallbackMessage) {
     final raw = error.toString().trim();
     var message = raw;
@@ -61,6 +61,6 @@ class FormHelpers {
       message = fallbackMessage;
     }
 
-    Get.snackbar('Error', message);
+    ToastHelper.showError(message, title: 'Error');
   }
 }

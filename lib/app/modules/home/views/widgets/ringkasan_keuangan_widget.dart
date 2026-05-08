@@ -4,6 +4,7 @@ import '../../../../../repositories/repository_factory.dart';
 import '../../../../../repositories/kost_repository.dart';
 import '../../../../../repositories/keuangan_repository.dart';
 import '../../../../../app/core/values/text_styles.dart';
+import '../../controllers/home_controller.dart';
 
 class RingkasanKeuanganWidgetController extends GetxController {
   final KostRepository _kostRepo;
@@ -79,7 +80,13 @@ class RingkasanKeuanganWidget extends StatelessWidget {
     final controller = Get.put(RingkasanKeuanganWidgetController());
 
     return GestureDetector(
-      onTap: () => Get.toNamed('/ringkasan-keuangan'),
+      onTap: () async {
+        await Get.toNamed('/ringkasan-keuangan');
+        controller.loadRingkasanKeuangan();
+        if (Get.isRegistered<HomeController>()) {
+          Get.find<HomeController>().loadDashboardData();
+        }
+      },
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(20),
