@@ -100,31 +100,33 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
         child: Column(
           children: [
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6B8E7A),
-                minimumSize: const Size(double.infinity, 46),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-              onPressed: controller.isSavingPengumuman.value
-                  ? null
-                  : AddPengumumanDialog.show,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.add, color: Colors.white, size: 22),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Tambah Pengumuman',
-                    style: AppTextStyles.subtitle16.colored(Colors.white),
+            if (!controller.isLoadingPengumuman.value && controller.pengumumanList.isNotEmpty) ...[
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6B8E7A),
+                  minimumSize: const Size(double.infinity, 46),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                ],
+                  elevation: 0,
+                ),
+                onPressed: controller.isSavingPengumuman.value
+                    ? null
+                    : AddPengumumanDialog.show,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.add, color: Colors.white, size: 22),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Tambah Pengumuman',
+                      style: AppTextStyles.subtitle16.colored(Colors.white),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
+            ],
             if (controller.isLoadingPengumuman.value)
               const Padding(
                 padding: EdgeInsets.only(top: 24),
@@ -133,7 +135,11 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
             else if (controller.errorMessage.value != null)
               ErrorStateWidget(message: controller.errorMessage.value!)
             else if (controller.pengumumanList.isEmpty)
-              const EmptyStateWidget()
+              EmptyStateWidget(
+                onAdd: controller.isSavingPengumuman.value
+                    ? null
+                    : AddPengumumanDialog.show,
+              )
             else
               ListView.separated(
                 shrinkWrap: true,
