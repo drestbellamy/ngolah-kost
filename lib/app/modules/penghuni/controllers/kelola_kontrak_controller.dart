@@ -7,8 +7,6 @@ import '../../../routes/app_routes.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/penghuni_repository.dart';
 import '../../../../repositories/tagihan_repository.dart';
-import '../../kamar/controllers/informasi_kamar_controller.dart';
-import '../../kelola_tagihan/controllers/kelola_tagihan_controller.dart';
 import '../models/penghuni_model.dart';
 import 'penghuni_controller.dart';
 
@@ -358,19 +356,14 @@ class KelolaKontrakController extends GetxController {
         hargaBulanan: p.sewaBulanan.round(),
       );
 
-      // Wait for data to be fully synced
-      await Future.delayed(const Duration(milliseconds: 500));
-      await _refreshRelatedData();
-
       try {
         HapticFeedback.heavyImpact();
       } catch (_) {
         // Ignore haptic feedback errors on unsupported devices
       }
 
-      if (Get.isBottomSheetOpen ?? false) {
-        Get.back(result: true);
-      }
+      // Navigate back to detail page
+      Get.back(result: true);
 
       ToastHelper.showSuccess(
         'Kontrak berhasil diperpanjang $tambahan bulan. Data tagihan telah diperbarui.',
@@ -554,19 +547,14 @@ class KelolaKontrakController extends GetxController {
         hargaBulanan: p.sewaBulanan.round(),
       );
 
-      // Wait for data to be fully synced
-      await Future.delayed(const Duration(milliseconds: 500));
-      await _refreshRelatedData();
-
       try {
         HapticFeedback.heavyImpact();
       } catch (_) {
         // Ignore haptic feedback errors on unsupported devices
       }
 
-      if (Get.isBottomSheetOpen ?? false) {
-        Get.back(result: true);
-      }
+      // Navigate back to detail page
+      Get.back(result: true);
 
       ToastHelper.showSuccess(
         'Kontrak berhasil diperbarui. Data tagihan telah disesuaikan.',
@@ -589,9 +577,7 @@ class KelolaKontrakController extends GetxController {
     // Tampilkan popup konfirmasi sesuai desain
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         backgroundColor: Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -629,7 +615,7 @@ class KelolaKontrakController extends GetxController {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Title
               const Text(
                 'Akhiri Kontrak?',
@@ -643,7 +629,7 @@ class KelolaKontrakController extends GetxController {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              
+
               // Subtitle
               const Text(
                 'Tindakan ini bersifat permanen dan akan\nlangsung berdampak pada akses penghuni.',
@@ -657,7 +643,7 @@ class KelolaKontrakController extends GetxController {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              
+
               // Konsekuensi section
               Container(
                 width: double.infinity,
@@ -674,7 +660,7 @@ class KelolaKontrakController extends GetxController {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Konsekuensi 1: Cabut Akses Kamar
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -723,7 +709,7 @@ class KelolaKontrakController extends GetxController {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    
+
                     // Konsekuensi 2: Nonaktifkan Akun
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -775,7 +761,7 @@ class KelolaKontrakController extends GetxController {
                 ),
               ),
               const SizedBox(height: 32),
-              
+
               // Buttons
               Row(
                 children: [
@@ -818,7 +804,8 @@ class KelolaKontrakController extends GetxController {
                           return;
                         }
 
-                        if (Get.isDialogOpen ?? false) Get.back(); // Close dialog
+                        if (Get.isDialogOpen ?? false)
+                          Get.back(); // Close dialog
 
                         try {
                           HapticFeedback.mediumImpact();
@@ -834,9 +821,11 @@ class KelolaKontrakController extends GetxController {
                             onDeleteUser: (_) {},
                           );
 
-                          // Wait for data to be fully synced
-                          await Future.delayed(const Duration(milliseconds: 500));
-                          await _refreshRelatedData();
+                          // Refresh penghuni list only (not all related data)
+                          if (Get.isRegistered<PenghuniController>()) {
+                            await Get.find<PenghuniController>()
+                                .loadPenghuniData();
+                          }
 
                           try {
                             HapticFeedback.heavyImpact();
@@ -844,14 +833,13 @@ class KelolaKontrakController extends GetxController {
                             // Ignore haptic feedback errors
                           }
 
-                          if (Get.isBottomSheetOpen ?? false) {
-                            Get.back(
-                              result: 'kontrak_diakhiri',
-                            ); // Return special value for ended contract
-                          }
+                          if (Get.isDialogOpen ?? false)
+                            Get.back(); // Close dialog
 
                           // Navigate back to penghuni list page
-                          Get.until((route) => route.settings.name == Routes.penghuni);
+                          Get.until(
+                            (route) => route.settings.name == Routes.penghuni,
+                          );
 
                           ToastHelper.showSuccess(
                             'Kontrak ${p.nama} telah diakhiri. Akun penghuni telah dinonaktifkan.',
@@ -1316,20 +1304,6 @@ class KelolaKontrakController extends GetxController {
   int _toInt(dynamic value) {
     if (value is int) return value;
     return int.tryParse(value?.toString() ?? '') ?? 0;
-  }
-
-  Future<void> _refreshRelatedData() async {
-    if (Get.isRegistered<PenghuniController>()) {
-      await Get.find<PenghuniController>().loadPenghuniData();
-    }
-
-    if (Get.isRegistered<InformasiKamarController>()) {
-      await Get.find<InformasiKamarController>().fetchPenghuniData();
-    }
-
-    if (Get.isRegistered<KelolaTagihanController>()) {
-      await Get.find<KelolaTagihanController>().loadTagihanData();
-    }
   }
 
   @override
