@@ -100,18 +100,76 @@ class InfoContentSection extends GetView<UserInfoController> {
     );
   }
 
-  Widget _buildPengumumanList(BuildContext context) {
-    if (controller.pengumumanList.isEmpty) {
-      return Padding(
-        padding: EdgeInsets.all(context.spacing(48)),
-        child: Center(
-          child: Text(
-            'Belum ada pengumuman',
-            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)).copyWith(
-              fontSize: context.fontSize(14),
+  Widget _buildEmptyState({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String description,
+  }) {
+    return Container(
+      margin: EdgeInsets.only(top: context.spacing(24)),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.spacing(24), 
+        vertical: context.spacing(40),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(context.borderRadius(16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: EdgeInsets.all(context.spacing(24)),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF3F6F4),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: context.iconSize(40),
+              color: const Color(0xFF6B8E7A),
             ),
           ),
-        ),
+          SizedBox(height: context.spacing(24)),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: context.fontSize(20),
+              fontWeight: FontWeight.bold,
+              color: const Color(0xFF111827),
+            ),
+          ),
+          SizedBox(height: context.spacing(12)),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: context.fontSize(14),
+              color: const Color(0xFF6B7280),
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPengumumanList(BuildContext context) {
+    if (controller.pengumumanList.isEmpty) {
+      return _buildEmptyState(
+        context: context,
+        icon: Icons.notifications_off_outlined,
+        title: 'Belum ada pengumuman',
+        description: 'Saat ini belum ada informasi terbaru dari pengelola kost. Kami akan memberi tahu Anda di sini jika ada pembaruan.',
       );
     }
 
@@ -129,16 +187,11 @@ class InfoContentSection extends GetView<UserInfoController> {
 
   Widget _buildPeraturanList(BuildContext context) {
     if (controller.peraturanList.isEmpty) {
-      return Padding(
-        padding: EdgeInsets.all(context.spacing(48)),
-        child: Center(
-          child: Text(
-            'Belum ada peraturan',
-            style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)).copyWith(
-              fontSize: context.fontSize(14),
-            ),
-          ),
-        ),
+      return _buildEmptyState(
+        context: context,
+        icon: Icons.assignment_outlined,
+        title: 'Belum ada peraturan',
+        description: 'Pengelola kost belum menambahkan tata tertib tertulis. Silakan hubungi admin jika Anda memiliki pertanyaan.',
       );
     }
 
