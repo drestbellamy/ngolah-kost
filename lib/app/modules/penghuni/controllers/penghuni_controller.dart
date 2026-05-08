@@ -319,8 +319,10 @@ class PenghuniController extends GetxController {
     return DateFormat('d MMM yyyy', 'id_ID').format(dt);
   }
 
-  void goToDetail(PenghuniModel penghuni) {
-    Get.toNamed('/penghuni/detail', arguments: penghuni);
+  Future<void> goToDetail(PenghuniModel penghuni) async {
+    await Get.toNamed('/penghuni/detail', arguments: penghuni);
+    // Refresh data setelah kembali dari detail page
+    await loadPenghuniData();
   }
 
   Future<void> tambahPenghuni() async {

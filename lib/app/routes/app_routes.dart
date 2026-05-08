@@ -9,6 +9,7 @@ abstract class Routes {
   static const kamar = '/kamar';
   static const penghuni = '/penghuni';
   static const penghuniDetail = '/penghuni/detail';
+  static const kelolaKontrak = '/kelola-kontrak';
   static const profil = '/profil';
   static const kelolaTagihan = '/kelola-tagihan';
   static const metodePembayaran = '/metode-pembayaran';
