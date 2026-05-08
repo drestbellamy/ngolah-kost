@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:get/get.dart';
+import '../utils/toast_helper.dart';
 
 enum LocationStatus { unknown, granted, denied, deniedForever, serviceDisabled }
 
@@ -156,14 +157,10 @@ class LocationService {
     String title = 'Location Error';
     String message = customMessage ?? _getDefaultErrorMessage(status);
 
-    Get.snackbar(
-      title,
+    ToastHelper.showError(
       message,
-      backgroundColor: const Color(0xFFEF4444),
-      colorText: const Color(0xFFFFFFFF),
-      snackPosition: SnackPosition.BOTTOM,
+      title: title,
       duration: const Duration(seconds: 4),
-      mainButton: _getErrorAction(status),
     );
   }
 

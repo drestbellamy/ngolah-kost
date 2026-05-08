@@ -7,6 +7,7 @@ import '../../../../repositories/kost_repository.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../kost/models/kost_model.dart';
 import '../models/tagihan_model.dart';
+import '../../../core/utils/toast_helper.dart';
 
 class KelolaTagihanController extends GetxController {
   final TagihanRepository _tagihanRepo;
@@ -295,11 +296,9 @@ class KelolaTagihanController extends GetxController {
 
   Future<void> verifikasiPembayaran(TagihanModel tagihan) async {
     if (tagihan.pembayaranId == null) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Data pembayaran tidak ditemukan',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Error',
       );
       return;
     }
@@ -313,21 +312,17 @@ class KelolaTagihanController extends GetxController {
       );
 
       Get.back(); // Close bottom sheet
-      Get.snackbar(
-        'Berhasil',
+      ToastHelper.showSuccess(
         'Pembayaran telah diverifikasi dan status tagihan diubah menjadi lunas',
-        backgroundColor: const Color(0xFF10B981),
-        colorText: Colors.white,
+        title: 'Berhasil',
       );
 
       // Reload data
       await loadTagihanData();
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Gagal memverifikasi pembayaran: ${e.toString()}',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Error',
       );
     } finally {
       isLoading.value = false;
@@ -336,11 +331,9 @@ class KelolaTagihanController extends GetxController {
 
   Future<void> tolakPembayaran(TagihanModel tagihan) async {
     if (tagihan.pembayaranId == null) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Data pembayaran tidak ditemukan',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Error',
       );
       return;
     }
@@ -354,21 +347,17 @@ class KelolaTagihanController extends GetxController {
       );
 
       Get.back(); // Close bottom sheet
-      Get.snackbar(
-        'Ditolak',
+      ToastHelper.showWarning(
         'Pembayaran telah ditolak dan status tagihan dikembalikan',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Ditolak',
       );
 
       // Reload data
       await loadTagihanData();
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Gagal menolak pembayaran: ${e.toString()}',
-        backgroundColor: const Color(0xFFEF4444),
-        colorText: Colors.white,
+        title: 'Error',
       );
     } finally {
       isLoading.value = false;
