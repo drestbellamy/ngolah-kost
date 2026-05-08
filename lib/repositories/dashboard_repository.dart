@@ -48,37 +48,52 @@ class DashboardRepository extends BaseRepository {
       final kostList = await _kostRepository.getKostList();
       final totalKost = kostList.length;
 
-      // Get total kamar and kamar kosong
-      int totalKamar = 0;
-      int kamarKosong = 0;
-      int totalPenghuni = 0;
+      // Get total kamar with kapasitas
+      final kamarRaw = await supabase.from('kamar').select('id, kapasitas');
 
-      for (final kost in kostList) {
-        final kamarList = await _kamarRepository.getKamarByKostId(kost.id);
-        totalKamar += kamarList.length as int;
+      final kamarList = kamarRaw
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
 
-        for (final kamar in kamarList) {
-          final status = (kamar['status']?.toString() ?? '').toLowerCase();
-          if (status == 'kosong') {
-            kamarKosong++;
-          }
+      final totalKamar = kamarList.length;
 
-          // Count active penghuni
-          final kamarId = kamar['id']?.toString() ?? '';
-          if (kamarId.isNotEmpty) {
-            final penghuniList = await _penghuniRepository.getPenghuniByKamarId(
-              kamarId,
-              onlyActive: true,
-            );
-            totalPenghuni += penghuniList.length as int;
-          }
+      // Get all active penghuni with their kamar_id
+      final penghuniRaw = await supabase
+          .from('penghuni')
+          .select('id, kamar_id')
+          .eq('status', 'aktif');
+
+      final penghuniList = penghuniRaw
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+
+      final totalPenghuni = penghuniList.length;
+
+      // Count penghuni per kamar
+      final penghuniPerKamar = <String, int>{};
+      for (final penghuni in penghuniList) {
+        final kamarId = penghuni['kamar_id']?.toString() ?? '';
+        if (kamarId.isNotEmpty) {
+          penghuniPerKamar[kamarId] = (penghuniPerKamar[kamarId] ?? 0) + 1;
         }
       }
 
-      // Get tagihan statistics
-      // Note: getTagihanList requires a lookup function, so we'll use a direct query instead
-      final tagihanRaw = await supabase.from('tagihan').select('id, status');
+      // Calculate kamar kosong (kamar yang masih punya slot kosong)
+      int kamarKosong = 0;
 
+      for (final kamar in kamarList) {
+        final kamarId = kamar['id']?.toString() ?? '';
+        final kapasitas = toInt(kamar['kapasitas']) ?? 1;
+        final terisi = penghuniPerKamar[kamarId] ?? 0;
+
+        // Kamar dianggap kosong jika masih ada slot (terisi < kapasitas)
+        if (terisi < kapasitas) {
+          kamarKosong++;
+        }
+      }
+
+      // Get tagihan statistics using direct query
+      final tagihanRaw = await supabase.from('tagihan').select('id, status');
       final tagihanList = tagihanRaw
           .map((item) => Map<String, dynamic>.from(item))
           .toList();
@@ -96,7 +111,7 @@ class DashboardRepository extends BaseRepository {
       final stats = {
         'totalKost': totalKost,
         'totalKamar': totalKamar,
-        'kamarKosong': kamarKosong,
+        'kamarKosong': kamarKosong, // Jumlah kamar yang masih punya slot kosong
         'totalPenghuni': totalPenghuni,
         'tagihanBelumBayar': tagihanBelumBayar,
         'menungguVerifikasi': menungguVerifikasi,
