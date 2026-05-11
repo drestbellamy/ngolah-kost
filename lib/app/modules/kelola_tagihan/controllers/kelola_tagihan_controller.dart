@@ -5,7 +5,6 @@ import '../../../../repositories/pembayaran_repository.dart';
 import '../../../../repositories/penghuni_repository.dart';
 import '../../../../repositories/kost_repository.dart';
 import '../../../../repositories/repository_factory.dart';
-import '../../kost/models/kost_model.dart';
 import '../models/tagihan_model.dart';
 import '../../../core/utils/toast_helper.dart';
 

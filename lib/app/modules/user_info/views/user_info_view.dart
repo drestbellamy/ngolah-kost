@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -34,9 +35,15 @@ class UserInfoView extends GetView<UserInfoController> {
                 child: Column(
                   children: [
                     SizedBox(height: context.spacing(20)),
-                    const TabSelector(),
+                    const TabSelector()
+                        .animate()
+                        .fadeIn(duration: 400.ms)
+                        .slideY(begin: -0.2, end: 0),
                     SizedBox(height: context.spacing(12)),
-                    const InfoContentSection(),
+                    const InfoContentSection()
+                        .animate()
+                        .fadeIn(duration: 400.ms, delay: 100.ms)
+                        .slideY(begin: 0.2, end: 0),
                     SizedBox(height: context.spacing(100)),
                   ],
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../controllers/user_tagihan_controller.dart';
@@ -28,7 +29,10 @@ class UserTagihanView extends GetView<UserTagihanController> {
           ),
 
           // Total Card
-          const TagihanTotalCard(),
+          const TagihanTotalCard()
+              .animate()
+              .fadeIn(duration: 400.ms)
+              .slideY(begin: -0.2, end: 0),
 
           // List Tagihan List
           Expanded(
