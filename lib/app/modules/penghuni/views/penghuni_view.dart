@@ -5,7 +5,7 @@ import '../models/penghuni_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../core/values/values.dart';
 import '../../../core/utils/responsive_utils.dart';
-
+import 'widgets/penghuni_shimmer_widget.dart';
 
 class PenghuniView extends GetView<PenghuniController> {
   const PenghuniView({super.key});
@@ -54,7 +54,7 @@ class PenghuniView extends GetView<PenghuniController> {
                       width: 256,
                       height: 256,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -66,7 +66,7 @@ class PenghuniView extends GetView<PenghuniController> {
                       width: 192,
                       height: 192,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -100,9 +100,11 @@ class PenghuniView extends GetView<PenghuniController> {
                                 Obx(
                                   () => Text(
                                     '${controller.penghuniList.length} penghuni',
-                                    style: AppTextStyles.subtitle14.colored (AppColors.primaryLight).copyWith(
-                                      fontSize: context.fontSize(14),
-                                    ),
+                                    style: AppTextStyles.subtitle14
+                                        .colored(AppColors.primaryLight)
+                                        .copyWith(
+                                          fontSize: context.fontSize(14),
+                                        ),
                                   ),
                                 ),
                               ],
@@ -116,9 +118,9 @@ class PenghuniView extends GetView<PenghuniController> {
                           onChanged: controller.searchPenghuni,
                           decoration: InputDecoration(
                             hintText: 'Cari penghuni, kamar, atau kost...',
-                            hintStyle: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)).copyWith(
-                              fontSize: context.fontSize(14),
-                            ),
+                            hintStyle: AppTextStyles.body14
+                                .colored(const Color(0xFF9CA3AF))
+                                .copyWith(fontSize: context.fontSize(14)),
                             prefixIcon: Icon(
                               Icons.search,
                               color: const Color(0xFF9CA3AF),
@@ -127,7 +129,9 @@ class PenghuniView extends GetView<PenghuniController> {
                             filled: true,
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                              borderRadius: BorderRadius.circular(
+                                context.borderRadius(12),
+                              ),
                               borderSide: BorderSide.none,
                             ),
                             contentPadding: context.symmetricPadding(
@@ -191,7 +195,7 @@ class PenghuniView extends GetView<PenghuniController> {
             Expanded(
               child: Obx(() {
                 if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const PenghuniShimmerWidget();
                 }
 
                 if (controller.errorMessage.value != null) {
@@ -201,7 +205,9 @@ class PenghuniView extends GetView<PenghuniController> {
                       child: Text(
                         controller.errorMessage.value!,
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.body14.colored(const Color(0xFFB91C1C)),
+                        style: AppTextStyles.body14.colored(
+                          const Color(0xFFB91C1C),
+                        ),
                       ),
                     ),
                   );
@@ -214,7 +220,10 @@ class PenghuniView extends GetView<PenghuniController> {
                     children: [
                       Container(
                         margin: const EdgeInsets.only(top: 70),
-                        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 60,
+                          horizontal: 24,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -245,15 +254,17 @@ class PenghuniView extends GetView<PenghuniController> {
                             const SizedBox(height: 24),
                             Text(
                               'Belum Ada Penghuni',
-                              style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                              style: AppTextStyles.header16.colored(
+                                AppColors.textPrimary,
+                              ),
                             ),
                             const SizedBox(height: 12),
                             Text(
                               'Tambahkan data penghuni masa sewa\ndan tagihan dari penghuni.',
                               textAlign: TextAlign.center,
-                              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                                height: 1.5,
-                              ),
+                              style: AppTextStyles.body14
+                                  .colored(AppColors.textGray)
+                                  .copyWith(height: 1.5),
                             ),
                             const SizedBox(height: 32),
                             ElevatedButton(
@@ -261,7 +272,10 @@ class PenghuniView extends GetView<PenghuniController> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -332,7 +346,11 @@ class PenghuniView extends GetView<PenghuniController> {
                 if (isSelected)
                   Padding(
                     padding: EdgeInsets.only(right: context.spacing(6)),
-                    child: Icon(Icons.apartment, size: context.iconSize(16), color: Colors.white),
+                    child: Icon(
+                      Icons.apartment,
+                      size: context.iconSize(16),
+                      color: Colors.white,
+                    ),
                   ),
                 if (!isSelected && hasPenghuni)
                   Padding(
@@ -361,14 +379,18 @@ class PenghuniView extends GetView<PenghuniController> {
                     color: isSelected
                         ? Colors.white.withValues(alpha: 0.2)
                         : const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(context.borderRadius(10)),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(10),
+                    ),
                   ),
                   child: Text(
                     count.toString(),
                     style: AppTextStyles.body12.copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: context.fontSize(12),
-                      color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF6B7280),
                     ),
                   ),
                 ),
@@ -452,7 +474,9 @@ class PenghuniView extends GetView<PenghuniController> {
                     height: context.iconSize(48),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE8F0ED),
-                      borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                      borderRadius: BorderRadius.circular(
+                        context.borderRadius(12),
+                      ),
                     ),
                     child: Icon(
                       Icons.person,
@@ -467,9 +491,9 @@ class PenghuniView extends GetView<PenghuniController> {
                       children: [
                         Text(
                           penghuni.nama,
-                          style: AppTextStyles.subtitle16.colored(const Color(0xFF2D3748)).copyWith(
-                            fontSize: context.fontSize(16),
-                          ),
+                          style: AppTextStyles.subtitle16
+                              .colored(const Color(0xFF2D3748))
+                              .copyWith(fontSize: context.fontSize(16)),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -485,9 +509,9 @@ class PenghuniView extends GetView<PenghuniController> {
                             Expanded(
                               child: Text(
                                 penghuni.namaKost,
-                                style: AppTextStyles.body12.colored(const Color(0xFF718096)).copyWith(
-                                  fontSize: context.fontSize(12),
-                                ),
+                                style: AppTextStyles.body12
+                                    .colored(const Color(0xFF718096))
+                                    .copyWith(fontSize: context.fontSize(12)),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -505,9 +529,9 @@ class PenghuniView extends GetView<PenghuniController> {
                             SizedBox(width: context.spacing(4)),
                             Text(
                               penghuni.noTelepon,
-                              style: AppTextStyles.body12.colored(const Color(0xFF718096)).copyWith(
-                                fontSize: context.fontSize(12),
-                              ),
+                              style: AppTextStyles.body12
+                                  .colored(const Color(0xFF718096))
+                                  .copyWith(fontSize: context.fontSize(12)),
                             ),
                           ],
                         ),
@@ -523,8 +547,12 @@ class PenghuniView extends GetView<PenghuniController> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withValues(alpha: 0.14),
-                          borderRadius: BorderRadius.circular(context.borderRadius(20)),
+                          color: const Color(
+                            0xFF10B981,
+                          ).withValues(alpha: 0.14),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(20),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -554,7 +582,9 @@ class PenghuniView extends GetView<PenghuniController> {
                         ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF6B8E7F),
-                          borderRadius: BorderRadius.circular(context.borderRadius(8)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(8),
+                          ),
                         ),
                         child: Text(
                           roomLabel,
@@ -580,9 +610,9 @@ class PenghuniView extends GetView<PenghuniController> {
                     children: [
                       Text(
                         'Sewa Bulanan',
-                        style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)).copyWith(
-                          fontSize: context.fontSize(12),
-                        ),
+                        style: AppTextStyles.body12
+                            .colored(const Color(0xFF9CA3AF))
+                            .copyWith(fontSize: context.fontSize(12)),
                       ),
                       SizedBox(height: context.spacing(4)),
                       Text(
@@ -600,9 +630,9 @@ class PenghuniView extends GetView<PenghuniController> {
                     children: [
                       Text(
                         'Tanggal Masuk',
-                        style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)).copyWith(
-                          fontSize: context.fontSize(12),
-                        ),
+                        style: AppTextStyles.body12
+                            .colored(const Color(0xFF9CA3AF))
+                            .copyWith(fontSize: context.fontSize(12)),
                       ),
                       SizedBox(height: context.spacing(4)),
                       Text(
