@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/login_controller.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
 import '../../../core/values/values.dart';
@@ -360,6 +361,13 @@ class LoginView extends GetView<LoginController> {
                                               ),
                                             ],
                                           ),
+                                  ).animate(
+                                    // Membuat efek shimmer berkala pada tombol utama CTA ini!
+                                    onPlay: (c) => c.repeat(reverse: false),
+                                  ).shimmer(
+                                    duration: 2500.ms, 
+                                    color: Colors.white.withValues(alpha: 0.2), 
+                                    angle: 45
                                   ),
                                 ),
                               ),
