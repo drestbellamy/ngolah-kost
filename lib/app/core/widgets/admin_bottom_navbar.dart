@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../routes/app_routes.dart';
 import '../values/values.dart';
 import '../utils/responsive_utils.dart';
@@ -95,39 +96,58 @@ class AdminBottomNavbar extends StatelessWidget {
     required bool isSelected,
   }) {
     return Builder(
-      builder: (context) => GestureDetector(
-        onTap: () => _onTabTapped(index),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.padding(16),
-            vertical: context.padding(8),
+      builder: (context) {
+        // Widget inti ikon
+        Widget iconWidget = Icon(
+          icon,
+          size: context.iconSize(20),
+          color: isSelected ? AppColors.primary : AppColors.textGray,
+        );
+
+        // Kalau di-select (aktif), animasi scale (pop up & bounce)
+        if (isSelected) {
+          iconWidget = iconWidget
+              .animate()
+              .scale(
+                begin: const Offset(0.5, 0.5),
+                end: const Offset(1, 1),
+                curve: Curves.elasticOut,
+                duration: 600.ms,
+              )
+              .then()
+              .shimmer(duration: 1000.ms);
+        }
+
+        return GestureDetector(
+          onTap: () => _onTabTapped(index),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.padding(16),
+              vertical: context.padding(8),
+            ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppColors.primary.withValues(alpha: 0.1)
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(context.borderRadius(16)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                iconWidget,
+                SizedBox(height: context.spacing(4)),
+                Text(
+                  label,
+                  style: AppTextStyles.labelMedium
+                      .weighted(isSelected ? FontWeight.w600 : FontWeight.w500)
+                      .colored(isSelected ? AppColors.primary : AppColors.textGray)
+                      .copyWith(fontSize: context.fontSize(11)),
+                ),
+              ],
+            ),
           ),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.1)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(context.borderRadius(16)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: context.iconSize(20),
-                color: isSelected ? AppColors.primary : AppColors.textGray,
-              ),
-              SizedBox(height: context.spacing(4)),
-              Text(
-                label,
-                style: AppTextStyles.labelMedium
-                    .weighted(isSelected ? FontWeight.w600 : FontWeight.w500)
-                    .colored(isSelected ? AppColors.primary : AppColors.textGray)
-                    .copyWith(fontSize: context.fontSize(11)),
-              ),
-            ],
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

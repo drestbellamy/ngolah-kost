@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/values/values.dart';
 import '../../models/tagihan_model.dart';
 import 'verifikasi_pembayaran_bottom_sheet.dart';
@@ -81,7 +82,17 @@ class TagihanCardWidget extends StatelessWidget {
                   statusText,
                   style: AppTextStyles.subtitle12.colored(statusColor),
                 ),
-              ),
+              )
+                  // Memberikan efek pulse (detak) kecil secara berulang untuk menarik perhatian!
+                  .animate(
+                    onPlay: (controller) => controller.repeat(reverse: true),
+                  )
+                  .scale(
+                    begin: const Offset(1, 1),
+                    end: const Offset(1.05, 1.05),
+                    duration: 1000.ms,
+                    curve: Curves.easeInOut,
+                  ),
             ],
           ),
           const SizedBox(height: 8),
@@ -182,6 +193,14 @@ class TagihanCardWidget extends StatelessWidget {
           ],
         ],
       ),
-    );
+    ).animate().fadeIn(
+          duration: 500.ms,
+          delay: (index * 100).ms, // Membuat efek staggered entrance/muncul beruntun sesuai urutan index
+        ).slideY(
+          begin: 0.2, // Muncul sedikit dari bawah
+          end: 0,
+          duration: 500.ms,
+          curve: Curves.easeOutQuad,
+        );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/values/values.dart';
 
 class EmptyStateWidget extends StatelessWidget {
@@ -40,7 +41,17 @@ class EmptyStateWidget extends StatelessWidget {
               size: 40,
               color: AppColors.primary,
             ),
-          ),
+          ) // Animasi floating buat empty state ini
+              .animate(
+                onPlay: (controller) => controller.repeat(reverse: true),
+              )
+              .moveY(
+                begin: -3,
+                end: 3,
+                duration: 1200.ms,
+                curve: Curves.easeInOut,
+              )
+              .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05)),
           const SizedBox(height: 24),
           Text(
             'Belum Ada Pengumuman',
