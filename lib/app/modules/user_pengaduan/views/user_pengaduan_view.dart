@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/user_pengaduan_controller.dart';
 import 'user_pengaduan_form_view.dart';
 import 'user_pengaduan_detail_view.dart';
@@ -45,7 +46,10 @@ class UserPengaduanView extends GetView<UserPengaduanController> {
                 ),
               ),
             ),
-          ),
+          )
+              .animate()
+              .fadeIn(duration: 400.ms)
+              .slideY(begin: -0.2, end: 0),
 
           // List Pengaduan
           Expanded(

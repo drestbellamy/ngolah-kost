@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:get/get.dart';
 import '../utils/toast_helper.dart';
 
 enum LocationStatus { unknown, granted, denied, deniedForever, serviceDisabled }
@@ -177,36 +175,6 @@ class LocationService {
         return 'Unable to determine location. Please check your device settings.';
       case LocationStatus.granted:
         return 'Location access granted.';
-    }
-  }
-
-  /// Get action button for error snackbar
-  static TextButton? _getErrorAction(LocationStatus status) {
-    switch (status) {
-      case LocationStatus.serviceDisabled:
-        return TextButton(
-          onPressed: () {
-            Get.closeAllSnackbars();
-            openLocationSettings();
-          },
-          child: const Text(
-            'Settings',
-            style: TextStyle(color: Color(0xFFFFFFFF)),
-          ),
-        );
-      case LocationStatus.deniedForever:
-        return TextButton(
-          onPressed: () {
-            Get.closeAllSnackbars();
-            openAppSettings();
-          },
-          child: const Text(
-            'Settings',
-            style: TextStyle(color: Color(0xFFFFFFFF)),
-          ),
-        );
-      default:
-        return null;
     }
   }
 

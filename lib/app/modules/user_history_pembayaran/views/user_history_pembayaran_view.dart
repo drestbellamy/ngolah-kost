@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/values/values.dart';
@@ -31,12 +32,18 @@ class UserHistoryPembayaranView
           Padding(
             padding: context.horizontalPadding(24),
             child: const TotalPaymentCard(),
-          ),
+          )
+              .animate()
+              .fadeIn(duration: 400.ms)
+              .slideY(begin: -0.2, end: 0),
           SizedBox(height: context.spacing(24)),
           Padding(
             padding: context.horizontalPadding(24),
             child: const FilterTabs(),
-          ),
+          )
+              .animate()
+              .fadeIn(duration: 400.ms, delay: 100.ms)
+              .slideY(begin: 0.2, end: 0),
           SizedBox(height: context.spacing(24)),
           Padding(
             padding: context.horizontalPadding(24),
@@ -49,13 +56,19 @@ class UserHistoryPembayaranView
                 ),
               ),
             ),
-          ),
+          )
+              .animate()
+              .fadeIn(duration: 400.ms, delay: 200.ms)
+              .slideY(begin: 0.2, end: 0),
           SizedBox(height: context.spacing(16)),
           Expanded(
             child: RefreshIndicator(
               onRefresh: () => controller.refreshData(),
               color: const Color(0xFF6B8E7A),
-              child: const PaymentHistoryList(),
+              child: const PaymentHistoryList()
+                  .animate()
+                  .fadeIn(duration: 400.ms, delay: 300.ms)
+                  .slideY(begin: 0.2, end: 0),
             ),
           ),
         ],

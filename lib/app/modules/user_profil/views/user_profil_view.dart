@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/user_profil_controller.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/values/values.dart';
@@ -113,13 +114,25 @@ class UserProfilView extends GetView<UserProfilController> {
                   ),
                   child: Column(
                     children: [
-                      const RoomInfoSection(),
+                      const RoomInfoSection()
+                          .animate()
+                          .fadeIn(duration: 400.ms, delay: 100.ms)
+                          .slideY(begin: 0.2, end: 0),
                       SizedBox(height: context.spacing(16)),
-                      const TenantInfoSection(),
+                      const TenantInfoSection()
+                          .animate()
+                          .fadeIn(duration: 400.ms, delay: 200.ms)
+                          .slideY(begin: 0.2, end: 0),
                       SizedBox(height: context.spacing(16)),
-                      const ContractInfoSection(),
+                      const ContractInfoSection()
+                          .animate()
+                          .fadeIn(duration: 400.ms, delay: 300.ms)
+                          .slideY(begin: 0.2, end: 0),
                       SizedBox(height: context.spacing(24)),
-                      _buildLogoutButton(context),
+                      _buildLogoutButton(context)
+                          .animate()
+                          .fadeIn(duration: 400.ms, delay: 400.ms)
+                          .slideY(begin: 0.2, end: 0),
                       SizedBox(height: context.spacing(24)),
                     ],
                   ),
