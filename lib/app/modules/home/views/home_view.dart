@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 import 'widgets/dashboard_card.dart';
+import 'widgets/dashboard_shimmer_widget.dart';
 import 'widgets/menu_item.dart';
 import 'widgets/ringkasan_keuangan_widget.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
@@ -141,178 +142,213 @@ class HomeView extends GetView<HomeController> {
                       Padding(
                         padding: context.horizontalPadding(24),
                         child: Obx(() {
-                          if (controller.isLoading.value) {
-                            return Center(
-                              child: Padding(
-                                padding: context.allPadding(40),
-                                child: const CircularProgressIndicator(
-                                  color: Color(0xFF6B8E7A),
-                                ),
-                              ),
-                            );
-                          }
-
-                          return Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: DashboardCard(
-                                      icon: Icons.home_work_outlined,
-                                      value: controller.totalKost.value
-                                          .toString(),
-                                      label: 'Total Kost',
-                                      iconBgColor: const Color(0xFF6B8E7A),
-                                    ),
-                                  ),
-                                  SizedBox(width: context.spacing(16)),
-                                  Expanded(
-                                    child: DashboardCard(
-                                      icon: Icons.meeting_room_outlined,
-                                      value: controller.totalKamar.value
-                                          .toString(),
-                                      label: 'Total Kamar',
-                                      iconBgColor: const Color(0xFFA8D5BA),
-                                    ),
-                                  ),
+                          return AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 700),
+                            switchInCurve: Curves.easeInQuad,
+                            switchOutCurve: Curves.easeOutQuad,
+                            layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+                              return Stack(
+                                alignment: Alignment.topCenter,
+                                children: <Widget>[
+                                  ...previousChildren,
+                                  if (currentChild != null) currentChild,
                                 ],
-                              ),
-                              SizedBox(height: context.spacing(16)),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: DashboardCard(
-                                      icon: Icons.door_front_door_outlined,
-                                      value: controller.kamarKosong.value
-                                          .toString(),
-                                      label: 'Kamar Kosong',
-                                      iconBgColor: const Color(0xFFF2A65A),
-                                    ),
+                              );
+                            },
+                            transitionBuilder: (Widget child, Animation<double> animation) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                            child: controller.isLoading.value
+                                ? const DashboardShimmerWidget(
+                                    key: ValueKey('shimmer'),
+                                  )
+                                : Column(
+                                    key: const ValueKey('content'),
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: DashboardCard(
+                                              icon: Icons.home_work_outlined,
+                                              value: controller.totalKost.value
+                                                  .toString(),
+                                              label: 'Total Kost',
+                                              iconBgColor:
+                                                  const Color(0xFF6B8E7A),
+                                            ),
+                                          ),
+                                          SizedBox(width: context.spacing(16)),
+                                          Expanded(
+                                            child: DashboardCard(
+                                              icon: Icons.meeting_room_outlined,
+                                              value: controller.totalKamar.value
+                                                  .toString(),
+                                              label: 'Total Kamar',
+                                              iconBgColor:
+                                                  const Color(0xFFA8D5BA),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: context.spacing(16)),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: DashboardCard(
+                                              icon: Icons.door_front_door_outlined,
+                                              value: controller.kamarKosong.value
+                                                  .toString(),
+                                              label: 'Kamar Kosong',
+                                              iconBgColor:
+                                                  const Color(0xFFF2A65A),
+                                            ),
+                                          ),
+                                          SizedBox(width: context.spacing(16)),
+                                          Expanded(
+                                            child: DashboardCard(
+                                              icon: Icons.people_outline,
+                                              value: controller.totalPenghuni.value
+                                                  .toString(),
+                                              label: 'Total Penghuni',
+                                              iconBgColor:
+                                                  const Color(0xFF6B8E7A),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: context.spacing(16)),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: DashboardCard(
+                                              icon: Icons.access_time_outlined,
+                                              value: controller
+                                                  .tagihanBelumBayar.value
+                                                  .toString(),
+                                              label: 'Tagihan Belum Bayar',
+                                              iconBgColor:
+                                                  const Color(0xFFF59E0B),
+                                            ),
+                                          ),
+                                          SizedBox(width: context.spacing(16)),
+                                          Expanded(
+                                            child: DashboardCard(
+                                              icon: Icons.check_circle_outline,
+                                              value: controller
+                                                  .menungguVerifikasi.value
+                                                  .toString(),
+                                              label: 'Menunggu Verifikasi',
+                                              iconBgColor:
+                                                  const Color(0xFF10B981),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(width: context.spacing(16)),
-                                  Expanded(
-                                    child: DashboardCard(
-                                      icon: Icons.people_outline,
-                                      value: controller.totalPenghuni.value
-                                          .toString(),
-                                      label: 'Total Penghuni',
-                                      iconBgColor: const Color(0xFF6B8E7A),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: context.spacing(16)),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: DashboardCard(
-                                      icon: Icons.access_time_outlined,
-                                      value: controller.tagihanBelumBayar.value
-                                          .toString(),
-                                      label: 'Tagihan Belum Bayar',
-                                      iconBgColor: const Color(0xFFF59E0B),
-                                    ),
-                                  ),
-                                  SizedBox(width: context.spacing(16)),
-                                  Expanded(
-                                    child: DashboardCard(
-                                      icon: Icons.check_circle_outline,
-                                      value: controller.menungguVerifikasi.value
-                                          .toString(),
-                                      label: 'Menunggu Verifikasi',
-                                      iconBgColor: const Color(0xFF10B981),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
                           );
                         }),
                       ),
 
                       SizedBox(height: context.spacing(24)),
 
-                      // Ringkasan Keuangan Widget
-                      Padding(
-                        padding: context.horizontalPadding(24),
-                        child: const RingkasanKeuanganWidget(),
-                      ),
+                      // Bawah: Ringkasan Keuangan Widget & Pengaturan
+                      Obx(() {
+                        return AnimatedOpacity(
+                          duration: const Duration(milliseconds: 700),
+                          curve: Curves.easeInQuad,
+                          opacity: controller.isLoading.value ? 0.0 : 1.0,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Ringkasan Keuangan Widget
+                              Padding(
+                                padding: context.horizontalPadding(24),
+                                child: const RingkasanKeuanganWidget(),
+                              ),
 
-                      SizedBox(height: context.spacing(24)),
+                              SizedBox(height: context.spacing(24)),
 
-                      // Settings Section
-                      Padding(
-                        padding: context.horizontalPadding(24),
-                        child: Text(
-                          'Pengaturan & Lainnya',
-                          style: AppTextStyles.subtitle18
-                              .colored(AppColors.textPrimary)
-                              .copyWith(fontSize: context.fontSize(18)),
-                        ),
-                      ),
+                              // Settings Section
+                              Padding(
+                                padding: context.horizontalPadding(24),
+                                child: Text(
+                                  'Pengaturan & Lainnya',
+                                  style: AppTextStyles.subtitle18
+                                      .colored(AppColors.textPrimary)
+                                      .copyWith(fontSize: context.fontSize(18)),
+                                ),
+                              ),
 
-                      SizedBox(height: context.spacing(16)),
+                              SizedBox(height: context.spacing(16)),
 
-                      Padding(
-                        padding: context.horizontalPadding(24),
-                        child: Column(
-                          children: [
-                            MenuItem(
-                              icon: Icons.account_balance_wallet_outlined,
-                              title: 'Metode Pembayaran',
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF4B83F3), Color(0xFF285ADA)],
+                              Padding(
+                                padding: context.horizontalPadding(24),
+                                child: Column(
+                                  children: [
+                                    MenuItem(
+                                      icon: Icons.account_balance_wallet_outlined,
+                                      title: 'Metode Pembayaran',
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFF4B83F3), Color(0xFF285ADA)],
+                                      ),
+                                      onTap: controller.navigateToMetodePembayaran,
+                                    ),
+                                    SizedBox(height: context.spacing(12)),
+                                    MenuItem(
+                                      icon: Icons.receipt_long_outlined,
+                                      title: 'Kelola Tagihan',
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFFF2A65A), Color(0xFFE8953D)],
+                                      ),
+                                      onTap: controller.navigateToKelolaTagihan,
+                                    ),
+                                    SizedBox(height: context.spacing(12)),
+                                    MenuItem(
+                                      icon: Icons.trending_up_outlined,
+                                      title: 'Kelola Keuangan',
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFF10B981), Color(0xFF059669)],
+                                      ),
+                                      onTap: controller.navigateToKelolaKeuangan,
+                                    ),
+                                    SizedBox(height: context.spacing(12)),
+                                    MenuItem(
+                                      icon: Icons.campaign_outlined,
+                                      title: 'Kelola Pengumuman',
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFF2D7A6E), Color(0xFF1F5449)],
+                                      ),
+                                      onTap: controller.navigateToKelolaPengumuman,
+                                    ),
+                                    SizedBox(height: context.spacing(12)),
+                                    MenuItem(
+                                      icon: Icons.rule_outlined,
+                                      title: 'Kelola Peraturan',
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFF8FAA9F), Color(0xFF6B8E7A)],
+                                      ),
+                                      onTap: controller.navigateToKelolaPeraturan,
+                                    ),
+                                    SizedBox(height: context.spacing(12)),
+                                    MenuItem(
+                                      icon: Icons.report_problem_outlined,
+                                      title: 'Kelola Pengaduan',
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                                      ),
+                                      onTap: controller.navigateToKelolaPengaduan,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              onTap: controller.navigateToMetodePembayaran,
-                            ),
-                            SizedBox(height: context.spacing(12)),
-                            MenuItem(
-                              icon: Icons.receipt_long_outlined,
-                              title: 'Kelola Tagihan',
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFF2A65A), Color(0xFFE8953D)],
-                              ),
-                              onTap: controller.navigateToKelolaTagihan,
-                            ),
-                            SizedBox(height: context.spacing(12)),
-                            MenuItem(
-                              icon: Icons.trending_up_outlined,
-                              title: 'Kelola Keuangan',
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF10B981), Color(0xFF059669)],
-                              ),
-                              onTap: controller.navigateToKelolaKeuangan,
-                            ),
-                            SizedBox(height: context.spacing(12)),
-                            MenuItem(
-                              icon: Icons.campaign_outlined,
-                              title: 'Kelola Pengumuman',
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF2D7A6E), Color(0xFF1F5449)],
-                              ),
-                              onTap: controller.navigateToKelolaPengumuman,
-                            ),
-                            SizedBox(height: context.spacing(12)),
-                            MenuItem(
-                              icon: Icons.rule_outlined,
-                              title: 'Kelola Peraturan',
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF8FAA9F), Color(0xFF6B8E7A)],
-                              ),
-                              onTap: controller.navigateToKelolaPeraturan,
-                            ),
-                            SizedBox(height: context.spacing(12)),
-                            MenuItem(
-                              icon: Icons.report_problem_outlined,
-                              title: 'Kelola Pengaduan',
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
-                              ),
-                              onTap: controller.navigateToKelolaPengaduan,
-                            ),
-                          ],
-                        ),
-                      ),
+                            ],
+                          ),
+                        );
+                      }),
 
                       SizedBox(height: context.spacing(100)),
                     ],
