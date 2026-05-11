@@ -8,6 +8,7 @@ import '../controllers/kost_controller.dart';
 import '../models/kost_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../routes/app_routes.dart';
+import 'widgets/kost_shimmer_widget.dart';
 
 class KostView extends GetView<KostController> {
   const KostView({super.key});
@@ -33,7 +34,7 @@ class KostView extends GetView<KostController> {
                 future: controller.kostFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const KostShimmerWidget();
                   }
 
                   if (snapshot.hasError) {
@@ -41,7 +42,9 @@ class KostView extends GetView<KostController> {
                       child: Text(
                         'Gagal memuat data kost: ${snapshot.error}',
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.bodyMedium.colored(AppColors.error),
+                        style: AppTextStyles.bodyMedium.colored(
+                          AppColors.error,
+                        ),
                       ),
                     );
                   }
@@ -112,9 +115,9 @@ class KostView extends GetView<KostController> {
             Text(
               'Tambahkan unit kost pertama Anda\nuntuk mulai mengelola properti.',
               textAlign: TextAlign.center,
-              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                height: 1.5,
-              ),
+              style: AppTextStyles.body14
+                  .colored(AppColors.textGray)
+                  .copyWith(height: 1.5),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -122,7 +125,10 @@ class KostView extends GetView<KostController> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -130,10 +136,7 @@ class KostView extends GetView<KostController> {
               ),
               child: const Text(
                 'Tambah Kost',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
               ),
             ),
           ],
@@ -168,13 +171,9 @@ class KostView extends GetView<KostController> {
                 backgroundColor: const Color(0xFF6B8E7F),
                 foregroundColor: Colors.white,
                 elevation: 2,
-                padding: EdgeInsets.symmetric(
-                  vertical: context.padding(14),
-                ),
+                padding: EdgeInsets.symmetric(vertical: context.padding(14)),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    context.borderRadius(12),
-                  ),
+                  borderRadius: BorderRadius.circular(context.borderRadius(12)),
                 ),
               ),
             ),
@@ -183,9 +182,7 @@ class KostView extends GetView<KostController> {
         // Kost List
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.all(
-              ResponsiveUtils.padding(context, 16),
-            ),
+            padding: EdgeInsets.all(ResponsiveUtils.padding(context, 16)),
             itemCount: controller.kostList.length,
             itemBuilder: (context, index) {
               final kost = controller.kostList[index];
