@@ -56,6 +56,13 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
   }
 
   void _onHargaChanged(TextEditingController controller, String value) {
+    final digitsOnly = value.replaceAll(RegExp(r'[^0-9]'), '');
+
+    // Validasi maksimal 9 digit (100.000.000)
+    if (digitsOnly.length > 9) {
+      return; // Tidak update jika melebihi 9 digit
+    }
+
     final formatted = _formatRupiahInput(value);
     if (controller.text != formatted) {
       controller.value = TextEditingValue(
@@ -64,17 +71,29 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
       );
     }
 
-    if (hargaError != null) {
-      setState(() {
-        hargaError = formatted.isEmpty ? 'Harga per bulan wajib diisi' : null;
-      });
-    }
+    // Update error state
+    setState(() {
+      if (formatted.isEmpty) {
+        hargaError = 'Harga per bulan wajib diisi';
+      } else {
+        final numericValue = int.tryParse(digitsOnly);
+        if (numericValue == null) {
+          hargaError = 'Harga tidak valid';
+        } else if (numericValue < 10000) {
+          hargaError = 'Harga minimal Rp 10.000';
+        } else if (numericValue > 100000000) {
+          hargaError = 'Harga maksimal Rp 100.000.000';
+        } else {
+          hargaError = null;
+        }
+      }
+    });
   }
 
   void _submit() {
     // Tutup keyboard sebelum submit
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     final nomorKamar = nomorKamarController.text.trim();
     final kapasitasText = kapasitasController.text.trim();
     final hargaText = hargaController.text.trim();
@@ -95,7 +114,21 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
           ? 'Kapasitas maksimal 20 penghuni'
           : null;
 
-      hargaError = hargaText.isEmpty ? 'Harga per bulan wajib diisi' : null;
+      if (hargaText.isEmpty) {
+        hargaError = 'Harga per bulan wajib diisi';
+      } else {
+        final hargaDigits = hargaText.replaceAll(RegExp(r'[^0-9]'), '');
+        final hargaValue = int.tryParse(hargaDigits);
+        if (hargaValue == null) {
+          hargaError = 'Harga tidak valid';
+        } else if (hargaValue < 10000) {
+          hargaError = 'Harga minimal Rp 10.000';
+        } else if (hargaValue > 100000000) {
+          hargaError = 'Harga maksimal Rp 100.000.000';
+        } else {
+          hargaError = null;
+        }
+      }
     });
 
     final hasError =
@@ -125,7 +158,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 children: [
                   Text(
                     'Edit Kamar',
-                    style: AppTextStyles.header18.colored(AppColors.textPrimary),
+                    style: AppTextStyles.header18.colored(
+                      AppColors.textPrimary,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
@@ -163,7 +198,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 },
                 decoration: InputDecoration(
                   hintText: 'misalnya, A-101, 201, R-01',
-                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
+                  hintStyle: AppTextStyles.body14.colored(
+                    const Color(0xFFD1D5DB),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -228,7 +265,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Masukkan jumlah kapasitas penghuni',
-                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
+                  hintStyle: AppTextStyles.body14.colored(
+                    const Color(0xFFD1D5DB),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -274,13 +313,17 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 onChanged: (value) => _onHargaChanged(hargaController, value),
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(12),
+                  LengthLimitingTextInputFormatter(9),
                 ],
                 decoration: InputDecoration(
                   hintText: 'Masukkan harga bulanan',
-                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
+                  hintStyle: AppTextStyles.body14.colored(
+                    const Color(0xFFD1D5DB),
+                  ),
                   prefixText: 'Rp ',
-                  prefixStyle: AppTextStyles.subtitle14.colored(AppColors.textGray),
+                  prefixStyle: AppTextStyles.subtitle14.colored(
+                    AppColors.textGray,
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -308,7 +351,7 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                     horizontal: 16,
                     vertical: 14,
                   ),
-                  helperText: 'Contoh: Rp 1.500.000',
+                  helperText: 'Maksimal Rp 100.000.000',
                   errorText: hargaError,
                 ),
               ),
@@ -334,7 +377,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                       ),
                       child: Text(
                         'Batal',
-                        style: AppTextStyles.subtitle14.colored(const Color(0xFF6B7280)),
+                        style: AppTextStyles.subtitle14.colored(
+                          const Color(0xFF6B7280),
+                        ),
                       ),
                     ),
                   ),

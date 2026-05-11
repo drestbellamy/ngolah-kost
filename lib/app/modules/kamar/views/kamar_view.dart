@@ -4,6 +4,7 @@ import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
 import '../../../core/utils/responsive_utils.dart';
 import '../controllers/kamar_controller.dart';
+import 'widgets/kamar_shimmer_widget.dart';
 
 class KamarView extends GetView<KamarController> {
   const KamarView({super.key});
@@ -34,7 +35,9 @@ class KamarView extends GetView<KamarController> {
                     Expanded(
                       child: Text(
                         controller.alamatKost.value,
-                        style: AppTextStyles.body14.colored(const Color(0xFFA8D5BA)),
+                        style: AppTextStyles.body14.colored(
+                          const Color(0xFFA8D5BA),
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -133,7 +136,11 @@ class KamarView extends GetView<KamarController> {
                                       children: [
                                         _buildTab(context, 'Semua Kamar', 0),
                                         _buildTab(context, 'Kosong', 1),
-                                        _buildTab(context, 'Terisi Sebagian', 2),
+                                        _buildTab(
+                                          context,
+                                          'Terisi Sebagian',
+                                          2,
+                                        ),
                                         _buildTab(context, 'Penuh', 3),
                                       ],
                                     ),
@@ -162,20 +169,22 @@ class KamarView extends GetView<KamarController> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(context.borderRadius(16)),
           ),
-          child: Icon(Icons.add, color: Colors.white, size: context.iconSize(24)),
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+            size: context.iconSize(24),
+          ),
         ),
       ),
     );
   }
 
-  List<Widget> _buildBodySlivers(BuildContext context, List<Map<String, dynamic>> filteredKamar) {
+  List<Widget> _buildBodySlivers(
+    BuildContext context,
+    List<Map<String, dynamic>> filteredKamar,
+  ) {
     if (controller.isLoading.value) {
-      return const [
-        SliverFillRemaining(
-          hasScrollBody: false,
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ];
+      return const [KamarShimmerWidget()];
     }
 
     if (filteredKamar.isEmpty) {
@@ -199,9 +208,9 @@ class KamarView extends GetView<KamarController> {
               child: Text(
                 'Belum ada data kamar. Silakan tekan tombol + untuk menambahkan kamar baru.',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                  fontSize: context.fontSize(14),
-                ),
+                style: AppTextStyles.body14
+                    .colored(AppColors.textGray)
+                    .copyWith(fontSize: context.fontSize(14)),
               ),
             ),
           ),
@@ -322,11 +331,10 @@ class KamarView extends GetView<KamarController> {
         child: Text(
           title,
           textAlign: TextAlign.center,
-          style: AppTextStyles.subtitle12.weighted(
-            isSelected ? FontWeight.w700 : FontWeight.w600
-          ).colored(isSelected ? Colors.white : AppColors.textGray).copyWith(
-            fontSize: context.fontSize(12),
-          ),
+          style: AppTextStyles.subtitle12
+              .weighted(isSelected ? FontWeight.w700 : FontWeight.w600)
+              .colored(isSelected ? Colors.white : AppColors.textGray)
+              .copyWith(fontSize: context.fontSize(12)),
         ),
       ),
     );
@@ -425,7 +433,9 @@ class KamarView extends GetView<KamarController> {
                   height: context.iconSize(48),
                   decoration: BoxDecoration(
                     color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(12),
+                    ),
                   ),
                   child: Icon(
                     Icons.meeting_room_outlined,
@@ -447,9 +457,11 @@ class KamarView extends GetView<KamarController> {
                                 Flexible(
                                   child: Text(
                                     'Kamar ${kamar['nomor']}',
-                                    style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
-                                      fontSize: context.fontSize(16),
-                                    ),
+                                    style: AppTextStyles.header16
+                                        .colored(AppColors.textPrimary)
+                                        .copyWith(
+                                          fontSize: context.fontSize(16),
+                                        ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -464,10 +476,15 @@ class KamarView extends GetView<KamarController> {
                             ),
                           ),
                           Container(
-                            padding: context.symmetricPadding(horizontal: 12, vertical: 4),
+                            padding: context.symmetricPadding(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: statusColor.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(context.borderRadius(20)),
+                              borderRadius: BorderRadius.circular(
+                                context.borderRadius(20),
+                              ),
                             ),
                             child: Text(
                               kamar['status'],
@@ -485,9 +502,9 @@ class KamarView extends GetView<KamarController> {
                         children: [
                           Text(
                             'Penghuni: $rasioPenghuni',
-                            style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
-                              fontSize: context.fontSize(12),
-                            ),
+                            style: AppTextStyles.body12
+                                .colored(AppColors.textGray)
+                                .copyWith(fontSize: context.fontSize(12)),
                           ),
                           SizedBox(width: context.spacing(4)),
                           Icon(
@@ -500,9 +517,9 @@ class KamarView extends GetView<KamarController> {
                       SizedBox(height: context.spacing(10)),
                       Text(
                         kamar['harga'],
-                        style: AppTextStyles.subtitle14.colored(AppColors.primary).copyWith(
-                          fontSize: context.fontSize(14),
-                        ),
+                        style: AppTextStyles.subtitle14
+                            .colored(AppColors.primary)
+                            .copyWith(fontSize: context.fontSize(14)),
                       ),
                     ],
                   ),
@@ -516,13 +533,21 @@ class KamarView extends GetView<KamarController> {
                   child: ElevatedButton.icon(
                     onPressed: () => controller.editKamar(kamar),
                     icon: Icon(Icons.edit_outlined, size: context.iconSize(18)),
-                    label: Text('Edit', style: TextStyle(fontSize: context.fontSize(14))),
+                    label: Text(
+                      'Edit',
+                      style: TextStyle(fontSize: context.fontSize(14)),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6B8E7A),
                       foregroundColor: Colors.white,
-                      padding: context.symmetricPadding(horizontal: 16, vertical: 12),
+                      padding: context.symmetricPadding(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(12),
+                        ),
                       ),
                       elevation: 0,
                     ),
@@ -532,14 +557,25 @@ class KamarView extends GetView<KamarController> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () => controller.hapusKamar(kamar),
-                    icon: Icon(Icons.delete_outline, size: context.iconSize(18)),
-                    label: Text('Hapus', style: TextStyle(fontSize: context.fontSize(14))),
+                    icon: Icon(
+                      Icons.delete_outline,
+                      size: context.iconSize(18),
+                    ),
+                    label: Text(
+                      'Hapus',
+                      style: TextStyle(fontSize: context.fontSize(14)),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFFFF1F2),
                       foregroundColor: const Color(0xFFEF4444),
-                      padding: context.symmetricPadding(horizontal: 16, vertical: 12),
+                      padding: context.symmetricPadding(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(12),
+                        ),
                       ),
                       elevation: 0,
                     ),
