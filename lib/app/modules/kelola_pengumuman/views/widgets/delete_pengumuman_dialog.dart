@@ -91,17 +91,17 @@ class DeletePengumumanDialog extends GetView<KelolaPengumumanController> {
                           : () async {
                               // Tutup dialog dulu
                               Get.back();
-                              
+
                               try {
                                 // Jalankan delete
                                 final success = await controller
                                     .deletePengumuman(pengumumanId);
-                                
+
                                 // Delay untuk memastikan dialog tertutup
                                 await Future.delayed(
                                   const Duration(milliseconds: 100),
                                 );
-                                
+
                                 // Tampilkan toast sesuai hasil
                                 if (success) {
                                   ToastHelper.showSuccess(

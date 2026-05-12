@@ -26,8 +26,7 @@ class KelolaTagihanController extends GetxController {
            RepositoryFactory.instance.pembayaranRepository,
        _penghuniRepo =
            penghuniRepository ?? RepositoryFactory.instance.penghuniRepository,
-       _kostRepo =
-           kostRepository ?? RepositoryFactory.instance.kostRepository;
+       _kostRepo = kostRepository ?? RepositoryFactory.instance.kostRepository;
   final searchController = TextEditingController();
   final selectedFilter = 'semua'.obs;
   final selectedMonthKey = 'semua'.obs;
@@ -52,8 +51,9 @@ class KelolaTagihanController extends GetxController {
     try {
       // Fetch all kost for filter
       final kosts = await _kostRepo.getKostList();
-      final mappedKost = kosts.map((k) => {'id': k.name, 'name': k.name}).toList()
-        ..sort((a, b) => a['name']!.compareTo(b['name']!));
+      final mappedKost =
+          kosts.map((k) => {'id': k.name, 'name': k.name}).toList()
+            ..sort((a, b) => a['name']!.compareTo(b['name']!));
       allKostList.assignAll(mappedKost);
 
       final rows = await _tagihanRepo.getTagihanList(
@@ -295,10 +295,7 @@ class KelolaTagihanController extends GetxController {
 
   Future<void> verifikasiPembayaran(TagihanModel tagihan) async {
     if (tagihan.pembayaranId == null) {
-      ToastHelper.showError(
-        'Data pembayaran tidak ditemukan',
-        title: 'Error',
-      );
+      ToastHelper.showError('Data pembayaran tidak ditemukan', title: 'Error');
       return;
     }
 
@@ -330,10 +327,7 @@ class KelolaTagihanController extends GetxController {
 
   Future<void> tolakPembayaran(TagihanModel tagihan) async {
     if (tagihan.pembayaranId == null) {
-      ToastHelper.showError(
-        'Data pembayaran tidak ditemukan',
-        title: 'Error',
-      );
+      ToastHelper.showError('Data pembayaran tidak ditemukan', title: 'Error');
       return;
     }
 

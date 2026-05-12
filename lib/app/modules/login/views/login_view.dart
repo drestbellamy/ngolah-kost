@@ -222,60 +222,86 @@ class LoginView extends GetView<LoginController> {
                                 () => SizedBox(
                                   width: double.infinity,
                                   height: context.buttonHeight(56),
-                                  child: ElevatedButton(
-                                    onPressed: controller.isLoading.value
-                                        ? null
-                                        : controller.login,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF4E7B63),
-                                      disabledBackgroundColor: const Color(
-                                        0xFF4E7B63,
-                                      ).withValues(alpha: 0.6),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(
-                                          context.borderRadius(16),
-                                        ),
-                                      ),
-                                      elevation: 0,
-                                    ),
-                                    child: controller.isLoading.value
-                                        ? SizedBox(
-                                            width: context.iconSize(24),
-                                            height: context.iconSize(24),
-                                            child: const CircularProgressIndicator(
-                                              strokeWidth: 2.5,
-                                              color: Colors.white,
-                                            ),
-                                          )
-                                        : Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                'Masuk',
-                                                style: AppTextStyles.buttonLarge
-                                                    .copyWith(
-                                                      color: Colors.white,
-                                                      letterSpacing: 0.4,
-                                                      fontSize: context.fontSize(16),
+                                  child:
+                                      ElevatedButton(
+                                            onPressed:
+                                                controller.isLoading.value
+                                                ? null
+                                                : controller.login,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: const Color(
+                                                0xFF4E7B63,
+                                              ),
+                                              disabledBackgroundColor:
+                                                  const Color(
+                                                    0xFF4E7B63,
+                                                  ).withValues(alpha: 0.6),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      context.borderRadius(16),
                                                     ),
                                               ),
-                                              SizedBox(width: context.spacing(8)),
-                                              Icon(
-                                                Icons.arrow_forward_rounded,
-                                                color: Colors.white,
-                                                size: context.iconSize(20),
-                                              ),
-                                            ],
+                                              elevation: 0,
+                                            ),
+                                            child: controller.isLoading.value
+                                                ? SizedBox(
+                                                    width: context.iconSize(24),
+                                                    height: context.iconSize(
+                                                      24,
+                                                    ),
+                                                    child:
+                                                        const CircularProgressIndicator(
+                                                          strokeWidth: 2.5,
+                                                          color: Colors.white,
+                                                        ),
+                                                  )
+                                                : Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        'Masuk',
+                                                        style: AppTextStyles
+                                                            .buttonLarge
+                                                            .copyWith(
+                                                              color:
+                                                                  Colors.white,
+                                                              letterSpacing:
+                                                                  0.4,
+                                                              fontSize: context
+                                                                  .fontSize(16),
+                                                            ),
+                                                      ),
+                                                      SizedBox(
+                                                        width: context.spacing(
+                                                          8,
+                                                        ),
+                                                      ),
+                                                      Icon(
+                                                        Icons
+                                                            .arrow_forward_rounded,
+                                                        color: Colors.white,
+                                                        size: context.iconSize(
+                                                          20,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                          )
+                                          .animate(
+                                            // Membuat efek shimmer berkala pada tombol utama CTA ini!
+                                            onPlay: (c) =>
+                                                c.repeat(reverse: false),
+                                          )
+                                          .shimmer(
+                                            duration: 2500.ms,
+                                            color: Colors.white.withValues(
+                                              alpha: 0.2,
+                                            ),
+                                            angle: 45,
                                           ),
-                                  ).animate(
-                                    // Membuat efek shimmer berkala pada tombol utama CTA ini!
-                                    onPlay: (c) => c.repeat(reverse: false),
-                                  ).shimmer(
-                                    duration: 2500.ms, 
-                                    color: Colors.white.withValues(alpha: 0.2), 
-                                    angle: 45
-                                  ),
                                 ),
                               ),
 
@@ -335,11 +361,7 @@ class LoginView extends GetView<LoginController> {
           fontWeight: FontWeight.w500,
           fontSize: context.fontSize(12),
         ),
-        prefixIcon: Icon(
-          icon,
-          color: iconColor,
-          size: context.iconSize(22),
-        ),
+        prefixIcon: Icon(icon, color: iconColor, size: context.iconSize(22)),
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(

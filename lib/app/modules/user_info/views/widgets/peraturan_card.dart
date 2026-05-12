@@ -46,9 +46,9 @@ class PeraturanCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   peraturan.judul,
-                  style: AppTextStyles.header16.colored(const Color(0xFF1F2937)).copyWith(
-                    fontSize: context.fontSize(16),
-                  ),
+                  style: AppTextStyles.header16
+                      .colored(const Color(0xFF1F2937))
+                      .copyWith(fontSize: context.fontSize(16)),
                 ),
               ),
             ],
@@ -56,10 +56,9 @@ class PeraturanCard extends StatelessWidget {
           SizedBox(height: context.spacing(12)),
           Text(
             peraturan.isi,
-            style: AppTextStyles.body14.colored(const Color(0xFF4B5563)).copyWith(
-              height: 1.5,
-              fontSize: context.fontSize(14),
-            ),
+            style: AppTextStyles.body14
+                .colored(const Color(0xFF4B5563))
+                .copyWith(height: 1.5, fontSize: context.fontSize(14)),
           ),
         ],
       ),

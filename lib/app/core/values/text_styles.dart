@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// Menggunakan SF Pro untuk Deskripsi & Body Text
 class AppTextStyles {
   // ==================== HEADERS - Helvetica Neue Bold ====================
-  
+
   /// Display Large - 57px Bold
   static const displayLarge = TextStyle(
     fontFamily: 'Helvetica Neue',
@@ -282,15 +282,14 @@ class AppTextStyles {
 extension TextStyleExtension on TextStyle {
   /// Menambahkan warna
   TextStyle colored(Color color) => copyWith(color: color);
-  
+
   /// Menambahkan opacity
-  TextStyle withAlpha(double alpha) => copyWith(
-    color: color?.withValues(alpha: alpha),
-  );
-  
+  TextStyle withAlpha(double alpha) =>
+      copyWith(color: color?.withValues(alpha: alpha));
+
   /// Menambahkan weight
   TextStyle weighted(FontWeight weight) => copyWith(fontWeight: weight);
-  
+
   /// Menambahkan ukuran
   TextStyle sized(double size) => copyWith(fontSize: size);
 }

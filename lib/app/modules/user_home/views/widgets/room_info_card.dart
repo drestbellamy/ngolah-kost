@@ -43,7 +43,9 @@ class RoomInfoCard extends StatelessWidget {
                   children: [
                     Text(
                       controller.kostName,
-                      style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                      style: AppTextStyles.header16.colored(
+                        AppColors.textPrimary,
+                      ),
                     ),
                     Text(
                       'Kamar ${controller.roomNumber}',
@@ -94,7 +96,9 @@ class RoomInfoCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       controller.nextPaymentDate,
-                      style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
+                      style: AppTextStyles.subtitle14.colored(
+                        AppColors.textPrimary,
+                      ),
                     ),
                   ],
                 ),
@@ -110,7 +114,9 @@ class RoomInfoCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       controller.nextPaymentAmount,
-                      style: AppTextStyles.subtitle14.colored(AppColors.textPrimary),
+                      style: AppTextStyles.subtitle14.colored(
+                        AppColors.textPrimary,
+                      ),
                     ),
                   ],
                 ),

@@ -55,7 +55,11 @@ class PaymentCard extends StatelessWidget {
               color: statusBgColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(statusIcon, color: statusColor, size: context.iconSize(24)),
+            child: Icon(
+              statusIcon,
+              color: statusColor,
+              size: context.iconSize(24),
+            ),
           ),
 
           SizedBox(width: context.spacing(16)),
@@ -71,9 +75,9 @@ class PaymentCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         payment['month'],
-                        style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
-                          fontSize: context.fontSize(16),
-                        ),
+                        style: AppTextStyles.header16
+                            .colored(AppColors.textPrimary)
+                            .copyWith(fontSize: context.fontSize(16)),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -85,13 +89,16 @@ class PaymentCard extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: statusBgColor,
-                        borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(12),
+                        ),
                       ),
                       child: Text(
                         payment['status'],
-                        style: AppTextStyles.body12.weighted(FontWeight.w600).colored(statusColor).copyWith(
-                          fontSize: context.fontSize(12),
-                        ),
+                        style: AppTextStyles.body12
+                            .weighted(FontWeight.w600)
+                            .colored(statusColor)
+                            .copyWith(fontSize: context.fontSize(12)),
                       ),
                     ),
                   ],
@@ -99,9 +106,9 @@ class PaymentCard extends StatelessWidget {
                 SizedBox(height: context.spacing(4)),
                 Text(
                   payment['method'],
-                  style: AppTextStyles.body14.colored(AppColors.textSecondary).copyWith(
-                    fontSize: context.fontSize(14),
-                  ),
+                  style: AppTextStyles.body14
+                      .colored(AppColors.textSecondary)
+                      .copyWith(fontSize: context.fontSize(14)),
                 ),
                 SizedBox(height: context.spacing(12)),
                 Row(
@@ -109,9 +116,9 @@ class PaymentCard extends StatelessWidget {
                   children: [
                     Text(
                       payment['amount'],
-                      style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
-                        fontSize: context.fontSize(16),
-                      ),
+                      style: AppTextStyles.header16
+                          .colored(AppColors.textPrimary)
+                          .copyWith(fontSize: context.fontSize(16)),
                     ),
                     Row(
                       children: [
@@ -123,9 +130,9 @@ class PaymentCard extends StatelessWidget {
                         SizedBox(width: context.spacing(4)),
                         Text(
                           payment['date'],
-                          style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)).copyWith(
-                            fontSize: context.fontSize(12),
-                          ),
+                          style: AppTextStyles.body12
+                              .colored(const Color(0xFF9CA3AF))
+                              .copyWith(fontSize: context.fontSize(12)),
                         ),
                       ],
                     ),

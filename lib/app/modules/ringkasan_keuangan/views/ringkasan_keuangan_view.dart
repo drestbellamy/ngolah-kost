@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
 import '../controllers/ringkasan_keuangan_controller.dart';
-import '../widgets/financial_chart.dart';
+import 'widgets/chart_card.dart';
+import 'widgets/total_summary_card.dart';
+import 'widgets/empty_keuangan_state.dart';
+import 'widgets/kost_list_item.dart';
+import 'widgets/ringkasan_keuangan_shimmer_widget.dart';
 
 class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
   const RingkasanKeuanganView({super.key});
@@ -30,406 +35,18 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                 color: const Color(0xFF6B8E7A),
                 child: Obx(() {
                   if (controller.isLoading.value) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const CircularProgressIndicator(color: Color(0xFF6B8E7A)),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Memuat data keuangan...',
-                            style: AppTextStyles.body14.colored(AppColors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    );
+                    return _buildLoadingState(context);
                   }
 
                   if (controller.errorMessage.value != null) {
-                    return SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.6,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.error_outline,
-                                  size: 64,
-                                  color: Color(0xFFEF4444),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  controller.errorMessage.value!,
-                                  textAlign: TextAlign.center,
-                                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
-                                ),
-                                const SizedBox(height: 24),
-                                ElevatedButton.icon(
-                                  onPressed: controller.loadKeuanganData,
-                                  icon: const Icon(Icons.refresh),
-                                  label: const Text('Coba Lagi'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF6B8E7A),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
+                    return _buildErrorState(context);
                   }
 
                   if (controller.kostList.isEmpty) {
-                    return SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 100),
-                        padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.shadowLight,
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: const BoxDecoration(
-                                color: AppColors.primaryLighter,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.account_balance_wallet_outlined,
-                                size: 40,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              'Belum Ada Data Keuangan',
-                              style: AppTextStyles.header16.colored(AppColors.textPrimary),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Data keuangan akan muncul setelah Anda\nmenambahkan properti kost pemasukan\nserta pengeluaran.',
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    return const EmptyKeuanganState();
                   }
 
-                  return SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 24),
-
-                        // Grafik Keuangan Bulanan
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Grafik Keuangan Bulanan',
-                                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
-                                ),
-                                const SizedBox(height: 20),
-                                // Chart
-                                Obx(
-                                  () => controller.pemasukanChartData.isNotEmpty
-                                      ? FinancialChart(
-                                          pemasukanData: controller
-                                              .pemasukanChartData
-                                              .toList(),
-                                          pengeluaranData: controller
-                                              .pengeluaranChartData
-                                              .toList(),
-                                          labels: controller.chartLabels.toList(),
-                                        )
-                                      : const SizedBox(
-                                          height: 200,
-                                          child: Center(
-                                            child: CircularProgressIndicator(
-                                              color: Color(0xFF6B8E7A),
-                                            ),
-                                          ),
-                                        ),
-                                ),
-                                const SizedBox(height: 16),
-                                // Legend
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    _buildLegend(
-                                      'Pemasukan',
-                                      const Color(0xFF10B981),
-                                    ),
-                                    const SizedBox(width: 24),
-                                    _buildLegend(
-                                      'Pengeluaran',
-                                      const Color(0xFFEF4444),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Total Summary Card
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Obx(
-                            () => Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Total Semua Kost',
-                                    style: AppTextStyles.subtitle16,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  _buildFinancialItem(
-                                    'Pemasukan',
-                                    controller.formatCurrency(
-                                      controller.totalPemasukan.value,
-                                    ),
-                                    const Color(0xFF10B981),
-                                    Icons.trending_up,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _buildFinancialItem(
-                                    'Pengeluaran',
-                                    controller.formatCurrency(
-                                      controller.totalPengeluaran.value,
-                                    ),
-                                    const Color(0xFFEF4444),
-                                    Icons.trending_down,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _buildFinancialItem(
-                                    controller.totalLabaBersih.value >= 0
-                                        ? 'Laba Bersih'
-                                        : 'Rugi Bersih',
-                                    '${controller.totalLabaBersih.value >= 0 ? '+' : ''}${controller.formatCurrency(controller.totalLabaBersih.value)}',
-                                    controller.totalLabaBersih.value >= 0
-                                        ? const Color(0xFF8B5CF6)
-                                        : const Color(0xFFEF4444),
-                                    controller.totalLabaBersih.value >= 0
-                                        ? Icons.savings
-                                        : Icons.warning,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Section Title
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Text(
-                            'Pilih Rumah Kost',
-                            style: AppTextStyles.header16.colored(AppColors.textPrimary),
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Kost List
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Obx(
-                            () => ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: controller.kostList.length,
-                              itemBuilder: (context, index) {
-                                final kost = controller.kostList[index];
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Get.toNamed(
-                                        '/detail-keuangan-kost',
-                                        arguments: {
-                                          'kostId': kost.kostId,
-                                          'kostName': kost.kostName,
-                                          'kostAddress': kost.kostAddress,
-                                        },
-                                      );
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(
-                                              alpha: 0.05,
-                                            ),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          // Icon
-                                          Container(
-                                            width: 56,
-                                            height: 56,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFF6B8E7A),
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
-                                            ),
-                                            child: const Icon(
-                                              Icons.home_work,
-                                              color: Colors.white,
-                                              size: 28,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 16),
-                                          // Content
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  kost.kostName,
-                                                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  kost.kostAddress,
-                                                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                                const SizedBox(height: 8),
-                                                // Financial indicators in one row
-                                                Wrap(
-                                                  spacing: 8,
-                                                  runSpacing: 4,
-                                                  children: [
-                                                    _buildSmallIndicator(
-                                                      Icons.trending_up,
-                                                      controller.formatCurrency(
-                                                        kost.pemasukan,
-                                                      ),
-                                                      const Color(0xFF10B981),
-                                                    ),
-                                                    _buildSmallIndicator(
-                                                      Icons.trending_down,
-                                                      controller.formatCurrency(
-                                                        kost.pengeluaran,
-                                                      ),
-                                                      const Color(0xFFEF4444),
-                                                    ),
-                                                    _buildSmallIndicator(
-                                                      kost.labaBersih >= 0
-                                                          ? Icons.savings
-                                                          : Icons.warning,
-                                                      '${kost.labaBersih >= 0 ? '+' : ''}${controller.formatCurrency(kost.labaBersih)}',
-                                                      kost.labaBersih >= 0
-                                                          ? const Color(
-                                                              0xFF8B5CF6,
-                                                            )
-                                                          : const Color(
-                                                              0xFFEF4444,
-                                                            ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          // Arrow
-                                          Icon(
-                                            Icons.chevron_right,
-                                            color: Colors.grey[400],
-                                            size: 24,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                  );
+                  return _buildContent(context);
                 }),
               ),
             ),
@@ -439,66 +56,184 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
     );
   }
 
-  Widget _buildFinancialItem(
-    String label,
-    String value,
-    Color color,
-    IconData icon,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border(left: BorderSide(color: color, width: 5)),
+  Widget _buildLoadingState(BuildContext context) {
+    return const RingkasanKeuanganShimmerWidget();
+  }
+
+  Widget _buildErrorState(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.6,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Color(0xFFEF4444),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  controller.errorMessage.value!,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.body14.colored(AppColors.textSecondary),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: controller.loadKeuanganData,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Coba Lagi'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6B8E7A),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, size: 20, color: color),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: AppTextStyles.subtitle14.colored(AppColors.textSecondary).weighted(FontWeight.w500),
-              ),
-            ],
-          ),
+          const SizedBox(height: 24),
+
+          // Swipeable Cards (Grafik & Total)
+          _buildSwipeableCards(context)
+              .animate()
+              .fadeIn(duration: 500.ms)
+              .slideY(begin: 0.1, end: 0, duration: 500.ms),
+
+          const SizedBox(height: 16),
+
+          // Section Title
+          Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Text(
+                  'Pilih Rumah Kost',
+                  style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                ),
+              )
+              .animate()
+              .fadeIn(delay: 200.ms, duration: 500.ms)
+              .slideX(begin: -0.1, end: 0, duration: 500.ms),
+
           const SizedBox(height: 8),
-          Text(
-            value,
-            style: AppTextStyles.header20.copyWith(fontSize: 28).colored(AppColors.textPrimary),
-          ),
+
+          // Kost List
+          _buildKostList(),
+
+          const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _buildLegend(String label, Color color) {
-    return Row(
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 8),
-        Text(label, style: AppTextStyles.body14.colored(AppColors.textSecondary)),
-      ],
-    );
+  Widget _buildSwipeableCards(BuildContext context) {
+    return SizedBox(
+          height: MediaQuery.of(context).size.height * 0.45,
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: controller.pageController,
+                  onPageChanged: (index) {
+                    controller.currentPage.value = index;
+                  },
+                  children: [
+                    // Page 1: Grafik Keuangan Bulanan
+                    Obx(
+                      () => ChartCard(
+                        pemasukanData: controller.pemasukanChartData.toList(),
+                        pengeluaranData: controller.pengeluaranChartData
+                            .toList(),
+                        labels: controller.chartLabels.toList(),
+                      ),
+                    ),
+
+                    // Page 2: Total Summary Card
+                    Obx(
+                      () => TotalSummaryCard(
+                        totalPemasukan: controller.totalPemasukan.value,
+                        totalPengeluaran: controller.totalPengeluaran.value,
+                        totalLabaBersih: controller.totalLabaBersih.value,
+                        formatCurrency: controller.formatCurrency,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Page Indicator
+              Obx(
+                () => Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    2,
+                    (index) => AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      width: controller.currentPage.value == index ? 24 : 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: controller.currentPage.value == index
+                            ? const Color(0xFF6B8E7A)
+                            : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 500.ms, delay: 100.ms)
+        .slideY(begin: 0.1, end: 0, duration: 500.ms);
   }
 
-  Widget _buildSmallIndicator(IconData icon, String value, Color color) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: color),
-        const SizedBox(width: 4),
-        Text(
-          value,
-          style: AppTextStyles.body12.weighted(FontWeight.w600).colored(color),
+  Widget _buildKostList() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Obx(
+        () => ListView.builder(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: controller.kostList.length,
+          itemBuilder: (context, index) {
+            final kost = controller.kostList[index];
+            return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: KostListItem(
+                    kost: kost,
+                    formatCurrency: controller.formatCurrency,
+                  ),
+                )
+                .animate()
+                .fadeIn(delay: (400 + (index * 150)).ms, duration: 500.ms)
+                .slideY(begin: 0.1, end: 0, duration: 500.ms);
+          },
         ),
-      ],
+      ),
     );
   }
 }

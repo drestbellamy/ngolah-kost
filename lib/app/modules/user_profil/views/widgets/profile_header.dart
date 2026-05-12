@@ -69,12 +69,14 @@ class ProfileHeader extends GetView<UserProfilController> {
                             Text(
                               'Profil User',
                               style: AppTextStyles.headlineSmall
-                                .weighted(FontWeight.w700)
-                                .colored(Colors.white),
+                                  .weighted(FontWeight.w700)
+                                  .colored(Colors.white),
                             ),
                             Text(
                               'Kelola akun Anda',
-                             style: AppTextStyles.subtitle14.colored(AppColors.primaryLight),
+                              style: AppTextStyles.subtitle14.colored(
+                                AppColors.primaryLight,
+                              ),
                             ),
                           ],
                         ),
@@ -162,8 +164,8 @@ class ProfileHeader extends GetView<UserProfilController> {
                 () => Text(
                   controller.userName,
                   style: AppTextStyles.headlineSmall
-                                .weighted(FontWeight.w700)
-                                .colored(Colors.white),
+                      .weighted(FontWeight.w700)
+                      .colored(Colors.white),
                 ),
               ),
               Text(
@@ -251,7 +253,9 @@ class ProfileHeader extends GetView<UserProfilController> {
                   ),
                   child: Text(
                     'Batal',
-                    style: AppTextStyles.subtitle14.weighted(FontWeight.bold).colored(const Color(0xFF6B7280)),
+                    style: AppTextStyles.subtitle14
+                        .weighted(FontWeight.bold)
+                        .colored(const Color(0xFF6B7280)),
                   ),
                 ),
               ),
@@ -293,7 +297,9 @@ class ProfileHeader extends GetView<UserProfilController> {
               children: [
                 Text(
                   title,
-                  style: AppTextStyles.subtitle14.weighted(FontWeight.bold).colored(AppColors.textPrimary),
+                  style: AppTextStyles.subtitle14
+                      .weighted(FontWeight.bold)
+                      .colored(AppColors.textPrimary),
                 ),
                 Text(
                   subtitle,

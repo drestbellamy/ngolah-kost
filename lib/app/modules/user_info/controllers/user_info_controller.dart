@@ -43,7 +43,7 @@ class UserInfoController extends GetxController with WidgetsBindingObserver {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
     loadData();
-    
+
     // Mark info as seen after the widget tree is fully built
     // Use Future.delayed to ensure all builds are complete
     Future.delayed(const Duration(milliseconds: 100), () {

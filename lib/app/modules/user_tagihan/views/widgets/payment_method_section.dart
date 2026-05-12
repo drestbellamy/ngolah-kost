@@ -27,9 +27,9 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
           children: [
             Text(
               'Metode Pembayaran',
-              style: AppTextStyles.subtitle16.colored(AppColors.textGray).copyWith(
-                fontSize: context.fontSize(16),
-              ),
+              style: AppTextStyles.subtitle16
+                  .colored(AppColors.textGray)
+                  .copyWith(fontSize: context.fontSize(16)),
             ),
             SizedBox(height: context.spacing(16)),
 
@@ -39,7 +39,9 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                 return Center(
                   child: Padding(
                     padding: context.allPadding(20),
-                    child: const CircularProgressIndicator(color: Color(0xFF6B8E7A)),
+                    child: const CircularProgressIndicator(
+                      color: Color(0xFF6B8E7A),
+                    ),
                   ),
                 );
               }
@@ -50,7 +52,9 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                   padding: context.allPadding(20),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFEF3C7),
-                    borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(12),
+                    ),
                     border: Border.all(color: const Color(0xFFFBBF24)),
                   ),
                   child: Column(
@@ -63,17 +67,17 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                       SizedBox(height: context.spacing(8)),
                       Text(
                         'Metode Pembayaran Belum Tersedia',
-                        style: AppTextStyles.subtitle14.colored(const Color(0xFFD97706)).copyWith(
-                          fontSize: context.fontSize(14),
-                        ),
+                        style: AppTextStyles.subtitle14
+                            .colored(const Color(0xFFD97706))
+                            .copyWith(fontSize: context.fontSize(14)),
                       ),
                       SizedBox(height: context.spacing(4)),
                       Text(
                         'Silakan hubungi pengelola kost untuk informasi pembayaran.',
                         textAlign: TextAlign.center,
-                        style: AppTextStyles.body12.colored(const Color(0xFFD97706)).copyWith(
-                          fontSize: context.fontSize(12),
-                        ),
+                        style: AppTextStyles.body12
+                            .colored(const Color(0xFFD97706))
+                            .copyWith(fontSize: context.fontSize(12)),
                       ),
                     ],
                   ),
@@ -141,7 +145,9 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                       0xFFFBBF24,
                     ).withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                      borderRadius: BorderRadius.circular(
+                        context.borderRadius(12),
+                      ),
                     ),
                     elevation: 0,
                   ),
@@ -159,9 +165,9 @@ class PaymentMethodSection extends GetView<UserTagihanController> {
                                   'tunai'
                               ? 'Konfirmasi Pembayaran Tunai'
                               : 'Kirim Bukti Pembayaran',
-                          style: AppTextStyles.subtitle16.colored(Colors.white).copyWith(
-                            fontSize: context.fontSize(16),
-                          ),
+                          style: AppTextStyles.subtitle16
+                              .colored(Colors.white)
+                              .copyWith(fontSize: context.fontSize(16)),
                         ),
                 );
               }),

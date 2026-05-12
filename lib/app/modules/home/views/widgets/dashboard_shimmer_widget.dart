@@ -20,9 +20,10 @@ class _DashboardShimmerWidgetState extends State<DashboardShimmerWidget>
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     )..repeat();
-    _animation = Tween<double>(begin: -1.0, end: 2.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: -1.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -50,11 +51,7 @@ class _DashboardShimmerWidgetState extends State<DashboardShimmerWidget>
             Color(0xFFF5F5F5),
             Color(0xFFE0E0E0),
           ],
-          stops: [
-            animationValue - 0.3,
-            animationValue,
-            animationValue + 0.3,
-          ],
+          stops: [animationValue - 0.3, animationValue, animationValue + 0.3],
         ),
       ),
     );
@@ -121,12 +118,7 @@ class _DashboardShimmerWidgetState extends State<DashboardShimmerWidget>
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _buildShimmerBox(
-            56,
-            56,
-            _animation.value,
-            borderRadius: 16,
-          ),
+          _buildShimmerBox(56, 56, _animation.value, borderRadius: 16),
           const Spacer(),
           _buildShimmerBox(
             60, // Lebar kotak text angkanya

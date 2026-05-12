@@ -14,11 +14,19 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
     Get.dialog(
       AlertDialog(
         title: Text('Keluar', style: TextStyle(fontSize: context.fontSize(18))),
-        content: Text('Apakah Anda yakin ingin keluar?', style: TextStyle(fontSize: context.fontSize(14))),
+        content: Text(
+          'Apakah Anda yakin ingin keluar?',
+          style: TextStyle(fontSize: context.fontSize(14)),
+        ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(), 
-            child: Text('Batal', style: AppTextStyles.subtitle14.copyWith(fontSize: context.fontSize(14))),
+            onPressed: () => Get.back(),
+            child: Text(
+              'Batal',
+              style: AppTextStyles.subtitle14.copyWith(
+                fontSize: context.fontSize(14),
+              ),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -27,7 +35,12 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
               await authCtrl.clearUser();
               Get.offAllNamed(Routes.login);
             },
-            child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red).copyWith(fontSize: context.fontSize(14))),
+            child: Text(
+              'Keluar',
+              style: AppTextStyles.subtitle14
+                  .colored(Colors.red)
+                  .copyWith(fontSize: context.fontSize(14)),
+            ),
           ),
         ],
       ),
@@ -86,21 +99,25 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: Get.context!.iconSize(48), color: const Color(0xFFEF4444)),
+            Icon(
+              Icons.error_outline,
+              size: Get.context!.iconSize(48),
+              color: const Color(0xFFEF4444),
+            ),
             SizedBox(height: Get.context!.spacing(16)),
             Text(
               'Terjadi Kesalahan',
-              style: AppTextStyles.header18.colored(const Color(0xFF1F2937)).copyWith(
-                fontSize: Get.context!.fontSize(18),
-              ),
+              style: AppTextStyles.header18
+                  .colored(const Color(0xFF1F2937))
+                  .copyWith(fontSize: Get.context!.fontSize(18)),
             ),
             SizedBox(height: Get.context!.spacing(8)),
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body14.colored(AppColors.textSecondary).copyWith(
-                fontSize: Get.context!.fontSize(14),
-              ),
+              style: AppTextStyles.body14
+                  .colored(AppColors.textSecondary)
+                  .copyWith(fontSize: Get.context!.fontSize(14)),
             ),
             SizedBox(height: Get.context!.spacing(16)),
             ElevatedButton(
@@ -108,7 +125,9 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B8E7A),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(8)),
+                  borderRadius: BorderRadius.circular(
+                    Get.context!.borderRadius(8),
+                  ),
                 ),
               ),
               child: Text(
@@ -124,12 +143,17 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Colors.red),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(8)),
+                  borderRadius: BorderRadius.circular(
+                    Get.context!.borderRadius(8),
+                  ),
                 ),
               ),
-              child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red).copyWith(
-                fontSize: Get.context!.fontSize(14),
-              )),
+              child: Text(
+                'Keluar',
+                style: AppTextStyles.subtitle14
+                    .colored(Colors.red)
+                    .copyWith(fontSize: Get.context!.fontSize(14)),
+              ),
             ),
           ],
         ),
@@ -150,18 +174,18 @@ class PaymentHistoryList extends GetView<UserHistoryPembayaranController> {
           SizedBox(height: Get.context!.spacing(16)),
           Text(
             title,
-            style: AppTextStyles.header16.colored(AppColors.textSecondary).copyWith(
-              fontSize: Get.context!.fontSize(16),
-            ),
+            style: AppTextStyles.header16
+                .colored(AppColors.textSecondary)
+                .copyWith(fontSize: Get.context!.fontSize(16)),
           ),
           if (subtitle != null) ...[
             SizedBox(height: Get.context!.spacing(8)),
             Text(
               subtitle,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body14.colored(const Color(0xFF9CA3AF)).copyWith(
-                fontSize: Get.context!.fontSize(14),
-              ),
+              style: AppTextStyles.body14
+                  .colored(const Color(0xFF9CA3AF))
+                  .copyWith(fontSize: Get.context!.fontSize(14)),
             ),
           ],
         ],

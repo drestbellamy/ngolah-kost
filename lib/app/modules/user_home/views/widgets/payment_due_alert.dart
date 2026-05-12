@@ -95,12 +95,16 @@ class PaymentDueAlert extends StatelessWidget {
                     children: [
                       Text(
                         'Tidak Ada Tagihan',
-                        style: AppTextStyles.header16.colored(AppColors.textGray),
+                        style: AppTextStyles.header16.colored(
+                          AppColors.textGray,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Semua tagihan sudah lunas',
-                        style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)),
+                        style: AppTextStyles.body12.colored(
+                          const Color(0xFF9CA3AF),
+                        ),
                       ),
                     ],
                   ),
@@ -135,16 +139,15 @@ class PaymentDueAlert extends StatelessWidget {
                   child: Icon(icon, color: Colors.white, size: 14),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: AppTextStyles.header16.colored(textColor),
-                ),
+                Text(title, style: AppTextStyles.header16.colored(textColor)),
               ],
             ),
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: AppTextStyles.body12.colored(textColor.withValues(alpha: 0.8)),
+              style: AppTextStyles.body12.colored(
+                textColor.withValues(alpha: 0.8),
+              ),
             ),
             const SizedBox(height: 8),
             if (status != 'pending') ...[

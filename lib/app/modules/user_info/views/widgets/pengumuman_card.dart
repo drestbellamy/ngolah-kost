@@ -47,9 +47,9 @@ class PengumumanCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   pengumuman.judul,
-                  style: AppTextStyles.header16.colored(
-                    const Color(0xFF1F2937),
-                  ).copyWith(fontSize: context.fontSize(16)),
+                  style: AppTextStyles.header16
+                      .colored(const Color(0xFF1F2937))
+                      .copyWith(fontSize: context.fontSize(16)),
                 ),
               ),
             ],
@@ -72,9 +72,9 @@ class PengumumanCard extends StatelessWidget {
               SizedBox(width: context.spacing(4)),
               Text(
                 pengumuman.tanggal,
-                style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)).copyWith(
-                  fontSize: context.fontSize(12),
-                ),
+                style: AppTextStyles.body12
+                    .colored(const Color(0xFF9CA3AF))
+                    .copyWith(fontSize: context.fontSize(12)),
               ),
             ],
           ),

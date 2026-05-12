@@ -32,31 +32,28 @@ class UserHistoryPembayaranView
           Padding(
             padding: context.horizontalPadding(24),
             child: const TotalPaymentCard(),
-          )
-              .animate()
-              .fadeIn(duration: 400.ms)
-              .slideY(begin: -0.2, end: 0),
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0),
           SizedBox(height: context.spacing(24)),
           Padding(
-            padding: context.horizontalPadding(24),
-            child: const FilterTabs(),
-          )
+                padding: context.horizontalPadding(24),
+                child: const FilterTabs(),
+              )
               .animate()
               .fadeIn(duration: 400.ms, delay: 100.ms)
               .slideY(begin: 0.2, end: 0),
           SizedBox(height: context.spacing(24)),
           Padding(
-            padding: context.horizontalPadding(24),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Riwayat Transaksi',
-                style: AppTextStyles.header18.colored(AppColors.textPrimary).copyWith(
-                  fontSize: context.fontSize(18),
+                padding: context.horizontalPadding(24),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Riwayat Transaksi',
+                    style: AppTextStyles.header18
+                        .colored(AppColors.textPrimary)
+                        .copyWith(fontSize: context.fontSize(18)),
+                  ),
                 ),
-              ),
-            ),
-          )
+              )
               .animate()
               .fadeIn(duration: 400.ms, delay: 200.ms)
               .slideY(begin: 0.2, end: 0),

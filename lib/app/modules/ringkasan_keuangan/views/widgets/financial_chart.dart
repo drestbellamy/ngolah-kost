@@ -83,13 +83,21 @@ class FinancialChart extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: CustomPaint(
-                      size: const Size(double.infinity, 200),
-                      painter: ChartPainter(
-                        pemasukanData: pemasukanData,
-                        pengeluaranData: pengeluaranData,
-                        maxValue: displayMaxValue,
-                      ),
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 1500),
+                      curve: Curves.easeInOutCubic,
+                      builder: (context, value, child) {
+                        return CustomPaint(
+                          size: const Size(double.infinity, 200),
+                          painter: ChartPainter(
+                            pemasukanData: pemasukanData,
+                            pengeluaranData: pengeluaranData,
+                            maxValue: displayMaxValue,
+                            animationProgress: value,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -124,11 +132,13 @@ class ChartPainter extends CustomPainter {
   final List<double> pemasukanData;
   final List<double> pengeluaranData;
   final double maxValue;
+  final double animationProgress;
 
   ChartPainter({
     required this.pemasukanData,
     required this.pengeluaranData,
     required this.maxValue,
+    required this.animationProgress,
   });
 
   @override
@@ -237,7 +247,18 @@ class ChartPainter extends CustomPainter {
     }
 
     if (hasValidPoint) {
-      canvas.drawPath(path, paint);
+      if (animationProgress < 1.0) {
+        var pathMetrics = path.computeMetrics();
+        for (var metric in pathMetrics) {
+          final extracted = metric.extractPath(
+            0.0,
+            metric.length * animationProgress,
+          );
+          canvas.drawPath(extracted, paint);
+        }
+      } else {
+        canvas.drawPath(path, paint);
+      }
     }
   }
 
@@ -254,6 +275,23 @@ class ChartPainter extends CustomPainter {
     final originalColor = paint.color;
 
     for (int i = 0; i < data.length; i++) {
+      // Calculate progress relative to this specific point's position on X axis
+      final currentPointFraction = data.length > 1
+          ? i / (data.length - 1)
+          : 1.0;
+
+      // Calculate individual animation value (0 to 1) for this point
+      double pointScale = 0.0;
+      if (animationProgress >= currentPointFraction) {
+        // Point pops in once the line reaches it (approx)
+        pointScale = ((animationProgress - currentPointFraction) * 5.0).clamp(
+          0.0,
+          1.0,
+        );
+      }
+
+      if (pointScale <= 0) continue;
+
       final x = i * spacing;
       final dataValue = data[i].isFinite ? data[i] : 0.0; // Handle NaN/Infinity
       final y = height - 20 - (dataValue * heightScale);
@@ -263,11 +301,11 @@ class ChartPainter extends CustomPainter {
         // Draw white border circle
         paint.style = PaintingStyle.fill;
         paint.color = Colors.white;
-        canvas.drawCircle(Offset(x, y), 6, paint);
+        canvas.drawCircle(Offset(x, y), 6 * pointScale, paint);
 
         // Draw colored inner circle
         paint.color = originalColor;
-        canvas.drawCircle(Offset(x, y), 4, paint);
+        canvas.drawCircle(Offset(x, y), 4 * pointScale, paint);
       }
     }
 
@@ -276,5 +314,7 @@ class ChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant ChartPainter oldDelegate) {
+    return oldDelegate.animationProgress != animationProgress;
+  }
 }

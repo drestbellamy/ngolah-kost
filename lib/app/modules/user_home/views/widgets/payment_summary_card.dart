@@ -83,10 +83,7 @@ class PaymentSummaryCard extends StatelessWidget {
             child: Icon(icon, color: iconColor, size: 20),
           ),
           const SizedBox(height: 8),
-          Text(
-            title,
-            style: AppTextStyles.body12.colored(AppColors.textGray),
-          ),
+          Text(title, style: AppTextStyles.body12.colored(AppColors.textGray)),
           const SizedBox(height: 4),
           Text(
             value,

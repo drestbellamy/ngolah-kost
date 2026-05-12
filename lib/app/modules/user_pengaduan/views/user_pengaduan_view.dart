@@ -46,10 +46,7 @@ class UserPengaduanView extends GetView<UserPengaduanController> {
                 ),
               ),
             ),
-          )
-              .animate()
-              .fadeIn(duration: 400.ms)
-              .slideY(begin: -0.2, end: 0),
+          ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0),
 
           // List Pengaduan
           Expanded(

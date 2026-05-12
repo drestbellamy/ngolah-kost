@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'keyboard_dismissible.dart';
 
 /// Template untuk halaman dengan form
-/// 
+///
 /// Gunakan template ini sebagai referensi untuk membuat halaman baru
 /// yang memiliki form input agar keyboard handling sudah benar
 class FormPageTemplate extends StatelessWidget {
@@ -14,9 +14,7 @@ class FormPageTemplate extends StatelessWidget {
       child: Scaffold(
         // PENTING: gunakan true agar layout menyesuaikan keyboard
         resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: const Text('Form Page'),
-        ),
+        appBar: AppBar(title: const Text('Form Page')),
         body: SingleChildScrollView(
           // PENTING: tambahkan ini agar keyboard tertutup saat scroll
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -38,13 +36,13 @@ class FormPageTemplate extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Submit button
               ElevatedButton(
                 onPressed: () {
                   // PENTING: tutup keyboard sebelum submit
                   FocusManager.instance.primaryFocus?.unfocus();
-                  
+
                   // Proses submit form
                   _submitForm();
                 },

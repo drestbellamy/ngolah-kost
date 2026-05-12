@@ -51,13 +51,17 @@ class PaymentMethodOption extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: const Color(0xFFFBBF24), size: context.iconSize(24)),
+                Icon(
+                  icon,
+                  color: const Color(0xFFFBBF24),
+                  size: context.iconSize(24),
+                ),
                 SizedBox(width: context.spacing(12)),
                 Text(
                   title,
-                  style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
-                    fontSize: context.fontSize(16),
-                  ),
+                  style: AppTextStyles.header16
+                      .colored(AppColors.textPrimary)
+                      .copyWith(fontSize: context.fontSize(16)),
                 ),
               ],
             ),
