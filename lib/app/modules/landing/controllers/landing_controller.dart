@@ -17,13 +17,13 @@ class LandingController extends GetxController {
   }
 
   void _startAnimation() {
-    // Start logo animation after 1.5 seconds
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    // Tampilkan logo (fade in) lebih cepat
+    Future.delayed(const Duration(milliseconds: 300), () {
       showContent.value = true;
     });
 
-    // Show description after logo animation completes (1.5s + 0.8s animation)
-    Future.delayed(const Duration(milliseconds: 2400), () {
+    // Pindah ke landing page setelah 1.5 detik
+    Future.delayed(const Duration(milliseconds: 1800), () {
       showDescription.value = true;
     });
   }

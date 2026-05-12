@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import '../controllers/landing_controller.dart';
 import '../../../core/values/values.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -8,7 +7,6 @@ import '../../../core/utils/responsive_utils.dart';
 class Landing3View extends GetView<LandingController> {
   const Landing3View({super.key});
 
-  static const String _landingLottieAsset = 'assets/lotties/Home.json';
   static const String _landingPage3BackgroundAsset =
       'assets/images/landing_page3/Landing3.webp';
 
@@ -37,7 +35,7 @@ class Landing3View extends GetView<LandingController> {
               fit: StackFit.expand,
               children: [
                 Image.asset(
-                  _landingPage3BackgroundAsset, // Pakai gambar miniatur
+                  _landingPage3BackgroundAsset,
                   fit: BoxFit.cover,
                   alignment: Alignment.topCenter,
                   errorBuilder: (context, error, stackTrace) => Container(
@@ -83,20 +81,7 @@ class Landing3View extends GetView<LandingController> {
           ),
         ),
 
-        // Center Logo overlay
-        Positioned(
-          top: MediaQuery.of(context).size.height * 0.10,
-          left: 0,
-          right: 0,
-          child: _buildBrandHeader(
-            titleColor: Colors.white,
-            subtitleColor: Colors.transparent,
-            logoBackground: const Color(0xFF6E947F), // Match design green
-            subtitle: '',
-          ),
-        ),
-
-        // Bottom White Content Sheet
+        // Bottom White Content Sheet with Slide Animation
         Positioned(
           left: 0,
           right: 0,
@@ -113,96 +98,107 @@ class Landing3View extends GetView<LandingController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Pantau Pembayaran',
-                  style: AppTextStyles.headlineLarge.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF5F8571),
-                    fontSize: context.fontSize(28),
+                _SlideAnimation(
+                  delay: 200,
+                  child: Text(
+                    'Pantau Pembayaran',
+                    style: AppTextStyles.headlineLarge.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF5F8571),
+                      fontSize: context.fontSize(28),
+                    ),
                   ),
                 ),
                 SizedBox(height: context.spacing(16)),
-                RichText(
-                  text: TextSpan(
-                    style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)).copyWith(
-                      fontSize: context.fontSize(16),
-                    ),
-                    children: [
-                      TextSpan(
-                        text:
-                            'Cek pembayaran penghuni, lihat riwayat transaksi, dan pastikan semua tagihan ',
+                _SlideAnimation(
+                  delay: 400,
+                  child: RichText(
+                    text: TextSpan(
+                      style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)).copyWith(
+                        fontSize: context.fontSize(16),
                       ),
-                      TextSpan(
-                        text: 'terkontrol',
-                        style: TextStyle(
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w700,
+                      children: [
+                        TextSpan(
+                          text:
+                              'Cek pembayaran penghuni, lihat riwayat transaksi, dan pastikan semua tagihan ',
                         ),
-                      ),
-                      TextSpan(text: ' dengan baik.'),
-                    ],
+                        TextSpan(
+                          text: 'terkontrol',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        TextSpan(text: ' dengan baik.'),
+                      ],
+                    ),
                   ),
                 ),
                 const Spacer(),
 
                 // Indicators
-                Row(
-                  children: [
-                    Container(
-                      width: context.spacing(8),
-                      height: context.spacing(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                _SlideAnimation(
+                  delay: 600,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: context.spacing(8),
+                        height: context.spacing(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE0E8E3),
+                          borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: context.spacing(8)),
-                    Container(
-                      width: context.spacing(8),
-                      height: context.spacing(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                      SizedBox(width: context.spacing(8)),
+                      Container(
+                        width: context.spacing(8),
+                        height: context.spacing(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE0E8E3),
+                          borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: context.spacing(8)),
-                    Container(
-                      width: context.spacing(28), // Ini yang aktif (halaman 3)
-                      height: context.spacing(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6E947F),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                      SizedBox(width: context.spacing(8)),
+                      Container(
+                        width: context.spacing(28),
+                        height: context.spacing(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6E947F),
+                          borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
                 SizedBox(height: context.spacing(24)),
 
                 // Button
-                SizedBox(
-                  width: double.infinity,
-                  height: context.buttonHeight(56),
-                  child: ElevatedButton(
-                    onPressed: controller
-                        .navigateToLogin, // Aksi khusus slide terakhir
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6E947F),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.borderRadius(16)),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Mulai Sekarang',
-                          style: AppTextStyles.buttonLarge.copyWith(
-                            color: Colors.white,
-                            fontSize: context.fontSize(16),
-                          ),
+                _SlideAnimation(
+                  delay: 800,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: context.buttonHeight(56),
+                    child: ElevatedButton(
+                      onPressed: controller.navigateToLogin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF6E947F),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(context.borderRadius(16)),
                         ),
-                      ],
+                        elevation: 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Mulai Sekarang',
+                            style: AppTextStyles.buttonLarge.copyWith(
+                              color: Colors.white,
+                              fontSize: context.fontSize(16),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -214,96 +210,72 @@ class Landing3View extends GetView<LandingController> {
     );
   }
 
-  Widget _buildBrandHeader({
-    required Color titleColor,
-    required Color subtitleColor,
-    required Color logoBackground,
-    required String subtitle,
-  }) {
-    return Builder(
-      builder: (context) => Column(
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: context.iconSize(100),
-                height: context.iconSize(100),
-                decoration: BoxDecoration(
-                  color: logoBackground,
-                  borderRadius: BorderRadius.circular(context.borderRadius(24)),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.25),
-                    width: 1.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.50),
-                      blurRadius: 6,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: context.allPadding(1),
-                child: Transform.scale(
-                  scale: 0.40,
-                  child: Lottie.asset(
-                    _landingLottieAsset,
-                    repeat: true,
-                    fit: BoxFit.cover,
-                    frameRate: FrameRate.composition,
-                    options: LottieOptions(enableMergePaths: true),
-                    errorBuilder: (_, __, _) => Icon(
-                      Icons.home_rounded,
-                      size: context.iconSize(58),
-                      color: const Color(0xFF6B8E7A),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Transform.translate(
-            offset: const Offset(
-              0,
-              -26, // Menambah nilai minus agar lebih dekat
-            ), // Mengurangi jarak antara animasi dan teks
-            child: Column(
-              children: [
-                Text(
-                  'Ngolah Kost',
-                  style: AppTextStyles.headlineLarge.copyWith(
-                    fontFamily: 'Helvetica Neu',
-                    color: titleColor,
-                    letterSpacing: 0.4,
-                    height: 0.1,
-                    fontSize: context.fontSize(28),
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.50),
-                        offset: const Offset(0, 2),
-                        blurRadius: 6,
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: context.spacing(8)),
-                Padding(
-                  padding: context.horizontalPadding(40),
-                  child: Text(
-                    subtitle,
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.body16.colored(subtitleColor).copyWith(
-                      fontSize: context.fontSize(16),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+}
+
+// Slide Animation Widget
+class _SlideAnimation extends StatefulWidget {
+  final Widget child;
+  final int delay;
+
+  const _SlideAnimation({
+    required this.child,
+    this.delay = 0,
+  });
+
+  @override
+  State<_SlideAnimation> createState() => _SlideAnimationState();
+}
+
+class _SlideAnimationState extends State<_SlideAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    Future.delayed(Duration(milliseconds: widget.delay), () {
+      if (mounted) {
+        _controller.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: widget.child,
       ),
     );
   }
