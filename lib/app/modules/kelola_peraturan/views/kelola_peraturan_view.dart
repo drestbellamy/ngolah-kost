@@ -176,7 +176,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                         ),
                         child: Text(
                           '${gedung.totalKamar} Rooms',
-                          style: AppTextStyles.body12.weighted(FontWeight.w500).colored(const Color(0xFF507562)),
+                          style: AppTextStyles.body12
+                              .weighted(FontWeight.w500)
+                              .colored(const Color(0xFF507562)),
                         ),
                       ),
                       Container(
@@ -231,7 +233,8 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
         child: Column(
           children: [
-            if (!controller.isLoadingPeraturan.value && controller.kategoriList.isNotEmpty) ...[
+            if (!controller.isLoadingPeraturan.value &&
+                controller.kategoriList.isNotEmpty) ...[
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6B8E7A),
@@ -280,13 +283,18 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 child: Text(
                   controller.errorMessage.value!,
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.body14.colored(const Color(0xFFB91C1C)).copyWith(height: 1.4),
+                  style: AppTextStyles.body14
+                      .colored(const Color(0xFFB91C1C))
+                      .copyWith(height: 1.4),
                 ),
               )
             else if (controller.kategoriList.isEmpty)
               Container(
                 margin: const EdgeInsets.only(top: 70),
-                padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 60,
+                  horizontal: 24,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -316,15 +324,17 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                     const SizedBox(height: 24),
                     Text(
                       'Belum Ada Peraturan',
-                      style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                      style: AppTextStyles.header16.colored(
+                        AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       'Tetapkan peraturan kost agar lingkungan\ntetap aman bagi seluruh penghuni.',
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                        height: 1.5,
-                      ),
+                      style: AppTextStyles.body14
+                          .colored(AppColors.textGray)
+                          .copyWith(height: 1.5),
                     ),
                     const SizedBox(height: 32),
                     ElevatedButton(
@@ -334,7 +344,10 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -401,7 +414,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                   kategori.nama,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.header16.colored(const Color(0xFF2D2F34)),
+                  style: AppTextStyles.header16.colored(
+                    const Color(0xFF2D2F34),
+                  ),
                 ),
               ),
               InkWell(
@@ -440,7 +455,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 children: [
                   Text(
                     '${entry.key + 1}.',
-                    style: AppTextStyles.body12.weighted(FontWeight.w700).colored(const Color(0xFF6B8E7A)),
+                    style: AppTextStyles.body12
+                        .weighted(FontWeight.w700)
+                        .colored(const Color(0xFF6B8E7A)),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -448,7 +465,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                       entry.value,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body12.colored(const Color(0xFF6C7383)).copyWith(height: 1.35),
+                      style: AppTextStyles.body12
+                          .colored(const Color(0xFF6C7383))
+                          .copyWith(height: 1.35),
                     ),
                   ),
                 ],
@@ -479,7 +498,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 children: [
                   Text(
                     'Tambah Peraturan',
-                    style: AppTextStyles.header18.colored(AppColors.textPrimary),
+                    style: AppTextStyles.header18.colored(
+                      AppColors.textPrimary,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
@@ -643,7 +664,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 children: [
                   Text(
                     'Edit Peraturan',
-                    style: AppTextStyles.header18.colored(AppColors.textPrimary),
+                    style: AppTextStyles.header18.colored(
+                      AppColors.textPrimary,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
@@ -804,7 +827,9 @@ class KelolaPeraturanView extends GetView<KelolaPeraturanController> {
                 children: [
                   Text(
                     'Hapus Peraturan',
-                    style: AppTextStyles.header18.colored(AppColors.textPrimary),
+                    style: AppTextStyles.header18.colored(
+                      AppColors.textPrimary,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),

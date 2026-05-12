@@ -15,11 +15,19 @@ class InfoContentSection extends GetView<UserInfoController> {
     Get.dialog(
       AlertDialog(
         title: Text('Keluar', style: TextStyle(fontSize: context.fontSize(18))),
-        content: Text('Apakah Anda yakin ingin keluar?', style: TextStyle(fontSize: context.fontSize(14))),
+        content: Text(
+          'Apakah Anda yakin ingin keluar?',
+          style: TextStyle(fontSize: context.fontSize(14)),
+        ),
         actions: [
           TextButton(
-            onPressed: () => Get.back(), 
-            child: Text('Batal', style: AppTextStyles.subtitle14.copyWith(fontSize: context.fontSize(14))),
+            onPressed: () => Get.back(),
+            child: Text(
+              'Batal',
+              style: AppTextStyles.subtitle14.copyWith(
+                fontSize: context.fontSize(14),
+              ),
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -28,7 +36,12 @@ class InfoContentSection extends GetView<UserInfoController> {
               await authCtrl.clearUser();
               Get.offAllNamed(Routes.login);
             },
-            child: Text('Keluar', style: AppTextStyles.subtitle14.colored(Colors.red).copyWith(fontSize: context.fontSize(14))),
+            child: Text(
+              'Keluar',
+              style: AppTextStyles.subtitle14
+                  .colored(Colors.red)
+                  .copyWith(fontSize: context.fontSize(14)),
+            ),
           ),
         ],
       ),
@@ -52,7 +65,10 @@ class InfoContentSection extends GetView<UserInfoController> {
       }
 
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: context.spacing(24), vertical: context.spacing(8)),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.spacing(24),
+          vertical: context.spacing(8),
+        ),
         child: controller.selectedTabIndex.value == 0
             ? _buildPengumumanList(context)
             : _buildPeraturanList(context),
@@ -66,14 +82,18 @@ class InfoContentSection extends GetView<UserInfoController> {
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.error_outline, size: Get.context!.iconSize(48), color: Colors.red),
+            Icon(
+              Icons.error_outline,
+              size: Get.context!.iconSize(48),
+              color: Colors.red,
+            ),
             SizedBox(height: Get.context!.spacing(16)),
             Text(
               controller.errorMessage.value,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body14.colored(Colors.red).copyWith(
-                fontSize: Get.context!.fontSize(14),
-              ),
+              style: AppTextStyles.body14
+                  .colored(Colors.red)
+                  .copyWith(fontSize: Get.context!.fontSize(14)),
             ),
             SizedBox(height: Get.context!.spacing(16)),
             ElevatedButton(
@@ -81,7 +101,10 @@ class InfoContentSection extends GetView<UserInfoController> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6B8E7A),
               ),
-              child: Text('Coba Lagi', style: TextStyle(fontSize: Get.context!.fontSize(14))),
+              child: Text(
+                'Coba Lagi',
+                style: TextStyle(fontSize: Get.context!.fontSize(14)),
+              ),
             ),
             SizedBox(height: Get.context!.spacing(12)),
             OutlinedButton(
@@ -89,10 +112,18 @@ class InfoContentSection extends GetView<UserInfoController> {
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: Colors.red),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(8)),
+                  borderRadius: BorderRadius.circular(
+                    Get.context!.borderRadius(8),
+                  ),
                 ),
               ),
-              child: Text('Keluar', style: TextStyle(color: Colors.red, fontSize: Get.context!.fontSize(14))),
+              child: Text(
+                'Keluar',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: Get.context!.fontSize(14),
+                ),
+              ),
             ),
           ],
         ),
@@ -109,7 +140,7 @@ class InfoContentSection extends GetView<UserInfoController> {
     return Container(
       margin: EdgeInsets.only(top: context.spacing(24)),
       padding: EdgeInsets.symmetric(
-        horizontal: context.spacing(24), 
+        horizontal: context.spacing(24),
         vertical: context.spacing(40),
       ),
       decoration: BoxDecoration(
@@ -169,7 +200,8 @@ class InfoContentSection extends GetView<UserInfoController> {
         context: context,
         icon: Icons.notifications_off_outlined,
         title: 'Belum ada pengumuman',
-        description: 'Saat ini belum ada informasi terbaru dari pengelola kost. Kami akan memberi tahu Anda di sini jika ada pembaruan.',
+        description:
+            'Saat ini belum ada informasi terbaru dari pengelola kost. Kami akan memberi tahu Anda di sini jika ada pembaruan.',
       );
     }
 
@@ -191,7 +223,8 @@ class InfoContentSection extends GetView<UserInfoController> {
         context: context,
         icon: Icons.assignment_outlined,
         title: 'Belum ada peraturan',
-        description: 'Pengelola kost belum menambahkan tata tertib tertulis. Silakan hubungi admin jika Anda memiliki pertanyaan.',
+        description:
+            'Pengelola kost belum menambahkan tata tertib tertulis. Silakan hubungi admin jika Anda memiliki pertanyaan.',
       );
     }
 

@@ -71,13 +71,15 @@ class FilterTabs extends GetView<UserHistoryPembayaranController> {
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: isSelected 
-              ? AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(Colors.white).copyWith(
-                  fontSize: context.fontSize(14),
-                )
-              : AppTextStyles.subtitle14.weighted(FontWeight.w600).colored(AppColors.textSecondary).copyWith(
-                  fontSize: context.fontSize(14),
-                ),
+          style: isSelected
+              ? AppTextStyles.subtitle14
+                    .weighted(FontWeight.w600)
+                    .colored(Colors.white)
+                    .copyWith(fontSize: context.fontSize(14))
+              : AppTextStyles.subtitle14
+                    .weighted(FontWeight.w600)
+                    .colored(AppColors.textSecondary)
+                    .copyWith(fontSize: context.fontSize(14)),
         ),
       ),
     );

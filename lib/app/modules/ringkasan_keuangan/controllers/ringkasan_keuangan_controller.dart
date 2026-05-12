@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/kost_repository.dart';
@@ -19,19 +20,29 @@ class RingkasanKeuanganController extends GetxController {
   final totalPemasukan = 0.0.obs;
   final totalPengeluaran = 0.0.obs;
   final totalLabaBersih = 0.0.obs;
-  
+
   // Chart data
   final pemasukanChartData = <double>[].obs;
   final pengeluaranChartData = <double>[].obs;
   final chartLabels = <String>[].obs;
-  
+
   final isLoading = false.obs;
   final errorMessage = RxnString();
+
+  // PageView controller for swipeable cards
+  final pageController = PageController();
+  final currentPage = 0.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadKeuanganData();
+  }
+
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
   }
 
   Future<void> loadKeuanganData() async {
@@ -124,39 +135,26 @@ class RingkasanKeuanganController extends GetxController {
       final now = DateTime.now();
       final months = <DateTime>[];
 
-      if (earliestDate != null && latestDate != null) {
-        // Start from earliest transaction month
-        final startMonth = DateTime(earliestDate.year, earliestDate.month, 1);
-        // End at the latest between current month and latest transaction month
-        final currentMonth = DateTime(now.year, now.month, 1);
+      final currentMonth = DateTime(now.year, now.month, 1);
+      DateTime endMonth = currentMonth;
+
+      if (latestDate != null) {
         final latestTransactionMonth = DateTime(
           latestDate.year,
           latestDate.month,
           1,
         );
-        final endMonth = latestTransactionMonth.isAfter(currentMonth)
+        endMonth = latestTransactionMonth.isAfter(currentMonth)
             ? latestTransactionMonth
             : currentMonth;
+      }
 
-        // Calculate months between start and end
-        var tempMonth = startMonth;
-        final allMonths = <DateTime>[];
-
-        while (tempMonth.isBefore(endMonth) ||
-            tempMonth.isAtSameMomentAs(endMonth)) {
-          allMonths.add(tempMonth);
-          tempMonth = DateTime(tempMonth.year, tempMonth.month + 1, 1);
-        }
-
-        // Take last 6 months or all months if less than 6
-        if (allMonths.length > 6) {
-          months.addAll(allMonths.sublist(allMonths.length - 6));
-        } else {
-          months.addAll(allMonths);
-        }
-      } else {
-        // No data found, show current month only
-        months.add(DateTime(now.year, now.month, 1));
+      // Always generate exactly 6 months ending at endMonth to ensure chart draws lines instead of dots
+      var tempMonth = DateTime(endMonth.year, endMonth.month - 5, 1);
+      while (tempMonth.isBefore(endMonth) ||
+          tempMonth.isAtSameMomentAs(endMonth)) {
+        months.add(tempMonth);
+        tempMonth = DateTime(tempMonth.year, tempMonth.month + 1, 1);
       }
 
       final pemasukanByMonth = <double>[];

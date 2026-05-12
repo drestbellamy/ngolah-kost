@@ -94,10 +94,25 @@ class FontWeightDemo extends StatelessWidget {
           _buildWeightRow('w100 - Thin', FontWeight.w100, fontFamily),
           _buildWeightRow('w200 - Ultralight', FontWeight.w200, fontFamily),
           _buildWeightRow('w300 - Light', FontWeight.w300, fontFamily),
-          _buildWeightRow('w400 - Regular', FontWeight.w400, fontFamily, highlight: true),
-          _buildWeightRow('w500 - Medium', FontWeight.w500, fontFamily, highlight: true),
+          _buildWeightRow(
+            'w400 - Regular',
+            FontWeight.w400,
+            fontFamily,
+            highlight: true,
+          ),
+          _buildWeightRow(
+            'w500 - Medium',
+            FontWeight.w500,
+            fontFamily,
+            highlight: true,
+          ),
           _buildWeightRow('w600 - Semibold', FontWeight.w600, fontFamily),
-          _buildWeightRow('w700 - Bold', FontWeight.w700, fontFamily, highlight: true),
+          _buildWeightRow(
+            'w700 - Bold',
+            FontWeight.w700,
+            fontFamily,
+            highlight: true,
+          ),
           _buildWeightRow('w800 - Extra Bold', FontWeight.w800, fontFamily),
           _buildWeightRow('w900 - Black', FontWeight.w900, fontFamily),
         ],
@@ -177,41 +192,32 @@ class FontWeightDemo extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Headers
-          _buildStylePreview(
-            'Headers (Bold)',
-            [
-              ('headlineSmall', AppTextStyles.headlineSmall, '24px'),
-              ('header20', AppTextStyles.header20, '20px'),
-              ('header18', AppTextStyles.header18, '18px'),
-              ('header16', AppTextStyles.header16, '16px'),
-            ],
-          ),
+          _buildStylePreview('Headers (Bold)', [
+            ('headlineSmall', AppTextStyles.headlineSmall, '24px'),
+            ('header20', AppTextStyles.header20, '20px'),
+            ('header18', AppTextStyles.header18, '18px'),
+            ('header16', AppTextStyles.header16, '16px'),
+          ]),
 
           const Divider(height: 32),
 
           // Sub Judul
-          _buildStylePreview(
-            'Sub Judul (Medium)',
-            [
-              ('subtitle18', AppTextStyles.subtitle18, '18px'),
-              ('titleMedium', AppTextStyles.titleMedium, '16px'),
-              ('subtitle14', AppTextStyles.subtitle14, '14px'),
-              ('subtitle12', AppTextStyles.subtitle12, '12px'),
-            ],
-          ),
+          _buildStylePreview('Sub Judul (Medium)', [
+            ('subtitle18', AppTextStyles.subtitle18, '18px'),
+            ('titleMedium', AppTextStyles.titleMedium, '16px'),
+            ('subtitle14', AppTextStyles.subtitle14, '14px'),
+            ('subtitle12', AppTextStyles.subtitle12, '12px'),
+          ]),
 
           const Divider(height: 32),
 
           // Body
-          _buildStylePreview(
-            'Body Text (Regular)',
-            [
-              ('body16', AppTextStyles.body16, '16px'),
-              ('body14', AppTextStyles.body14, '14px'),
-              ('body12', AppTextStyles.body12, '12px'),
-              ('body10', AppTextStyles.body10, '10px'),
-            ],
-          ),
+          _buildStylePreview('Body Text (Regular)', [
+            ('body16', AppTextStyles.body16, '16px'),
+            ('body14', AppTextStyles.body14, '14px'),
+            ('body12', AppTextStyles.body12, '12px'),
+            ('body10', AppTextStyles.body10, '10px'),
+          ]),
         ],
       ),
     );

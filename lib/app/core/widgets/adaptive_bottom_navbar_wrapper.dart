@@ -5,10 +5,7 @@ import 'dart:async';
 class AdaptiveBottomNavbarWrapper extends StatefulWidget {
   final Widget child;
 
-  const AdaptiveBottomNavbarWrapper({
-    super.key,
-    required this.child,
-  });
+  const AdaptiveBottomNavbarWrapper({super.key, required this.child});
 
   @override
   State<AdaptiveBottomNavbarWrapper> createState() =>
@@ -16,7 +13,8 @@ class AdaptiveBottomNavbarWrapper extends StatefulWidget {
 }
 
 class _AdaptiveBottomNavbarWrapperState
-    extends State<AdaptiveBottomNavbarWrapper> with WidgetsBindingObserver {
+    extends State<AdaptiveBottomNavbarWrapper>
+    with WidgetsBindingObserver {
   Timer? _debounceTimer;
   bool _needsRebuild = false;
 
@@ -37,7 +35,7 @@ class _AdaptiveBottomNavbarWrapperState
   void didChangeMetrics() {
     // Tandai bahwa perlu rebuild, tapi jangan langsung setState
     _needsRebuild = true;
-    
+
     // Debounce untuk menghindari rebuild berlebihan
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 150), () {

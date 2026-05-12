@@ -50,7 +50,9 @@ class UserProfilView extends GetView<UserProfilController> {
                           padding: context.allPadding(16),
                           decoration: BoxDecoration(
                             color: Colors.red.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                            borderRadius: BorderRadius.circular(
+                              context.borderRadius(12),
+                            ),
                             border: Border.all(
                               color: Colors.red.withValues(alpha: 0.3),
                             ),
@@ -74,8 +76,16 @@ class UserProfilView extends GetView<UserProfilController> {
                               SizedBox(height: context.spacing(12)),
                               ElevatedButton.icon(
                                 onPressed: controller.fetchUserProfile,
-                                icon: Icon(Icons.refresh, size: context.iconSize(16)),
-                                label: Text('Coba Lagi', style: TextStyle(fontSize: context.fontSize(14))),
+                                icon: Icon(
+                                  Icons.refresh,
+                                  size: context.iconSize(16),
+                                ),
+                                label: Text(
+                                  'Coba Lagi',
+                                  style: TextStyle(
+                                    fontSize: context.fontSize(14),
+                                  ),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.red,
                                   foregroundColor: Colors.white,
@@ -165,9 +175,9 @@ class UserProfilView extends GetView<UserProfilController> {
             SizedBox(width: context.spacing(8)),
             Text(
               'Keluar',
-              style: AppTextStyles.subtitle14.colored(Colors.red).copyWith(
-                fontSize: context.fontSize(14),
-              ),
+              style: AppTextStyles.subtitle14
+                  .colored(Colors.red)
+                  .copyWith(fontSize: context.fontSize(14)),
             ),
           ],
         ),

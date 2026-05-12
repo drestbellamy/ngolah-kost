@@ -83,9 +83,9 @@ class TagihanListWidget extends GetView<KelolaTagihanController> {
               Text(
                 'Tidak ada data tagihan untuk saat ini.\nTagihan akan otomatis muncul saat siklus\npembayaran dimulai.',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                  height: 1.5,
-                ),
+                style: AppTextStyles.body14
+                    .colored(AppColors.textGray)
+                    .copyWith(height: 1.5),
               ),
             ],
           ),

@@ -41,7 +41,9 @@ class TagihanListSection extends GetView<UserTagihanController> {
             child: Center(
               child: Padding(
                 padding: context.allPadding(40),
-                child: const CircularProgressIndicator(color: Color(0xFF6B8E7A)),
+                child: const CircularProgressIndicator(
+                  color: Color(0xFF6B8E7A),
+                ),
               ),
             ),
           );
@@ -62,17 +64,17 @@ class TagihanListSection extends GetView<UserTagihanController> {
                     SizedBox(height: context.spacing(16)),
                     Text(
                       'Terjadi Kesalahan',
-                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary).copyWith(
-                        fontSize: context.fontSize(18),
-                      ),
+                      style: AppTextStyles.subtitle18
+                          .colored(AppColors.textPrimary)
+                          .copyWith(fontSize: context.fontSize(18)),
                     ),
                     SizedBox(height: context.spacing(8)),
                     Text(
                       controller.errorMessage.value,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                        fontSize: context.fontSize(14),
-                      ),
+                      style: AppTextStyles.body14
+                          .colored(AppColors.textGray)
+                          .copyWith(fontSize: context.fontSize(14)),
                     ),
                     SizedBox(height: context.spacing(16)),
                     ElevatedButton(
@@ -80,7 +82,9 @@ class TagihanListSection extends GetView<UserTagihanController> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6B8E7A),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(context.borderRadius(8)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(8),
+                          ),
                         ),
                       ),
                       child: const Text(
@@ -94,7 +98,9 @@ class TagihanListSection extends GetView<UserTagihanController> {
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.red),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(context.borderRadius(8)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(8),
+                          ),
                         ),
                       ),
                       child: const Text(
@@ -124,17 +130,17 @@ class TagihanListSection extends GetView<UserTagihanController> {
                     SizedBox(height: context.spacing(16)),
                     Text(
                       'Semua Tagihan Lunas',
-                      style: AppTextStyles.subtitle18.colored(AppColors.textPrimary).copyWith(
-                        fontSize: context.fontSize(18),
-                      ),
+                      style: AppTextStyles.subtitle18
+                          .colored(AppColors.textPrimary)
+                          .copyWith(fontSize: context.fontSize(18)),
                     ),
                     SizedBox(height: context.spacing(8)),
                     Text(
                       'Tidak ada tagihan yang perlu dibayar saat ini.',
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                        fontSize: context.fontSize(14),
-                      ),
+                      style: AppTextStyles.body14
+                          .colored(AppColors.textGray)
+                          .copyWith(fontSize: context.fontSize(14)),
                     ),
                   ],
                 ),

@@ -14,10 +14,15 @@ void showUploadBottomSheet() {
       if (selectedImage.value == null) {
         // Step 1: Show image picker options
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: Get.context!.spacing(24), vertical: Get.context!.spacing(16)),
+          padding: EdgeInsets.symmetric(
+            horizontal: Get.context!.spacing(24),
+            vertical: Get.context!.spacing(16),
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(Get.context!.borderRadius(20))),
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(Get.context!.borderRadius(20)),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -27,7 +32,9 @@ void showUploadBottomSheet() {
                 height: Get.context!.spacing(4),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE5E7EB),
-                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(2)),
+                  borderRadius: BorderRadius.circular(
+                    Get.context!.borderRadius(2),
+                  ),
                 ),
               ),
               SizedBox(height: Get.context!.spacing(24)),
@@ -55,7 +62,9 @@ void showUploadBottomSheet() {
                   padding: Get.context!.allPadding(16),
                   decoration: BoxDecoration(
                     color: const Color(0xFFF9FAFB),
-                    borderRadius: BorderRadius.circular(Get.context!.borderRadius(12)),
+                    borderRadius: BorderRadius.circular(
+                      Get.context!.borderRadius(12),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -63,7 +72,9 @@ void showUploadBottomSheet() {
                         padding: Get.context!.allPadding(10),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFFBEB),
-                          borderRadius: BorderRadius.circular(Get.context!.borderRadius(10)),
+                          borderRadius: BorderRadius.circular(
+                            Get.context!.borderRadius(10),
+                          ),
                         ),
                         child: Icon(
                           Icons.image_outlined,
@@ -103,9 +114,13 @@ void showUploadBottomSheet() {
                   onPressed: () => Get.back(),
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFFF3F4F6),
-                    padding: EdgeInsets.symmetric(vertical: Get.context!.spacing(14)),
+                    padding: EdgeInsets.symmetric(
+                      vertical: Get.context!.spacing(14),
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(Get.context!.borderRadius(12)),
+                      borderRadius: BorderRadius.circular(
+                        Get.context!.borderRadius(12),
+                      ),
                     ),
                   ),
                   child: Text(
@@ -125,10 +140,15 @@ void showUploadBottomSheet() {
       } else {
         // Step 2: Show image preview with confirm/cancel buttons
         return Container(
-          padding: EdgeInsets.symmetric(horizontal: Get.context!.spacing(24), vertical: Get.context!.spacing(16)),
+          padding: EdgeInsets.symmetric(
+            horizontal: Get.context!.spacing(24),
+            vertical: Get.context!.spacing(16),
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(Get.context!.borderRadius(20))),
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(Get.context!.borderRadius(20)),
+            ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -138,7 +158,9 @@ void showUploadBottomSheet() {
                 height: Get.context!.spacing(4),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE5E7EB),
-                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(2)),
+                  borderRadius: BorderRadius.circular(
+                    Get.context!.borderRadius(2),
+                  ),
                 ),
               ),
               SizedBox(height: Get.context!.spacing(24)),
@@ -154,13 +176,19 @@ void showUploadBottomSheet() {
               // Image Preview
               Container(
                 width: double.infinity,
-                constraints: BoxConstraints(maxHeight: Get.context!.spacing(300)),
+                constraints: BoxConstraints(
+                  maxHeight: Get.context!.spacing(300),
+                ),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(12)),
+                  borderRadius: BorderRadius.circular(
+                    Get.context!.borderRadius(12),
+                  ),
                   border: Border.all(color: const Color(0xFFE5E7EB)),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(Get.context!.borderRadius(12)),
+                  borderRadius: BorderRadius.circular(
+                    Get.context!.borderRadius(12),
+                  ),
                   child: Image.file(
                     File(selectedImage.value!.path),
                     fit: BoxFit.contain,
@@ -194,7 +222,9 @@ void showUploadBottomSheet() {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6B8E7A),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(Get.context!.borderRadius(12)),
+                      borderRadius: BorderRadius.circular(
+                        Get.context!.borderRadius(12),
+                      ),
                     ),
                   ),
                   child: Text(
@@ -215,9 +245,13 @@ void showUploadBottomSheet() {
                   onPressed: () => Get.back(),
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFFF3F4F6),
-                    padding: EdgeInsets.symmetric(vertical: Get.context!.spacing(14)),
+                    padding: EdgeInsets.symmetric(
+                      vertical: Get.context!.spacing(14),
+                    ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(Get.context!.borderRadius(12)),
+                      borderRadius: BorderRadius.circular(
+                        Get.context!.borderRadius(12),
+                      ),
                     ),
                   ),
                   child: Text(

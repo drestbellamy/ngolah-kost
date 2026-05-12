@@ -146,21 +146,26 @@ class HomeView extends GetView<HomeController> {
                             duration: const Duration(milliseconds: 700),
                             switchInCurve: Curves.easeInQuad,
                             switchOutCurve: Curves.easeOutQuad,
-                            layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-                              return Stack(
-                                alignment: Alignment.topCenter,
-                                children: <Widget>[
-                                  ...previousChildren,
-                                  if (currentChild != null) currentChild,
-                                ],
-                              );
-                            },
-                            transitionBuilder: (Widget child, Animation<double> animation) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
+                            layoutBuilder:
+                                (
+                                  Widget? currentChild,
+                                  List<Widget> previousChildren,
+                                ) {
+                                  return Stack(
+                                    alignment: Alignment.topCenter,
+                                    children: <Widget>[
+                                      ...previousChildren,
+                                      if (currentChild != null) currentChild,
+                                    ],
+                                  );
+                                },
+                            transitionBuilder:
+                                (Widget child, Animation<double> animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                             child: controller.isLoading.value
                                 ? const DashboardShimmerWidget(
                                     key: ValueKey('shimmer'),
@@ -176,8 +181,9 @@ class HomeView extends GetView<HomeController> {
                                               value: controller.totalKost.value
                                                   .toString(),
                                               label: 'Total Kost',
-                                              iconBgColor:
-                                                  const Color(0xFF6B8E7A),
+                                              iconBgColor: const Color(
+                                                0xFF6B8E7A,
+                                              ),
                                             ),
                                           ),
                                           SizedBox(width: context.spacing(16)),
@@ -187,8 +193,9 @@ class HomeView extends GetView<HomeController> {
                                               value: controller.totalKamar.value
                                                   .toString(),
                                               label: 'Total Kamar',
-                                              iconBgColor:
-                                                  const Color(0xFFA8D5BA),
+                                              iconBgColor: const Color(
+                                                0xFFA8D5BA,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -198,23 +205,30 @@ class HomeView extends GetView<HomeController> {
                                         children: [
                                           Expanded(
                                             child: DashboardCard(
-                                              icon: Icons.door_front_door_outlined,
-                                              value: controller.kamarKosong.value
+                                              icon: Icons
+                                                  .door_front_door_outlined,
+                                              value: controller
+                                                  .kamarKosong
+                                                  .value
                                                   .toString(),
                                               label: 'Kamar Kosong',
-                                              iconBgColor:
-                                                  const Color(0xFFF2A65A),
+                                              iconBgColor: const Color(
+                                                0xFFF2A65A,
+                                              ),
                                             ),
                                           ),
                                           SizedBox(width: context.spacing(16)),
                                           Expanded(
                                             child: DashboardCard(
                                               icon: Icons.people_outline,
-                                              value: controller.totalPenghuni.value
+                                              value: controller
+                                                  .totalPenghuni
+                                                  .value
                                                   .toString(),
                                               label: 'Total Penghuni',
-                                              iconBgColor:
-                                                  const Color(0xFF6B8E7A),
+                                              iconBgColor: const Color(
+                                                0xFF6B8E7A,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -226,11 +240,13 @@ class HomeView extends GetView<HomeController> {
                                             child: DashboardCard(
                                               icon: Icons.access_time_outlined,
                                               value: controller
-                                                  .tagihanBelumBayar.value
+                                                  .tagihanBelumBayar
+                                                  .value
                                                   .toString(),
                                               label: 'Tagihan Belum Bayar',
-                                              iconBgColor:
-                                                  const Color(0xFFF59E0B),
+                                              iconBgColor: const Color(
+                                                0xFFF59E0B,
+                                              ),
                                             ),
                                           ),
                                           SizedBox(width: context.spacing(16)),
@@ -238,11 +254,13 @@ class HomeView extends GetView<HomeController> {
                                             child: DashboardCard(
                                               icon: Icons.check_circle_outline,
                                               value: controller
-                                                  .menungguVerifikasi.value
+                                                  .menungguVerifikasi
+                                                  .value
                                                   .toString(),
                                               label: 'Menunggu Verifikasi',
-                                              iconBgColor:
-                                                  const Color(0xFF10B981),
+                                              iconBgColor: const Color(
+                                                0xFF10B981,
+                                              ),
                                             ),
                                           ),
                                         ],
@@ -290,19 +308,27 @@ class HomeView extends GetView<HomeController> {
                                 child: Column(
                                   children: [
                                     MenuItem(
-                                      icon: Icons.account_balance_wallet_outlined,
+                                      icon:
+                                          Icons.account_balance_wallet_outlined,
                                       title: 'Metode Pembayaran',
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFF4B83F3), Color(0xFF285ADA)],
+                                        colors: [
+                                          Color(0xFF4B83F3),
+                                          Color(0xFF285ADA),
+                                        ],
                                       ),
-                                      onTap: controller.navigateToMetodePembayaran,
+                                      onTap:
+                                          controller.navigateToMetodePembayaran,
                                     ),
                                     SizedBox(height: context.spacing(12)),
                                     MenuItem(
                                       icon: Icons.receipt_long_outlined,
                                       title: 'Kelola Tagihan',
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFFF2A65A), Color(0xFFE8953D)],
+                                        colors: [
+                                          Color(0xFFF2A65A),
+                                          Color(0xFFE8953D),
+                                        ],
                                       ),
                                       onTap: controller.navigateToKelolaTagihan,
                                     ),
@@ -311,36 +337,52 @@ class HomeView extends GetView<HomeController> {
                                       icon: Icons.trending_up_outlined,
                                       title: 'Kelola Keuangan',
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFF10B981), Color(0xFF059669)],
+                                        colors: [
+                                          Color(0xFF10B981),
+                                          Color(0xFF059669),
+                                        ],
                                       ),
-                                      onTap: controller.navigateToKelolaKeuangan,
+                                      onTap:
+                                          controller.navigateToKelolaKeuangan,
                                     ),
                                     SizedBox(height: context.spacing(12)),
                                     MenuItem(
                                       icon: Icons.campaign_outlined,
                                       title: 'Kelola Pengumuman',
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFF2D7A6E), Color(0xFF1F5449)],
+                                        colors: [
+                                          Color(0xFF2D7A6E),
+                                          Color(0xFF1F5449),
+                                        ],
                                       ),
-                                      onTap: controller.navigateToKelolaPengumuman,
+                                      onTap:
+                                          controller.navigateToKelolaPengumuman,
                                     ),
                                     SizedBox(height: context.spacing(12)),
                                     MenuItem(
                                       icon: Icons.rule_outlined,
                                       title: 'Kelola Peraturan',
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFF8FAA9F), Color(0xFF6B8E7A)],
+                                        colors: [
+                                          Color(0xFF8FAA9F),
+                                          Color(0xFF6B8E7A),
+                                        ],
                                       ),
-                                      onTap: controller.navigateToKelolaPeraturan,
+                                      onTap:
+                                          controller.navigateToKelolaPeraturan,
                                     ),
                                     SizedBox(height: context.spacing(12)),
                                     MenuItem(
                                       icon: Icons.report_problem_outlined,
                                       title: 'Kelola Pengaduan',
                                       gradient: const LinearGradient(
-                                        colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                                        colors: [
+                                          Color(0xFFEF4444),
+                                          Color(0xFFDC2626),
+                                        ],
                                       ),
-                                      onTap: controller.navigateToKelolaPengaduan,
+                                      onTap:
+                                          controller.navigateToKelolaPengaduan,
                                     ),
                                   ],
                                 ),

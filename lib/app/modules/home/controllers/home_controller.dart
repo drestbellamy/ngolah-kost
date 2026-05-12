@@ -42,10 +42,7 @@ class HomeController extends GetxController {
       tagihanBelumBayar.value = stats['tagihanBelumBayar'] ?? 0;
       menungguVerifikasi.value = stats['menungguVerifikasi'] ?? 0;
     } catch (e) {
-      ToastHelper.showError(
-        'Gagal memuat data dashboard: $e',
-        title: 'Error',
-      );
+      ToastHelper.showError('Gagal memuat data dashboard: $e', title: 'Error');
     } finally {
       isLoading.value = false;
     }
@@ -70,7 +67,10 @@ class HomeController extends GetxController {
       );
       refreshAllData();
     } catch (e) {
-      ToastHelper.showError('Gagal membuka halaman: $e', title: 'Error Navigasi');
+      ToastHelper.showError(
+        'Gagal membuka halaman: $e',
+        title: 'Error Navigasi',
+      );
       print("Navigasi error: $e");
     }
   }
@@ -84,7 +84,10 @@ class HomeController extends GetxController {
       );
       refreshAllData();
     } catch (e) {
-      ToastHelper.showError('Gagal membuka halaman: $e', title: 'Error Navigasi');
+      ToastHelper.showError(
+        'Gagal membuka halaman: $e',
+        title: 'Error Navigasi',
+      );
       print("Navigasi error: $e");
     }
   }
@@ -106,7 +109,7 @@ class HomeController extends GetxController {
 
   void refreshAllData() {
     loadDashboardData();
-    
+
     // Refresh the Ringkasan Keuangan widget if it's already in the widget tree
     if (Get.isRegistered<RingkasanKeuanganWidgetController>()) {
       Get.find<RingkasanKeuanganWidgetController>().loadRingkasanKeuangan();

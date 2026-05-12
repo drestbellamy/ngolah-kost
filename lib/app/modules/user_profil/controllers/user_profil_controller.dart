@@ -275,7 +275,10 @@ class UserProfilController extends GetxController {
                         Get.back();
                         final authCtrl = Get.find<AuthController>();
                         await authCtrl.clearUser();
-                        ToastHelper.showInfo('Anda telah keluar', title: 'Logout');
+                        ToastHelper.showInfo(
+                          'Anda telah keluar',
+                          title: 'Logout',
+                        );
                         Get.offAllNamed(Routes.login);
                       },
                       style: ElevatedButton.styleFrom(
@@ -396,7 +399,9 @@ class UserProfilController extends GetxController {
       final confirmed = await Get.dialog<bool>(
         Dialog(
           backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(

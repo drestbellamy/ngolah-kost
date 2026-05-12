@@ -19,7 +19,10 @@ class PengaduanListWidget extends GetView<KelolaPengaduanController> {
             children: [
               Container(
                 margin: const EdgeInsets.only(top: 40),
-                padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 60,
+                  horizontal: 24,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -96,4 +99,3 @@ class PengaduanListWidget extends GetView<KelolaPengaduanController> {
     });
   }
 }
-

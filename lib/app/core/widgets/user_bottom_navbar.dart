@@ -79,9 +79,10 @@ class _UserBottomNavbarState extends State<UserBottomNavbar> {
             infoNotifCount: 0,
           );
         }
-        
+
         return _buildNavbarRow(
-          hasTagihanNotif: _notificationController!.hasTagihanNotification.value,
+          hasTagihanNotif:
+              _notificationController!.hasTagihanNotification.value,
           hasInfoNotif: _notificationController!.hasInfoNotification.value,
           infoNotifCount: _notificationController!.infoNotificationCount.value,
         );
