@@ -74,7 +74,7 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
   void _submit() {
     // Tutup keyboard sebelum submit
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     final nomorKamar = nomorKamarController.text.trim();
     final kapasitasText = kapasitasController.text.trim();
     final hargaText = hargaController.text.trim();
@@ -125,7 +125,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 children: [
                   Text(
                     'Edit Kamar',
-                    style: AppTextStyles.header18.colored(AppColors.textPrimary),
+                    style: AppTextStyles.header18.colored(
+                      AppColors.textPrimary,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => Get.back(),
@@ -163,7 +165,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 },
                 decoration: InputDecoration(
                   hintText: 'misalnya, A-101, 201, R-01',
-                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
+                  hintStyle: AppTextStyles.body14.colored(
+                    const Color(0xFFD1D5DB),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -228,7 +232,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Masukkan jumlah kapasitas penghuni',
-                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
+                  hintStyle: AppTextStyles.body14.colored(
+                    const Color(0xFFD1D5DB),
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -278,9 +284,13 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                 ],
                 decoration: InputDecoration(
                   hintText: 'Masukkan harga bulanan',
-                  hintStyle: AppTextStyles.body14.colored(const Color(0xFFD1D5DB)),
+                  hintStyle: AppTextStyles.body14.colored(
+                    const Color(0xFFD1D5DB),
+                  ),
                   prefixText: 'Rp ',
-                  prefixStyle: AppTextStyles.subtitle14.colored(AppColors.textGray),
+                  prefixStyle: AppTextStyles.subtitle14.colored(
+                    AppColors.textGray,
+                  ),
                   filled: true,
                   fillColor: const Color(0xFFF9FAFB),
                   border: OutlineInputBorder(
@@ -334,7 +344,9 @@ class _EditKamarBottomSheetState extends State<EditKamarBottomSheet> {
                       ),
                       child: Text(
                         'Batal',
-                        style: AppTextStyles.subtitle14.colored(const Color(0xFF6B7280)),
+                        style: AppTextStyles.subtitle14.colored(
+                          const Color(0xFF6B7280),
+                        ),
                       ),
                     ),
                   ),

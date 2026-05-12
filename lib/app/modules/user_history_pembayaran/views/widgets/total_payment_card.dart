@@ -27,24 +27,26 @@ class TotalPaymentCard extends GetView<UserHistoryPembayaranController> {
         children: [
           Text(
             'Total Pembayaran',
-            style: AppTextStyles.body14.colored(AppColors.textSecondary).copyWith(
-              fontSize: context.fontSize(14),
-            ),
+            style: AppTextStyles.body14
+                .colored(AppColors.textSecondary)
+                .copyWith(fontSize: context.fontSize(14)),
           ),
           SizedBox(height: context.spacing(8)),
           Obx(
             () => Text(
               controller.totalPayment,
-              style: AppTextStyles.header20.copyWith(fontSize: context.fontSize(32)).colored(const Color(0xFF6B8E7A)),
+              style: AppTextStyles.header20
+                  .copyWith(fontSize: context.fontSize(32))
+                  .colored(const Color(0xFF6B8E7A)),
             ),
           ),
           SizedBox(height: context.spacing(8)),
           Obx(
             () => Text(
               '${controller.paymentCount} pembayaran selesai',
-              style: AppTextStyles.body12.colored(const Color(0xFF9CA3AF)).copyWith(
-                fontSize: context.fontSize(12),
-              ),
+              style: AppTextStyles.body12
+                  .colored(const Color(0xFF9CA3AF))
+                  .copyWith(fontSize: context.fontSize(12)),
             ),
           ),
         ],

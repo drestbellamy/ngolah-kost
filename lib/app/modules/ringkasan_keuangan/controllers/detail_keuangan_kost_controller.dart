@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/utils/toast_helper.dart';
 import 'package:intl/intl.dart';
@@ -15,8 +16,13 @@ class DetailKeuanganKostController extends GetxController {
   final kostName = ''.obs;
   final kostAddress = ''.obs;
 
+  final allPemasukanList = <Map<String, dynamic>>[].obs;
+  final allPengeluaranList = <Map<String, dynamic>>[].obs;
+
   final pemasukanList = <Map<String, dynamic>>[].obs;
   final pengeluaranList = <Map<String, dynamic>>[].obs;
+
+  final selectedMonth = DateTime(DateTime.now().year, DateTime.now().month).obs;
 
   // Financial summary
   final totalPemasukan = 0.0.obs;
@@ -30,6 +36,10 @@ class DetailKeuanganKostController extends GetxController {
 
   final isLoading = false.obs;
   final errorMessage = RxnString();
+
+  // PageView controller for swipeable cards
+  final pageController = PageController();
+  final currentPage = 0.obs;
 
   @override
   void onInit() {
@@ -48,6 +58,12 @@ class DetailKeuanganKostController extends GetxController {
     }
   }
 
+  @override
+  void onClose() {
+    pageController.dispose();
+    super.onClose();
+  }
+
   Future<void> loadKeuanganData() async {
     isLoading.value = true;
     errorMessage.value = null;
@@ -63,8 +79,7 @@ class DetailKeuanganKostController extends GetxController {
         loadChartData(),
       ]);
 
-      // Calculate financial summary
-      calculateFinancialSummary();
+      filterDataByMonth();
     } catch (e) {
       errorMessage.value = 'Gagal memuat data: ${e.toString()}';
       print('Error loading keuangan data: $e');
@@ -83,7 +98,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data setelah sinkronisasi
       await loadPembayaranData();
       await loadChartData();
-      calculateFinancialSummary();
+      filterDataByMonth();
 
       ToastHelper.showSuccess(
         'Sinkronisasi pemasukan berhasil',
@@ -104,22 +119,22 @@ class DetailKeuanganKostController extends GetxController {
     try {
       // Use getPemasukanList with kostId filter
       final data = await _keuanganRepo.getPemasukanList(kostId: kostId.value);
-      pemasukanList.value = data;
+      allPemasukanList.value = data;
       print('Loaded ${data.length} pemasukan records');
     } catch (e) {
       print('Error loading pemasukan: $e');
-      pemasukanList.clear();
+      allPemasukanList.clear();
     }
   }
 
   Future<void> loadPengeluaranData() async {
     try {
       final data = await _keuanganRepo.getPengeluaranList(kostId: kostId.value);
-      pengeluaranList.value = data;
+      allPengeluaranList.value = data;
       print('Loaded ${data.length} pengeluaran records');
     } catch (e) {
       print('Error loading pengeluaran: $e');
-      pengeluaranList.clear();
+      allPengeluaranList.clear();
     }
   }
 
@@ -163,42 +178,21 @@ class DetailKeuanganKostController extends GetxController {
       }
 
       // Generate months for chart
-      final now = DateTime.now();
       final months = <DateTime>[];
 
-      if (earliestDate != null && latestDate != null) {
-        // Start from earliest transaction month
-        final startMonth = DateTime(earliestDate.year, earliestDate.month, 1);
-        // End at the latest between current month and latest transaction month
-        final currentMonth = DateTime(now.year, now.month, 1);
-        final latestTransactionMonth = DateTime(
-          latestDate.year,
-          latestDate.month,
-          1,
-        );
-        final endMonth = latestTransactionMonth.isAfter(currentMonth)
-            ? latestTransactionMonth
-            : currentMonth;
+      // SINKRONISASI GRAFIK: Gunakan parameter filter periode agar selalu menyesuaikan bulan yang dipilih
+      final endMonth = DateTime(
+        selectedMonth.value.year,
+        selectedMonth.value.month,
+        1,
+      );
 
-        // Calculate months between start and end
-        var tempMonth = startMonth;
-        final allMonths = <DateTime>[];
-
-        while (tempMonth.isBefore(endMonth) ||
-            tempMonth.isAtSameMomentAs(endMonth)) {
-          allMonths.add(tempMonth);
-          tempMonth = DateTime(tempMonth.year, tempMonth.month + 1, 1);
-        }
-
-        // Take last 6 months or all months if less than 6
-        if (allMonths.length > 6) {
-          months.addAll(allMonths.sublist(allMonths.length - 6));
-        } else {
-          months.addAll(allMonths);
-        }
-      } else {
-        // No data found, show current month only
-        months.add(DateTime(now.year, now.month, 1));
+      // Always generate exactly 6 months ending at endMonth to ensure chart draws lines instead of dots
+      var tempMonth = DateTime(endMonth.year, endMonth.month - 5, 1);
+      while (tempMonth.isBefore(endMonth) ||
+          tempMonth.isAtSameMomentAs(endMonth)) {
+        months.add(tempMonth);
+        tempMonth = DateTime(tempMonth.year, tempMonth.month + 1, 1);
       }
 
       final pemasukanByMonth = <double>[];
@@ -286,7 +280,7 @@ class DetailKeuanganKostController extends GetxController {
   int _parseAmount(dynamic amountData) {
     // Jika sudah integer, langsung return
     if (amountData is int) return amountData;
-    
+
     // Jika string atau tipe lain, parse ke integer
     final amountString = amountData?.toString() ?? '0';
     final cleanAmountString = amountString.replaceAll(RegExp(r'[^0-9]'), '');
@@ -313,7 +307,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data
       await loadPengeluaranData();
       await loadChartData();
-      calculateFinancialSummary();
+      filterDataByMonth();
 
       ToastHelper.showSuccess(
         'Pengeluaran berhasil ditambahkan',
@@ -355,7 +349,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data
       await loadPengeluaranData();
       await loadChartData();
-      calculateFinancialSummary();
+      filterDataByMonth();
 
       ToastHelper.showSuccess(
         'Pengeluaran berhasil diupdate',
@@ -384,7 +378,7 @@ class DetailKeuanganKostController extends GetxController {
       // Reload data
       await loadPengeluaranData();
       await loadChartData();
-      calculateFinancialSummary();
+      filterDataByMonth();
 
       ToastHelper.showSuccess(
         'Pengeluaran berhasil dihapus',
@@ -418,6 +412,41 @@ class DetailKeuanganKostController extends GetxController {
 
     // Calculate laba bersih
     labaBersih.value = totalPemasukan.value - totalPengeluaran.value;
+  }
+
+  void filterDataByMonth() {
+    pemasukanList.value = allPemasukanList.where((item) {
+      final date = _parseDate(item['tanggal']);
+      if (date == null) return false;
+      return date.year == selectedMonth.value.year &&
+          date.month == selectedMonth.value.month;
+    }).toList();
+
+    pengeluaranList.value = allPengeluaranList.where((item) {
+      final date = _parseDate(item['tanggal']);
+      if (date == null) return false;
+      return date.year == selectedMonth.value.year &&
+          date.month == selectedMonth.value.month;
+    }).toList();
+
+    calculateFinancialSummary();
+    loadChartData(); // Perbarui grafik setiap kali filter bulan diubah (sinkronisasi UI)
+  }
+
+  void previousMonth() {
+    selectedMonth.value = DateTime(
+      selectedMonth.value.year,
+      selectedMonth.value.month - 1,
+    );
+    filterDataByMonth();
+  }
+
+  void nextMonth() {
+    selectedMonth.value = DateTime(
+      selectedMonth.value.year,
+      selectedMonth.value.month + 1,
+    );
+    filterDataByMonth();
   }
 
   String formatCurrency(double amount) {

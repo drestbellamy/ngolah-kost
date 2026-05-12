@@ -141,17 +141,16 @@ class ResponsiveUtils {
   }
 
   /// Get responsive horizontal padding
-  static EdgeInsets horizontalPadding(BuildContext context, double basePadding) {
-    return EdgeInsets.symmetric(
-      horizontal: padding(context, basePadding),
-    );
+  static EdgeInsets horizontalPadding(
+    BuildContext context,
+    double basePadding,
+  ) {
+    return EdgeInsets.symmetric(horizontal: padding(context, basePadding));
   }
 
   /// Get responsive vertical padding
   static EdgeInsets verticalPadding(BuildContext context, double basePadding) {
-    return EdgeInsets.symmetric(
-      vertical: padding(context, basePadding),
-    );
+    return EdgeInsets.symmetric(vertical: padding(context, basePadding));
   }
 
   /// Get responsive symmetric padding
@@ -263,12 +262,9 @@ extension ResponsiveExtension on BuildContext {
 /// Widget builder untuk responsive layout
 class ResponsiveBuilder extends StatelessWidget {
   final Widget Function(BuildContext context, BoxConstraints constraints)
-      builder;
+  builder;
 
-  const ResponsiveBuilder({
-    super.key,
-    required this.builder,
-  });
+  const ResponsiveBuilder({super.key, required this.builder});
 
   @override
   Widget build(BuildContext context) {

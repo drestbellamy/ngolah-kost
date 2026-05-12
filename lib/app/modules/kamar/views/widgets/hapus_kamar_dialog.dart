@@ -43,7 +43,9 @@ class HapusKamarDialog extends StatelessWidget {
             Text(
               'Apakah Anda yakin ingin menghapus Kamar ${kamar['nomor']}? Tindakan ini tidak dapat dibatalkan.',
               textAlign: TextAlign.center,
-              style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(height: 1.5),
+              style: AppTextStyles.body14
+                  .colored(AppColors.textGray)
+                  .copyWith(height: 1.5),
             ),
             const SizedBox(height: 24),
 
@@ -66,7 +68,9 @@ class HapusKamarDialog extends StatelessWidget {
                     ),
                     child: Text(
                       'Batal',
-                      style: AppTextStyles.header16.colored(const Color(0xFF6B7280)),
+                      style: AppTextStyles.header16.colored(
+                        const Color(0xFF6B7280),
+                      ),
                     ),
                   ),
                 ),

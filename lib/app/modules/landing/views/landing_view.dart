@@ -114,7 +114,10 @@ class LandingView extends GetView<LandingController> {
           child: Align(
             alignment: Alignment.topRight,
             child: Padding(
-              padding: EdgeInsets.only(top: context.padding(8.0), right: context.padding(24.0)),
+              padding: EdgeInsets.only(
+                top: context.padding(8.0),
+                right: context.padding(24.0),
+              ),
               child: GestureDetector(
                 onTap: controller.navigateToLogin,
                 child: Container(
@@ -124,7 +127,9 @@ class LandingView extends GetView<LandingController> {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(context.borderRadius(16)),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(16),
+                    ),
                   ),
                   child: Text(
                     'Lewati',
@@ -182,9 +187,9 @@ class LandingView extends GetView<LandingController> {
                 SizedBox(height: context.spacing(16)),
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)).copyWith(
-                      fontSize: context.fontSize(16),
-                    ),
+                    style: AppTextStyles.body16
+                        .colored(const Color(0xFF6C8F7B))
+                        .copyWith(fontSize: context.fontSize(16)),
                     children: [
                       TextSpan(
                         text:
@@ -218,7 +223,9 @@ class LandingView extends GetView<LandingController> {
                       height: context.spacing(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFF6E947F),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(4),
+                        ),
                       ),
                     ),
                     SizedBox(width: context.spacing(8)),
@@ -227,7 +234,9 @@ class LandingView extends GetView<LandingController> {
                       height: context.spacing(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(4),
+                        ),
                       ),
                     ),
                     SizedBox(width: context.spacing(8)),
@@ -236,7 +245,9 @@ class LandingView extends GetView<LandingController> {
                       height: context.spacing(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(4),
+                        ),
                       ),
                     ),
                   ],
@@ -257,7 +268,9 @@ class LandingView extends GetView<LandingController> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6E947F),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.borderRadius(16)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(16),
+                        ),
                       ),
                       elevation: 0,
                     ),
@@ -307,7 +320,9 @@ class LandingView extends GetView<LandingController> {
                   : const Color(0xFF6E947F).withValues(alpha: 0.72),
               borderRadius: BorderRadius.circular(99),
               border: isActive
-                  ? Border.all(color: const Color(0xFF6E947F).withValues(alpha: 0.28))
+                  ? Border.all(
+                      color: const Color(0xFF6E947F).withValues(alpha: 0.28),
+                    )
                   : null,
             ),
           );
@@ -397,9 +412,9 @@ class LandingView extends GetView<LandingController> {
                   child: Text(
                     subtitle,
                     textAlign: TextAlign.center,
-                    style: AppTextStyles.body16.colored(subtitleColor).copyWith(
-                      fontSize: context.fontSize(16),
-                    ),
+                    style: AppTextStyles.body16
+                        .colored(subtitleColor)
+                        .copyWith(fontSize: context.fontSize(16)),
                   ),
                 ),
               ],

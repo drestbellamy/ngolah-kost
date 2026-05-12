@@ -18,7 +18,10 @@ class TransferBankInfo extends StatelessWidget {
         ),
         child: Text(
           'Belum ada rekening bank yang tersedia.',
-          style: TextStyle(fontSize: context.fontSize(12), color: const Color(0xFFD97706)),
+          style: TextStyle(
+            fontSize: context.fontSize(12),
+            color: const Color(0xFFD97706),
+          ),
         ),
       );
     }
@@ -52,7 +55,10 @@ class TransferBankInfo extends StatelessWidget {
                   children: [
                     Text(
                       'No. Rekening:',
-                      style: TextStyle(fontSize: context.fontSize(12), color: const Color(0xFF6B7280)),
+                      style: TextStyle(
+                        fontSize: context.fontSize(12),
+                        color: const Color(0xFF6B7280),
+                      ),
                     ),
                     Text(
                       metode.noRek,

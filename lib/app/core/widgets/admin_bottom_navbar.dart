@@ -140,7 +140,9 @@ class AdminBottomNavbar extends StatelessWidget {
                   label,
                   style: AppTextStyles.labelMedium
                       .weighted(isSelected ? FontWeight.w600 : FontWeight.w500)
-                      .colored(isSelected ? AppColors.primary : AppColors.textGray)
+                      .colored(
+                        isSelected ? AppColors.primary : AppColors.textGray,
+                      )
                       .copyWith(fontSize: context.fontSize(11)),
                 ),
               ],

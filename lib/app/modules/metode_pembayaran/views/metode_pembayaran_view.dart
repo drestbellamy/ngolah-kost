@@ -185,7 +185,10 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                               children: [
                                 Container(
                                   margin: const EdgeInsets.only(top: 70),
-                                  padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 24),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 60,
+                                    horizontal: 24,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(16),
@@ -216,15 +219,17 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                                       const SizedBox(height: 24),
                                       Text(
                                         'Belum Ada Metode Pembayaran',
-                                        style: AppTextStyles.header16.colored(AppColors.textPrimary),
+                                        style: AppTextStyles.header16.colored(
+                                          AppColors.textPrimary,
+                                        ),
                                       ),
                                       const SizedBox(height: 12),
                                       Text(
                                         'Tambahkan metode pembayaran untuk\nmempermudah penghuni Anda membayar.',
                                         textAlign: TextAlign.center,
-                                        style: AppTextStyles.body14.colored(AppColors.textGray).copyWith(
-                                          height: 1.5,
-                                        ),
+                                        style: AppTextStyles.body14
+                                            .colored(AppColors.textGray)
+                                            .copyWith(height: 1.5),
                                       ),
                                       const SizedBox(height: 32),
                                       ElevatedButton(
@@ -232,9 +237,14 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.primary,
                                           foregroundColor: Colors.white,
-                                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 24,
+                                            vertical: 12,
+                                          ),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           elevation: 0,
                                         ),

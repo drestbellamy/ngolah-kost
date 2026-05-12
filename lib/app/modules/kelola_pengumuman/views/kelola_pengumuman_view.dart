@@ -100,7 +100,8 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
         child: Column(
           children: [
-            if (!controller.isLoadingPengumuman.value && controller.pengumumanList.isNotEmpty) ...[
+            if (!controller.isLoadingPengumuman.value &&
+                controller.pengumumanList.isNotEmpty) ...[
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF6B8E7A),

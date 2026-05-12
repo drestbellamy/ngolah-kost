@@ -36,9 +36,9 @@ class TagihanTotalCard extends GetView<UserTagihanController> {
           children: [
             Text(
               'Total yang dibayar',
-              style: AppTextStyles.subtitle16.colored(AppColors.textGray).copyWith(
-                fontSize: context.fontSize(16),
-              ),
+              style: AppTextStyles.subtitle16
+                  .colored(AppColors.textGray)
+                  .copyWith(fontSize: context.fontSize(16)),
             ),
             SizedBox(height: context.spacing(8)),
             Obx(
@@ -48,9 +48,9 @@ class TagihanTotalCard extends GetView<UserTagihanController> {
                   symbol: 'Rp ',
                   decimalDigits: 0,
                 ).format(controller.totalBayarTerpilih),
-                style: AppTextStyles.displaySmall.colored(AppColors.primary).copyWith(
-                  fontSize: context.fontSize(32),
-                ),
+                style: AppTextStyles.displaySmall
+                    .colored(AppColors.primary)
+                    .copyWith(fontSize: context.fontSize(32)),
               ),
             ),
           ],

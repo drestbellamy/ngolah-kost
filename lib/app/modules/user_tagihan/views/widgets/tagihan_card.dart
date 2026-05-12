@@ -53,7 +53,9 @@ class TagihanCard extends GetView<UserTagihanController> {
                       height: context.iconSize(40),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF3F4F6),
-                        borderRadius: BorderRadius.circular(context.borderRadius(10)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(10),
+                        ),
                       ),
                       child: Icon(
                         hasPendingPayment ? Icons.schedule : Icons.receipt_long,
@@ -70,15 +72,15 @@ class TagihanCard extends GetView<UserTagihanController> {
                         children: [
                           Text(
                             'Tagihan Bulanan',
-                            style: AppTextStyles.header16.colored(AppColors.textPrimary).copyWith(
-                              fontSize: context.fontSize(16),
-                            ),
+                            style: AppTextStyles.header16
+                                .colored(AppColors.textPrimary)
+                                .copyWith(fontSize: context.fontSize(16)),
                           ),
                           Text(
                             tagihan.nomorKamar,
-                            style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
-                              fontSize: context.fontSize(12),
-                            ),
+                            style: AppTextStyles.body12
+                                .colored(AppColors.textGray)
+                                .copyWith(fontSize: context.fontSize(12)),
                           ),
                         ],
                       ),
@@ -92,15 +94,18 @@ class TagihanCard extends GetView<UserTagihanController> {
                         color: hasPendingPayment
                             ? const Color(0xFFFEF3C7)
                             : const Color(0xFFFEF3C7),
-                        borderRadius: BorderRadius.circular(context.borderRadius(20)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(20),
+                        ),
                       ),
                       child: Text(
                         hasPendingPayment
                             ? 'Menunggu Verifikasi'
                             : tagihan.status,
-                        style: AppTextStyles.body10.weighted(FontWeight.w700).colored(const Color(0xFFD97706)).copyWith(
-                          fontSize: context.fontSize(10),
-                        ),
+                        style: AppTextStyles.body10
+                            .weighted(FontWeight.w700)
+                            .colored(const Color(0xFFD97706))
+                            .copyWith(fontSize: context.fontSize(10)),
                       ),
                     ),
                   ],
@@ -111,15 +116,15 @@ class TagihanCard extends GetView<UserTagihanController> {
                   children: [
                     Text(
                       'Periode Penagihan',
-                      style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
-                        fontSize: context.fontSize(12),
-                      ),
+                      style: AppTextStyles.body12
+                          .colored(AppColors.textGray)
+                          .copyWith(fontSize: context.fontSize(12)),
                     ),
                     Text(
                       tagihan.periodePenagihan,
-                      style: AppTextStyles.subtitle12.colored(AppColors.textPrimary).copyWith(
-                        fontSize: context.fontSize(12),
-                      ),
+                      style: AppTextStyles.subtitle12
+                          .colored(AppColors.textPrimary)
+                          .copyWith(fontSize: context.fontSize(12)),
                     ),
                   ],
                 ),
@@ -137,9 +142,9 @@ class TagihanCard extends GetView<UserTagihanController> {
                         SizedBox(width: context.spacing(4)),
                         Text(
                           'Tanggal Jatuh Tempo',
-                          style: AppTextStyles.body12.colored(AppColors.textGray).copyWith(
-                            fontSize: context.fontSize(12),
-                          ),
+                          style: AppTextStyles.body12
+                              .colored(AppColors.textGray)
+                              .copyWith(fontSize: context.fontSize(12)),
                         ),
                       ],
                     ),
@@ -148,9 +153,9 @@ class TagihanCard extends GetView<UserTagihanController> {
                         'dd MMMM yyyy',
                         'id_ID',
                       ).format(tagihan.jatuhTempo),
-                      style: AppTextStyles.subtitle12.colored(AppColors.errorLight).copyWith(
-                        fontSize: context.fontSize(12),
-                      ),
+                      style: AppTextStyles.subtitle12
+                          .colored(AppColors.errorLight)
+                          .copyWith(fontSize: context.fontSize(12)),
                     ),
                   ],
                 ),
@@ -197,9 +202,9 @@ class TagihanCard extends GetView<UserTagihanController> {
                         SizedBox(width: context.spacing(8)),
                         Text(
                           'Jumlah Total',
-                          style: AppTextStyles.subtitle14.colored(AppColors.textPrimary).copyWith(
-                            fontSize: context.fontSize(14),
-                          ),
+                          style: AppTextStyles.subtitle14
+                              .colored(AppColors.textPrimary)
+                              .copyWith(fontSize: context.fontSize(14)),
                         ),
                       ],
                     ),
@@ -209,9 +214,9 @@ class TagihanCard extends GetView<UserTagihanController> {
                         symbol: 'Rp ',
                         decimalDigits: 0,
                       ).format(tagihan.totalBayar),
-                      style: AppTextStyles.header20.colored(AppColors.primary).copyWith(
-                        fontSize: context.fontSize(20),
-                      ),
+                      style: AppTextStyles.header20
+                          .colored(AppColors.primary)
+                          .copyWith(fontSize: context.fontSize(20)),
                     ),
                   ],
                 ),

@@ -31,7 +31,10 @@ class QrisInfo extends StatelessWidget {
         ),
         child: Text(
           'Belum ada QRIS yang tersedia.',
-          style: TextStyle(fontSize: context.fontSize(12), color: const Color(0xFFD97706)),
+          style: TextStyle(
+            fontSize: context.fontSize(12),
+            color: const Color(0xFFD97706),
+          ),
         ),
       );
     }
@@ -67,11 +70,15 @@ class QrisInfo extends StatelessWidget {
                     width: context.spacing(180),
                     height: context.spacing(180),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(context.borderRadius(8)),
+                      borderRadius: BorderRadius.circular(
+                        context.borderRadius(8),
+                      ),
                       border: Border.all(color: const Color(0xFFE5E7EB)),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(context.borderRadius(8)),
+                      borderRadius: BorderRadius.circular(
+                        context.borderRadius(8),
+                      ),
                       child: Image.network(
                         metode.qrImage!,
                         fit: BoxFit.contain,
@@ -94,7 +101,9 @@ class QrisInfo extends StatelessWidget {
                     height: context.spacing(180),
                     decoration: BoxDecoration(
                       color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(context.borderRadius(8)),
+                      borderRadius: BorderRadius.circular(
+                        context.borderRadius(8),
+                      ),
                       border: Border.all(color: const Color(0xFFE5E7EB)),
                     ),
                     child: Icon(
@@ -127,7 +136,9 @@ class QrisInfo extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Color(0xFF6B8E7A)),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(context.borderRadius(8)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(8),
+                          ),
                         ),
                         padding: context.symmetricPadding(vertical: 8),
                       ),

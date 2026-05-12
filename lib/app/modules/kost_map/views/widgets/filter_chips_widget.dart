@@ -86,7 +86,9 @@ class FilterChipsWidget extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           'Hapus',
-                          style: AppTextStyles.body12.weighted(FontWeight.w500).colored(AppColors.textGray),
+                          style: AppTextStyles.body12
+                              .weighted(FontWeight.w500)
+                              .colored(AppColors.textGray),
                         ),
                       ],
                     ),
@@ -149,9 +151,11 @@ class FilterChipsWidget extends StatelessWidget {
 
                 Text(
                   label,
-                  style: AppTextStyles.body12.weighted(FontWeight.w500).colored(
-                    isSelected ? Colors.white : const Color(0xFF374151),
-                  ),
+                  style: AppTextStyles.body12
+                      .weighted(FontWeight.w500)
+                      .colored(
+                        isSelected ? Colors.white : const Color(0xFF374151),
+                      ),
                 ),
               ],
             ),

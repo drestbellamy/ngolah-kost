@@ -76,7 +76,9 @@ class Landing2View extends GetView<LandingController> {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(context.borderRadius(16)),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(16),
+                    ),
                   ),
                   child: Text(
                     'Lewati',
@@ -134,9 +136,9 @@ class Landing2View extends GetView<LandingController> {
                 SizedBox(height: context.spacing(16)),
                 RichText(
                   text: TextSpan(
-                    style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)).copyWith(
-                          fontSize: context.fontSize(16),
-                        ),
+                    style: AppTextStyles.body16
+                        .colored(const Color(0xFF6C8F7B))
+                        .copyWith(fontSize: context.fontSize(16)),
                     children: const [
                       TextSpan(
                         text:
@@ -162,7 +164,9 @@ class Landing2View extends GetView<LandingController> {
                       height: context.iconSize(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(4),
+                        ),
                       ),
                     ),
                     SizedBox(width: context.spacing(8)),
@@ -171,7 +175,9 @@ class Landing2View extends GetView<LandingController> {
                       height: context.iconSize(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFF6E947F),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(4),
+                        ),
                       ),
                     ),
                     SizedBox(width: context.spacing(8)),
@@ -180,7 +186,9 @@ class Landing2View extends GetView<LandingController> {
                       height: context.iconSize(8),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0E8E3),
-                        borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(4),
+                        ),
                       ),
                     ),
                   ],
@@ -201,7 +209,9 @@ class Landing2View extends GetView<LandingController> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6E947F),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(context.borderRadius(16)),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(16),
+                        ),
                       ),
                       elevation: 0,
                     ),

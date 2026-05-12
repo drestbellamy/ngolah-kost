@@ -29,58 +29,58 @@ class ProfilView extends GetView<ProfilController> {
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             physics: const AlwaysScrollableScrollPhysics(),
             child: Column(
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    _buildUsernameSection(),
-                    const SizedBox(height: 16),
-                    _buildPasswordSection(),
-                    const SizedBox(height: 24),
-                    // Render Save Button if any section is expanded
-                    Obx(() {
-                      if (controller.isUsernameExpanded.value ||
-                          controller.isPasswordExpanded.value) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton.icon(
-                              onPressed: controller.saveChanges,
-                              icon: const Icon(Icons.save_outlined, size: 20),
-                              label: Text(
-                                'Simpan Perubahan',
-                                style: AppTextStyles.body14.copyWith(
-                                  fontWeight: FontWeight.bold,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      _buildUsernameSection(),
+                      const SizedBox(height: 16),
+                      _buildPasswordSection(),
+                      const SizedBox(height: 24),
+                      // Render Save Button if any section is expanded
+                      Obx(() {
+                        if (controller.isUsernameExpanded.value ||
+                            controller.isPasswordExpanded.value) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton.icon(
+                                onPressed: controller.saveChanges,
+                                icon: const Icon(Icons.save_outlined, size: 20),
+                                label: Text(
+                                  'Simpan Perubahan',
+                                  style: AppTextStyles.body14.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF5E8675),
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF5E8675),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  elevation: 0,
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                elevation: 0,
                               ),
                             ),
-                          ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    }),
-                    _buildLogoutButton(),
-                    const SizedBox(height: 40),
-                  ],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }),
+                      _buildLogoutButton(),
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
         ),
         bottomNavigationBar: const AdminBottomNavbar(currentIndex: 3),
@@ -149,7 +149,9 @@ class ProfilView extends GetView<ProfilController> {
                           ),
                           Text(
                             'Kelola akun Anda',
-                            style: AppTextStyles.subtitle14.colored(AppColors.primaryLight),
+                            style: AppTextStyles.subtitle14.colored(
+                              AppColors.primaryLight,
+                            ),
                           ),
                         ],
                       ),
@@ -344,8 +346,8 @@ class ProfilView extends GetView<ProfilController> {
                 Text(
                   controller.authController.currentUser?.username ?? 'admin',
                   style: AppTextStyles.headlineSmall
-                                .weighted(FontWeight.w700)
-                                .colored(Colors.white),
+                      .weighted(FontWeight.w700)
+                      .colored(Colors.white),
                 ),
                 Text(
                   'Administrator',
@@ -385,10 +387,7 @@ class ProfilView extends GetView<ProfilController> {
                 color: AppColors.primary,
                 size: 24,
               ),
-              title: Text(
-                'Username',
-                style: AppTextStyles.subtitle16,
-              ),
+              title: Text('Username', style: AppTextStyles.subtitle16),
               trailing: Icon(
                 isExpanded
                     ? CupertinoIcons.chevron_down
@@ -540,10 +539,7 @@ class ProfilView extends GetView<ProfilController> {
                 color: AppColors.primary,
                 size: 24,
               ),
-              title: Text(
-                'Ubah Password',
-                style: AppTextStyles.subtitle16,
-              ),
+              title: Text('Ubah Password', style: AppTextStyles.subtitle16),
               trailing: Icon(
                 isExpanded
                     ? CupertinoIcons.chevron_down

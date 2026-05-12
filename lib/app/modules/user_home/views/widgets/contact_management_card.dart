@@ -26,7 +26,7 @@ class ContactManagementCard extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 Color.fromARGB(255, 136, 159, 149),
-                Color.fromARGB(255, 107, 162, 134)
+                Color.fromARGB(255, 107, 162, 134),
               ],
             ),
             borderRadius: BorderRadius.circular(16),
