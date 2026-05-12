@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../core/utils/responsive_utils.dart';
-import 'package:get/get.dart';
 
 class DashboardShimmerWidget extends StatefulWidget {
   const DashboardShimmerWidget({super.key});

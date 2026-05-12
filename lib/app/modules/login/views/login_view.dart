@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/login_controller.dart';
 import '../../../core/widgets/keyboard_dismissible.dart';
@@ -12,10 +11,6 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    const double logoVerticalOffset = -55;
-    const double logoBottomPadding = 0;
-    const double lottieScale = 0.40;
-    const double textLogoGap = -26;
     final double imageHeightRatio = 0.48;
 
     const Color fieldBorderColor = Color(0xFF6B8E7A);
@@ -30,7 +25,6 @@ class LoginView extends GetView<LoginController> {
     final double fieldVertPadding = context.padding(15);
     final double fieldHorizPadding = context.padding(12);
     final double usernamePasswordFieldGap = context.spacing(18);
-    final double logoSize = context.iconSize(100);
 
     return KeyboardDismissible(
       child: Scaffold(
@@ -97,94 +91,7 @@ class LoginView extends GetView<LoginController> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // ── Logo + teks dibungkus satu Transform ──
-                            Transform.translate(
-                              offset: Offset(0, logoVerticalOffset),
-                              child: Column(
-                                children: [
-                                  // ── Animated logo ──
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      // Green rounded square background
-                                      Container(
-                                        width: logoSize,
-                                        height: logoSize,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF6E947F),
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
-                                          border: Border.all(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.25,
-                                            ),
-                                            width: 1.2,
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withValues(
-                                                alpha: 0.50,
-                                              ),
-                                              blurRadius: 6,
-                                              offset: const Offset(0, 4),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      // Lottie animation
-                                      Padding(
-                                        padding: const EdgeInsets.all(1),
-                                        child: Transform.scale(
-                                          scale: lottieScale,
-                                          child: Lottie.asset(
-                                            'assets/lotties/Home.json',
-                                            repeat: true,
-                                            fit: BoxFit.cover,
-                                            frameRate: FrameRate.composition,
-                                            options: LottieOptions(
-                                              enableMergePaths: true,
-                                            ),
-                                            errorBuilder: (_, e, s) =>
-                                                const Icon(
-                                                  Icons.home_rounded,
-                                                  size: 58,
-                                                  color: Color(0xFF6B8E7A),
-                                                ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-
-                                  SizedBox(height: logoBottomPadding),
-
-                                  // ── App name — jarak diatur lewat textLogoGap ──
-                                  Transform.translate(
-                                    offset: Offset(0, textLogoGap),
-                                    child: Text(
-                                      'Ngolah Kost',
-                                      style: AppTextStyles.headlineLarge
-                                          .copyWith(
-                                            fontFamily: 'Helvetica Neue',
-                                            color: Colors.white,
-                                            letterSpacing: 0.4,
-                                            height: 0.1,
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.black.withValues(
-                                                  alpha: 0.50,
-                                                ),
-                                                offset: const Offset(0, 2),
-                                                blurRadius: 6,
-                                              ),
-                                            ],
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            // Logo dan teks dihapus
                           ],
                         ),
                       ),
