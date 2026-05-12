@@ -110,198 +110,216 @@ class LoginView extends GetView<LoginController> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Greeting
-                              Text(
-                                'Selamat Datang',
-                                style: AppTextStyles.headlineSmall
-                                    .weighted(FontWeight.w800)
-                                    .colored(const Color(0xFF4A7A5A))
-                                    .copyWith(fontSize: context.fontSize(24)),
+                              // Greeting with Slide Animation
+                              _SlideAnimation(
+                                delay: 100,
+                                child: Text(
+                                  'Selamat Datang',
+                                  style: AppTextStyles.headlineSmall
+                                      .weighted(FontWeight.w800)
+                                      .colored(const Color(0xFF4A7A5A))
+                                      .copyWith(fontSize: context.fontSize(24)),
+                                ),
                               ),
                               SizedBox(height: context.spacing(6)),
-                              Text(
-                                'Silakan masuk ke akun Anda untuk melanjutkan',
-                                style: AppTextStyles.body14
-                                    .colored(const Color(0xFF9E9E9E))
-                                    .copyWith(fontSize: context.fontSize(14)),
+                              _SlideAnimation(
+                                delay: 200,
+                                child: Text(
+                                  'Silakan masuk ke akun Anda untuk melanjutkan',
+                                  style: AppTextStyles.body14
+                                      .colored(const Color(0xFF9E9E9E))
+                                      .copyWith(fontSize: context.fontSize(14)),
+                                ),
                               ),
                               SizedBox(height: context.spacing(30)),
 
-                              // Username field
-                              Obx(
-                                () => _buildTextField(
-                                  context: context,
-                                  textController: controller.usernameController,
-                                  hintText: 'Username',
-                                  icon: Icons.person_outline_rounded,
-                                  errorText: controller.usernameError.value,
-                                  borderColor: fieldBorderColor,
-                                  focusColor: fieldFocusColor,
-                                  iconColor: fieldIconColor,
-                                  hintColor: fieldHintColor,
-                                  textColor: fieldTextColor,
-                                  fillColor: fieldFillColor,
-                                  borderRadius: fieldBorderRadius,
-                                  borderWidth: fieldBorderWidth,
-                                  focusWidth: fieldFocusWidth,
-                                  vertPadding: fieldVertPadding,
-                                  horizPadding: fieldHorizPadding,
+                              // Username field with Slide Animation
+                              _SlideAnimation(
+                                delay: 300,
+                                child: Obx(
+                                  () => _buildTextField(
+                                    context: context,
+                                    textController: controller.usernameController,
+                                    hintText: 'Username',
+                                    icon: Icons.person_outline_rounded,
+                                    errorText: controller.usernameError.value,
+                                    borderColor: fieldBorderColor,
+                                    focusColor: fieldFocusColor,
+                                    iconColor: fieldIconColor,
+                                    hintColor: fieldHintColor,
+                                    textColor: fieldTextColor,
+                                    fillColor: fieldFillColor,
+                                    borderRadius: fieldBorderRadius,
+                                    borderWidth: fieldBorderWidth,
+                                    focusWidth: fieldFocusWidth,
+                                    vertPadding: fieldVertPadding,
+                                    horizPadding: fieldHorizPadding,
+                                  ),
                                 ),
                               ),
                               SizedBox(height: usernamePasswordFieldGap),
 
-                              // Password field
-                              Obx(
-                                () => _buildTextField(
-                                  context: context,
-                                  textController: controller.passwordController,
-                                  hintText: 'Password',
-                                  icon: Icons.lock_outline_rounded,
-                                  isPassword: true,
-                                  obscureText:
-                                      controller.isPasswordHidden.value,
-                                  errorText: controller.passwordError.value,
-                                  onTogglePassword:
-                                      controller.togglePasswordVisibility,
-                                  borderColor: fieldBorderColor,
-                                  focusColor: fieldFocusColor,
-                                  iconColor: fieldIconColor,
-                                  hintColor: fieldHintColor,
-                                  textColor: fieldTextColor,
-                                  fillColor: fieldFillColor,
-                                  borderRadius: fieldBorderRadius,
-                                  borderWidth: fieldBorderWidth,
-                                  focusWidth: fieldFocusWidth,
-                                  vertPadding: fieldVertPadding,
-                                  horizPadding: fieldHorizPadding,
+                              // Password field with Slide Animation
+                              _SlideAnimation(
+                                delay: 400,
+                                child: Obx(
+                                  () => _buildTextField(
+                                    context: context,
+                                    textController: controller.passwordController,
+                                    hintText: 'Password',
+                                    icon: Icons.lock_outline_rounded,
+                                    isPassword: true,
+                                    obscureText:
+                                        controller.isPasswordHidden.value,
+                                    errorText: controller.passwordError.value,
+                                    onTogglePassword:
+                                        controller.togglePasswordVisibility,
+                                    borderColor: fieldBorderColor,
+                                    focusColor: fieldFocusColor,
+                                    iconColor: fieldIconColor,
+                                    hintColor: fieldHintColor,
+                                    textColor: fieldTextColor,
+                                    fillColor: fieldFillColor,
+                                    borderRadius: fieldBorderRadius,
+                                    borderWidth: fieldBorderWidth,
+                                    focusWidth: fieldFocusWidth,
+                                    vertPadding: fieldVertPadding,
+                                    horizPadding: fieldHorizPadding,
+                                  ),
                                 ),
                               ),
 
                               SizedBox(height: context.spacing(20)),
 
-                              // Remember Me checkbox
-                              Obx(
-                                () => Row(
-                                  children: [
-                                    SizedBox(
-                                      width: context.iconSize(24),
-                                      height: context.iconSize(24),
-                                      child: Checkbox(
-                                        value: controller.rememberMe.value,
-                                        onChanged: (value) =>
-                                            controller.toggleRememberMe(),
-                                        activeColor: const Color(0xFF4E7B63),
-                                        checkColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            context.borderRadius(4),
+                              // Remember Me checkbox with Slide Animation
+                              _SlideAnimation(
+                                delay: 500,
+                                child: Obx(
+                                  () => Row(
+                                    children: [
+                                      SizedBox(
+                                        width: context.iconSize(24),
+                                        height: context.iconSize(24),
+                                        child: Checkbox(
+                                          value: controller.rememberMe.value,
+                                          onChanged: (value) =>
+                                              controller.toggleRememberMe(),
+                                          activeColor: const Color(0xFF4E7B63),
+                                          checkColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              context.borderRadius(4),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(width: context.spacing(12)),
-                                    GestureDetector(
-                                      onTap: controller.toggleRememberMe,
-                                      child: Text(
-                                        'Ingatkan saya',
-                                        style: AppTextStyles.body14
-                                            .colored(const Color(0xFF6B7280))
-                                            .copyWith(
-                                              fontSize: context.fontSize(14),
-                                            ),
+                                      SizedBox(width: context.spacing(12)),
+                                      GestureDetector(
+                                        onTap: controller.toggleRememberMe,
+                                        child: Text(
+                                          'Ingatkan saya',
+                                          style: AppTextStyles.body14
+                                              .colored(const Color(0xFF6B7280))
+                                              .copyWith(
+                                                fontSize: context.fontSize(14),
+                                              ),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
 
                               SizedBox(height: context.spacing(35)),
 
-                              // Login button
-                              Obx(
-                                () => SizedBox(
-                                  width: double.infinity,
-                                  height: context.buttonHeight(56),
-                                  child:
-                                      ElevatedButton(
-                                            onPressed:
-                                                controller.isLoading.value
-                                                ? null
-                                                : controller.login,
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: const Color(
-                                                0xFF4E7B63,
+                              // Login button with Slide Animation
+                              _SlideAnimation(
+                                delay: 600,
+                                child: Obx(
+                                  () => SizedBox(
+                                    width: double.infinity,
+                                    height: context.buttonHeight(56),
+                                    child:
+                                        ElevatedButton(
+                                              onPressed:
+                                                  controller.isLoading.value
+                                                  ? null
+                                                  : controller.login,
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: const Color(
+                                                  0xFF4E7B63,
+                                                ),
+                                                disabledBackgroundColor:
+                                                    const Color(
+                                                      0xFF4E7B63,
+                                                    ).withValues(alpha: 0.6),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        context.borderRadius(16),
+                                                      ),
+                                                ),
+                                                elevation: 0,
                                               ),
-                                              disabledBackgroundColor:
-                                                  const Color(
-                                                    0xFF4E7B63,
-                                                  ).withValues(alpha: 0.6),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      context.borderRadius(16),
-                                                    ),
-                                              ),
-                                              elevation: 0,
-                                            ),
-                                            child: controller.isLoading.value
-                                                ? SizedBox(
-                                                    width: context.iconSize(24),
-                                                    height: context.iconSize(
-                                                      24,
-                                                    ),
-                                                    child:
-                                                        const CircularProgressIndicator(
-                                                          strokeWidth: 2.5,
+                                              child: controller.isLoading.value
+                                                  ? SizedBox(
+                                                      width: context.iconSize(24),
+                                                      height: context.iconSize(
+                                                        24,
+                                                      ),
+                                                      child:
+                                                          const CircularProgressIndicator(
+                                                            strokeWidth: 2.5,
+                                                            color: Colors.white,
+                                                          ),
+                                                    )
+                                                  : Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          'Masuk',
+                                                          style: AppTextStyles
+                                                              .buttonLarge
+                                                              .copyWith(
+                                                                color:
+                                                                    Colors.white,
+                                                                letterSpacing:
+                                                                    0.4,
+                                                                fontSize: context
+                                                                    .fontSize(16),
+                                                              ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: context.spacing(
+                                                            8,
+                                                          ),
+                                                        ),
+                                                        Icon(
+                                                          Icons
+                                                              .arrow_forward_rounded,
                                                           color: Colors.white,
+                                                          size: context.iconSize(
+                                                            20,
+                                                          ),
                                                         ),
-                                                  )
-                                                : Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Text(
-                                                        'Masuk',
-                                                        style: AppTextStyles
-                                                            .buttonLarge
-                                                            .copyWith(
-                                                              color:
-                                                                  Colors.white,
-                                                              letterSpacing:
-                                                                  0.4,
-                                                              fontSize: context
-                                                                  .fontSize(16),
-                                                            ),
-                                                      ),
-                                                      SizedBox(
-                                                        width: context.spacing(
-                                                          8,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons
-                                                            .arrow_forward_rounded,
-                                                        color: Colors.white,
-                                                        size: context.iconSize(
-                                                          20,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                          )
-                                          .animate(
-                                            // Membuat efek shimmer berkala pada tombol utama CTA ini!
-                                            onPlay: (c) =>
-                                                c.repeat(reverse: false),
-                                          )
-                                          .shimmer(
-                                            duration: 2500.ms,
-                                            color: Colors.white.withValues(
-                                              alpha: 0.2,
+                                                      ],
+                                                    ),
+                                            )
+                                            .animate(
+                                              // Membuat efek shimmer berkala pada tombol utama CTA ini!
+                                              onPlay: (c) =>
+                                                  c.repeat(reverse: false),
+                                            )
+                                            .shimmer(
+                                              duration: 2500.ms,
+                                              color: Colors.white.withValues(
+                                                alpha: 0.2,
+                                              ),
+                                              angle: 45,
                                             ),
-                                            angle: 45,
-                                          ),
+                                  ),
                                 ),
                               ),
 
@@ -400,6 +418,75 @@ class LoginView extends GetView<LoginController> {
           borderRadius: BorderRadius.circular(borderRadius),
           borderSide: const BorderSide(color: Colors.red, width: 2.0),
         ),
+      ),
+    );
+  }
+}
+
+// Slide Animation Widget
+class _SlideAnimation extends StatefulWidget {
+  final Widget child;
+  final int delay;
+
+  const _SlideAnimation({
+    required this.child,
+    this.delay = 0,
+  });
+
+  @override
+  State<_SlideAnimation> createState() => _SlideAnimationState();
+}
+
+class _SlideAnimationState extends State<_SlideAnimation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.3),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    Future.delayed(Duration(milliseconds: widget.delay), () {
+      if (mounted) {
+        _controller.forward();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: widget.child,
       ),
     );
   }
