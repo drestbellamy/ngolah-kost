@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
 import '../../../core/utils/responsive_utils.dart';
@@ -163,18 +164,23 @@ class KamarView extends GetView<KamarController> {
         ),
       ),
       floatingActionButton: Builder(
-        builder: (context) => FloatingActionButton(
-          onPressed: controller.tambahKamar,
-          backgroundColor: const Color(0xFFF2A65A),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(context.borderRadius(16)),
-          ),
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-            size: context.iconSize(24),
-          ),
-        ),
+        builder: (context) =>
+            FloatingActionButton(
+              onPressed: controller.tambahKamar,
+              backgroundColor: const Color(0xFFF2A65A),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(context.borderRadius(16)),
+              ),
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+                size: context.iconSize(24),
+              ),
+            ).animate().scale(
+              delay: 200.ms,
+              duration: 300.ms,
+              curve: Curves.easeOutBack,
+            ),
       ),
     );
   }
@@ -212,7 +218,7 @@ class KamarView extends GetView<KamarController> {
                     .colored(AppColors.textGray)
                     .copyWith(fontSize: context.fontSize(14)),
               ),
-            ),
+            ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2),
           ),
         ),
       ];
@@ -230,7 +236,7 @@ class KamarView extends GetView<KamarController> {
           itemCount: filteredKamar.length,
           itemBuilder: (context, index) {
             final kamar = filteredKamar[index];
-            return _buildKamarCard(context, kamar);
+            return _buildKamarCard(context, kamar, index);
           },
         ),
       ),
@@ -399,7 +405,11 @@ class KamarView extends GetView<KamarController> {
     });
   }
 
-  Widget _buildKamarCard(BuildContext context, Map<String, dynamic> kamar) {
+  Widget _buildKamarCard(
+    BuildContext context,
+    Map<String, dynamic> kamar,
+    int index,
+  ) {
     final kapasitas = kamar['kapasitas'] ?? 2;
     final terisi = kamar['terisi'] ?? (kamar['status'] == 'Kosong' ? 0 : 1);
     final rasioPenghuni = '$terisi/$kapasitas';
@@ -408,185 +418,191 @@ class KamarView extends GetView<KamarController> {
         : const Color(0xFFF2A65A);
 
     return GestureDetector(
-      onTap: () => controller.navigateToInformasiKamar(kamar),
-      child: Container(
-        margin: EdgeInsets.only(bottom: context.spacing(16)),
-        padding: context.allPadding(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(context.borderRadius(16)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: context.iconSize(48),
-                  height: context.iconSize(48),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                      context.borderRadius(12),
-                    ),
-                  ),
-                  child: Icon(
-                    Icons.meeting_room_outlined,
-                    color: const Color(0xFF6B8E7A),
-                    size: context.iconSize(24),
-                  ),
+          onTap: () => controller.navigateToInformasiKamar(kamar),
+          child: Container(
+            margin: EdgeInsets.only(bottom: context.spacing(16)),
+            padding: context.allPadding(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(context.borderRadius(16)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-                SizedBox(width: context.spacing(16)),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: context.iconSize(48),
+                      height: context.iconSize(48),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(
+                          context.borderRadius(12),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.meeting_room_outlined,
+                        color: const Color(0xFF6B8E7A),
+                        size: context.iconSize(24),
+                      ),
+                    ),
+                    SizedBox(width: context.spacing(16)),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    'Kamar ${kamar['nomor']}',
-                                    style: AppTextStyles.header16
-                                        .colored(AppColors.textPrimary)
-                                        .copyWith(
-                                          fontSize: context.fontSize(16),
-                                        ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        'Kamar ${kamar['nomor']}',
+                                        style: AppTextStyles.header16
+                                            .colored(AppColors.textPrimary)
+                                            .copyWith(
+                                              fontSize: context.fontSize(16),
+                                            ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    SizedBox(width: context.spacing(4)),
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: const Color(0xFF6B7280),
+                                      size: context.iconSize(18),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: context.symmetricPadding(
+                                  horizontal: 12,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusColor.withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(
+                                    context.borderRadius(20),
                                   ),
                                 ),
-                                SizedBox(width: context.spacing(4)),
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: const Color(0xFF6B7280),
-                                  size: context.iconSize(18),
+                                child: Text(
+                                  kamar['status'],
+                                  style: TextStyle(
+                                    fontSize: context.fontSize(12),
+                                    fontWeight: FontWeight.w600,
+                                    color: statusColor,
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: context.symmetricPadding(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: statusColor.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(
-                                context.borderRadius(20),
                               ),
-                            ),
-                            child: Text(
-                              kamar['status'],
-                              style: TextStyle(
-                                fontSize: context.fontSize(12),
-                                fontWeight: FontWeight.w600,
-                                color: statusColor,
-                              ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                      SizedBox(height: context.spacing(6)),
-                      Row(
-                        children: [
+                          SizedBox(height: context.spacing(6)),
+                          Row(
+                            children: [
+                              Text(
+                                'Penghuni: $rasioPenghuni',
+                                style: AppTextStyles.body12
+                                    .colored(AppColors.textGray)
+                                    .copyWith(fontSize: context.fontSize(12)),
+                              ),
+                              SizedBox(width: context.spacing(4)),
+                              Icon(
+                                Icons.person_outline,
+                                size: context.iconSize(16),
+                                color: const Color(0xFF6B7280),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: context.spacing(10)),
                           Text(
-                            'Penghuni: $rasioPenghuni',
-                            style: AppTextStyles.body12
-                                .colored(AppColors.textGray)
-                                .copyWith(fontSize: context.fontSize(12)),
-                          ),
-                          SizedBox(width: context.spacing(4)),
-                          Icon(
-                            Icons.person_outline,
-                            size: context.iconSize(16),
-                            color: const Color(0xFF6B7280),
+                            kamar['harga'],
+                            style: AppTextStyles.subtitle14
+                                .colored(AppColors.primary)
+                                .copyWith(fontSize: context.fontSize(14)),
                           ),
                         ],
                       ),
-                      SizedBox(height: context.spacing(10)),
-                      Text(
-                        kamar['harga'],
-                        style: AppTextStyles.subtitle14
-                            .colored(AppColors.primary)
-                            .copyWith(fontSize: context.fontSize(14)),
+                    ),
+                  ],
+                ),
+                SizedBox(height: context.spacing(16)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => controller.editKamar(kamar),
+                        icon: Icon(
+                          Icons.edit_outlined,
+                          size: context.iconSize(18),
+                        ),
+                        label: Text(
+                          'Edit',
+                          style: TextStyle(fontSize: context.fontSize(14)),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6B8E7A),
+                          foregroundColor: Colors.white,
+                          padding: context.symmetricPadding(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              context.borderRadius(12),
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+                    SizedBox(width: context.spacing(12)),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => controller.hapusKamar(kamar),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          size: context.iconSize(18),
+                        ),
+                        label: Text(
+                          'Hapus',
+                          style: TextStyle(fontSize: context.fontSize(14)),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFF1F2),
+                          foregroundColor: const Color(0xFFEF4444),
+                          padding: context.symmetricPadding(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              context.borderRadius(12),
+                            ),
+                          ),
+                          elevation: 0,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            SizedBox(height: context.spacing(16)),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => controller.editKamar(kamar),
-                    icon: Icon(Icons.edit_outlined, size: context.iconSize(18)),
-                    label: Text(
-                      'Edit',
-                      style: TextStyle(fontSize: context.fontSize(14)),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF6B8E7A),
-                      foregroundColor: Colors.white,
-                      padding: context.symmetricPadding(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          context.borderRadius(12),
-                        ),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-                SizedBox(width: context.spacing(12)),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () => controller.hapusKamar(kamar),
-                    icon: Icon(
-                      Icons.delete_outline,
-                      size: context.iconSize(18),
-                    ),
-                    label: Text(
-                      'Hapus',
-                      style: TextStyle(fontSize: context.fontSize(14)),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFFF1F2),
-                      foregroundColor: const Color(0xFFEF4444),
-                      padding: context.symmetricPadding(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          context.borderRadius(12),
-                        ),
-                      ),
-                      elevation: 0,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 400.ms, delay: (index * 100).ms)
+        .slideX(begin: 0.1, duration: 400.ms, curve: Curves.easeOutQuad);
   }
 }
 
