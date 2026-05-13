@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
 import '../controllers/kelola_pengumuman_controller.dart';
@@ -11,6 +12,7 @@ import 'widgets/detail_pengumuman_dialog.dart';
 import 'widgets/add_pengumuman_dialog.dart';
 import 'widgets/edit_pengumuman_dialog.dart';
 import 'widgets/delete_pengumuman_dialog.dart';
+import 'widgets/kelola_pengumuman_shimmer_widget.dart';
 
 class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
   const KelolaPengumumanView({super.key});
@@ -28,12 +30,28 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
               _buildHeader(selectedGedung),
               Expanded(
                 child: selectedGedung == null
-                    ? _buildPilihGedungContent()
+                    ? _buildPilihGedungContent(context)
                     : _buildKelolaPengumumanContent(),
               ),
             ],
           ),
         ),
+        floatingActionButton:
+            (selectedGedung != null &&
+                !controller.isLoadingPengumuman.value &&
+                controller.pengumumanList.isNotEmpty)
+            ? FloatingActionButton(
+                onPressed: controller.isSavingPengumuman.value
+                    ? null
+                    : AddPengumumanDialog.show,
+                backgroundColor: const Color(0xFFFF9F66),
+                child: const Icon(Icons.add, color: Colors.white),
+              ).animate().scale(
+                delay: 200.ms,
+                duration: 300.ms,
+                curve: Curves.easeOutBack,
+              )
+            : null,
       );
     });
   }
@@ -53,42 +71,55 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
     );
   }
 
-  Widget _buildPilihGedungContent() {
-    if (controller.isLoadingGedung.value) {
-      return const Center(child: CircularProgressIndicator());
+  Widget _buildPilihGedungContent(BuildContext context) {
+    if (controller.isLoadingGedung.value && controller.gedungKostList.isEmpty) {
+      return const KelolaPengumumanShimmerWidget(isGedung: true);
     }
 
-    if (controller.gedungKostList.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            controller.errorMessage.value ?? 'Belum ada data kost.',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body14.colored(AppColors.textGray),
-          ),
-        ),
-      );
-    }
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      child: Column(
-        children: controller.gedungKostList
-            .map(
-              (gedung) => Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: GedungCardWidget(
-                  gedung: gedung,
-                  totalPengumuman: controller.getPengumumanCountForKost(
-                    gedung.id,
+    return RefreshIndicator(
+      onRefresh: controller.loadGedungKost,
+      child: controller.gedungKostList.isEmpty
+          ? SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Text(
+                      controller.errorMessage.value ?? 'Belum ada data kost.',
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.body14.colored(AppColors.textGray),
+                    ),
                   ),
-                  onTap: () => controller.pilihGedungKost(gedung),
                 ),
               ),
             )
-            .toList(),
-      ),
+          : SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              child: Column(
+                children: controller.gedungKostList.asMap().entries.map((
+                  entry,
+                ) {
+                  final index = entry.key;
+                  final gedung = entry.value;
+                  return Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: GedungCardWidget(
+                          gedung: gedung,
+                          totalPengumuman: controller.getPengumumanCountForKost(
+                            gedung.id,
+                          ),
+                          onTap: () => controller.pilihGedungKost(gedung),
+                        ),
+                      )
+                      .animate()
+                      .fadeIn(duration: 400.ms, delay: (index * 100).ms)
+                      .slideY(begin: 0.1);
+                }).toList(),
+              ),
+            ),
     );
   }
 
@@ -97,43 +128,14 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
       onRefresh: controller.refreshPengumumanAktif,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 80),
         child: Column(
           children: [
-            if (!controller.isLoadingPengumuman.value &&
-                controller.pengumumanList.isNotEmpty) ...[
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF6B8E7A),
-                  minimumSize: const Size(double.infinity, 46),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
-                ),
-                onPressed: controller.isSavingPengumuman.value
-                    ? null
-                    : AddPengumumanDialog.show,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add, color: Colors.white, size: 22),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Tambah Pengumuman',
-                      style: AppTextStyles.subtitle16.colored(Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-            if (controller.isLoadingPengumuman.value)
-              const Padding(
-                padding: EdgeInsets.only(top: 24),
-                child: CircularProgressIndicator(),
-              )
-            else if (controller.errorMessage.value != null)
+            if (controller.isLoadingPengumuman.value &&
+                controller.pengumumanList.isEmpty)
+              const KelolaPengumumanShimmerWidget(isGedung: false)
+            else if (controller.errorMessage.value != null &&
+                controller.pengumumanList.isEmpty)
               ErrorStateWidget(message: controller.errorMessage.value!)
             else if (controller.pengumumanList.isEmpty)
               EmptyStateWidget(
@@ -143,6 +145,7 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
               )
             else
               ListView.separated(
+                padding: EdgeInsets.zero,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: controller.pengumumanList.length,
@@ -151,11 +154,14 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                 itemBuilder: (context, index) {
                   final item = controller.pengumumanList[index];
                   return PengumumanCardWidget(
-                    item: item,
-                    onTap: () => DetailPengumumanDialog.show(item),
-                    onEdit: () => EditPengumumanDialog.show(item),
-                    onDelete: () => DeletePengumumanDialog.show(item.id),
-                  );
+                        item: item,
+                        onTap: () => DetailPengumumanDialog.show(item),
+                        onEdit: () => EditPengumumanDialog.show(item),
+                        onDelete: () => DeletePengumumanDialog.show(item.id),
+                      )
+                      .animate()
+                      .fadeIn(duration: 400.ms, delay: (index * 100).ms)
+                      .slideX(begin: 0.1);
                 },
               ),
           ],
