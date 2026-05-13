@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/tagihan_repository.dart';
 import '../models/penghuni_model.dart';
@@ -66,39 +67,54 @@ class _PenghuniDetailViewState extends State<PenghuniDetailView> {
                     InfoPenghuniCard(
                       penghuni: penghuni,
                       contractBadge: contractBadge,
-                    ),
+                    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1),
 
                     const SizedBox(height: 16),
 
                     // Card Data Pribadi
-                    DataPribadiCard(penghuni: penghuni),
+                    DataPribadiCard(penghuni: penghuni)
+                        .animate()
+                        .fadeIn(duration: 400.ms, delay: 100.ms)
+                        .slideY(begin: 0.1),
 
                     const SizedBox(height: 16),
 
                     // Card Kontak Darurat
-                    KontakDaruratCard(penghuni: penghuni),
+                    KontakDaruratCard(penghuni: penghuni)
+                        .animate()
+                        .fadeIn(duration: 400.ms, delay: 200.ms)
+                        .slideY(begin: 0.1),
 
                     const SizedBox(height: 16),
 
                     // Card Informasi Kamar
-                    InformasiKamarCard(penghuni: penghuni),
+                    InformasiKamarCard(penghuni: penghuni)
+                        .animate()
+                        .fadeIn(duration: 400.ms, delay: 300.ms)
+                        .slideY(begin: 0.1),
 
                     const SizedBox(height: 16),
 
                     // Card Informasi Kontrak
                     InformasiKontrakCard(
-                      penghuni: penghuni,
-                      onContractUpdated: (updatedPenghuni) {
-                        setState(() {
-                          _penghuni = updatedPenghuni;
-                        });
-                      },
-                    ),
+                          penghuni: penghuni,
+                          onContractUpdated: (updatedPenghuni) {
+                            setState(() {
+                              _penghuni = updatedPenghuni;
+                            });
+                          },
+                        )
+                        .animate()
+                        .fadeIn(duration: 400.ms, delay: 400.ms)
+                        .slideY(begin: 0.1),
 
                     const SizedBox(height: 16),
 
                     // Card History Pembayaran
-                    HistoryPembayaranCard(billingFuture: billingFuture),
+                    HistoryPembayaranCard(billingFuture: billingFuture)
+                        .animate()
+                        .fadeIn(duration: 400.ms, delay: 500.ms)
+                        .slideY(begin: 0.1),
 
                     const SizedBox(height: 16),
                   ],

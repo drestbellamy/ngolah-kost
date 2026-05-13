@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/penghuni_controller.dart';
 import '../models/penghuni_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
@@ -240,24 +241,30 @@ class PenghuniView extends GetView<PenghuniController> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: const BoxDecoration(
-                                color: AppColors.primaryLighter,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.people_outline,
-                                size: 40,
-                                color: AppColors.primary,
-                              ),
-                            ),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: const BoxDecoration(
+                                    color: AppColors.primaryLighter,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.people_outline,
+                                    size: 40,
+                                    color: AppColors.primary,
+                                  ),
+                                )
+                                .animate()
+                                .scale(delay: 200.ms, duration: 400.ms)
+                                .fadeIn(),
                             const SizedBox(height: 24),
                             Text(
-                              'Belum Ada Penghuni',
-                              style: AppTextStyles.header16.colored(
-                                AppColors.textPrimary,
-                              ),
-                            ),
+                                  'Belum Ada Penghuni',
+                                  style: AppTextStyles.header16.colored(
+                                    AppColors.textPrimary,
+                                  ),
+                                )
+                                .animate()
+                                .slideY(begin: 0.5, delay: 300.ms)
+                                .fadeIn(),
                             const SizedBox(height: 12),
                             Text(
                               'Tambahkan data penghuni masa sewa\ndan tagihan dari penghuni.',
@@ -265,7 +272,7 @@ class PenghuniView extends GetView<PenghuniController> {
                               style: AppTextStyles.body14
                                   .colored(AppColors.textGray)
                                   .copyWith(height: 1.5),
-                            ),
+                            ).animate().slideY(begin: 0.5, delay: 400.ms).fadeIn(),
                             const SizedBox(height: 32),
                             ElevatedButton(
                               onPressed: controller.tambahPenghuni,
@@ -288,12 +295,12 @@ class PenghuniView extends GetView<PenghuniController> {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ),
+                            ).animate().scale(delay: 500.ms).fadeIn(),
                           ],
                         ),
                       ),
                     ],
-                  );
+                  ).animate().fadeIn(duration: 500.ms);
                 }
 
                 return RefreshIndicator(
@@ -303,7 +310,7 @@ class PenghuniView extends GetView<PenghuniController> {
                     itemCount: controller.filteredPenghuniList.length,
                     itemBuilder: (context, index) {
                       final penghuni = controller.filteredPenghuniList[index];
-                      return _buildPenghuniCard(penghuni);
+                      return _buildPenghuniCard(penghuni, index);
                     },
                   ),
                 );
@@ -443,214 +450,219 @@ class PenghuniView extends GetView<PenghuniController> {
     });
   }
 
-  Widget _buildPenghuniCard(PenghuniModel penghuni) {
+  Widget _buildPenghuniCard(PenghuniModel penghuni, int index) {
     final roomLabel = controller.getRoomDisplayLabel(penghuni);
     final occupancyLabel = controller.getOccupancyStatusLabel(penghuni);
 
     return Builder(
-      builder: (context) => GestureDetector(
-        onTap: () => controller.goToDetail(penghuni),
-        child: Container(
-          margin: EdgeInsets.only(bottom: context.spacing(12)),
-          padding: context.allPadding(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(context.borderRadius(16)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
+          builder: (context) => GestureDetector(
+            onTap: () => controller.goToDetail(penghuni),
+            child: Container(
+              margin: EdgeInsets.only(bottom: context.spacing(12)),
+              padding: context.allPadding(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(context.borderRadius(16)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: context.iconSize(48),
-                    height: context.iconSize(48),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F0ED),
-                      borderRadius: BorderRadius.circular(
-                        context.borderRadius(12),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      color: const Color(0xFF6B8E7F),
-                      size: context.iconSize(24),
-                    ),
-                  ),
-                  SizedBox(width: context.spacing(12)),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          penghuni.nama,
-                          style: AppTextStyles.subtitle16
-                              .colored(const Color(0xFF2D3748))
-                              .copyWith(fontSize: context.fontSize(16)),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        SizedBox(height: context.spacing(4)),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              size: context.iconSize(14),
-                              color: const Color(0xFF718096),
-                            ),
-                            SizedBox(width: context.spacing(4)),
-                            Expanded(
-                              child: Text(
-                                penghuni.namaKost,
-                                style: AppTextStyles.body12
-                                    .colored(const Color(0xFF718096))
-                                    .copyWith(fontSize: context.fontSize(12)),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: context.spacing(2)),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.phone,
-                              size: context.iconSize(14),
-                              color: const Color(0xFF718096),
-                            ),
-                            SizedBox(width: context.spacing(4)),
-                            Text(
-                              penghuni.noTelepon,
-                              style: AppTextStyles.body12
-                                  .colored(const Color(0xFF718096))
-                                  .copyWith(fontSize: context.fontSize(12)),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  Row(
                     children: [
                       Container(
-                        padding: context.symmetricPadding(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
+                        width: context.iconSize(48),
+                        height: context.iconSize(48),
                         decoration: BoxDecoration(
-                          color: const Color(
-                            0xFF10B981,
-                          ).withValues(alpha: 0.14),
+                          color: const Color(0xFFE8F0ED),
                           borderRadius: BorderRadius.circular(
-                            context.borderRadius(20),
+                            context.borderRadius(12),
                           ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.person_rounded,
-                              size: context.iconSize(12),
-                              color: const Color(0xFF10B981),
-                            ),
-                            SizedBox(width: context.spacing(4)),
-                            Text(
-                              occupancyLabel,
-                              style: AppTextStyles.labelSmall.copyWith(
-                                fontWeight: FontWeight.w700,
-                                fontSize: context.fontSize(11),
-                                color: const Color(0xFF10B981),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: context.spacing(8)),
-                      Container(
-                        padding: context.symmetricPadding(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
+                        child: Icon(
+                          Icons.person,
                           color: const Color(0xFF6B8E7F),
-                          borderRadius: BorderRadius.circular(
-                            context.borderRadius(8),
-                          ),
+                          size: context.iconSize(24),
                         ),
-                        child: Text(
-                          roomLabel,
-                          style: AppTextStyles.body12.copyWith(
-                            fontWeight: FontWeight.w600,
-                            fontSize: context.fontSize(12),
-                            color: Colors.white,
-                          ),
+                      ),
+                      SizedBox(width: context.spacing(12)),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              penghuni.nama,
+                              style: AppTextStyles.subtitle16
+                                  .colored(const Color(0xFF2D3748))
+                                  .copyWith(fontSize: context.fontSize(16)),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: context.spacing(4)),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on,
+                                  size: context.iconSize(14),
+                                  color: const Color(0xFF718096),
+                                ),
+                                SizedBox(width: context.spacing(4)),
+                                Expanded(
+                                  child: Text(
+                                    penghuni.namaKost,
+                                    style: AppTextStyles.body12
+                                        .colored(const Color(0xFF718096))
+                                        .copyWith(
+                                          fontSize: context.fontSize(12),
+                                        ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: context.spacing(2)),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.phone,
+                                  size: context.iconSize(14),
+                                  color: const Color(0xFF718096),
+                                ),
+                                SizedBox(width: context.spacing(4)),
+                                Text(
+                                  penghuni.noTelepon,
+                                  style: AppTextStyles.body12
+                                      .colored(const Color(0xFF718096))
+                                      .copyWith(fontSize: context.fontSize(12)),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                            padding: context.symmetricPadding(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFF10B981,
+                              ).withValues(alpha: 0.14),
+                              borderRadius: BorderRadius.circular(
+                                context.borderRadius(20),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.person_rounded,
+                                  size: context.iconSize(12),
+                                  color: const Color(0xFF10B981),
+                                ),
+                                SizedBox(width: context.spacing(4)),
+                                Text(
+                                  occupancyLabel,
+                                  style: AppTextStyles.labelSmall.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: context.fontSize(11),
+                                    color: const Color(0xFF10B981),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: context.spacing(8)),
+                          Container(
+                            padding: context.symmetricPadding(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF6B8E7F),
+                              borderRadius: BorderRadius.circular(
+                                context.borderRadius(8),
+                              ),
+                            ),
+                            child: Text(
+                              roomLabel,
+                              style: AppTextStyles.body12.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: context.fontSize(12),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: context.spacing(12)),
+                  const Divider(height: 1, color: Color(0xFFE5E7EB)),
+                  SizedBox(height: context.spacing(12)),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Sewa Bulanan',
+                            style: AppTextStyles.body12
+                                .colored(const Color(0xFF9CA3AF))
+                                .copyWith(fontSize: context.fontSize(12)),
+                          ),
+                          SizedBox(height: context.spacing(4)),
+                          Text(
+                            'Rp ${penghuni.sewaBulanan.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
+                            style: AppTextStyles.body14.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: context.fontSize(14),
+                              color: const Color(0xFF2D3748),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            'Tanggal Masuk',
+                            style: AppTextStyles.body12
+                                .colored(const Color(0xFF9CA3AF))
+                                .copyWith(fontSize: context.fontSize(12)),
+                          ),
+                          SizedBox(height: context.spacing(4)),
+                          Text(
+                            penghuni.tanggalMasuk,
+                            style: AppTextStyles.body14.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: context.fontSize(14),
+                              color: const Color(0xFF2D3748),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ],
               ),
-              SizedBox(height: context.spacing(12)),
-              const Divider(height: 1, color: Color(0xFFE5E7EB)),
-              SizedBox(height: context.spacing(12)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Sewa Bulanan',
-                        style: AppTextStyles.body12
-                            .colored(const Color(0xFF9CA3AF))
-                            .copyWith(fontSize: context.fontSize(12)),
-                      ),
-                      SizedBox(height: context.spacing(4)),
-                      Text(
-                        'Rp ${penghuni.sewaBulanan.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}',
-                        style: AppTextStyles.body14.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: context.fontSize(14),
-                          color: const Color(0xFF2D3748),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Tanggal Masuk',
-                        style: AppTextStyles.body12
-                            .colored(const Color(0xFF9CA3AF))
-                            .copyWith(fontSize: context.fontSize(12)),
-                      ),
-                      SizedBox(height: context.spacing(4)),
-                      Text(
-                        penghuni.tanggalMasuk,
-                        style: AppTextStyles.body14.copyWith(
-                          fontWeight: FontWeight.w600,
-                          fontSize: context.fontSize(14),
-                          color: const Color(0xFF2D3748),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        )
+        .animate()
+        .fadeIn(duration: 400.ms, delay: (index * 100).ms)
+        .slideX(begin: 0.1, duration: 400.ms, curve: Curves.easeOutQuad);
   }
 }
