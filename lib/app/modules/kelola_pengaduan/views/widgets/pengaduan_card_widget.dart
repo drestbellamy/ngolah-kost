@@ -248,10 +248,9 @@ class PengaduanCardWidget extends StatelessWidget {
     .animate()
     .fadeIn(
       duration: 500.ms,
-      delay: (index * 100).ms,
     )
-    .slideY(
-      begin: 0.2,
+    .slideX(
+      begin: -0.2,
       end: 0,
       duration: 500.ms,
       curve: Curves.easeOutQuad,
