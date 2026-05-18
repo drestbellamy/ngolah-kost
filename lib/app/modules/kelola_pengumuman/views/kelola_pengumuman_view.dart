@@ -115,8 +115,8 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                         ),
                       )
                       .animate()
-                      .fadeIn(duration: 400.ms, delay: (index * 100).ms)
-                      .slideY(begin: 0.1);
+                      .fadeIn(duration: 400.ms)
+                      .slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad);
                 }).toList(),
               ),
             ),
@@ -160,8 +160,8 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                         onDelete: () => DeletePengumumanDialog.show(item.id),
                       )
                       .animate()
-                      .fadeIn(duration: 400.ms, delay: (index * 100).ms)
-                      .slideX(begin: 0.1);
+                      .fadeIn(duration: 400.ms)
+                      .slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad);
                 },
               ),
           ],

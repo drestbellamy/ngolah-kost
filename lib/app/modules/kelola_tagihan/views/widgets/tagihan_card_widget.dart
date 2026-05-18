@@ -204,11 +204,9 @@ class TagihanCardWidget extends StatelessWidget {
         .animate()
         .fadeIn(
           duration: 500.ms,
-          delay: (index * 100)
-              .ms, // Membuat efek staggered entrance/muncul beruntun sesuai urutan index
         )
-        .slideY(
-          begin: 0.2, // Muncul sedikit dari bawah
+        .slideX(
+          begin: -0.2, // Muncul sedikit dari bawah
           end: 0,
           duration: 500.ms,
           curve: Curves.easeOutQuad,

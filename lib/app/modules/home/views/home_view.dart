@@ -9,6 +9,7 @@ import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
 import '../../../core/utils/responsive_utils.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
@@ -274,123 +275,92 @@ class HomeView extends GetView<HomeController> {
                       SizedBox(height: context.spacing(24)),
 
                       // Bawah: Ringkasan Keuangan Widget & Pengaturan
-                      Obx(() {
-                        return AnimatedOpacity(
-                          duration: const Duration(milliseconds: 700),
-                          curve: Curves.easeInQuad,
-                          opacity: controller.isLoading.value ? 0.0 : 1.0,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Ringkasan Keuangan Widget
-                              Padding(
-                                padding: context.horizontalPadding(24),
-                                child: const RingkasanKeuanganWidget(),
-                              ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Ringkasan Keuangan Widget
+                          Padding(
+                            padding: context.horizontalPadding(24),
+                            child: const RingkasanKeuanganWidget(),
+                          ).animate().fadeIn(duration: 500.ms).slideY(begin: 0.1, duration: 500.ms),
 
-                              SizedBox(height: context.spacing(24)),
+                          SizedBox(height: context.spacing(24)),
 
-                              // Settings Section
-                              Padding(
-                                padding: context.horizontalPadding(24),
-                                child: Text(
-                                  'Pengaturan & Lainnya',
-                                  style: AppTextStyles.subtitle18
-                                      .colored(AppColors.textPrimary)
-                                      .copyWith(fontSize: context.fontSize(18)),
-                                ),
-                              ),
+                          // Settings Section
+                          Padding(
+                            padding: context.horizontalPadding(24),
+                            child: Text(
+                              'Pengaturan & Lainnya',
+                              style: AppTextStyles.subtitle18
+                                  .colored(AppColors.textPrimary)
+                                  .copyWith(fontSize: context.fontSize(18)),
+                            ),
+                          ).animate().fadeIn(duration: 500.ms, delay: 100.ms).slideX(begin: -0.1, duration: 500.ms),
 
-                              SizedBox(height: context.spacing(16)),
+                          SizedBox(height: context.spacing(16)),
 
-                              Padding(
-                                padding: context.horizontalPadding(24),
-                                child: Column(
-                                  children: [
-                                    MenuItem(
-                                      icon:
-                                          Icons.account_balance_wallet_outlined,
-                                      title: 'Metode Pembayaran',
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFF4B83F3),
-                                          Color(0xFF285ADA),
-                                        ],
-                                      ),
-                                      onTap:
-                                          controller.navigateToMetodePembayaran,
-                                    ),
-                                    SizedBox(height: context.spacing(12)),
-                                    MenuItem(
-                                      icon: Icons.receipt_long_outlined,
-                                      title: 'Kelola Tagihan',
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFFF2A65A),
-                                          Color(0xFFE8953D),
-                                        ],
-                                      ),
-                                      onTap: controller.navigateToKelolaTagihan,
-                                    ),
-                                    SizedBox(height: context.spacing(12)),
-                                    MenuItem(
-                                      icon: Icons.trending_up_outlined,
-                                      title: 'Kelola Keuangan',
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFF10B981),
-                                          Color(0xFF059669),
-                                        ],
-                                      ),
-                                      onTap:
-                                          controller.navigateToKelolaKeuangan,
-                                    ),
-                                    SizedBox(height: context.spacing(12)),
-                                    MenuItem(
-                                      icon: Icons.campaign_outlined,
-                                      title: 'Kelola Pengumuman',
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFF2D7A6E),
-                                          Color(0xFF1F5449),
-                                        ],
-                                      ),
-                                      onTap:
-                                          controller.navigateToKelolaPengumuman,
-                                    ),
-                                    SizedBox(height: context.spacing(12)),
-                                    MenuItem(
-                                      icon: Icons.rule_outlined,
-                                      title: 'Kelola Peraturan',
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFF8FAA9F),
-                                          Color(0xFF6B8E7A),
-                                        ],
-                                      ),
-                                      onTap:
-                                          controller.navigateToKelolaPeraturan,
-                                    ),
-                                    SizedBox(height: context.spacing(12)),
-                                    MenuItem(
-                                      icon: Icons.report_problem_outlined,
-                                      title: 'Kelola Pengaduan',
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFFEF4444),
-                                          Color(0xFFDC2626),
-                                        ],
-                                      ),
-                                      onTap:
-                                          controller.navigateToKelolaPengaduan,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          Padding(
+                            padding: context.horizontalPadding(24),
+                            child: Column(
+                              children: [
+                                MenuItem(
+                                  icon: Icons.account_balance_wallet_outlined,
+                                  title: 'Metode Pembayaran',
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF4B83F3), Color(0xFF285ADA)],
+                                  ),
+                                  onTap: controller.navigateToMetodePembayaran,
+                                ).animate().fadeIn(duration: 400.ms, delay: 100.ms).slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
+                                SizedBox(height: context.spacing(12)),
+                                MenuItem(
+                                  icon: Icons.receipt_long_outlined,
+                                  title: 'Kelola Tagihan',
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFF2A65A), Color(0xFFE8953D)],
+                                  ),
+                                  onTap: controller.navigateToKelolaTagihan,
+                                ).animate().fadeIn(duration: 400.ms, delay: 150.ms).slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
+                                SizedBox(height: context.spacing(12)),
+                                MenuItem(
+                                  icon: Icons.trending_up_outlined,
+                                  title: 'Kelola Keuangan',
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF10B981), Color(0xFF059669)],
+                                  ),
+                                  onTap: controller.navigateToKelolaKeuangan,
+                                ).animate().fadeIn(duration: 400.ms, delay: 200.ms).slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
+                                SizedBox(height: context.spacing(12)),
+                                MenuItem(
+                                  icon: Icons.campaign_outlined,
+                                  title: 'Kelola Pengumuman',
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF2D7A6E), Color(0xFF1F5449)],
+                                  ),
+                                  onTap: controller.navigateToKelolaPengumuman,
+                                ).animate().fadeIn(duration: 400.ms, delay: 250.ms).slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
+                                SizedBox(height: context.spacing(12)),
+                                MenuItem(
+                                  icon: Icons.rule_outlined,
+                                  title: 'Kelola Peraturan',
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF8FAA9F), Color(0xFF6B8E7A)],
+                                  ),
+                                  onTap: controller.navigateToKelolaPeraturan,
+                                ).animate().fadeIn(duration: 400.ms, delay: 300.ms).slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
+                                SizedBox(height: context.spacing(12)),
+                                MenuItem(
+                                  icon: Icons.report_problem_outlined,
+                                  title: 'Kelola Pengaduan',
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
+                                  ),
+                                  onTap: controller.navigateToKelolaPengaduan,
+                                ).animate().fadeIn(duration: 400.ms, delay: 350.ms).slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad),
+                              ],
+                            ),
                           ),
-                        );
-                      }),
+                        ],
+                      ),
 
                       SizedBox(height: context.spacing(100)),
                     ],
