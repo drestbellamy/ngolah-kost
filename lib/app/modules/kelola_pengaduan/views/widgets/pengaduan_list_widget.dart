@@ -81,12 +81,18 @@ class PengaduanListWidget extends GetView<KelolaPengaduanController> {
       }
 
       return ListView.builder(
-        padding: context.allPadding(16),
+        padding: EdgeInsets.fromLTRB(
+          context.spacing(16),
+          0,
+          context.spacing(16),
+          context.spacing(16),
+        ),
         itemCount: controller.filteredPengaduanList.length,
         itemBuilder: (context, index) {
           final pengaduan = controller.filteredPengaduanList[index];
           return PengaduanCardWidget(
             pengaduan: pengaduan,
+            index: index,
             onTap: () {
               Get.to(
                 () => KelolaPengaduanDetailView(pengaduan: pengaduan),

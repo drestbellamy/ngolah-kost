@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import '../../../../core/values/values.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../models/pengaduan_admin_model.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class PengaduanCardWidget extends StatelessWidget {
   final PengaduanAdminModel pengaduan;
+  final int index;
   final VoidCallback onTap;
 
   const PengaduanCardWidget({
     super.key,
     required this.pengaduan,
+    required this.index,
     required this.onTap,
   });
 
@@ -137,6 +140,16 @@ class PengaduanCardWidget extends StatelessWidget {
                                 letterSpacing: 0.3,
                               ),
                             ),
+                          )
+                          .animate(
+                            onPlay: (controller) =>
+                                controller.repeat(reverse: true),
+                          )
+                          .scale(
+                            begin: const Offset(1, 1),
+                            end: const Offset(1.05, 1.05),
+                            duration: 1000.ms,
+                            curve: Curves.easeInOut,
                           ),
                         ],
                       ),
@@ -231,6 +244,17 @@ class PengaduanCardWidget extends StatelessWidget {
           ),
         ),
       ),
+    )
+    .animate()
+    .fadeIn(
+      duration: 500.ms,
+      delay: (index * 100).ms,
+    )
+    .slideY(
+      begin: 0.2,
+      end: 0,
+      duration: 500.ms,
+      curve: Curves.easeOutQuad,
     );
   }
 
