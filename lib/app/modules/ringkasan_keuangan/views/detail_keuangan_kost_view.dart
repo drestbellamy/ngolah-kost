@@ -413,10 +413,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                 )
                                 .animate()
                                 .fadeIn(
-                                  delay: (200 + (index * 100)).ms,
                                   duration: 400.ms,
                                 )
-                                .slideY(begin: 0.1, end: 0, duration: 400.ms);
+                                .slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad);
                           },
                         ),
                         if (hasMore)
@@ -792,10 +791,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                                 )
                                 .animate()
                                 .fadeIn(
-                                  delay: (200 + (index * 100)).ms,
                                   duration: 400.ms,
                                 )
-                                .slideY(begin: 0.1, end: 0, duration: 400.ms);
+                                .slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad);
                           },
                         ),
                         if (hasMore)

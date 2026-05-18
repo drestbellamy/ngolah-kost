@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/metode_pembayaran_controller.dart';
 import '../models/metode_pembayaran_model.dart';
 import '../../../core/values/values.dart';
@@ -276,7 +277,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                             itemCount: controller.filteredList.length,
                             itemBuilder: (context, index) {
                               final metode = controller.filteredList[index];
-                              return _buildMetodeCard(metode);
+                              return _buildMetodeCard(metode, index);
                             },
                           );
                         }(),
@@ -325,7 +326,7 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
     );
   }
 
-  Widget _buildMetodeCard(MetodePembayaranModel metode) {
+  Widget _buildMetodeCard(MetodePembayaranModel metode, int index) {
     final isActive = metode.isActive;
 
     return ClipRRect(
@@ -420,6 +421,17 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
                               ),
                             ],
                           ),
+                        )
+                        // Memberikan efek pulse (detak) kecil secara berulang untuk menarik perhatian!
+                        .animate(
+                          onPlay: (controller) =>
+                              controller.repeat(reverse: true),
+                        )
+                        .scale(
+                          begin: const Offset(1, 1),
+                          end: const Offset(1.05, 1.05),
+                          duration: 1000.ms,
+                          curve: Curves.easeInOut,
                         ),
                       ],
                     ),
@@ -502,6 +514,16 @@ class MetodePembayaranView extends GetView<MetodePembayaranController> {
           ],
         ),
       ),
+    )
+    .animate()
+    .fadeIn(
+      duration: 500.ms,
+    )
+    .slideX(
+      begin: -0.2,
+      end: 0,
+      duration: 500.ms,
+      curve: Curves.easeOutQuad,
     );
   }
 
