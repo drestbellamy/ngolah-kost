@@ -168,6 +168,9 @@ class UserTagihanController extends GetxController {
         }
       }
 
+      // Sort tagihan in ascending order (terlama ke terbaru)
+      tagihan.sort((a, b) => a.jatuhTempo.compareTo(b.jatuhTempo));
+
       print('Converted tagihan: ${tagihan.length} items'); // Debug
       semuaTagihan.assignAll(tagihan);
 
@@ -212,23 +215,61 @@ class UserTagihanController extends GetxController {
 
   // Check if tagihan can be selected
   bool canSelectTagihan(TagihanUserModel tagihan) {
-    return !tagihanWithPendingPayment.contains(tagihan.id);
+    // Jika sudah ada pembayaran pending, tidak bisa dipilih
+    if (tagihanWithPendingPayment.contains(tagihan.id)) return false;
+
+    // Pastikan tagihan bulan-bulan sebelumnya sudah dipilih atau pending
+    final unpaidBills = tagihanBelumDibayar;
+    final index = unpaidBills.indexWhere((t) => t.id == tagihan.id);
+    
+    if (index > 0) {
+      for (int i = 0; i < index; i++) {
+        final prev = unpaidBills[i];
+        final isPrevPending = tagihanWithPendingPayment.contains(prev.id);
+        final isPrevSelected = tagihanTerpilih.contains(prev);
+        
+        if (!isPrevPending && !isPrevSelected) {
+          return false; // Ada tagihan bulan sebelumnya yang belum diselesaikan
+        }
+      }
+    }
+    return true;
   }
 
   void toggleTagihan(TagihanUserModel tagihan) {
-    // Don't allow selection if tagihan has pending payment
-    if (!canSelectTagihan(tagihan)) {
-      ToastHelper.showWarning(
-        'Tagihan ini sudah memiliki pembayaran yang menunggu verifikasi',
-        title: 'Tidak Dapat Dipilih',
-        duration: const Duration(seconds: 2),
-      );
-      return;
-    }
-
     if (tagihanTerpilih.contains(tagihan)) {
+      // Hapus tagihan ini
       tagihanTerpilih.remove(tagihan);
+      
+      // Hapus juga tagihan bulan-bulan setelahnya untuk menjaga urutan
+      final unpaidBills = tagihanBelumDibayar;
+      final index = unpaidBills.indexWhere((t) => t.id == tagihan.id);
+      if (index != -1) {
+        for (int i = index + 1; i < unpaidBills.length; i++) {
+          final nextTagihan = unpaidBills[i];
+          if (tagihanTerpilih.contains(nextTagihan)) {
+            tagihanTerpilih.remove(nextTagihan);
+          }
+        }
+      }
     } else {
+      // Jika tidak memenuhi syarat, tampilkan peringatan
+      if (!canSelectTagihan(tagihan)) {
+        if (tagihanWithPendingPayment.contains(tagihan.id)) {
+          ToastHelper.showWarning(
+            'Tagihan ini sudah memiliki pembayaran yang menunggu verifikasi',
+            title: 'Tidak Dapat Dipilih',
+            duration: const Duration(seconds: 2),
+          );
+        } else {
+          ToastHelper.showWarning(
+            'Pilih tagihan bulan sebelumnya terlebih dahulu',
+            title: 'Tidak Dapat Dipilih',
+            duration: const Duration(seconds: 2),
+          );
+        }
+        return;
+      }
       tagihanTerpilih.add(tagihan);
     }
   }
