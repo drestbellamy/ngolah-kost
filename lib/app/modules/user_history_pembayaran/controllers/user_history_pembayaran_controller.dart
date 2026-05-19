@@ -205,6 +205,10 @@ class UserHistoryPembayaranController extends GetxController {
   String get totalPayment {
     final filtered = filteredPaymentHistory;
     final total = filtered.fold<int>(0, (sum, payment) {
+      final status = payment['rawStatus']?.toString().toLowerCase() ?? '';
+      if (status == 'ditolak' || status == 'rejected') {
+        return sum; // Abaikan yang ditolak
+      }
       return sum + (payment['rawAmount'] as int? ?? 0);
     });
     return NumberFormat.currency(
@@ -214,8 +218,13 @@ class UserHistoryPembayaranController extends GetxController {
     ).format(total);
   }
 
-  // Get payment count based on filter
-  int get paymentCount => filteredPaymentHistory.length;
+  // Get payment count based on filter (mengabaikan yang ditolak)
+  int get paymentCount {
+    return filteredPaymentHistory.where((payment) {
+      final status = payment['rawStatus']?.toString().toLowerCase() ?? '';
+      return status != 'ditolak' && status != 'rejected';
+    }).length;
+  }
 
   Future<void> refreshData() async {
     await loadPaymentHistory();
