@@ -15,19 +15,20 @@ class TagihanCard extends GetView<UserTagihanController> {
   Widget build(BuildContext context) {
     return Obx(() {
       bool isSelected = controller.tagihanTerpilih.contains(tagihan);
-      bool hasPendingPayment = !controller.canSelectTagihan(tagihan);
+      bool isDisabled = !controller.canSelectTagihan(tagihan);
+      bool isPending = controller.tagihanWithPendingPayment.contains(tagihan.id);
 
       return GestureDetector(
         onTap: () => controller.toggleTagihan(tagihan),
         child: Opacity(
-          opacity: hasPendingPayment ? 0.6 : 1.0,
+          opacity: isDisabled ? 0.6 : 1.0,
           child: Container(
             margin: EdgeInsets.only(bottom: context.spacing(16)),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(context.borderRadius(16)),
               border: Border.all(
-                color: hasPendingPayment
+                color: isPending
                     ? const Color(0xFFF59E0B)
                     : isSelected
                     ? const Color(0xFF6B8E7A)
@@ -58,9 +59,11 @@ class TagihanCard extends GetView<UserTagihanController> {
                         ),
                       ),
                       child: Icon(
-                        hasPendingPayment ? Icons.schedule : Icons.receipt_long,
-                        color: hasPendingPayment
+                        isPending ? Icons.schedule : Icons.receipt_long,
+                        color: isPending
                             ? const Color(0xFFF59E0B)
+                            : isDisabled
+                            ? const Color(0xFF9CA3AF)
                             : const Color(0xFF6B8E7A),
                         size: context.iconSize(20),
                       ),
@@ -91,20 +94,22 @@ class TagihanCard extends GetView<UserTagihanController> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: hasPendingPayment
+                        color: isPending
                             ? const Color(0xFFFEF3C7)
+                            : isDisabled && !isPending
+                            ? const Color(0xFFF3F4F6)
                             : const Color(0xFFFEF3C7),
                         borderRadius: BorderRadius.circular(
                           context.borderRadius(20),
                         ),
                       ),
                       child: Text(
-                        hasPendingPayment
+                        isPending
                             ? 'Menunggu Verifikasi'
                             : tagihan.status,
                         style: AppTextStyles.body10
                             .weighted(FontWeight.w700)
-                            .colored(const Color(0xFFD97706))
+                            .colored(isDisabled && !isPending ? const Color(0xFF9CA3AF) : const Color(0xFFD97706))
                             .copyWith(fontSize: context.fontSize(10)),
                       ),
                     ),
@@ -172,28 +177,34 @@ class TagihanCard extends GetView<UserTagihanController> {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: hasPendingPayment
+                              color: isDisabled
                                   ? const Color(0xFFD1D5DB)
                                   : isSelected
                                   ? const Color(0xFF6B8E7A)
                                   : const Color(0xFFD1D5DB),
                               width: 2,
                             ),
-                            color: hasPendingPayment
+                            color: isDisabled
                                 ? const Color(0xFFD1D5DB)
                                 : isSelected
                                 ? const Color(0xFF6B8E7A)
                                 : Colors.transparent,
                           ),
-                          child: isSelected && !hasPendingPayment
+                          child: isSelected && !isDisabled
                               ? Icon(
                                   Icons.check,
                                   size: context.iconSize(14),
                                   color: Colors.white,
                                 )
-                              : hasPendingPayment
+                              : isPending
                               ? Icon(
                                   Icons.schedule,
+                                  size: context.iconSize(12),
+                                  color: const Color(0xFF9CA3AF),
+                                )
+                              : isDisabled && !isPending
+                              ? Icon(
+                                  Icons.lock_outline,
                                   size: context.iconSize(12),
                                   color: const Color(0xFF9CA3AF),
                                 )
