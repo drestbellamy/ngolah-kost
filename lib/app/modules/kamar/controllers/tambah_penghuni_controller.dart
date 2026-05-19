@@ -303,13 +303,8 @@ class TambahPenghuniController extends GetxController {
     durasiKontrakError.value = durasiKontrak.value.isEmpty
         ? 'Durasi kontrak harus dipilih'
         : null;
-    sistemPembayaranError.value = sistemPembayaran.value.isEmpty
-        ? 'Sistem pembayaran harus dipilih'
-        : null;
 
-    return tanggalMasukError.value == null &&
-        durasiKontrakError.value == null &&
-        sistemPembayaranError.value == null;
+    return tanggalMasukError.value == null && durasiKontrakError.value == null;
   }
 
   Future<void> _submitForm() async {
@@ -473,7 +468,7 @@ class TambahPenghuniController extends GetxController {
                         'username': '@${usernameController.text}',
                         'statusKontrak': 'Aktif',
                         'durasiKontrak': durasiKontrak.value,
-                        'siklusBayar': sistemPembayaran.value,
+                        'sudahBayarBulan': '0 Bulan',
                         'tanggalMulai': tanggalMasuk.value,
                         'tanggalBerakhir': tanggalBerakhir.value,
                         'hargaSewa': perTagihan.value,
@@ -647,20 +642,19 @@ class TambahPenghuniController extends GetxController {
       durasiKontrakBulan.value = 24;
     }
 
-    // Update sistem pembayaran options based on durasi
-    _updateSistemPembayaranOptions();
-
-    // Reset sistem pembayaran
-    sistemPembayaran.value = '';
-    sistemPembayaranBulan.value = 0;
+    // Set default sistem pembayaran (bulanan)
+    sistemPembayaran.value = '1 Bulan';
+    sistemPembayaranBulan.value = 1;
+    sistemPembayaranLabel.value = 'Bulanan (1 bulan)';
     durasiKontrakError.value = null;
     sistemPembayaranError.value = null;
 
     // Calculate tanggal berakhir
     _calculateTanggalBerakhir();
 
-    // Update total kontrak
+    // Update total kontrak and pembayaran
     totalKontrak.value = '${durasiKontrakBulan.value} bulan';
+    _calculatePayment();
   }
 
   void _updateSistemPembayaranOptions() {

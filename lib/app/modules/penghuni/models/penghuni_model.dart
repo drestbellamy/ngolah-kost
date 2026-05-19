@@ -17,6 +17,7 @@ class PembayaranModel {
 class PenghuniModel {
   final String id;
   final String nama;
+  final String? username;
   final String noTelepon;
   final String nomorKamar;
   final String namaKost;
@@ -38,6 +39,7 @@ class PenghuniModel {
   PenghuniModel({
     required this.id,
     required this.nama,
+    this.username,
     required this.noTelepon,
     required this.nomorKamar,
     required this.namaKost,

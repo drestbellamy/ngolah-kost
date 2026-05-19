@@ -93,6 +93,8 @@ class PenghuniController extends GetxController {
               PenghuniModel(
                 id: row['id']?.toString() ?? '',
                 nama: (user['nama'] ?? row['nama'] ?? 'Penghuni').toString(),
+                username: (user['username'] ?? row['username'] ?? '')
+                    .toString(),
                 noTelepon: (user['no_tlpn'] ?? row['no_tlpn'] ?? '-')
                     .toString(),
                 nomorKamar: (kamar['no_kamar'] ?? '-').toString(),

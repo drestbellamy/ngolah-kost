@@ -65,7 +65,7 @@ class KelolaKontrakView extends StatelessWidget {
                 // Header
                 const CustomHeader(
                   title: 'Kelola Kontrak',
-                  subtitle: 'Perpanjang, edit, atau akhiri kontrak',
+                  subtitle: 'Perpanjang atau akhiri kontrak',
                   showBackButton: true,
                 ),
 
@@ -93,9 +93,6 @@ class KelolaKontrakView extends StatelessWidget {
                               content = _buildPerpanjangContent(controller);
                               break;
                             case 1:
-                              content = _buildEditContent(controller);
-                              break;
-                            case 2:
                               content = _buildAkhiriContent(controller);
                               break;
                             default:
@@ -201,8 +198,7 @@ class KelolaKontrakView extends StatelessWidget {
         child: Row(
           children: [
             _buildTab('Perpanjang', 0, controller),
-            _buildTab('Edit', 1, controller),
-            _buildTab('Akhiri', 2, controller),
+            _buildTab('Akhiri', 1, controller),
           ],
         ),
       ),
@@ -220,9 +216,6 @@ class KelolaKontrakView extends StatelessWidget {
 
     if (index == 0) {
       bgColor = isSelected ? const Color(0xFF6B8E7F) : Colors.transparent;
-      textColor = isSelected ? Colors.white : const Color(0xFF6B7280);
-    } else if (index == 1) {
-      bgColor = isSelected ? const Color(0xFFF2A65A) : Colors.transparent;
       textColor = isSelected ? Colors.white : const Color(0xFF6B7280);
     } else {
       bgColor = isSelected ? const Color(0xFFEF4444) : Colors.transparent;

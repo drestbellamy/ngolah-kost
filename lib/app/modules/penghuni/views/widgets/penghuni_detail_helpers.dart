@@ -160,6 +160,46 @@ class PenghuniDetailHelpers {
     );
   }
 
+  static Future<int> loadPaidMonths(
+    PenghuniModel penghuni,
+    TagihanRepository tagihanRepo,
+  ) async {
+    try {
+      final rows = await tagihanRepo.getTagihanByPenghuniId(penghuni.id);
+      if (rows.isEmpty) {
+        return 0;
+      }
+
+      final fallbackSiklus = _resolveSiklusBulan(penghuni.sistemPembayaran);
+      var totalPaidMonths = 0;
+
+      for (final raw in rows) {
+        final row = Map<String, dynamic>.from(raw);
+        final status = (row['status'] ?? '').toString().toLowerCase().trim();
+        if (status != 'lunas') continue;
+
+        final siklus = _resolveTagihanSiklusBulan(
+          row,
+          penghuni,
+          fallbackSiklus: fallbackSiklus,
+        );
+
+        if (siklus > 0) {
+          totalPaidMonths += siklus;
+        }
+      }
+
+      if (penghuni.durasiKontrak > 0 &&
+          totalPaidMonths > penghuni.durasiKontrak) {
+        return penghuni.durasiKontrak;
+      }
+
+      return totalPaidMonths;
+    } catch (_) {
+      return 0;
+    }
+  }
+
   static int _toInt(dynamic value) {
     if (value is int) return value;
     return int.tryParse(value?.toString() ?? '') ?? 0;

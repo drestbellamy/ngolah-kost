@@ -13,6 +13,11 @@ class InfoPenghuniCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rawUsername = penghuni.username?.trim() ?? '';
+    final displayUsername = rawUsername.isEmpty
+        ? ''
+        : (rawUsername.startsWith('@') ? rawUsername : '@$rawUsername');
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -44,6 +49,26 @@ class InfoPenghuniCard extends StatelessWidget {
                         color: Color(0xFF2D3748),
                       ),
                     ),
+                    if (displayUsername.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.alternate_email,
+                            size: 16,
+                            color: Color(0xFF718096),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            displayUsername,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Color(0xFF718096),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 8),
                     Row(
                       children: [
