@@ -4,6 +4,7 @@ import '../../models/penghuni_model.dart';
 import '../../../../../repositories/repository_factory.dart';
 import '../../controllers/kelola_kontrak_controller.dart';
 import '../../../../core/utils/toast_helper.dart';
+import 'penghuni_detail_helpers.dart';
 
 class InformasiKontrakCard extends StatelessWidget {
   final PenghuniModel penghuni;
@@ -90,20 +91,32 @@ class InformasiKontrakCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Sistem Pembayaran',
+                        'Sudah Dibayar',
                         style: TextStyle(
                           fontSize: 12,
                           color: Color(0xFF9CA3AF),
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        penghuni.sistemPembayaran,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3748),
+                      FutureBuilder<int>(
+                        future: PenghuniDetailHelpers.loadPaidMonths(
+                          penghuni,
+                          RepositoryFactory.instance.tagihanRepository,
                         ),
+                        builder: (context, snapshot) {
+                          final paidMonths = snapshot.data;
+                          final label = paidMonths == null
+                              ? '-'
+                              : '$paidMonths Bulan';
+                          return Text(
+                            label,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF2D3748),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -309,6 +322,7 @@ class InformasiKontrakCard extends StatelessWidget {
       nama: (row['nama']?.toString().trim().isNotEmpty ?? false)
           ? row['nama'].toString()
           : fallback.nama,
+      username: fallback.username,
       noTelepon: (row['no_tlpn']?.toString().trim().isNotEmpty ?? false)
           ? row['no_tlpn'].toString()
           : fallback.noTelepon,

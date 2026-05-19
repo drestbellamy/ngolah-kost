@@ -763,14 +763,14 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Siklus Bayar',
+                                'Sudah Dibayar',
                                 style: AppTextStyles.body12.colored(
                                   AppColors.textGray,
                                 ),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                penghuni['siklusBayar'],
+                                penghuni['sudahBayarBulan'],
                                 style: AppTextStyles.subtitle14.colored(
                                   AppColors.textPrimary,
                                 ),
@@ -793,6 +793,24 @@ class InformasiKamarView extends GetView<InformasiKamarController> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () =>
+                            controller.goToPenghuniDetail(penghuni),
+                        icon: const Icon(Icons.person_outline, size: 18),
+                        label: const Text('Lihat Profil Penghuni'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF6B8E7A),
+                          side: const BorderSide(color: Color(0xFF6B8E7A)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     const Divider(color: Color(0xFFE5E7EB)),

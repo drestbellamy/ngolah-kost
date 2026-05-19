@@ -758,67 +758,6 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
             ),
           const SizedBox(height: 16),
 
-          // Sistem Pembayaran
-          _buildLabel('Sistem Pembayaran', isRequired: true),
-          const SizedBox(height: 8),
-          GestureDetector(
-            onTap: controller.durasiKontrak.value.isEmpty
-                ? null
-                : () => _showSistemPembayaranPicker(),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                color: controller.durasiKontrak.value.isEmpty
-                    ? const Color(0xFFE5E7EB)
-                    : const Color(0xFFF3F4F6),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: controller.sistemPembayaranError.value != null
-                      ? Colors.red
-                      : const Color(0xFFE5E7EB),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    controller.sistemPembayaran.value.isEmpty
-                        ? 'Pilih sistem pembayaran'
-                        : controller.sistemPembayaran.value,
-                    style: AppTextStyles.body14.colored(
-                      controller.sistemPembayaran.value.isEmpty
-                          ? const Color(0xFF9CA3AF)
-                          : AppColors.textPrimary,
-                    ),
-                  ),
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 20,
-                    color: controller.durasiKontrak.value.isEmpty
-                        ? const Color(0xFFD1D5DB)
-                        : const Color(0xFF6B7280),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (controller.sistemPembayaranError.value != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Text(
-                controller.sistemPembayaranError.value!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-              ),
-            ),
-          const SizedBox(height: 8),
-
-          Text(
-            'Frekuensi pembayaran sewa oleh penghuni',
-            style: AppTextStyles.body12.colored(AppColors.textGray),
-          ),
-          const SizedBox(height: 16),
-
           // Tanggal Berakhir Kontrak
           Obx(() {
             if (controller.tanggalBerakhir.value.isNotEmpty) {
@@ -894,22 +833,7 @@ class TambahPenghuniView extends GetView<TambahPenghuniController> {
                       controller.totalKontrak.value,
                     ),
                     const SizedBox(height: 8),
-                    _buildSummaryRow(
-                      'Sistem Pembayaran:',
-                      controller.sistemPembayaranLabel.value,
-                    ),
                     const Divider(height: 24, color: Color(0xFFF2A65A)),
-                    _buildSummaryRow(
-                      'Akan generate:',
-                      controller.jumlahTagihan.value,
-                      valueColor: const Color(0xFFF2A65A),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildSummaryRow(
-                      'Per tagihan:',
-                      controller.perTagihan.value,
-                      valueColor: const Color(0xFFF2A65A),
-                    ),
                     const SizedBox(height: 8),
                     _buildSummaryRow(
                       'Total Nilai Kontrak:',
