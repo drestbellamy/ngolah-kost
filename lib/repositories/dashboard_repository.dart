@@ -93,14 +93,29 @@ class DashboardRepository extends BaseRepository {
       }
 
       // Get tagihan statistics using direct query
-      final tagihanRaw = await supabase.from('tagihan').select('id, status');
+      // Count unpaid bills for current month and previous months (real-time)
+      final now = DateTime.now();
+      final currentMonth = now.month;
+      final currentYear = now.year;
+      
+      final tagihanRaw = await supabase.from('tagihan').select('id, status, bulan, tahun');
       final tagihanList = tagihanRaw
           .map((item) => Map<String, dynamic>.from(item))
           .toList();
 
       final tagihanBelumBayar = tagihanList.where((t) {
         final status = (t['status']?.toString() ?? '').toLowerCase();
-        return status == 'belum_dibayar';
+        final bulan = toInt(t['bulan']) ?? 0;
+        final tahun = toInt(t['tahun']) ?? 0;
+        
+        // Only count unpaid bills for current month and previous months
+        // Include if: year < current OR (year == current AND month <= current)
+        if (status != 'belum_dibayar') return false;
+        
+        if (tahun < currentYear) return true; // Previous years
+        if (tahun == currentYear && bulan <= currentMonth) return true; // Current year, up to current month
+        
+        return false; // Future months
       }).length;
 
       final menungguVerifikasi = tagihanList.where((t) {

@@ -185,6 +185,7 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFF6B8E7A,
                                               ),
+                                              onTap: controller.navigateToKost,
                                             ),
                                           ),
                                           SizedBox(width: context.spacing(16)),
@@ -197,6 +198,7 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFFA8D5BA,
                                               ),
+                                              onTap: controller.navigateToKost,
                                             ),
                                           ),
                                         ],
@@ -216,6 +218,7 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFFF2A65A,
                                               ),
+                                              onTap: controller.navigateToKost,
                                             ),
                                           ),
                                           SizedBox(width: context.spacing(16)),
@@ -230,6 +233,7 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFF6B8E7A,
                                               ),
+                                              onTap: controller.navigateToPenghuni,
                                             ),
                                           ),
                                         ],
@@ -248,6 +252,7 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFFF59E0B,
                                               ),
+                                              onTap: controller.navigateToKelolaTagihan,
                                             ),
                                           ),
                                           SizedBox(width: context.spacing(16)),
@@ -262,6 +267,7 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFF10B981,
                                               ),
+                                              onTap: controller.navigateToKelolaTagihanVerifikasi,
                                             ),
                                           ),
                                         ],
