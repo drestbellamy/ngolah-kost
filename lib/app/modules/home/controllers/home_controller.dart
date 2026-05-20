@@ -53,6 +53,22 @@ class HomeController extends GetxController {
     refreshAllData();
   }
 
+  void navigateToKelolaTagihanVerifikasi() async {
+    // Navigate to kelola tagihan with verification tab/filter
+    await Get.toNamed('/kelola-tagihan', arguments: {'tab': 'verifikasi'});
+    refreshAllData();
+  }
+
+  void navigateToKost() async {
+    await Get.toNamed('/kost');
+    refreshAllData();
+  }
+
+  void navigateToPenghuni() async {
+    await Get.toNamed('/penghuni');
+    refreshAllData();
+  }
+
   void navigateToMetodePembayaran() async {
     await Get.toNamed('/metode-pembayaran');
     refreshAllData();
@@ -103,7 +119,7 @@ class HomeController extends GetxController {
   }
 
   void navigateToVerifikasi() async {
-    await Get.toNamed('/kelola-tagihan');
+    await Get.toNamed('/kelola-tagihan', arguments: {'tab': 'verifikasi'});
     refreshAllData();
   }
 

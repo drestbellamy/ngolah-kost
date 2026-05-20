@@ -41,6 +41,13 @@ class KelolaTagihanController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    
+    // Check if there's an argument to set initial filter
+    final args = Get.arguments;
+    if (args != null && args is Map && args['tab'] == 'verifikasi') {
+      selectedFilter.value = 'menunggu_verifikasi';
+    }
+    
     loadTagihanData();
   }
 
