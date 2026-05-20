@@ -139,7 +139,8 @@ class LoginView extends GetView<LoginController> {
                                 child: Obx(
                                   () => _buildTextField(
                                     context: context,
-                                    textController: controller.usernameController,
+                                    textController:
+                                        controller.usernameController,
                                     hintText: 'Username',
                                     icon: Icons.person_outline_rounded,
                                     errorText: controller.usernameError.value,
@@ -165,7 +166,8 @@ class LoginView extends GetView<LoginController> {
                                 child: Obx(
                                   () => _buildTextField(
                                     context: context,
-                                    textController: controller.passwordController,
+                                    textController:
+                                        controller.passwordController,
                                     hintText: 'Password',
                                     icon: Icons.lock_outline_rounded,
                                     isPassword: true,
@@ -256,14 +258,18 @@ class LoginView extends GetView<LoginController> {
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
-                                                        context.borderRadius(16),
+                                                        context.borderRadius(
+                                                          16,
+                                                        ),
                                                       ),
                                                 ),
                                                 elevation: 0,
                                               ),
                                               child: controller.isLoading.value
                                                   ? SizedBox(
-                                                      width: context.iconSize(24),
+                                                      width: context.iconSize(
+                                                        24,
+                                                      ),
                                                       height: context.iconSize(
                                                         24,
                                                       ),
@@ -283,26 +289,26 @@ class LoginView extends GetView<LoginController> {
                                                           style: AppTextStyles
                                                               .buttonLarge
                                                               .copyWith(
-                                                                color:
-                                                                    Colors.white,
+                                                                color: Colors
+                                                                    .white,
                                                                 letterSpacing:
                                                                     0.4,
                                                                 fontSize: context
-                                                                    .fontSize(16),
+                                                                    .fontSize(
+                                                                      16,
+                                                                    ),
                                                               ),
                                                         ),
                                                         SizedBox(
-                                                          width: context.spacing(
-                                                            8,
-                                                          ),
+                                                          width: context
+                                                              .spacing(8),
                                                         ),
                                                         Icon(
                                                           Icons
                                                               .arrow_forward_rounded,
                                                           color: Colors.white,
-                                                          size: context.iconSize(
-                                                            20,
-                                                          ),
+                                                          size: context
+                                                              .iconSize(20),
                                                         ),
                                                       ],
                                                     ),
@@ -428,10 +434,7 @@ class _SlideAnimation extends StatefulWidget {
   final Widget child;
   final int delay;
 
-  const _SlideAnimation({
-    required this.child,
-    this.delay = 0,
-  });
+  const _SlideAnimation({required this.child, this.delay = 0});
 
   @override
   State<_SlideAnimation> createState() => _SlideAnimationState();
@@ -454,18 +457,12 @@ class _SlideAnimationState extends State<_SlideAnimation>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     Future.delayed(Duration(milliseconds: widget.delay), () {
       if (mounted) {
@@ -484,10 +481,7 @@ class _SlideAnimationState extends State<_SlideAnimation>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: widget.child,
-      ),
+      child: SlideTransition(position: _slideAnimation, child: widget.child),
     );
   }
 }

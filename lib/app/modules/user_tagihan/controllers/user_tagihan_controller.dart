@@ -221,13 +221,13 @@ class UserTagihanController extends GetxController {
     // Pastikan tagihan bulan-bulan sebelumnya sudah dipilih atau pending
     final unpaidBills = tagihanBelumDibayar;
     final index = unpaidBills.indexWhere((t) => t.id == tagihan.id);
-    
+
     if (index > 0) {
       for (int i = 0; i < index; i++) {
         final prev = unpaidBills[i];
         final isPrevPending = tagihanWithPendingPayment.contains(prev.id);
         final isPrevSelected = tagihanTerpilih.contains(prev);
-        
+
         if (!isPrevPending && !isPrevSelected) {
           return false; // Ada tagihan bulan sebelumnya yang belum diselesaikan
         }
@@ -240,7 +240,7 @@ class UserTagihanController extends GetxController {
     if (tagihanTerpilih.contains(tagihan)) {
       // Hapus tagihan ini
       tagihanTerpilih.remove(tagihan);
-      
+
       // Hapus juga tagihan bulan-bulan setelahnya untuk menjaga urutan
       final unpaidBills = tagihanBelumDibayar;
       final index = unpaidBills.indexWhere((t) => t.id == tagihan.id);
