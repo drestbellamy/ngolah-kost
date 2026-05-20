@@ -615,39 +615,58 @@ class KostMapView extends GetView<KostMapController> {
           Row(
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => controller.openNavigation(kost),
-                  icon: const Icon(Icons.directions, size: 16),
-                  label: const Text('Rute'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF6B8E7F),
-                    side: const BorderSide(color: Color(0xFF6B8E7F)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                child: !controller.isAdmin
+                    ? ElevatedButton.icon(
+                        // User Mode: Solid Route Button
+                        onPressed: () => controller.openNavigation(kost),
+                        icon: const Icon(Icons.directions, size: 16),
+                        label: const Text('Rute'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6B8E7F),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      )
+                    : OutlinedButton.icon(
+                        // Admin Mode: Outlined Route Button
+                        onPressed: () => controller.openNavigation(kost),
+                        icon: const Icon(Icons.directions, size: 16),
+                        label: const Text('Rute'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF6B8E7F),
+                          side: const BorderSide(color: Color(0xFF6B8E7F)),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+              ),
+
+              if (controller.isAdmin) ...[
+                const SizedBox(width: 12),
+
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => controller.navigateToKostDetail(kost),
+                    icon: const Icon(Icons.info_outline, size: 16),
+                    label: const Text('Detail'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6B8E7F),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                   ),
                 ),
-              ),
-
-              const SizedBox(width: 12),
-
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => controller.navigateToKostDetail(kost),
-                  icon: const Icon(Icons.info_outline, size: 16),
-                  label: const Text('Detail'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6B8E7F),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ),
+              ],
             ],
           ),
         ],
@@ -660,7 +679,9 @@ class KostMapView extends GetView<KostMapController> {
       KostDetailBottomSheet(
         kost: kost,
         onRoutePressed: () => controller.openNavigation(kost),
-        onDetailPressed: () => controller.navigateToKostDetail(kost),
+        onDetailPressed: controller.isAdmin
+            ? () => controller.navigateToKostDetail(kost)
+            : null,
       ),
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

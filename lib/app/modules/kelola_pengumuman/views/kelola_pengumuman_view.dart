@@ -116,7 +116,12 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                       )
                       .animate()
                       .fadeIn(duration: 400.ms)
-                      .slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad);
+                      .slideX(
+                        begin: -0.2,
+                        end: 0,
+                        duration: 400.ms,
+                        curve: Curves.easeOutQuad,
+                      );
                 }).toList(),
               ),
             ),
@@ -161,7 +166,12 @@ class KelolaPengumumanView extends GetView<KelolaPengumumanController> {
                       )
                       .animate()
                       .fadeIn(duration: 400.ms)
-                      .slideX(begin: -0.2, end: 0, duration: 400.ms, curve: Curves.easeOutQuad);
+                      .slideX(
+                        begin: -0.2,
+                        end: 0,
+                        duration: 400.ms,
+                        curve: Curves.easeOutQuad,
+                      );
                 },
               ),
           ],

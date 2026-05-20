@@ -55,7 +55,10 @@ class Landing2View extends GetView<LandingController> {
           child: Align(
             alignment: Alignment.topRight,
             child: Padding(
-              padding: EdgeInsets.only(top: context.padding(8.0), right: context.padding(24.0)),
+              padding: EdgeInsets.only(
+                top: context.padding(8.0),
+                right: context.padding(24.0),
+              ),
               child: GestureDetector(
                 onTap: controller.navigateToLogin,
                 child: Container(
@@ -65,7 +68,9 @@ class Landing2View extends GetView<LandingController> {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(context.borderRadius(16)),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(16),
+                    ),
                   ),
                   child: Text(
                     'Lewati',
@@ -114,9 +119,9 @@ class Landing2View extends GetView<LandingController> {
                   delay: 400,
                   child: RichText(
                     text: TextSpan(
-                      style: AppTextStyles.body16.colored(const Color(0xFF6C8F7B)).copyWith(
-                        fontSize: context.fontSize(16),
-                      ),
+                      style: AppTextStyles.body16
+                          .colored(const Color(0xFF6C8F7B))
+                          .copyWith(fontSize: context.fontSize(16)),
                       children: [
                         TextSpan(
                           text:
@@ -145,7 +150,9 @@ class Landing2View extends GetView<LandingController> {
                         height: context.spacing(8),
                         decoration: BoxDecoration(
                           color: const Color(0xFFE0E8E3),
-                          borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(4),
+                          ),
                         ),
                       ),
                       SizedBox(width: context.spacing(8)),
@@ -154,7 +161,9 @@ class Landing2View extends GetView<LandingController> {
                         height: context.spacing(8),
                         decoration: BoxDecoration(
                           color: const Color(0xFF6E947F),
-                          borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(4),
+                          ),
                         ),
                       ),
                       SizedBox(width: context.spacing(8)),
@@ -163,7 +172,9 @@ class Landing2View extends GetView<LandingController> {
                         height: context.spacing(8),
                         decoration: BoxDecoration(
                           color: const Color(0xFFE0E8E3),
-                          borderRadius: BorderRadius.circular(context.borderRadius(4)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(4),
+                          ),
                         ),
                       ),
                     ],
@@ -187,7 +198,9 @@ class Landing2View extends GetView<LandingController> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF6E947F),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(context.borderRadius(16)),
+                          borderRadius: BorderRadius.circular(
+                            context.borderRadius(16),
+                          ),
                         ),
                         elevation: 0,
                       ),
@@ -226,10 +239,7 @@ class _SlideAnimation extends StatefulWidget {
   final Widget child;
   final int delay;
 
-  const _SlideAnimation({
-    required this.child,
-    this.delay = 0,
-  });
+  const _SlideAnimation({required this.child, this.delay = 0});
 
   @override
   State<_SlideAnimation> createState() => _SlideAnimationState();
@@ -252,18 +262,12 @@ class _SlideAnimationState extends State<_SlideAnimation>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     Future.delayed(Duration(milliseconds: widget.delay), () {
       if (mounted) {
@@ -282,10 +286,7 @@ class _SlideAnimationState extends State<_SlideAnimation>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: SlideTransition(
-        position: _slideAnimation,
-        child: widget.child,
-      ),
+      child: SlideTransition(position: _slideAnimation, child: widget.child),
     );
   }
 }

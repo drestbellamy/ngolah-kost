@@ -6,13 +6,13 @@ import '../../../../data/enums/room_availability_status.dart';
 class KostDetailBottomSheet extends StatelessWidget {
   final KostWithStatus kost;
   final VoidCallback onRoutePressed;
-  final VoidCallback onDetailPressed;
+  final VoidCallback? onDetailPressed;
 
   const KostDetailBottomSheet({
     super.key,
     required this.kost,
     required this.onRoutePressed,
-    required this.onDetailPressed,
+    this.onDetailPressed,
   });
 
   @override
@@ -230,66 +230,99 @@ class KostDetailBottomSheet extends StatelessWidget {
                       children: [
                         // Route button
                         Expanded(
-                          child: OutlinedButton(
-                            onPressed: onRoutePressed,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF6B8E7F),
-                              side: const BorderSide(
-                                color: Color(0xFF6B8E7F),
-                                width: 2,
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.directions, size: 20),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Rute',
-                                  style: AppTextStyles.buttonMedium.copyWith(
-                                    fontSize: 15,
+                          child: onDetailPressed == null
+                              ? ElevatedButton(
+                                  // User mode: Solid full-width Rute button
+                                  onPressed: onRoutePressed,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF6B8E7F),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.directions, size: 20),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Rute',
+                                        style: AppTextStyles.buttonMedium
+                                            .copyWith(fontSize: 15),
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : OutlinedButton(
+                                  // Admin mode: Outlined Rute button
+                                  onPressed: onRoutePressed,
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: const Color(0xFF6B8E7F),
+                                    side: const BorderSide(
+                                      color: Color(0xFF6B8E7F),
+                                      width: 2,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.directions, size: 20),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Rute',
+                                        style: AppTextStyles.buttonMedium
+                                            .copyWith(fontSize: 15),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
                         ),
 
-                        const SizedBox(width: 12),
-
-                        // Detail button
-                        Expanded(
-                          flex: 2,
-                          child: ElevatedButton(
-                            onPressed: onDetailPressed,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF6B8E7F),
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                        if (onDetailPressed != null) ...[
+                          const SizedBox(width: 12),
+                          // Detail button
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              onPressed: onDetailPressed,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF6B8E7F),
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.info_outline, size: 20),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Lihat Detail Kost',
+                                    style: AppTextStyles.buttonMedium.copyWith(
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.info_outline, size: 20),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Lihat Detail Kost',
-                                  style: AppTextStyles.buttonMedium.copyWith(
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   ],
