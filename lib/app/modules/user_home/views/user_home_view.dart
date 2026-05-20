@@ -12,6 +12,7 @@ import 'widgets/payment_due_alert.dart';
 import 'widgets/payment_summary_card.dart';
 import 'widgets/contact_management_card.dart';
 import 'widgets/pengaduan_card.dart';
+import 'widgets/peta_kost_card.dart';
 
 class UserHomeView extends GetView<UserHomeController> {
   const UserHomeView({super.key});
@@ -153,6 +154,11 @@ class UserHomeView extends GetView<UserHomeController> {
                         const PengaduanCard()
                             .animate()
                             .fadeIn(duration: 400.ms, delay: 400.ms)
+                            .slideY(begin: 0.2, end: 0),
+                        SizedBox(height: context.spacing(24)),
+                        const PetaKostCard()
+                            .animate()
+                            .fadeIn(duration: 400.ms, delay: 450.ms)
                             .slideY(begin: 0.2, end: 0),
                         SizedBox(height: context.spacing(24)),
                         ContactManagementCard(controller: controller)

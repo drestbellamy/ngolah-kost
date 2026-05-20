@@ -88,7 +88,7 @@ class AppPages {
       name: Routes.kostMap,
       page: () => const KostMapView(),
       binding: KostMapBinding(),
-      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+      middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: Routes.addKost,

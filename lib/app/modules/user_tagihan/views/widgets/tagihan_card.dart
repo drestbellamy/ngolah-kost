@@ -16,7 +16,9 @@ class TagihanCard extends GetView<UserTagihanController> {
     return Obx(() {
       bool isSelected = controller.tagihanTerpilih.contains(tagihan);
       bool isDisabled = !controller.canSelectTagihan(tagihan);
-      bool isPending = controller.tagihanWithPendingPayment.contains(tagihan.id);
+      bool isPending = controller.tagihanWithPendingPayment.contains(
+        tagihan.id,
+      );
 
       return GestureDetector(
         onTap: () => controller.toggleTagihan(tagihan),
@@ -104,12 +106,14 @@ class TagihanCard extends GetView<UserTagihanController> {
                         ),
                       ),
                       child: Text(
-                        isPending
-                            ? 'Menunggu Verifikasi'
-                            : tagihan.status,
+                        isPending ? 'Menunggu Verifikasi' : tagihan.status,
                         style: AppTextStyles.body10
                             .weighted(FontWeight.w700)
-                            .colored(isDisabled && !isPending ? const Color(0xFF9CA3AF) : const Color(0xFFD97706))
+                            .colored(
+                              isDisabled && !isPending
+                                  ? const Color(0xFF9CA3AF)
+                                  : const Color(0xFFD97706),
+                            )
                             .copyWith(fontSize: context.fontSize(10)),
                       ),
                     ),

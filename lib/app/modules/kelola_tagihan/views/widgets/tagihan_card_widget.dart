@@ -202,9 +202,7 @@ class TagihanCardWidget extends StatelessWidget {
           ),
         )
         .animate()
-        .fadeIn(
-          duration: 500.ms,
-        )
+        .fadeIn(duration: 500.ms)
         .slideX(
           begin: -0.2, // Muncul sedikit dari bawah
           end: 0,

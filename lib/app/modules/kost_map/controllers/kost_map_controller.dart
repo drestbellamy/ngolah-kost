@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../core/services/location_service.dart';
 import '../../../core/services/navigation_service.dart';
+import '../../../core/controllers/auth_controller.dart';
 import '../../../core/utils/distance_calculator.dart' as utils;
 import '../../../core/utils/toast_helper.dart';
 import '../../../data/models/kost_with_status_model.dart';
@@ -24,6 +25,15 @@ class KostMapController extends GetxController {
   // Search debouncing
   Timer? _searchDebounceTimer;
   final _searchController = TextEditingController();
+
+  // Auth Controller for checking roles
+  bool get isAdmin {
+    try {
+      return Get.find<AuthController>().isAdmin;
+    } catch (_) {
+      return false;
+    }
+  }
 
   // Getters
   MapState get mapState => _mapState.value;

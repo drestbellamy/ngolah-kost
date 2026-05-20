@@ -230,7 +230,12 @@ class RingkasanKeuanganView extends GetView<RingkasanKeuanganController> {
                 )
                 .animate()
                 .fadeIn(duration: 500.ms)
-                .slideX(begin: -0.2, end: 0, duration: 500.ms, curve: Curves.easeOutQuad);
+                .slideX(
+                  begin: -0.2,
+                  end: 0,
+                  duration: 500.ms,
+                  curve: Curves.easeOutQuad,
+                );
           },
         ),
       ),
