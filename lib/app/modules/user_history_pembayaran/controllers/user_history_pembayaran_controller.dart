@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../core/controllers/auth_controller.dart';
@@ -6,6 +7,7 @@ import '../../../../repositories/pembayaran_repository.dart';
 import '../../../../repositories/tagihan_repository.dart';
 import '../../../../repositories/metode_pembayaran_repository.dart';
 import '../../../../repositories/repository_factory.dart';
+import '../../../../models/payment_detail_model.dart';
 
 class UserHistoryPembayaranController extends GetxController {
   final PenghuniRepository _penghuniRepo;
@@ -228,6 +230,64 @@ class UserHistoryPembayaranController extends GetxController {
 
   Future<void> refreshData() async {
     await loadPaymentHistory();
+  }
+
+  /// Get payment detail from existing data (no API call needed)
+  /// Data sudah ada di paymentHistory, tinggal convert ke PaymentDetail model
+  PaymentDetail? getPaymentDetailFromHistory(String paymentId) {
+    try {
+      // Cari payment dari history yang sudah ada
+      final payment = paymentHistory.firstWhereOrNull(
+        (p) => p['id']?.toString() == paymentId,
+      );
+
+      if (payment == null) {
+        Get.snackbar(
+          'Error',
+          'Data pembayaran tidak ditemukan',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: const Color(0xFFFEF2F2),
+          colorText: const Color(0xFFDC2626),
+          margin: const EdgeInsets.all(16),
+        );
+        return null;
+      }
+
+      // Convert ke PaymentDetail model
+      final paymentDate = DateFormat('dd MMM yyyy', 'id_ID').parse(
+        payment['date'],
+      );
+
+      return PaymentDetail(
+        id: payment['id']?.toString() ?? '',
+        userId: authController.currentUser?.id ?? '',
+        month: payment['month']?.toString() ?? '',
+        paymentMethod: payment['method']?.toString() ?? '',
+        amount: (payment['rawAmount'] as int? ?? 0).toDouble(),
+        status: payment['status']?.toString() ?? '',
+        proofImageUrl: payment['buktiPembayaran']?.toString() ?? '',
+        paymentDate: paymentDate,
+        createdAt: paymentDate,
+        verifiedAt: payment['rawStatus'] == 'verified' ||
+                payment['rawStatus'] == 'lunas'
+            ? paymentDate
+            : null,
+        rejectionReason: payment['rawStatus'] == 'rejected' ||
+                payment['rawStatus'] == 'ditolak'
+            ? 'Pembayaran ditolak. Silakan hubungi admin untuk informasi lebih lanjut.'
+            : null,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Gagal memuat detail pembayaran: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFFEF2F2),
+        colorText: const Color(0xFFDC2626),
+        margin: const EdgeInsets.all(16),
+      );
+      return null;
+    }
   }
 
   int _toInt(dynamic value) {
