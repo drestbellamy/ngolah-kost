@@ -1,11 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/values/values.dart';
+import '../../controllers/user_history_pembayaran_controller.dart';
+import 'payment_proof_modal.dart';
 
 class PaymentCard extends StatelessWidget {
   final Map<String, dynamic> payment;
 
   const PaymentCard({super.key, required this.payment});
+
+  void _showPaymentProof(BuildContext context) {
+    final controller = Get.find<UserHistoryPembayaranController>();
+    final paymentId = payment['id']?.toString() ?? '';
+
+    if (paymentId.isEmpty) {
+      Get.snackbar(
+        'Error',
+        'ID pembayaran tidak valid',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFFFEF2F2),
+        colorText: const Color(0xFFDC2626),
+        margin: const EdgeInsets.all(16),
+      );
+      return;
+    }
+
+    // Get payment detail dari data yang sudah ada (no API call)
+    final detail = controller.getPaymentDetailFromHistory(paymentId);
+
+    if (detail != null) {
+      // Show modal bottom sheet with payment proof
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => SizedBox(
+          height: MediaQuery.of(context).size.height * 0.85,
+          child: PaymentProofModal(detail: detail),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +67,9 @@ class PaymentCard extends StatelessWidget {
       statusBgColor = const Color(0xFFF59E0B).withValues(alpha: 0.1);
     }
 
-    return Container(
+    return GestureDetector(
+      onTap: () => _showPaymentProof(context),
+      child: Container(
       margin: EdgeInsets.only(bottom: context.spacing(16)),
       padding: context.allPadding(20),
       decoration: BoxDecoration(
@@ -142,6 +180,7 @@ class PaymentCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
