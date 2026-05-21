@@ -52,6 +52,8 @@ import '../modules/user_pengaduan/bindings/user_pengaduan_binding.dart';
 import '../modules/user_pengaduan/views/user_pengaduan_view.dart';
 import '../modules/kelola_pengaduan/bindings/kelola_pengaduan_binding.dart';
 import '../modules/kelola_pengaduan/views/kelola_pengaduan_view.dart';
+import '../modules/riwayat_notifikasi/bindings/riwayat_notifikasi_binding.dart';
+import '../modules/riwayat_notifikasi/views/riwayat_notifikasi_view.dart';
 import '../core/middleware/auth_middleware.dart';
 import '../core/middleware/role_middleware.dart';
 import 'app_routes.dart';
@@ -248,6 +250,12 @@ class AppPages {
       name: Routes.kelolaPengaduan,
       page: () => const KelolaPengaduanView(),
       binding: KelolaPengaduanBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.riwayatNotifikasi,
+      page: () => const RiwayatNotifikasiView(),
+      binding: RiwayatNotifikasiBinding(),
       middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
     ),
   ];

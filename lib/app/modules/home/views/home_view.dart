@@ -23,11 +23,47 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           children: [
             // Header - dengan background image
-            const CustomHeader(
+            CustomHeader(
               title: 'Dashboard Admin',
               subtitle: 'Kelola rumah kost Anda',
               showBackButton: false,
               backgroundImage: 'assets/images/dashboard_admin/header_admin.png',
+              trailing: GestureDetector(
+                onTap: controller.navigateToRiwayatNotifikasi,
+                child: Container(
+                  width: context.iconSize(44),
+                  height: context.iconSize(44),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(12),
+                    ),
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        Icons.notifications_none_rounded,
+                        color: Colors.white,
+                        size: context.iconSize(26),
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 12,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE56A69),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 1.5),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
 
             // Konten
@@ -233,7 +269,8 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFF6B8E7A,
                                               ),
-                                              onTap: controller.navigateToPenghuni,
+                                              onTap:
+                                                  controller.navigateToPenghuni,
                                             ),
                                           ),
                                         ],
@@ -252,7 +289,8 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFFF59E0B,
                                               ),
-                                              onTap: controller.navigateToKelolaTagihan,
+                                              onTap: controller
+                                                  .navigateToKelolaTagihan,
                                             ),
                                           ),
                                           SizedBox(width: context.spacing(16)),
@@ -267,7 +305,8 @@ class HomeView extends GetView<HomeController> {
                                               iconBgColor: const Color(
                                                 0xFF10B981,
                                               ),
-                                              onTap: controller.navigateToKelolaTagihanVerifikasi,
+                                              onTap: controller
+                                                  .navigateToKelolaTagihanVerifikasi,
                                             ),
                                           ),
                                         ],
