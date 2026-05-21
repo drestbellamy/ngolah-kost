@@ -123,6 +123,11 @@ class HomeController extends GetxController {
     refreshAllData();
   }
 
+  void navigateToRiwayatNotifikasi() async {
+    await Get.toNamed('/riwayat-notifikasi');
+    refreshAllData();
+  }
+
   void refreshAllData() {
     loadDashboardData();
 
