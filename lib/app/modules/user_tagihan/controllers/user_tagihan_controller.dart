@@ -6,6 +6,7 @@ import '../../../data/models/metode_pembayaran_model.dart';
 import '../../../core/controllers/auth_controller.dart';
 import '../../../core/controllers/notification_controller.dart';
 import '../../../core/utils/responsive_utils.dart';
+import '../../../core/values/values.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/penghuni_repository.dart';
 import '../../../../repositories/tagihan_repository.dart';
@@ -226,7 +227,7 @@ class UserTagihanController extends GetxController {
       for (int i = 0; i < index; i++) {
         final prev = unpaidBills[i];
         final isPrevPending = tagihanWithPendingPayment.contains(prev.id);
-        final isPrevSelected = tagihanTerpilih.contains(prev);
+        final isPrevSelected = tagihanTerpilih.any((t) => t.id == prev.id);
 
         if (!isPrevPending && !isPrevSelected) {
           return false; // Ada tagihan bulan sebelumnya yang belum diselesaikan
@@ -237,9 +238,9 @@ class UserTagihanController extends GetxController {
   }
 
   void toggleTagihan(TagihanUserModel tagihan) {
-    if (tagihanTerpilih.contains(tagihan)) {
+    if (tagihanTerpilih.any((t) => t.id == tagihan.id)) {
       // Hapus tagihan ini
-      tagihanTerpilih.remove(tagihan);
+      tagihanTerpilih.removeWhere((t) => t.id == tagihan.id);
 
       // Hapus juga tagihan bulan-bulan setelahnya untuk menjaga urutan
       final unpaidBills = tagihanBelumDibayar;
@@ -247,9 +248,7 @@ class UserTagihanController extends GetxController {
       if (index != -1) {
         for (int i = index + 1; i < unpaidBills.length; i++) {
           final nextTagihan = unpaidBills[i];
-          if (tagihanTerpilih.contains(nextTagihan)) {
-            tagihanTerpilih.remove(nextTagihan);
-          }
+          tagihanTerpilih.removeWhere((t) => t.id == nextTagihan.id);
         }
       }
     } else {
@@ -396,53 +395,178 @@ class UserTagihanController extends GetxController {
 
       // Show confirmation dialog
       final confirmed = await Get.dialog<bool>(
-        AlertDialog(
-          title: const Text('Konfirmasi Pembayaran Tunai'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('Anda akan mengkonfirmasi pembayaran tunai untuk:'),
-              const SizedBox(height: 12),
-              ...tagihanTerpilih.map(
-                (tagihan) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text('• ${tagihan.periodePenagihan}'),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Total: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(totalBayarTerpilih)}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Builder(
-                builder: (context) => Text(
-                  'Pembayaran akan dikirim ke admin untuk verifikasi.',
-                  style: TextStyle(
-                    fontSize: context.fontSize(12),
-                    color: Colors.grey,
+        Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFF0FDF4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.check_circle_outline,
+                    color: Color(0xFF6B8E7A),
+                    size: 32,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                
+                // Title
+                Text(
+                  'Konfirmasi Pembayaran?',
+                  style: AppTextStyles.header20.copyWith(color: AppColors.textPrimary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                
+                // Subtitle
+                Text(
+                  'Tindakan ini bersifat permanen dan tidak bisa\ndibatalkan jika dikonfirmasi',
+                  style: AppTextStyles.body14.copyWith(color: AppColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                
+                // Info Box
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF7FDF9),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mengkonfirmasi pembayaran untuk :',
+                        style: AppTextStyles.body14.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE8F4EC),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Icon(Icons.calendar_today_outlined, size: 16, color: Color(0xFF6B8E7A)),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Builder(
+                              builder: (context) {
+                                if (tagihanTerpilih.isEmpty) return const SizedBox();
+                                
+                                final sorted = List<TagihanUserModel>.from(tagihanTerpilih)
+                                  ..sort((a, b) => a.jatuhTempo.compareTo(b.jatuhTempo));
+                                  
+                                final displayText = sorted.length == 1
+                                    ? sorted.first.periodePenagihan
+                                    : '${sorted.first.periodePenagihan} - ${sorted.last.periodePenagihan}';
+
+                                return Text(
+                                  displayText,
+                                  style: AppTextStyles.body14.copyWith(
+                                    color: AppColors.textPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                );
+                              }
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Text(
+                            'Total: ',
+                            style: AppTextStyles.body16.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          Text(
+                            NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0).format(totalBayarTerpilih),
+                            style: AppTextStyles.header18.copyWith(
+                              color: const Color(0xFF6B8E7A),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Pembayaran tunai ini akan dikirim ke admin\nuntuk diverifikasi',
+                        style: AppTextStyles.body12.copyWith(color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Get.back(result: false),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          side: const BorderSide(color: Color(0xFFE5E7EB)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          'Batal',
+                          style: AppTextStyles.body14.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Get.back(result: true),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: const Color(0xFF6B8E7A),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Konfirmasi',
+                          style: AppTextStyles.body14.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(result: false),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () => Get.back(result: true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF6B8E7A),
-              ),
-              child: const Text(
-                'Konfirmasi',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
         ),
       );
 
