@@ -35,8 +35,10 @@ class PaymentCard extends StatelessWidget {
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
-        builder: (context) => SizedBox(
-          height: MediaQuery.of(context).size.height * 0.85,
+        builder: (context) => Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+          ),
           child: PaymentProofModal(detail: detail),
         ),
       );
