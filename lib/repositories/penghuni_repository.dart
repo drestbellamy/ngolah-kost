@@ -685,8 +685,10 @@ class PenghuniRepository extends BaseRepository {
 
           lookup[penghuniId] = {
             'nama': (user['nama'] ?? row['nama'] ?? 'Penghuni').toString(),
+            'no_tlpn': (user['no_tlpn'] ?? row['no_tlpn'] ?? '-').toString(),
             'nomor_kamar': (kamar['no_kamar'] ?? '-').toString(),
             'nama_kost': kost.name,
+            'alamat_kost': kost.address,
           };
         }
       }

@@ -10,6 +10,7 @@ import 'pengumuman_repository.dart';
 import 'peraturan_repository.dart';
 import 'keuangan_repository.dart';
 import 'dashboard_repository.dart';
+import 'pengajuan_pindah_repository.dart';
 
 /// Singleton factory for creating and managing repository instances
 /// Provides lazy initialization and dependency injection
@@ -36,6 +37,7 @@ class RepositoryFactory {
   PeraturanRepository? _peraturanRepository;
   KeuanganRepository? _keuanganRepository;
   DashboardRepository? _dashboardRepository;
+  PengajuanPindahRepository? _pengajuanPindahRepository;
 
   /// Get AuthRepository instance (lazy initialized)
   AuthRepository get authRepository {
@@ -122,6 +124,12 @@ class RepositoryFactory {
     return _dashboardRepository!;
   }
 
+  /// Get PengajuanPindahRepository instance (lazy initialized)
+  PengajuanPindahRepository get pengajuanPindahRepository {
+    _pengajuanPindahRepository ??= PengajuanPindahRepository();
+    return _pengajuanPindahRepository!;
+  }
+
   /// Reset all repository instances (useful for testing)
   void reset() {
     _authRepository = null;
@@ -136,6 +144,7 @@ class RepositoryFactory {
     _peraturanRepository = null;
     _keuanganRepository = null;
     _dashboardRepository = null;
+    _pengajuanPindahRepository = null;
   }
 
   /// Inject custom repository instances (useful for testing with mocks)
@@ -152,6 +161,7 @@ class RepositoryFactory {
     PeraturanRepository? peraturanRepository,
     KeuanganRepository? keuanganRepository,
     DashboardRepository? dashboardRepository,
+    PengajuanPindahRepository? pengajuanPindahRepository,
   }) {
     if (authRepository != null) _authRepository = authRepository;
     if (kostRepository != null) _kostRepository = kostRepository;
@@ -174,6 +184,9 @@ class RepositoryFactory {
     if (keuanganRepository != null) _keuanganRepository = keuanganRepository;
     if (dashboardRepository != null) {
       _dashboardRepository = dashboardRepository;
+    }
+    if (pengajuanPindahRepository != null) {
+      _pengajuanPindahRepository = pengajuanPindahRepository;
     }
   }
 }

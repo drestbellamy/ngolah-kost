@@ -482,6 +482,27 @@ class HomeView extends GetView<HomeController> {
                                       duration: 400.ms,
                                       curve: Curves.easeOutQuad,
                                     ),
+                                SizedBox(height: context.spacing(12)),
+                                MenuItem(
+                                      icon: Icons.sync_alt_outlined,
+                                      title: 'Pengajuan Pindah Kamar',
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFF8B5CF6),
+                                          Color(0xFF7C3AED),
+                                        ],
+                                      ),
+                                      onTap:
+                                          controller.navigateToAdminPengajuanPindah,
+                                    )
+                                    .animate()
+                                    .fadeIn(duration: 400.ms, delay: 400.ms)
+                                    .slideX(
+                                      begin: -0.2,
+                                      end: 0,
+                                      duration: 400.ms,
+                                      curve: Curves.easeOutQuad,
+                                    ),
                               ],
                             ),
                           ),

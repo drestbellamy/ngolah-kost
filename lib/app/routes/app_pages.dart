@@ -50,8 +50,13 @@ import '../modules/user_profil/bindings/user_profil_binding.dart';
 import '../modules/user_profil/views/user_profil_view.dart';
 import '../modules/user_pengaduan/bindings/user_pengaduan_binding.dart';
 import '../modules/user_pengaduan/views/user_pengaduan_view.dart';
+import '../modules/user_pengajuan_pindah/bindings/user_pengajuan_pindah_binding.dart';
+import '../modules/user_pengajuan_pindah/views/user_pengajuan_pindah_view.dart';
 import '../modules/kelola_pengaduan/bindings/kelola_pengaduan_binding.dart';
 import '../modules/kelola_pengaduan/views/kelola_pengaduan_view.dart';
+import '../modules/admin_pengajuan_pindah/bindings/admin_pengajuan_pindah_binding.dart';
+import '../modules/admin_pengajuan_pindah/views/admin_pengajuan_pindah_view.dart';
+import '../modules/admin_pengajuan_pindah/views/admin_pengajuan_pindah_detail_view.dart';
 import '../modules/riwayat_notifikasi/bindings/riwayat_notifikasi_binding.dart';
 import '../modules/riwayat_notifikasi/views/riwayat_notifikasi_view.dart';
 import '../core/middleware/auth_middleware.dart';
@@ -247,9 +252,27 @@ class AppPages {
       middlewares: [AuthMiddleware(), UserOnlyMiddleware()],
     ),
     GetPage(
+      name: Routes.userPengajuanPindah,
+      page: () => const UserPengajuanPindahView(),
+      binding: UserPengajuanPindahBinding(),
+      middlewares: [AuthMiddleware(), UserOnlyMiddleware()],
+    ),
+    GetPage(
       name: Routes.kelolaPengaduan,
       page: () => const KelolaPengaduanView(),
       binding: KelolaPengaduanBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.adminPengajuanPindah,
+      page: () => const AdminPengajuanPindahView(),
+      binding: AdminPengajuanPindahBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.adminPengajuanPindahDetail,
+      page: () => const AdminPengajuanPindahDetailView(),
+      // Use existing controller so no new binding needed, or use the same binding
       middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
     ),
     GetPage(

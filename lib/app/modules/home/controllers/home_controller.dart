@@ -122,6 +122,11 @@ class HomeController extends GetxController {
     refreshAllData();
   }
 
+  void navigateToAdminPengajuanPindah() async {
+    await Get.toNamed('/admin-pengajuan-pindah');
+    refreshAllData();
+  }
+
   void navigateToVerifikasi() async {
     await Get.toNamed('/kelola-tagihan', arguments: {'tab': 'verifikasi'});
     refreshAllData();
