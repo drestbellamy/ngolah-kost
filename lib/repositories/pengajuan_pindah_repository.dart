@@ -9,12 +9,12 @@ class PengajuanPindahRepository extends BaseRepository {
   final SupabaseClient _supabase;
 
   PengajuanPindahRepository([SupabaseClient? supabase])
-      : _supabase = supabase ?? Supabase.instance.client;
+    : _supabase = supabase ?? Supabase.instance.client;
 
-  /// Fetch all available (kosong) rooms across all kosts
-  Future<List<Map<String, dynamic>>> getKamarKosong() async {
+  /// Fetch all rooms across all kosts
+  Future<List<Map<String, dynamic>>> getSemuaKamar() async {
     try {
-      logDebug('Fetching available rooms');
+      logDebug('Fetching all rooms');
       final response = await _supabase
           .from('kamar')
           .select('''
@@ -24,16 +24,15 @@ class PengajuanPindahRepository extends BaseRepository {
               alamat
             )
           ''')
-          .eq('status', 'kosong')
           .order('no_kamar');
-      
+
       return List<Map<String, dynamic>>.from(response);
     } on PostgrestException catch (e) {
-      logError('Failed to fetch available rooms', {'error': e.message});
+      logError('Failed to fetch all rooms', {'error': e.message});
       throw Exception(formatPostgrestError(e));
     } catch (e) {
-      logError('Unexpected error fetching available rooms', {'error': e.toString()});
-      throw Exception('Gagal memuat daftar kamar kosong.');
+      logError('Unexpected error fetching all rooms', {'error': e.toString()});
+      throw Exception('Gagal memuat daftar kamar.');
     }
   }
 
@@ -47,7 +46,7 @@ class PengajuanPindahRepository extends BaseRepository {
           .eq('user_id', userId)
           .eq('status', 'aktif')
           .maybeSingle();
-      
+
       return response;
     } on PostgrestException catch (e) {
       logError('Failed to fetch active penghuni', {'error': e.message});
@@ -65,9 +64,9 @@ class PengajuanPindahRepository extends BaseRepository {
     try {
       logDebug('Submitting move request', {
         'penghuniId': penghuniId,
-        'kamarTujuanId': kamarTujuanId
+        'kamarTujuanId': kamarTujuanId,
       });
-      
+
       await _supabase.from('pengajuan_pindah').insert({
         'penghuni_id': penghuniId,
         'kamar_tujuan_id': kamarTujuanId,
@@ -75,7 +74,7 @@ class PengajuanPindahRepository extends BaseRepository {
         'alasan': alasan,
         'status': 'menunggu', // Default status
       });
-      
+
       logInfo('Successfully submitted move request');
     } on PostgrestException catch (e) {
       logError('Failed to submit move request', {'error': e.message});
@@ -99,7 +98,7 @@ class PengajuanPindahRepository extends BaseRepository {
           .eq('penghuni_id', penghuniId)
           .eq('status', 'menunggu')
           .maybeSingle();
-      
+
       if (response == null) return null;
       return PengajuanPindahModel.fromMap(response);
     } on PostgrestException catch (e) {

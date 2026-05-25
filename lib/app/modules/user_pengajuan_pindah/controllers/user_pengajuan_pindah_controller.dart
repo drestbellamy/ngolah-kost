@@ -10,13 +10,13 @@ class UserPengajuanPindahController extends GetxController {
   final authController = Get.find<AuthController>();
 
   UserPengajuanPindahController({PengajuanPindahRepository? repository})
-      : _repository = repository ?? PengajuanPindahRepository();
+    : _repository = repository ?? PengajuanPindahRepository();
 
   // State
   final isLoading = false.obs;
   final isSubmitting = false.obs;
   final errorMessage = ''.obs;
-  
+
   // Data
   final availableRooms = <Map<String, dynamic>>[].obs;
   final groupedKosts = <String, Map<String, dynamic>>{}.obs;
@@ -68,8 +68,7 @@ class UserPengajuanPindahController extends GetxController {
       }
 
       // 3. Load available rooms
-      await loadAvailableRooms();
-
+      await loadSemuaKamar();
     } catch (e) {
       errorMessage.value = e.toString();
     } finally {
@@ -77,9 +76,9 @@ class UserPengajuanPindahController extends GetxController {
     }
   }
 
-  Future<void> loadAvailableRooms() async {
+  Future<void> loadSemuaKamar() async {
     try {
-      final rooms = await _repository.getKamarKosong();
+      final rooms = await _repository.getSemuaKamar();
       availableRooms.value = rooms;
 
       final groups = <String, Map<String, dynamic>>{};
@@ -99,7 +98,6 @@ class UserPengajuanPindahController extends GetxController {
         (groups[kostId]!['rooms'] as List).add(room);
       }
       groupedKosts.value = groups;
-
     } catch (e) {
       errorMessage.value = 'Gagal memuat daftar kamar: ${e.toString()}';
     }
@@ -147,10 +145,9 @@ class UserPengajuanPindahController extends GetxController {
       );
 
       ToastHelper.showSuccess('Pengajuan pindah kamar berhasil dikirim');
-      
+
       // Refresh state to show pending request
       await _initData();
-
     } catch (e) {
       ToastHelper.showError('Gagal mengirim pengajuan: ${e.toString()}');
     } finally {
