@@ -8,6 +8,7 @@ import '../../../../repositories/tagihan_repository.dart';
 import '../../../../repositories/metode_pembayaran_repository.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../models/payment_detail_model.dart';
+import '../../../core/utils/toast_helper.dart';
 
 class UserHistoryPembayaranController extends GetxController {
   final PenghuniRepository _penghuniRepo;
@@ -242,13 +243,9 @@ class UserHistoryPembayaranController extends GetxController {
       );
 
       if (payment == null) {
-        Get.snackbar(
-          'Error',
+        ToastHelper.showError(
           'Data pembayaran tidak ditemukan',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFFFEF2F2),
-          colorText: const Color(0xFFDC2626),
-          margin: const EdgeInsets.all(16),
+          title: 'Error',
         );
         return null;
       }
@@ -278,13 +275,9 @@ class UserHistoryPembayaranController extends GetxController {
             : null,
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'Gagal memuat detail pembayaran: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFFEF2F2),
-        colorText: const Color(0xFFDC2626),
-        margin: const EdgeInsets.all(16),
+        title: 'Error',
       );
       return null;
     }

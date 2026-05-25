@@ -2,8 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../enums/toast_type.dart';
 import '../widgets/toast_container.dart';
+import '../../modules/riwayat_notifikasi/controllers/riwayat_notifikasi_controller.dart';
 
 class ToastHelper {
+  static void _addToHistory(String title, String message, ToastType type) {
+    Future.microtask(() {
+      String notifType = 'pengumuman';
+      if (type == ToastType.error || type == ToastType.warning) {
+        notifType = 'pengaduan';
+      } else if (title.toLowerCase().contains('tagihan') || title.toLowerCase().contains('pembayaran')) {
+        notifType = 'tagihan';
+      } else if (title.toLowerCase().contains('penghuni')) {
+        notifType = 'penghuni';
+      }
+      RiwayatNotifikasiController.addNotification(title, message, notifType);
+    });
+  }
+
   /// Show success toast
   static void showSuccess(
     String message, {
@@ -11,6 +26,7 @@ class ToastHelper {
     Duration duration = const Duration(seconds: 3),
     IconData? icon,
   }) {
+    _addToHistory(title ?? 'Berhasil', message, ToastType.success);
     Get.showSnackbar(
       GetSnackBar(
         messageText: _buildToastContent(
@@ -38,6 +54,7 @@ class ToastHelper {
     Duration duration = const Duration(seconds: 3),
     IconData? icon,
   }) {
+    _addToHistory(title ?? 'Gagal', message, ToastType.error);
     Get.showSnackbar(
       GetSnackBar(
         messageText: _buildToastContent(
@@ -65,6 +82,7 @@ class ToastHelper {
     Duration duration = const Duration(seconds: 3),
     IconData? icon,
   }) {
+    _addToHistory(title ?? 'Peringatan', message, ToastType.warning);
     Get.showSnackbar(
       GetSnackBar(
         messageText: _buildToastContent(
@@ -92,6 +110,7 @@ class ToastHelper {
     Duration duration = const Duration(seconds: 3),
     IconData? icon,
   }) {
+    _addToHistory(title ?? 'Informasi', message, ToastType.info);
     Get.showSnackbar(
       GetSnackBar(
         messageText: _buildToastContent(
@@ -142,6 +161,8 @@ class ToastHelper {
         defaultTitle = 'Information';
         break;
     }
+
+    _addToHistory(title ?? defaultTitle, message, type);
 
     Get.showSnackbar(
       GetSnackBar(

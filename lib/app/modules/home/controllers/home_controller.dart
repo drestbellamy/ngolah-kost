@@ -3,6 +3,7 @@ import '../../kelola_pengumuman/bindings/kelola_pengumuman_binding.dart';
 import '../../kelola_pengumuman/views/kelola_pengumuman_view.dart';
 import '../../ringkasan_keuangan/bindings/ringkasan_keuangan_binding.dart';
 import '../../ringkasan_keuangan/views/ringkasan_keuangan_view.dart';
+import '../../riwayat_notifikasi/controllers/riwayat_notifikasi_controller.dart';
 import '../../../../repositories/repository_factory.dart';
 import '../../../../repositories/dashboard_repository.dart';
 import '../views/widgets/ringkasan_keuangan_widget.dart';
@@ -23,6 +24,9 @@ class HomeController extends GetxController {
   final tagihanBelumBayar = 0.obs;
   final menungguVerifikasi = 0.obs;
   final isLoading = true.obs;
+
+  bool get hasUnreadNotifications => 
+      RiwayatNotifikasiController.sharedNotifications.any((n) => !n.isRead);
 
   @override
   void onInit() {
