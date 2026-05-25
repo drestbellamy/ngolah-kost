@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/utils/responsive_utils.dart';
 import '../../../../core/values/values.dart';
+import '../../../../core/utils/toast_helper.dart';
 import '../../controllers/user_history_pembayaran_controller.dart';
 import 'payment_proof_modal.dart';
 
@@ -15,13 +16,9 @@ class PaymentCard extends StatelessWidget {
     final paymentId = payment['id']?.toString() ?? '';
 
     if (paymentId.isEmpty) {
-      Get.snackbar(
-        'Error',
+      ToastHelper.showError(
         'ID pembayaran tidak valid',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: const Color(0xFFFEF2F2),
-        colorText: const Color(0xFFDC2626),
-        margin: const EdgeInsets.all(16),
+        title: 'Error',
       );
       return;
     }

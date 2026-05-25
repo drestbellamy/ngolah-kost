@@ -21,57 +21,50 @@ class NotificationItem {
 
 class RiwayatNotifikasiController extends GetxController {
   final isLoading = true.obs;
-  final notifications = <NotificationItem>[].obs;
+  
+  // Shared static list for notifications to persist across views
+  static final RxList<NotificationItem> sharedNotifications = <NotificationItem>[].obs;
+
+  static void addNotification(String title, String message, String type) {
+    sharedNotifications.insert(
+      0,
+      NotificationItem(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: title,
+        message: message,
+        date: DateTime.now(),
+        type: type,
+        isRead: false,
+      ),
+    );
+  }
+
+  // Getter for the view to observe
+  RxList<NotificationItem> get notifications => sharedNotifications;
 
   @override
   void onInit() {
     super.onInit();
-    loadNotifications();
+    Future.microtask(() {
+      _cleanupOldNotifications();
+      loadNotifications();
+    });
+  }
+
+  void _cleanupOldNotifications() {
+    final thirtyDaysAgo = DateTime.now().subtract(const Duration(days: 30));
+    // Hapus notifikasi yang sudah dibaca dan usianya lebih dari 30 hari
+    sharedNotifications.removeWhere(
+      (n) => n.isRead && n.date.isBefore(thirtyDaysAgo),
+    );
   }
 
   void loadNotifications() async {
     try {
       isLoading.value = true;
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Mock data based on requested logic
-      notifications.assignAll([
-        NotificationItem(
-          id: '1',
-          title: 'Verifikasi Pembayaran',
-          message:
-              'Penghuni Budi mengirimkan bukti pembayaran tagihan bulan ini.',
-          date: DateTime.now().subtract(const Duration(minutes: 30)),
-          type: 'tagihan',
-          isRead: false,
-        ),
-        NotificationItem(
-          id: '2',
-          title: 'Pengaduan Baru',
-          message: 'AC di kamar 102 tidak dingin.',
-          date: DateTime.now().subtract(const Duration(hours: 2)),
-          type: 'pengaduan',
-          isRead: false,
-        ),
-        NotificationItem(
-          id: '3',
-          title: 'Penghuni Baru',
-          message: 'Siti telah terdaftar sebagai penghuni baru kamar 201.',
-          date: DateTime.now().subtract(const Duration(days: 1)),
-          type: 'penghuni',
-          isRead: true,
-        ),
-        NotificationItem(
-          id: '4',
-          title: 'Pengumuman Dibuat',
-          message:
-              'Pengumuman "Kerja Bakti Mingguan" berhasil dikirim ke semua penghuni.',
-          date: DateTime.now().subtract(const Duration(days: 2)),
-          type: 'pengumuman',
-          isRead: true,
-        ),
-      ]);
+      // TODO: Fetch real data from the database here
+      // final data = await supabase.from('notifications').select()...
+      // sharedNotifications.assignAll(data);
     } catch (e) {
       ToastHelper.showError('Gagal memuat notifikasi: $e');
     } finally {
@@ -80,10 +73,10 @@ class RiwayatNotifikasiController extends GetxController {
   }
 
   void markAsRead(String id) {
-    final index = notifications.indexWhere((n) => n.id == id);
-    if (index != -1 && !notifications[index].isRead) {
-      final notif = notifications[index];
-      notifications[index] = NotificationItem(
+    final index = sharedNotifications.indexWhere((n) => n.id == id);
+    if (index != -1 && !sharedNotifications[index].isRead) {
+      final notif = sharedNotifications[index];
+      sharedNotifications[index] = NotificationItem(
         id: notif.id,
         title: notif.title,
         message: notif.message,
@@ -94,7 +87,12 @@ class RiwayatNotifikasiController extends GetxController {
     }
   }
 
+  void removeNotification(String id) {
+    sharedNotifications.removeWhere((n) => n.id == id);
+  }
+
   void handleNotificationTap(NotificationItem notif) {
+    // Ubah notifikasi menjadi sudah dibaca (warna putih) saat diklik, bukan menghapusnya
     markAsRead(notif.id);
     switch (notif.type) {
       case 'tagihan':
