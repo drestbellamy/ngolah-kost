@@ -10,6 +10,8 @@ class HapusKamarDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -58,7 +60,7 @@ class HapusKamarDialog extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF6B7280),
                       side: const BorderSide(
-                        color: Color(0xFFE5E7EB),
+                        color: Color(0xFFD1D5DB), // Warna abu-abu
                         width: 1.5,
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/values/values.dart';
+import '../../../core/utils/toast_helper.dart';
 import '../controllers/detail_keuangan_kost_controller.dart';
 import 'widgets/chart_card.dart';
 import 'widgets/detail_kost_summary_card.dart';
@@ -427,14 +428,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                             child: TextButton(
                               onPressed: () {
                                 // TODO: Navigate to full list
-                                Get.snackbar(
-                                  'Info',
+                                ToastHelper.showInfo(
                                   'Menampilkan ${controller.pemasukanList.length} data pemasukan',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: const Color(0xFF6B8E7A),
-                                  colorText: Colors.white,
-                                  margin: const EdgeInsets.all(16),
-                                  borderRadius: 8,
+                                  title: 'Info',
                                 );
                               },
                               style: TextButton.styleFrom(
@@ -808,14 +804,9 @@ class DetailKeuanganKostView extends GetView<DetailKeuanganKostController> {
                             child: TextButton(
                               onPressed: () {
                                 // TODO: Navigate to full list
-                                Get.snackbar(
-                                  'Info',
+                                ToastHelper.showInfo(
                                   'Menampilkan ${controller.pengeluaranList.length} data pengeluaran',
-                                  snackPosition: SnackPosition.BOTTOM,
-                                  backgroundColor: const Color(0xFF6B8E7A),
-                                  colorText: Colors.white,
-                                  margin: const EdgeInsets.all(16),
-                                  borderRadius: 8,
+                                  title: 'Info',
                                 );
                               },
                               style: TextButton.styleFrom(

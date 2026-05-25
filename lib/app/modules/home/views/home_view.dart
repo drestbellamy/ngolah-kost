@@ -47,19 +47,22 @@ class HomeView extends GetView<HomeController> {
                         color: Colors.white,
                         size: context.iconSize(26),
                       ),
-                      Positioned(
-                        top: 10,
-                        right: 12,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE56A69),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white, width: 1.5),
-                          ),
-                        ),
-                      ),
+                      Obx(() => controller.hasUnreadNotifications
+                          ? Positioned(
+                              top: 10,
+                              right: 12,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE56A69),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: Colors.white, width: 1.5),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink()),
                     ],
                   ),
                 ),
