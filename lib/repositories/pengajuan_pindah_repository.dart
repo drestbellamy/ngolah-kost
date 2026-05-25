@@ -106,4 +106,54 @@ class PengajuanPindahRepository extends BaseRepository {
       throw Exception(formatPostgrestError(e));
     }
   }
+
+  /// Get all move requests for admin
+  Future<List<PengajuanPindahModel>> getAllPengajuan() async {
+    try {
+      logDebug('Fetching all move requests');
+      final response = await _supabase
+          .from('pengajuan_pindah')
+          .select('''
+            *,
+            kamar:kamar_tujuan_id (
+              no_kamar,
+              harga,
+              kost:kost_id (nama_kost, alamat)
+            )
+          ''')
+          .order('created_at', ascending: false);
+
+      return (response as List)
+          .map((item) => PengajuanPindahModel.fromMap(item))
+          .toList();
+    } on PostgrestException catch (e) {
+      logError('Failed to fetch all move requests', {'error': e.message});
+      throw Exception(formatPostgrestError(e));
+    }
+  }
+
+  /// Update the status of a move request
+  Future<void> updateStatusPengajuan(String id, String status, {String? keteranganAdmin}) async {
+    try {
+      logDebug('Updating move request status', {'id': id, 'status': status});
+      
+      final Map<String, dynamic> updateData = {'status': status};
+      if (keteranganAdmin != null) {
+        updateData['keterangan_admin'] = keteranganAdmin;
+      }
+      
+      await _supabase
+          .from('pengajuan_pindah')
+          .update(updateData)
+          .eq('id', id);
+          
+      // Note: Changing actual room logic should be handled depending on business logic.
+      // If approved, you might need to update the penghuni's room to the kamar_tujuan_id.
+          
+      logInfo('Successfully updated move request status');
+    } on PostgrestException catch (e) {
+      logError('Failed to update move request status', {'error': e.message});
+      throw Exception(formatPostgrestError(e));
+    }
+  }
 }

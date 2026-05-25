@@ -13,6 +13,12 @@ class PengajuanPindahModel {
   final String? noKamarTujuan;
   final String? namaKostTujuan;
   final String? namaPenghuni;
+  final String? noTeleponPenghuni;
+  final String? noKamarAsal;
+  final String? namaKostAsal;
+  final String? alamatKostAsal;
+  final String? alamatKostTujuan;
+  final int? hargaKamarTujuan;
 
   PengajuanPindahModel({
     required this.id,
@@ -27,6 +33,12 @@ class PengajuanPindahModel {
     this.noKamarTujuan,
     this.namaKostTujuan,
     this.namaPenghuni,
+    this.noTeleponPenghuni,
+    this.noKamarAsal,
+    this.namaKostAsal,
+    this.alamatKostAsal,
+    this.alamatKostTujuan,
+    this.hargaKamarTujuan,
   });
 
   factory PengajuanPindahModel.fromMap(Map<String, dynamic> map) {
@@ -34,7 +46,20 @@ class PengajuanPindahModel {
     final kamarTujuan = map['kamar'] as Map<String, dynamic>?;
     final kostTujuan = kamarTujuan?['kost'] as Map<String, dynamic>?;
     final penghuni = map['penghuni'] as Map<String, dynamic>?;
-    final user = penghuni?['users'] as Map<String, dynamic>?;
+    
+    // Parse users safely
+    Map<String, dynamic>? user;
+    if (penghuni?['users'] is Map) {
+      user = penghuni?['users'] as Map<String, dynamic>;
+    } else if (penghuni?['users'] is List && (penghuni?['users'] as List).isNotEmpty) {
+      user = (penghuni?['users'] as List).first as Map<String, dynamic>;
+    }
+
+    final kamarAsal = penghuni?['kamar'] as Map<String, dynamic>?;
+    final kostAsal = kamarAsal?['kost'] as Map<String, dynamic>?;
+
+    final hargaKamar = kamarTujuan?['harga'];
+    final parsedHarga = hargaKamar is int ? hargaKamar : int.tryParse(hargaKamar?.toString() ?? '');
 
     return PengajuanPindahModel(
       id: map['id']?.toString() ?? '',
@@ -55,6 +80,12 @@ class PengajuanPindahModel {
       noKamarTujuan: kamarTujuan?['no_kamar']?.toString(),
       namaKostTujuan: kostTujuan?['nama_kost']?.toString(),
       namaPenghuni: user?['nama']?.toString(),
+      noTeleponPenghuni: user?['no_tlpn']?.toString(),
+      noKamarAsal: kamarAsal?['no_kamar']?.toString(),
+      namaKostAsal: kostAsal?['nama_kost']?.toString(),
+      alamatKostAsal: kostAsal?['alamat']?.toString(),
+      alamatKostTujuan: kostTujuan?['alamat']?.toString(),
+      hargaKamarTujuan: parsedHarga,
     );
   }
 
