@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/widgets/custom_header.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/values/values.dart';
@@ -14,6 +13,7 @@ import 'widgets/contact_management_card.dart';
 import 'widgets/pengaduan_card.dart';
 import 'widgets/peta_kost_card.dart';
 import 'widgets/pengajuan_pindah_card.dart';
+import 'widgets/user_home_shimmer.dart';
 
 class UserHomeView extends GetView<UserHomeController> {
   const UserHomeView({super.key});
@@ -79,7 +79,28 @@ class UserHomeView extends GetView<UserHomeController> {
       backgroundColor: const Color(0xFFF7F9F8),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return Column(
+            children: [
+              SafeArea(
+                top: false,
+                bottom: false,
+                child: CustomHeader(
+                  title: 'Hallo!',
+                  subtitle: 'Selamat datang kembali',
+                  showBackButton: false,
+                  trailing: Container(
+                    width: context.iconSize(48),
+                    height: context.iconSize(48),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ),
+              const Expanded(child: UserHomeShimmer()),
+            ],
+          );
         }
 
         if (controller.errorMessage.value.isNotEmpty) {
@@ -135,42 +156,21 @@ class UserHomeView extends GetView<UserHomeController> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        RoomInfoCard(controller: controller)
-                            .animate()
-                            .fadeIn(duration: 400.ms, delay: 100.ms)
-                            .slideY(begin: 0.2, end: 0),
+                        RoomInfoCard(controller: controller),
                         SizedBox(height: context.spacing(20)),
                         if (controller.hasDuePayment.value) ...[
-                          PaymentDueAlert(controller: controller)
-                              .animate()
-                              .fadeIn(duration: 400.ms, delay: 200.ms)
-                              .slideY(begin: 0.2, end: 0),
+                          PaymentDueAlert(controller: controller),
                           SizedBox(height: context.spacing(24)),
                         ],
-                        PaymentSummaryCard(controller: controller)
-                            .animate()
-                            .fadeIn(duration: 400.ms, delay: 300.ms)
-                            .slideY(begin: 0.2, end: 0),
+                        PaymentSummaryCard(controller: controller),
                         SizedBox(height: context.spacing(24)),
-                        const PengaduanCard()
-                            .animate()
-                            .fadeIn(duration: 400.ms, delay: 400.ms)
-                            .slideY(begin: 0.2, end: 0),
+                        const PengaduanCard(),
                         SizedBox(height: context.spacing(24)),
-                        const PengajuanPindahCard()
-                            .animate()
-                            .fadeIn(duration: 400.ms, delay: 425.ms)
-                            .slideY(begin: 0.2, end: 0),
+                        const PengajuanPindahCard(),
                         SizedBox(height: context.spacing(24)),
-                        const PetaKostCard()
-                            .animate()
-                            .fadeIn(duration: 400.ms, delay: 450.ms)
-                            .slideY(begin: 0.2, end: 0),
+                        const PetaKostCard(),
                         SizedBox(height: context.spacing(24)),
-                        ContactManagementCard(controller: controller)
-                            .animate()
-                            .fadeIn(duration: 400.ms, delay: 500.ms)
-                            .slideY(begin: 0.2, end: 0),
+                        ContactManagementCard(controller: controller),
                         SizedBox(height: context.spacing(24)),
                       ],
                     ),

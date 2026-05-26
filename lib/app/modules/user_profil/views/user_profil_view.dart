@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../controllers/user_profil_controller.dart';
 import '../../../core/widgets/user_bottom_navbar.dart';
 import '../../../core/values/values.dart';
@@ -9,6 +8,7 @@ import 'widgets/contract_info_section.dart';
 import 'widgets/profile_header.dart';
 import 'widgets/room_info_section.dart';
 import 'widgets/tenant_info_section.dart';
+import 'widgets/user_profil_shimmer.dart';
 
 class UserProfilView extends GetView<UserProfilController> {
   const UserProfilView({super.key});
@@ -19,7 +19,7 @@ class UserProfilView extends GetView<UserProfilController> {
       backgroundColor: const Color(0xFFF7F9F8),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const UserProfilShimmer();
         }
 
         if (controller.errorMessage.value.isNotEmpty) {
@@ -124,25 +124,13 @@ class UserProfilView extends GetView<UserProfilController> {
                   ),
                   child: Column(
                     children: [
-                      const RoomInfoSection()
-                          .animate()
-                          .fadeIn(duration: 400.ms, delay: 100.ms)
-                          .slideY(begin: 0.2, end: 0),
+                      const RoomInfoSection(),
                       SizedBox(height: context.spacing(16)),
-                      const TenantInfoSection()
-                          .animate()
-                          .fadeIn(duration: 400.ms, delay: 200.ms)
-                          .slideY(begin: 0.2, end: 0),
+                      const TenantInfoSection(),
                       SizedBox(height: context.spacing(16)),
-                      const ContractInfoSection()
-                          .animate()
-                          .fadeIn(duration: 400.ms, delay: 300.ms)
-                          .slideY(begin: 0.2, end: 0),
+                      const ContractInfoSection(),
                       SizedBox(height: context.spacing(24)),
-                      _buildLogoutButton(context)
-                          .animate()
-                          .fadeIn(duration: 400.ms, delay: 400.ms)
-                          .slideY(begin: 0.2, end: 0),
+                      _buildLogoutButton(context),
                       SizedBox(height: context.spacing(24)),
                     ],
                   ),
