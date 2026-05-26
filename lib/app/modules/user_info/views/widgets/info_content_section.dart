@@ -7,6 +7,7 @@ import '../../../../core/controllers/auth_controller.dart';
 import '../../../../routes/app_routes.dart';
 import 'pengumuman_card.dart';
 import 'peraturan_card.dart';
+import 'user_info_shimmer.dart';
 
 class InfoContentSection extends GetView<UserInfoController> {
   const InfoContentSection({super.key});
@@ -52,12 +53,7 @@ class InfoContentSection extends GetView<UserInfoController> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.isLoading.value) {
-        return const Padding(
-          padding: EdgeInsets.all(48.0),
-          child: Center(
-            child: CircularProgressIndicator(color: Color(0xFF6B8E7A)),
-          ),
-        );
+        return const UserInfoShimmer();
       }
 
       if (controller.errorMessage.value.isNotEmpty) {

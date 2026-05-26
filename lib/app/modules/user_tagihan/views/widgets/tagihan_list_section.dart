@@ -37,14 +37,10 @@ class TagihanListSection extends GetView<UserTagihanController> {
       padding: context.allPadding(24),
       sliver: Obx(() {
         if (controller.isLoading.value) {
-          return SliverToBoxAdapter(
-            child: Center(
-              child: Padding(
-                padding: context.allPadding(40),
-                child: const CircularProgressIndicator(
-                  color: Color(0xFF6B8E7A),
-                ),
-              ),
+          return SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) => _buildTagihanItemShimmer(context, index),
+              childCount: 5,
             ),
           );
         }
@@ -156,6 +152,161 @@ class TagihanListSection extends GetView<UserTagihanController> {
           }, childCount: controller.tagihanBelumDibayar.length),
         );
       }),
+    );
+  }
+
+  Widget _buildTagihanItemShimmer(BuildContext context, int index) {
+    return Container(
+      margin: EdgeInsets.only(bottom: context.spacing(16)),
+      padding: context.allPadding(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(context.borderRadius(16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: _ShimmerEffect(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: context.screenWidth * 0.3,
+                      height: context.fontSize(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    SizedBox(height: context.spacing(6)),
+                    Container(
+                      width: context.screenWidth * 0.25,
+                      height: context.fontSize(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: 80,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(context.borderRadius(20)),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: context.spacing(12)),
+            const Divider(),
+            SizedBox(height: context.spacing(12)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: context.screenWidth * 0.2,
+                  height: context.fontSize(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                Container(
+                  width: context.screenWidth * 0.3,
+                  height: context.fontSize(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: context.spacing(12)),
+            Container(
+              width: double.infinity,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(context.borderRadius(8)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ShimmerEffect extends StatefulWidget {
+  final Widget child;
+
+  const _ShimmerEffect({required this.child});
+
+  @override
+  State<_ShimmerEffect> createState() => _ShimmerEffectState();
+}
+
+class _ShimmerEffectState extends State<_ShimmerEffect>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat();
+
+    _animation = Tween<double>(begin: -2, end: 2).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOutSine),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return ShaderMask(
+          shaderCallback: (bounds) {
+            return LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: const [
+                Color(0xFFE0E0E0),
+                Color(0xFFF5F5F5),
+                Color(0xFFE0E0E0),
+              ],
+              stops: [
+                _animation.value - 1,
+                _animation.value,
+                _animation.value + 1,
+              ],
+            ).createShader(bounds);
+          },
+          child: widget.child,
+        );
+      },
     );
   }
 }
