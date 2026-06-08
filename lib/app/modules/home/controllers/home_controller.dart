@@ -24,14 +24,28 @@ class HomeController extends GetxController {
   final tagihanBelumBayar = 0.obs;
   final menungguVerifikasi = 0.obs;
   final isLoading = true.obs;
-
-  bool get hasUnreadNotifications => 
-      RiwayatNotifikasiController.sharedNotifications.any((n) => !n.isRead);
+  final hasUnreadNotifications = false.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadDashboardData();
+    _updateNotificationStatus();
+  }
+
+  void _updateNotificationStatus() {
+    // Update notification status
+    if (Get.isRegistered<RiwayatNotifikasiController>()) {
+      final controller = Get.find<RiwayatNotifikasiController>();
+      hasUnreadNotifications.value = controller.notifications.any((n) => !n.isRead);
+      
+      // Listen to changes in notifications
+      ever(controller.notifications, (_) {
+        hasUnreadNotifications.value = controller.notifications.any((n) => !n.isRead);
+      });
+    } else {
+      hasUnreadNotifications.value = false;
+    }
   }
 
   Future<void> loadDashboardData() async {
@@ -135,10 +149,13 @@ class HomeController extends GetxController {
   void navigateToRiwayatNotifikasi() async {
     await Get.toNamed('/riwayat-notifikasi');
     refreshAllData();
+    // Update notification status after returning from notification page
+    _updateNotificationStatus();
   }
 
   void refreshAllData() {
     loadDashboardData();
+    _updateNotificationStatus();
 
     // Refresh the Ringkasan Keuangan widget if it's already in the widget tree
     if (Get.isRegistered<RingkasanKeuanganWidgetController>()) {

@@ -47,7 +47,7 @@ class HomeView extends GetView<HomeController> {
                         color: Colors.white,
                         size: context.iconSize(26),
                       ),
-                      Obx(() => controller.hasUnreadNotifications
+                      Obx(() => controller.hasUnreadNotifications.value
                           ? Positioned(
                               top: 10,
                               right: 12,
