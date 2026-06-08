@@ -19,7 +19,7 @@ class PaymentSummaryCard extends StatelessWidget {
           style: AppTextStyles.header18
               .colored(AppColors.textPrimary)
               .copyWith(
-                fontSize: context.fontSize(20),
+                fontSize: context.fontSize(18),
                 fontWeight: FontWeight.bold,
               ),
         ),
