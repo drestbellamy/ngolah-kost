@@ -2,86 +2,74 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/values/values.dart';
 import '../../../../routes/app_routes.dart';
+import '../../../../core/utils/responsive_utils.dart';
 
 class PengaduanCard extends StatelessWidget {
   const PengaduanCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Layanan Pengaduan',
-          style: AppTextStyles.header18.colored(AppColors.textPrimary),
+    return GestureDetector(
+      onTap: () => Get.toNamed(Routes.userPengaduan),
+      child: Container(
+        padding: context.allPadding(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(context.borderRadius(16)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        GestureDetector(
-          onTap: () => Get.toNamed(Routes.userPengaduan),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color.fromARGB(255, 255, 112, 112),
-                  Color.fromARGB(255, 255, 55, 55),
+        child: Row(
+          children: [
+            Container(
+              padding: context.allPadding(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE3F2FD),
+                borderRadius: BorderRadius.circular(context.borderRadius(12)),
+              ),
+              child: Icon(
+                Icons.build_outlined,
+                color: const Color(0xFF2196F3),
+                size: context.iconSize(28),
+              ),
+            ),
+            SizedBox(width: context.spacing(16)),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Lapor Kendala',
+                    style: AppTextStyles.header16
+                        .colored(const Color(0xFF1F2937))
+                        .copyWith(
+                          fontSize: context.fontSize(16),
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                  SizedBox(height: context.spacing(4)),
+                  Text(
+                    'Ada fasilitas yang rusak?',
+                    style: AppTextStyles.body12
+                        .colored(const Color(0xFF6B7280))
+                        .copyWith(fontSize: context.fontSize(13)),
+                  ),
                 ],
               ),
-              borderRadius: BorderRadius.circular(16),
             ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.report_problem_outlined,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Laporkan Kendala',
-                        style: AppTextStyles.header16.colored(Colors.white),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Fasilitas kamar bermasalah? Laporkan sekarang',
-                        style: AppTextStyles.body12.colored(
-                          Colors.white.withValues(alpha: 0.9),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Colors.white,
-                    size: 16,
-                  ),
-                ),
-              ],
+            Icon(
+              Icons.chevron_right,
+              color: const Color(0xFF9CA3AF),
+              size: context.iconSize(24),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

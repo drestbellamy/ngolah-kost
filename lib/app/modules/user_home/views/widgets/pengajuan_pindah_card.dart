@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../routes/app_routes.dart';
+import '../../../../core/values/values.dart';
+import '../../../../core/utils/responsive_utils.dart';
 
 class PengajuanPindahCard extends StatelessWidget {
   const PengajuanPindahCard({super.key});
@@ -11,59 +13,60 @@ class PengajuanPindahCard extends StatelessWidget {
       onTap: () => Get.toNamed(Routes.userPengajuanPindah),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
+        padding: context.allPadding(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(context.borderRadius(16)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 15,
-              offset: const Offset(0, 4),
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: context.allPadding(14),
               decoration: BoxDecoration(
-                color: const Color(0xFF0D9488).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: const Color(0xFFFFF7E6),
+                borderRadius: BorderRadius.circular(context.borderRadius(12)),
               ),
-              child: const Icon(
-                Icons.swap_horiz,
-                color: Color(0xFF0D9488),
-                size: 28,
+              child: Icon(
+                Icons.sync_alt_outlined,
+                color: const Color(0xFFF2A65A),
+                size: context.iconSize(28),
               ),
             ),
-            const SizedBox(width: 16),
-            const Expanded(
+            SizedBox(width: context.spacing(16)),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Pindah Kamar/Kost',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2F2F2F),
-                    ),
+                    'Pindah Kamar',
+                    style: AppTextStyles.header16
+                        .colored(const Color(0xFF1F2937))
+                        .copyWith(
+                          fontSize: context.fontSize(16),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: context.spacing(4)),
                   Text(
-                    'Ajukan perpindahan ke kamar lain',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF6B7280),
-                    ),
+                    'Ajukan perpindahan kamar lain',
+                    style: AppTextStyles.body12
+                        .colored(const Color(0xFF6B7280))
+                        .copyWith(fontSize: context.fontSize(13)),
                   ),
                 ],
               ),
             ),
-            const Icon(
+            Icon(
               Icons.chevron_right,
-              color: Color(0xFF9CA3AF),
+              color: const Color(0xFF9CA3AF),
+              size: context.iconSize(24),
             ),
           ],
         ),
