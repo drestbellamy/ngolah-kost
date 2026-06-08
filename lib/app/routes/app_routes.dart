@@ -32,4 +32,5 @@ abstract class Routes {
   static const adminPengajuanPindah = '/admin-pengajuan-pindah';
   static const adminPengajuanPindahDetail = '/admin-pengajuan-pindah-detail';
   static const riwayatNotifikasi = '/riwayat-notifikasi';
+  static const riwayatPenghuni = '/riwayat-penghuni';
 }

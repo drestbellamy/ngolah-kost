@@ -59,6 +59,8 @@ import '../modules/admin_pengajuan_pindah/views/admin_pengajuan_pindah_view.dart
 import '../modules/admin_pengajuan_pindah/views/admin_pengajuan_pindah_detail_view.dart';
 import '../modules/riwayat_notifikasi/bindings/riwayat_notifikasi_binding.dart';
 import '../modules/riwayat_notifikasi/views/riwayat_notifikasi_view.dart';
+import '../modules/riwayat_penghuni/bindings/riwayat_penghuni_binding.dart';
+import '../modules/riwayat_penghuni/views/riwayat_penghuni_view.dart';
 import '../core/middleware/auth_middleware.dart';
 import '../core/middleware/role_middleware.dart';
 import 'app_routes.dart';
@@ -279,6 +281,12 @@ class AppPages {
       name: Routes.riwayatNotifikasi,
       page: () => const RiwayatNotifikasiView(),
       binding: RiwayatNotifikasiBinding(),
+      middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
+    ),
+    GetPage(
+      name: Routes.riwayatPenghuni,
+      page: () => const RiwayatPenghuniView(),
+      binding: RiwayatPenghuniBinding(),
       middlewares: [AuthMiddleware(), AdminOnlyMiddleware()],
     ),
   ];

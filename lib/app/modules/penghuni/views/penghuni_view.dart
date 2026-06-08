@@ -6,6 +6,8 @@ import '../models/penghuni_model.dart';
 import '../../../core/widgets/admin_bottom_navbar.dart';
 import '../../../core/values/values.dart';
 import '../../../core/utils/responsive_utils.dart';
+import '../../riwayat_penghuni/views/riwayat_penghuni_view.dart';
+import '../../riwayat_penghuni/bindings/riwayat_penghuni_binding.dart';
 import 'widgets/penghuni_shimmer_widget.dart';
 
 class PenghuniView extends GetView<PenghuniController> {
@@ -81,65 +83,31 @@ class PenghuniView extends GetView<PenghuniController> {
                       context.padding(24),
                       context.padding(24),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Kelola Penghuni',
-                                  style: AppTextStyles.headlineSmall
-                                      .weighted(FontWeight.w700)
-                                      .colored(Colors.white)
-                                      .copyWith(fontSize: context.fontSize(24)),
-                                ),
-                                SizedBox(height: context.spacing(4)),
-                                Obx(
-                                  () => Text(
-                                    '${controller.penghuniList.length} penghuni',
-                                    style: AppTextStyles.subtitle14
-                                        .colored(AppColors.primaryLight)
-                                        .copyWith(
-                                          fontSize: context.fontSize(14),
-                                        ),
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              'Kelola Penghuni',
+                              style: AppTextStyles.headlineSmall
+                                  .weighted(FontWeight.w700)
+                                  .colored(Colors.white)
+                                  .copyWith(fontSize: context.fontSize(24)),
+                            ),
+                            SizedBox(height: context.spacing(4)),
+                            Obx(
+                              () => Text(
+                                '${controller.penghuniList.length} penghuni',
+                                style: AppTextStyles.subtitle14
+                                    .colored(AppColors.primaryLight)
+                                    .copyWith(
+                                      fontSize: context.fontSize(14),
+                                    ),
+                              ),
                             ),
                           ],
-                        ),
-                        SizedBox(height: context.spacing(16)),
-                        // Search Bar
-                        TextField(
-                          controller: controller.searchController,
-                          onChanged: controller.searchPenghuni,
-                          decoration: InputDecoration(
-                            hintText: 'Cari penghuni, kamar, atau kost...',
-                            hintStyle: AppTextStyles.body14
-                                .colored(const Color(0xFF9CA3AF))
-                                .copyWith(fontSize: context.fontSize(14)),
-                            prefixIcon: Icon(
-                              Icons.search,
-                              color: const Color(0xFF9CA3AF),
-                              size: context.iconSize(20),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                context.borderRadius(12),
-                              ),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: context.symmetricPadding(
-                              horizontal: 16,
-                              vertical: 12,
-                            ),
-                          ),
                         ),
                       ],
                     ),
@@ -150,42 +118,277 @@ class PenghuniView extends GetView<PenghuniController> {
 
             const SizedBox(height: 16),
 
-            // Filter Chips + Sort
+            // Search Bar
+            Padding(
+              padding: context.horizontalPadding(16),
+              child: TextField(
+                controller: controller.searchController,
+                onChanged: controller.searchPenghuni,
+                decoration: InputDecoration(
+                  hintText: 'Cari penghuni, kamar, atau kost...',
+                  hintStyle: AppTextStyles.body14
+                      .colored(const Color(0xFF9CA3AF))
+                      .copyWith(fontSize: context.fontSize(14)),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: const Color(0xFF9CA3AF),
+                    size: context.iconSize(20),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      context.borderRadius(12),
+                    ),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: context.symmetricPadding(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Filter Kost Dropdown and History Button
             Padding(
               padding: context.horizontalPadding(16),
               child: Row(
                 children: [
+                  // Filter Dropdown
                   Expanded(
-                    child: SizedBox(
-                      height: context.buttonHeight(40),
-                      child: Obx(() {
-                        final selected = controller.selectedFilter.value;
-                        final countVersion = controller.kostCounts.values
-                            .fold<int>(0, (sum, item) => sum + item);
-
-                        return ListView.separated(
-                          key: ValueKey('kost-chip-$selected-$countVersion'),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: controller.kostFilterOptions.length,
-                          separatorBuilder: (_, _) => const SizedBox(width: 8),
-                          itemBuilder: (context, index) {
-                            final option = controller.kostFilterOptions[index];
-                            final count = controller.getPenghuniCountByKost(
-                              option,
-                            );
-                            return _buildFilterChip(
-                              option,
-                              count,
-                              selected == option,
-                              count > 0,
-                            );
-                          },
-                        );
-                      }),
+                    child: Obx(() {
+                      final kostOptions = controller.kostFilterOptions;
+                      final selectedKost = controller.selectedFilter.value;
+                      final selectedCount = controller.getPenghuniCountByKost(selectedKost);
+                      
+                      return Container(
+                        padding: context.symmetricPadding(horizontal: 16, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                          border: Border.all(
+                            color: const Color(0xFFE5E7EB),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF6B8E7A).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                Icons.apartment_rounded,
+                                size: context.iconSize(20),
+                                color: const Color(0xFF6B8E7A),
+                              ),
+                            ),
+                            SizedBox(width: context.spacing(12)),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Kost',
+                                    style: AppTextStyles.body12.copyWith(
+                                      color: const Color(0xFF9CA3AF),
+                                      fontSize: context.fontSize(11),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          selectedKost,
+                                          style: AppTextStyles.body14.copyWith(
+                                            color: const Color(0xFF2D3748),
+                                            fontSize: context.fontSize(14),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF6B8E7A).withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          '$selectedCount',
+                                          style: TextStyle(
+                                            fontSize: context.fontSize(12),
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xFF6B8E7A),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              icon: Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: const Color(0xFF6B7280),
+                                size: context.iconSize(24),
+                              ),
+                              color: Colors.white,
+                              elevation: 8,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              offset: const Offset(0, 8),
+                              itemBuilder: (BuildContext context) {
+                                return kostOptions.map((String kost) {
+                                  final count = controller.getPenghuniCountByKost(kost);
+                                  final isSelected = kost == selectedKost;
+                                  
+                                  return PopupMenuItem<String>(
+                                    value: kost,
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                                      decoration: BoxDecoration(
+                                        color: isSelected 
+                                            ? const Color(0xFF6B8E7A).withValues(alpha: 0.08)
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          if (isSelected)
+                                            Padding(
+                                              padding: const EdgeInsets.only(right: 8),
+                                              child: Icon(
+                                                Icons.check_circle_rounded,
+                                                size: 18,
+                                                color: const Color(0xFF6B8E7A),
+                                              ),
+                                            ),
+                                          Expanded(
+                                            child: Text(
+                                              kost,
+                                              style: TextStyle(
+                                                color: isSelected 
+                                                    ? const Color(0xFF6B8E7A)
+                                                    : const Color(0xFF2D3748),
+                                                fontWeight: isSelected 
+                                                    ? FontWeight.w600 
+                                                    : FontWeight.w500,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isSelected
+                                                  ? const Color(0xFF6B8E7A).withValues(alpha: 0.15)
+                                                  : const Color(0xFFF3F4F6),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              count.toString(),
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                                color: isSelected
+                                                    ? const Color(0xFF6B8E7A)
+                                                    : const Color(0xFF6B7280),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }).toList();
+                              },
+                              onSelected: (String newValue) {
+                                controller.filterByKost(newValue);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                  
+                  SizedBox(width: context.spacing(12)),
+                  
+                  // History Button
+                  GestureDetector(
+                    onTap: () {
+                      RiwayatPenghuniBinding().dependencies();
+                      Get.to(() => const RiwayatPenghuniView());
+                    },
+                    child: Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(context.borderRadius(12)),
+                        border: Border.all(
+                          color: const Color(0xFFE5E7EB),
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.history_rounded,
+                            size: context.iconSize(24),
+                            color: const Color(0xFF6B8E7A),
+                          ),
+                          Positioned(
+                            top: 12,
+                            right: 12,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFEF4444),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  _buildSortButton(),
                 ],
               ),
             ),
@@ -321,133 +524,6 @@ class PenghuniView extends GetView<PenghuniController> {
       ),
       bottomNavigationBar: const AdminBottomNavbar(currentIndex: 2),
     );
-  }
-
-  Widget _buildFilterChip(
-    String label,
-    int count,
-    bool isSelected,
-    bool hasPenghuni,
-  ) {
-    return Builder(
-      builder: (context) => Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(context.borderRadius(20)),
-          onTap: () => controller.filterByKost(label),
-          child: AnimatedContainer(
-            key: ValueKey('$label-$count-$isSelected'),
-            duration: const Duration(milliseconds: 120),
-            padding: context.symmetricPadding(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: isSelected ? const Color(0xFF6B8E7F) : Colors.white,
-              borderRadius: BorderRadius.circular(context.borderRadius(20)),
-              border: Border.all(
-                color: isSelected
-                    ? const Color(0xFF6B8E7F)
-                    : const Color(0xFFE5E7EB),
-              ),
-            ),
-            child: Row(
-              children: [
-                if (isSelected)
-                  Padding(
-                    padding: EdgeInsets.only(right: context.spacing(6)),
-                    child: Icon(
-                      Icons.apartment,
-                      size: context.iconSize(16),
-                      color: Colors.white,
-                    ),
-                  ),
-                if (!isSelected && hasPenghuni)
-                  Padding(
-                    padding: EdgeInsets.only(right: context.spacing(6)),
-                    child: Container(
-                      width: context.spacing(8),
-                      height: context.spacing(8),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF10B981),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: context.fontSize(14),
-                    fontWeight: FontWeight.w500,
-                    color: isSelected ? Colors.white : const Color(0xFF6B7280),
-                  ),
-                ),
-                SizedBox(width: context.spacing(6)),
-                Container(
-                  padding: context.symmetricPadding(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? Colors.white.withValues(alpha: 0.2)
-                        : const Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(
-                      context.borderRadius(10),
-                    ),
-                  ),
-                  child: Text(
-                    count.toString(),
-                    style: AppTextStyles.body12.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: context.fontSize(12),
-                      color: isSelected
-                          ? Colors.white
-                          : const Color(0xFF6B7280),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSortButton() {
-    return Obx(() {
-      final isAsc = controller.isSortAsc.value;
-      return Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: controller.toggleSortOrder,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  isAsc
-                      ? Icons.arrow_upward_rounded
-                      : Icons.arrow_downward_rounded,
-                  size: 14,
-                  color: const Color(0xFF6B7280),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  isAsc ? 'Asc' : 'Desc',
-                  style: AppTextStyles.labelSmall.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF6B7280),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
   }
 
   Widget _buildPenghuniCard(PenghuniModel penghuni, int index) {
