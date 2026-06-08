@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/user_home_controller.dart';
 import '../../../../core/values/values.dart';
+import '../../../../core/utils/responsive_utils.dart';
 
 class PaymentSummaryCard extends StatelessWidget {
   final UserHomeController controller;
@@ -15,33 +16,46 @@ class PaymentSummaryCard extends StatelessWidget {
       children: [
         Text(
           'Ringkasan Pembayaran',
-          style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
+          style: AppTextStyles.header18
+              .colored(AppColors.textPrimary)
+              .copyWith(
+                fontSize: context.fontSize(20),
+                fontWeight: FontWeight.bold,
+              ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: context.spacing(16)),
         Obx(
           () => Row(
             children: [
               Expanded(
                 child: _buildSummaryItem(
+                  context: context,
                   icon: Icons.check_circle_outline,
+                  iconBgColor: const Color(0xFFD1FAE5),
                   iconColor: const Color(0xFF10B981),
-                  title: 'Sudah Lunas',
-                  value: '${controller.totalLunas.value}',
-                  subtitle: controller.totalLunas.value == 1
-                      ? 'Tagihan'
-                      : 'Tagihan',
+                  title: 'Total Lunas',
+                  value: '${controller.totalLunas.value} Bulan',
+                  subtitle: controller.firstPaidMonth.value.isNotEmpty
+                      ? controller.firstPaidMonth.value
+                      : controller.totalLunas.value > 0
+                      ? 'Pembayaran selesai'
+                      : 'Belum ada pembayaran',
+                  subtitleColor: const Color(0xFF10B981),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: context.spacing(16)),
               Expanded(
                 child: _buildSummaryItem(
-                  icon: Icons.schedule,
-                  iconColor: const Color(0xFFF2A65A),
+                  context: context,
+                  icon: Icons.error_outline,
+                  iconBgColor: const Color(0xFFFFEDDB),
+                  iconColor: const Color(0xFFFF6B2C),
                   title: 'Belum Bayar',
-                  value: '${controller.totalBelumBayar.value}',
-                  subtitle: controller.totalBelumBayar.value == 1
-                      ? 'Tagihan'
-                      : 'Tagihan',
+                  value: '${controller.totalBelumBayar.value} Bulan',
+                  subtitle: controller.unpaidMonthsList.value.isNotEmpty
+                      ? controller.unpaidMonthsList.value
+                      : 'Tidak ada tagihan',
+                  subtitleColor: const Color(0xFFFF6B2C),
                 ),
               ),
             ],
@@ -52,48 +66,66 @@ class PaymentSummaryCard extends StatelessWidget {
   }
 
   Widget _buildSummaryItem({
+    required BuildContext context,
     required IconData icon,
+    required Color iconBgColor,
     required Color iconColor,
     required String title,
     required String value,
     required String subtitle,
+    required Color subtitleColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: context.allPadding(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(context.borderRadius(16)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: context.iconSize(56),
+            height: context.iconSize(56),
             decoration: BoxDecoration(
-              color: iconColor.withValues(alpha: 0.1),
+              color: iconBgColor,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(icon, color: iconColor, size: context.iconSize(28)),
           ),
-          const SizedBox(height: 8),
-          Text(title, style: AppTextStyles.body12.colored(AppColors.textGray)),
-          const SizedBox(height: 4),
+          SizedBox(height: context.spacing(16)),
+          Text(
+            title,
+            style: AppTextStyles.body12
+                .colored(const Color(0xFF9CA3AF))
+                .copyWith(fontSize: context.fontSize(14)),
+          ),
+          SizedBox(height: context.spacing(8)),
           Text(
             value,
-            style: AppTextStyles.subtitle18.colored(AppColors.textPrimary),
+            style: AppTextStyles.header18
+                .colored(const Color(0xFF1F2937))
+                .copyWith(
+                  fontSize: context.fontSize(18),
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: context.spacing(8)),
           Text(
             subtitle,
-            style: AppTextStyles.body10.colored(iconColor),
-            textAlign: TextAlign.center,
+            style: AppTextStyles.body12
+                .colored(subtitleColor)
+                .copyWith(
+                  fontSize: context.fontSize(13),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),

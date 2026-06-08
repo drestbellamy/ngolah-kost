@@ -78,6 +78,8 @@ class UserHomeController extends GetxController {
   final totalBelumBayar = 0.obs;
   final lunasDate = ''.obs;
   final belumBayarDate = ''.obs;
+  final unpaidMonthsList = ''.obs;
+  final firstPaidMonth = ''.obs;
 
   // Announcements
   final announcements = <Map<String, dynamic>>[].obs;
@@ -165,12 +167,21 @@ class UserHomeController extends GetxController {
       DateTime? nearestDue;
       int? nearestAmount;
       bool hasPending = false;
+      List<Map<String, dynamic>> unpaidMonths = [];
+      DateTime? firstPaidDate;
 
       final now = DateTime.now();
 
       for (final tagihan in tagihanList) {
         final status = tagihan['status']?.toString() ?? '';
         final tagihanId = tagihan['id']?.toString() ?? '';
+        final bulan = tagihan['bulan'] as int? ?? 0;
+        final tahun = tagihan['tahun'] as int? ?? 0;
+
+        // Debug logging
+        print(
+          'Tagihan Debug: bulan=$bulan, tahun=$tahun, status=$status, id=$tagihanId',
+        );
 
         // Check if this tagihan has pending payment
         final hasPendingPayment = pembayaranList.any(
@@ -179,21 +190,32 @@ class UserHomeController extends GetxController {
               p['status'] == 'pending',
         );
 
+        if (hasPendingPayment) {
+          print('  -> Has pending payment, not counting as belum_dibayar');
+        }
+
         if (status == 'lunas') {
           lunas++;
+
+          // Track first paid date (earliest lunas tagihan)
+          final paidDate = DateTime(tahun, bulan, 1);
+          if (firstPaidDate == null || paidDate.isBefore(firstPaidDate)) {
+            firstPaidDate = paidDate;
+          }
         } else if (status == 'belum_dibayar') {
           if (hasPendingPayment) {
             // Don't count as belum bayar if has pending payment
             hasPending = true;
           } else {
             belumBayar++;
+
+            // Add to unpaid months list
+            unpaidMonths.add({'bulan': bulan, 'tahun': tahun});
+            print('  -> Added to unpaidMonths: bulan=$bulan, tahun=$tahun');
           }
 
           // Find nearest due date (only for non-pending)
           if (!hasPendingPayment) {
-            final bulan = tagihan['bulan'] as int? ?? 0;
-            final tahun = tagihan['tahun'] as int? ?? 0;
-
             // Get jatuh tempo from database or fallback to 20th of month
             DateTime dueDateTime;
             if (tagihan['tanggal_jatuh_tempo'] != null) {
@@ -214,9 +236,93 @@ class UserHomeController extends GetxController {
         }
       }
 
+      print('Total unpaidMonths collected: ${unpaidMonths.length}');
+      print('unpaidMonths data: $unpaidMonths');
+
       totalLunas.value = lunas;
       totalBelumBayar.value = belumBayar;
       hasPendingPayment.value = hasPending;
+
+      // Set first paid month
+      if (firstPaidDate != null) {
+        final monthNames = [
+          '',
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'Mei',
+          'Jun',
+          'Jul',
+          'Agu',
+          'Sep',
+          'Okt',
+          'Nov',
+          'Des',
+        ];
+        final monthName = monthNames[firstPaidDate.month];
+        firstPaidMonth.value = 'Sejak $monthName ${firstPaidDate.year}';
+        print('First paid month: ${firstPaidMonth.value}');
+      } else {
+        firstPaidMonth.value = '';
+      }
+
+      // Format unpaid months list
+      if (unpaidMonths.isNotEmpty) {
+        // Sort by year and month
+        unpaidMonths.sort((a, b) {
+          final yearCompare = a['tahun'].compareTo(b['tahun']);
+          if (yearCompare != 0) return yearCompare;
+          return a['bulan'].compareTo(b['bulan']);
+        });
+
+        print('After sorting unpaidMonths: $unpaidMonths');
+
+        // Format the list
+        final monthNames = [
+          '',
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'Mei',
+          'Jun',
+          'Jul',
+          'Agu',
+          'Sep',
+          'Okt',
+          'Nov',
+          'Des',
+        ];
+
+        if (unpaidMonths.length <= 3) {
+          // Show all months if 3 or less
+          final formattedMonths = unpaidMonths
+              .map((m) {
+                final monthName = monthNames[m['bulan']];
+                return '$monthName ${m['tahun']}';
+              })
+              .join(', ');
+          unpaidMonthsList.value = formattedMonths;
+          print('Formatted (<=3): $formattedMonths');
+        } else {
+          // Show first 2 and last 1 with ellipsis
+          final first = unpaidMonths.first;
+          final second = unpaidMonths[1];
+          final last = unpaidMonths.last;
+
+          final firstName = monthNames[first['bulan']];
+          final secondName = monthNames[second['bulan']];
+          final lastName = monthNames[last['bulan']];
+
+          unpaidMonthsList.value =
+              '$firstName, $secondName, ... $lastName ${last['tahun']}';
+          print('Formatted (>3): ${unpaidMonthsList.value}');
+        }
+      } else {
+        unpaidMonthsList.value = '';
+        print('No unpaid months');
+      }
 
       if (hasPending && nearestDue == null) {
         // If only pending payment exists, show pending status
