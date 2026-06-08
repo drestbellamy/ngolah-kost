@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../app/data/models/pengajuan_pindah_model.dart';
 import 'base/base_repository.dart';
+import 'base/constants.dart';
 
 class PengajuanPindahRepository extends BaseRepository {
   @override
@@ -132,28 +133,108 @@ class PengajuanPindahRepository extends BaseRepository {
     }
   }
 
-  /// Update the status of a move request
-  Future<void> updateStatusPengajuan(String id, String status, {String? keteranganAdmin}) async {
+  /// Update the status of a move request using RPC (NEW VERSION with Atomic Transaction)
+  Future<Map<String, dynamic>> updateStatusPengajuan(
+    String id,
+    String status, {
+    String? keteranganAdmin,
+  }) async {
     try {
-      logDebug('Updating move request status', {'id': id, 'status': status});
-      
-      final Map<String, dynamic> updateData = {'status': status};
-      if (keteranganAdmin != null) {
-        updateData['keterangan_admin'] = keteranganAdmin;
+      logDebug('Updating move request status via RPC', {
+        'id': id,
+        'status': status,
+      });
+
+      // 🆕 Gunakan RPC function untuk proses perpindahan kamar
+      // Semua operasi dalam 1 transaction atomic
+      final result = await _supabase.rpc(
+        RepositoryConstants.processRoomTransferRpc,
+        params: {
+          'p_pengajuan_id': id,
+          'p_status': status,
+          'p_keterangan_admin': keteranganAdmin,
+        },
+      );
+
+      // Parse result dari RPC
+      if (result is Map<String, dynamic>) {
+        final success = result['success'] as bool? ?? false;
+        final message = result['message'] as String? ?? '';
+        final data = result['data'] as Map<String, dynamic>? ?? {};
+
+        logInfo('Successfully processed move request via RPC', {
+          'success': success,
+          'message': message,
+          'pengajuan_id': id,
+        });
+
+        // Log detail perpindahan untuk debugging
+        if (data.isNotEmpty) {
+          logDebug('Room transfer details', {
+            'penghuni_id': data['penghuni_id'],
+            'kamar_asal_id': data['kamar_asal_id'],
+            'kamar_tujuan_id': data['kamar_tujuan_id'],
+            'status_kamar_asal': data['status_kamar_asal'],
+            'status_kamar_tujuan': data['status_kamar_tujuan'],
+            'terisi_asal': data['terisi_asal'],
+            'terisi_tujuan': data['terisi_tujuan'],
+            'harga_lama': data['harga_lama'],
+            'harga_baru': data['harga_baru'],
+          });
+        }
+
+        return {'success': success, 'message': message, 'data': data};
       }
-      
-      await _supabase
-          .from('pengajuan_pindah')
-          .update(updateData)
-          .eq('id', id);
-          
-      // Note: Changing actual room logic should be handled depending on business logic.
-      // If approved, you might need to update the penghuni's room to the kamar_tujuan_id.
-          
-      logInfo('Successfully updated move request status');
+
+      // Jika result bukan Map (unexpected format)
+      logWarning('Unexpected RPC result type', {
+        'result_type': result.runtimeType.toString(),
+      });
+
+      return {
+        'success': true,
+        'message': 'Pengajuan berhasil diproses',
+        'data': {},
+      };
     } on PostgrestException catch (e) {
-      logError('Failed to update move request status', {'error': e.message});
-      throw Exception(formatPostgrestError(e));
+      logError('Failed to update move request status', {
+        'error': e.message,
+        'details': e.details,
+        'hint': e.hint,
+        'code': e.code,
+      });
+
+      // Parse error message untuk user-friendly message
+      String errorMessage = e.message;
+
+      // Cek error spesifik dari RPC function
+      if (errorMessage.contains('Kamar tujuan sudah penuh')) {
+        errorMessage = 'Kamar tujuan sudah penuh. Silakan pilih kamar lain.';
+      } else if (errorMessage.contains('tidak ditemukan')) {
+        errorMessage = 'Data tidak ditemukan. Silakan refresh halaman.';
+      } else if (errorMessage.contains('tidak boleh sama')) {
+        errorMessage = 'Kamar asal dan tujuan tidak boleh sama.';
+      } else if (errorMessage.contains('tidak boleh NULL')) {
+        errorMessage = 'Data tidak lengkap. Silakan periksa kembali.';
+      } else if (errorMessage.toLowerCase().contains('permission denied') ||
+          errorMessage.toLowerCase().contains('rls')) {
+        errorMessage = 'Anda tidak memiliki izin untuk melakukan operasi ini.';
+      } else {
+        // Ambil pesan error yang lebih spesifik jika ada
+        final details = e.details?.toString() ?? '';
+        if (details.isNotEmpty) {
+          errorMessage = '$errorMessage\nDetail: $details';
+        }
+      }
+
+      throw Exception(errorMessage);
+    } catch (e) {
+      logError('Unexpected error updating move request', {
+        'error': e.toString(),
+        'error_type': e.runtimeType.toString(),
+      });
+
+      throw Exception('Gagal memproses pengajuan: ${e.toString()}');
     }
   }
 }
