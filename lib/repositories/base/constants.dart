@@ -32,6 +32,7 @@ class RepositoryConstants {
   static const String getUserProfileDataRpc = 'get_user_profile_data';
   static const String getAllPengaduanForAdminRpc =
       'get_all_pengaduan_for_admin';
+  static const String processRoomTransferRpc = 'process_room_transfer';
 
   // Status Values
   static const String statusAktif = 'aktif';
